@@ -1,0 +1,143 @@
+
+import React, { useState } from 'react';
+import { StarField } from '@/components/StarField';
+import { CosmicButton } from '@/components/CosmicButton';
+import { useAppStore } from '@/store/useAppStore';
+import { ArrowLeft, Send } from 'lucide-react';
+
+const UniversePage: React.FC = () => {
+  const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const [question, setQuestion] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [currentAnswer, setCurrentAnswer] = useState<null | {
+    question: string;
+    answer: string;
+  }>(null);
+  
+  const handleAskUniverse = () => {
+    if (question.trim().length < 3) return;
+    
+    setIsAsking(true);
+    setTimeout(() => {
+      const response = askUniverse(question);
+      setCurrentAnswer({
+        question: response.question,
+        answer: response.answer
+      });
+      setQuestion('');
+      setIsAsking(false);
+    }, 2000); // Add a delay for effect
+  };
+  
+  return (
+    <div className="min-h-screen flex flex-col relative">
+      <StarField starCount={150} />
+      
+      {/* Header */}
+      <div className="relative z-10 px-4 py-4 flex items-center">
+        <button
+          className="p-2 text-cosmic-accent"
+          onClick={() => setActiveScreen('main')}
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
+          Врата Вселенной
+        </h1>
+      </div>
+      
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-lg mx-auto w-full">
+        {currentAnswer ? (
+          <div className="animate-fade-in w-full">
+            <div className="cosmic-card mb-6">
+              <h2 className="text-lg font-serif text-cosmic-accent mb-2">
+                Твой вопрос
+              </h2>
+              <p className="text-white">{currentAnswer.question}</p>
+            </div>
+            
+            <div className="cosmic-card bg-cosmic-accent/10">
+              <h2 className="text-lg font-serif text-cosmic-gold mb-4">
+                Ответ Вселенной
+              </h2>
+              <p className="text-xl font-serif text-white italic leading-relaxed">
+                "{currentAnswer.answer}"
+              </p>
+              
+              <div className="mt-8">
+                <CosmicButton 
+                  onClick={() => setCurrentAnswer(null)} 
+                  variant="outline"
+                >
+                  Задать новый вопрос
+                </CosmicButton>
+              </div>
+            </div>
+          </div>
+        ) : isAsking ? (
+          <div className="w-full flex flex-col items-center animate-fade-in">
+            <div className="energy-circle w-40 h-40 animate-pulse-slow mb-6">
+              <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                <div className="text-cosmic-accent animate-pulse-slow">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4V2M12 22v-2M6.34 6.34L4.93 4.93M19.07 19.07l-1.41-1.41M4 12H2M22 12h-2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" 
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-cosmic-secondary text-center">
+              Вселенная обдумывает ответ...
+            </p>
+          </div>
+        ) : (
+          <div className="w-full animate-fade-in">
+            <h2 className="text-2xl font-serif text-white mb-6 text-center">
+              Что ты хочешь спросить у Вселенной?
+            </h2>
+            
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Задай свой вопрос..."
+              className="cosmic-input w-full h-40 resize-none mb-8"
+            />
+            
+            <CosmicButton 
+              onClick={handleAskUniverse}
+              className="w-full"
+              disabled={question.length < 3}
+            >
+              <Send size={18} className="mr-2" />
+              Отправить вопрос
+            </CosmicButton>
+            
+            {activeQuestions.length > 0 && (
+              <div className="mt-12">
+                <h3 className="text-lg font-serif text-cosmic-secondary mb-4">
+                  Предыдущие вопросы
+                </h3>
+                
+                <div className="space-y-4">
+                  {activeQuestions.slice(0, 3).map((q) => (
+                    <div key={q.id} className="cosmic-card bg-cosmic-dark/60">
+                      <p className="text-sm text-cosmic-secondary mb-2">
+                        {new Date(q.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-white mb-2">{q.question}</p>
+                      <p className="text-cosmic-accent italic">"{q.answer}"</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default UniversePage;
