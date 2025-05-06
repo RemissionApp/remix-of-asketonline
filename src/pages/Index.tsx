@@ -2,9 +2,6 @@
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 
-// Import Zustand store
-import { create } from 'zustand';
-
 const Index = () => {
   // Automatically redirect to the main app
   return (
