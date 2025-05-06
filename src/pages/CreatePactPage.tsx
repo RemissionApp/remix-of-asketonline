@@ -4,6 +4,7 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft } from 'lucide-react';
+import { PactOath } from '@/components/PactOath';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen } = useAppStore();
@@ -14,7 +15,7 @@ const CreatePactPage: React.FC = () => {
   const [reward, setReward] = useState('');
   
   const handleNext = () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
@@ -138,52 +139,77 @@ const CreatePactPage: React.FC = () => {
             />
           </div>
         );
+      case 3:
+        return (
+          <PactOath
+            title={title}
+            duration={duration}
+            reward={reward}
+            onConfirm={handleNext}
+            onBack={handleBack}
+          />
+        );
     }
   };
+  
+  // Don't show the standard UI for the oath screen
+  const showStandardLayout = step < 3;
   
   return (
     <div className="min-h-screen flex flex-col relative">
       <StarField starCount={100} />
       
-      {/* Header */}
-      <div className="relative z-10 px-4 py-4 flex items-center">
-        <button
-          className="p-2 text-cosmic-accent"
-          onClick={handleBack}
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-          Создание Аскезы
-        </h1>
-      </div>
+      {showStandardLayout && (
+        <>
+          {/* Header */}
+          <div className="relative z-10 px-4 py-4 flex items-center">
+            <button
+              className="p-2 text-cosmic-accent"
+              onClick={handleBack}
+            >
+              <ArrowLeft size={24} />
+            </button>
+            <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
+              Создание Аскезы
+            </h1>
+          </div>
+          
+          {/* Main content */}
+          <div className="relative z-10 flex-1 flex flex-col px-4 py-4 max-w-lg mx-auto w-full">
+            {renderStep()}
+          </div>
+          
+          {/* Bottom */}
+          <div className="relative z-10 p-4 max-w-lg mx-auto w-full">
+            <div className="flex justify-between items-center mb-6">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={`flex-1 h-1 rounded-full mx-1 ${
+                    i <= step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'
+                  }`}
+                />
+              ))}
+            </div>
+            
+            {step < 3 && (
+              <CosmicButton 
+                onClick={handleNext} 
+                className="w-full"
+                disabled={isNextDisabled()}
+              >
+                {step === 2 ? 'Далее' : 'Далее'}
+              </CosmicButton>
+            )}
+          </div>
+        </>
+      )}
       
-      {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col px-4 py-4 max-w-lg mx-auto w-full">
-        {renderStep()}
-      </div>
-      
-      {/* Bottom */}
-      <div className="relative z-10 p-4 max-w-lg mx-auto w-full">
-        <div className="flex justify-between items-center mb-6">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className={`flex-1 h-1 rounded-full mx-1 ${
-                i <= step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'
-              }`}
-            />
-          ))}
+      {!showStandardLayout && (
+        <div className="relative z-10 flex-1 flex flex-col p-4">
+          {renderStep()}
         </div>
-        
-        <CosmicButton 
-          onClick={handleNext} 
-          className="w-full"
-          disabled={isNextDisabled()}
-        >
-          {step === 2 ? 'Заключить' : 'Далее'}
-        </CosmicButton>
-      </div>
+      )}
     </div>
   );
 };
