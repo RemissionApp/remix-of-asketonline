@@ -32,25 +32,53 @@ export const PactOath: React.FC<PactOathProps> = ({
       clearTimeout(timer2);
     };
   }, []);
-  
-  // Play sound effect on component mount
-  useEffect(() => {
-    // Sound effect could be added here in the future
-  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <div 
-        className={`cosmic-card max-w-lg w-full mx-auto relative overflow-hidden transition-all duration-1000 ${
+        className={`relative max-w-lg w-full mx-auto overflow-hidden transition-all duration-1000 ${
           isReady ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
-        {/* Animated background effect */}
-        <div className="absolute inset-0 bg-cosmic-accent/5 animate-pulse-slow" />
-        <div className="absolute inset-0 bg-cosmic-accent/10 animate-float opacity-50" />
-        
+        {/* Portal awakening effect */}
+        <div className="relative w-full aspect-square max-w-md mx-auto mb-6">
+          {/* Background subtle glow */}
+          <div className="absolute inset-0 bg-cosmic-dark rounded-full blur-xl opacity-60" />
+          
+          {/* Main glowing circle */}
+          <div className="absolute inset-4 rounded-full border-2 border-cosmic-gold/80 animate-spin-slow shadow-[0_0_40px_rgba(245,158,11,0.5)]" 
+               style={{animationDuration: '30s'}} />
+          
+          {/* Inner circle - brighter */}
+          <div className="absolute inset-10 rounded-full border border-cosmic-gold shadow-[0_0_20px_rgba(245,158,11,0.8)] animate-spin-slow"
+               style={{animationDuration: '20s', animationDirection: 'reverse'}} />
+          
+          {/* Center glow */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-3/4 h-3/4 rounded-full bg-cosmic-gold/5 filter blur-md animate-pulse-slow" />
+          </div>
+          
+          {/* Bright ring */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-1/2 h-1/2 rounded-full border-2 border-cosmic-gold shadow-[0_0_30px_rgba(245,158,11,0.9)] animate-pulse-slow" />
+          </div>
+          
+          {/* Small particles */}
+          {[...Array(6)].map((_, i) => (
+            <div 
+              key={i} 
+              className="absolute w-1 h-1 bg-cosmic-gold rounded-full blur-[1px] animate-spin-slow" 
+              style={{
+                top: `${50 + 35 * Math.cos(i * (Math.PI / 3))}%`, 
+                left: `${50 + 35 * Math.sin(i * (Math.PI / 3))}%`,
+                animationDuration: `${15 + i * 2}s`
+              }}
+            />
+          ))}
+        </div>
+
         {/* Main content */}
-        <div className={`relative z-10 transition-opacity duration-1000 ${
+        <div className={`cosmic-card relative z-10 transition-opacity duration-1000 ${
           showText ? 'opacity-100' : 'opacity-0'
         }`}>
           <h2 className="text-2xl font-serif text-center text-white mb-4">
@@ -84,7 +112,7 @@ export const PactOath: React.FC<PactOathProps> = ({
             <p className="text-center">Да будет Сила внутри меня.»</p>
           </div>
 
-          <div className="mt-6 text-right text-cosmic-accent italic">
+          <div className="mt-6 text-right text-cosmic-gold italic">
             <p>{userProfile.name} — Дитя Воли</p>
           </div>
         </div>
@@ -102,7 +130,7 @@ export const PactOath: React.FC<PactOathProps> = ({
         </Button>
         <Button
           onClick={onConfirm}
-          className="bg-cosmic-accent text-white hover:bg-cosmic-accent2 animate-pulse-slow"
+          className="bg-cosmic-gold text-black hover:bg-cosmic-gold/80 animate-pulse-slow"
         >
           Заключить Пакт
         </Button>
