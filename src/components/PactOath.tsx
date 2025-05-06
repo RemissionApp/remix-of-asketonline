@@ -35,8 +35,17 @@ export const PactOath: React.FC<PactOathProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
+      {/* Cosmic background image */}
+      <div className="fixed inset-0 z-0">
+        <div 
+          className="w-full h-full bg-cover bg-center opacity-90"
+          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
+      </div>
+
       <div 
-        className={`relative max-w-lg w-full mx-auto overflow-hidden transition-all duration-1000 ${
+        className={`relative z-10 max-w-lg w-full mx-auto overflow-hidden transition-all duration-1000 ${
           isReady ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
@@ -78,7 +87,7 @@ export const PactOath: React.FC<PactOathProps> = ({
         </div>
 
         {/* Main content */}
-        <div className={`cosmic-card relative z-10 transition-opacity duration-1000 ${
+        <div className={`cosmic-card backdrop-blur-lg bg-cosmic-dark/40 relative z-10 transition-opacity duration-1000 ${
           showText ? 'opacity-100' : 'opacity-0'
         }`}>
           <h2 className="text-2xl font-serif text-center text-white mb-4">
@@ -118,13 +127,13 @@ export const PactOath: React.FC<PactOathProps> = ({
         </div>
       </div>
       
-      <div className={`flex gap-4 mt-6 transition-all duration-1000 ${
+      <div className={`flex gap-4 mt-6 transition-all duration-1000 z-20 relative ${
         showText ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}>
         <Button
           variant="outline"
           onClick={onBack}
-          className="text-cosmic-secondary border-cosmic-accent/30 hover:bg-cosmic-accent/20"
+          className="text-cosmic-secondary border-cosmic-accent/30 hover:bg-cosmic-accent/20 backdrop-blur-md"
         >
           Назад
         </Button>
