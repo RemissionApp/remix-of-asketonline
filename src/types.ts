@@ -25,7 +25,7 @@ export interface UniverseQuestion {
 
 export interface UserProfile {
   name: string;
-  age?: number;
+  birthDate?: Date;
   totalDays: number;
   energyPoints: number;
   goal: string;
