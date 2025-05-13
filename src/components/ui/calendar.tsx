@@ -31,7 +31,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3 pointer-events-auto", className)}
+      className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
@@ -64,7 +64,7 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary pointer-events-auto",
+        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary z-50",
         ...classNames,
       }}
       components={{
@@ -83,8 +83,7 @@ function Calendar({
           // Handle month change
           const handleMonthChange = (newMonth: string) => {
             const monthIndex = parseInt(newMonth);
-            const newDate = new Date(displayMonth);
-            newDate.setMonth(monthIndex);
+            const newDate = new Date(year, monthIndex);
             if (props.onMonthChange) {
               props.onMonthChange(newDate);
             }
@@ -92,9 +91,9 @@ function Calendar({
           
           // Handle year change
           const handleYearChange = (newYear: string) => {
-            const newDate = new Date(displayMonth);
-            newDate.setFullYear(parseInt(newYear));
-            setCurrentYear(parseInt(newYear));
+            const yearValue = parseInt(newYear);
+            setCurrentYear(yearValue);
+            const newDate = new Date(yearValue, month);
             if (props.onMonthChange) {
               props.onMonthChange(newDate);
             }
@@ -106,13 +105,28 @@ function Calendar({
                 <Select 
                   value={month.toString()} 
                   onValueChange={handleMonthChange}
+                  open={undefined}
                 >
-                  <SelectTrigger className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white pointer-events-auto">
+                  <SelectTrigger 
+                    className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     <SelectValue>{monthNames[month]}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50">
+                  <SelectContent 
+                    className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50"
+                    position="popper"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {monthNames.map((monthName, idx) => (
-                      <SelectItem key={idx} value={idx.toString()} className="cursor-pointer">
+                      <SelectItem 
+                        key={idx} 
+                        value={idx.toString()} 
+                        className="cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {monthName}
                       </SelectItem>
                     ))}
@@ -122,13 +136,28 @@ function Calendar({
                 <Select 
                   value={year.toString()} 
                   onValueChange={handleYearChange}
+                  open={undefined}
                 >
-                  <SelectTrigger className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white pointer-events-auto">
+                  <SelectTrigger 
+                    className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     <SelectValue>{year}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50">
+                  <SelectContent 
+                    className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50"
+                    position="popper"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {yearsRange.map((y) => (
-                      <SelectItem key={y} value={y.toString()} className="cursor-pointer">
+                      <SelectItem 
+                        key={y} 
+                        value={y.toString()} 
+                        className="cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {y}
                       </SelectItem>
                     ))}
