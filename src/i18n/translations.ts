@@ -70,6 +70,30 @@ type TranslationKeys = {
     proTitle: string;
     proDescription: string;
     proButton: string;
+    achievements: {
+      title: string;
+      unlocked: string;
+      locked: string;
+      empty: string;
+    };
+    missions: {
+      title: string;
+      current: string;
+      empty: string;
+      get: string;
+      about: string;
+      description: string;
+      rewards: string;
+    };
+    ranks: {
+      next: string;
+      progress: string;
+      seeker: string;
+      pilgrim: string;
+      warrior: string;
+      master: string;
+      enlightened: string;
+    };
   };
   pactOath: {
     title: string;
@@ -89,6 +113,16 @@ type TranslationKeys = {
     birthDatePlaceholder: string;
     birthDateRequired: string;
     continueButton: string;
+  };
+  gamification: {
+    energyPoints: string;
+    levelUp: string;
+    newAchievement: string;
+    newMission: string;
+    missionCompleted: string;
+    rankTitle: string;
+    pointsEarned: string;
+    rewards: string;
   };
 };
 
@@ -127,7 +161,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     main: {
       days: "дней",
       todayCompleted: "Сегодня я выдержал",
-      askUniverse: "Спросить Вселенную",
+      askUniverse: "Спросить Вселенну��",
       noPacts: "У тебя пока нет активных аскез",
       createPact: "Заключить договор",
       nav: {
@@ -188,7 +222,31 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       ],
       proTitle: "ASKET PRO",
       proDescription: "Разблокируй дополнительные возможности и усиль свой путь",
-      proButton: "Открыть силу PRO ✨"
+      proButton: "Открыть силу PRO ✨",
+      achievements: {
+        title: "Достижения",
+        unlocked: "Разблокированные достижения",
+        locked: "Предстоящие достижения",
+        empty: "У вас пока нет разблокированных достижений"
+      },
+      missions: {
+        title: "Миссии",
+        current: "Текущая миссия",
+        empty: "У вас нет активных миссий",
+        get: "Получить миссию",
+        about: "О космических миссиях",
+        description: "Космические миссии — это специальные задания от Вселенной, которые помогут вам укрепить вашу силу духа и получить дополнительные награды. Завершайте миссии и получайте энергетические очки и достижения.",
+        rewards: "Эксклюзивные награды"
+      },
+      ranks: {
+        next: "до ранга",
+        progress: "прогресс",
+        seeker: "Искатель",
+        pilgrim: "Пилигрим",
+        warrior: "Воин Света",
+        master: "Мастер",
+        enlightened: "Просветлённый"
+      }
     },
     pactOath: {
       title: "Моя Аскеза",
@@ -208,6 +266,16 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       birthDatePlaceholder: "Выберите дату рождения",
       birthDateRequired: "Укажите дату рождения",
       continueButton: "Продолжить"
+    },
+    gamification: {
+      energyPoints: "Очки энергии",
+      levelUp: "Повышение ранга!",
+      newAchievement: "Новое достижение!",
+      newMission: "Новая миссия!",
+      missionCompleted: "Миссия выполнена!",
+      rankTitle: "Ваш ранг:",
+      pointsEarned: "Получено очков:",
+      rewards: "Награды:"
     }
   },
   en: {
@@ -305,7 +373,31 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       ],
       proTitle: "ASKET PRO",
       proDescription: "Unlock additional capabilities and enhance your path",
-      proButton: "Unlock PRO power ✨"
+      proButton: "Unlock PRO power ✨",
+      achievements: {
+        title: "Achievements",
+        unlocked: "Unlocked achievements",
+        locked: "Upcoming achievements",
+        empty: "You have no unlocked achievements yet"
+      },
+      missions: {
+        title: "Missions",
+        current: "Current mission",
+        empty: "You have no active missions",
+        get: "Get mission",
+        about: "About cosmic missions",
+        description: "Cosmic missions are special tasks from the Universe that will help you strengthen your spirit and earn additional rewards. Complete missions to earn energy points and achievements.",
+        rewards: "Exclusive rewards"
+      },
+      ranks: {
+        next: "until rank",
+        progress: "progress",
+        seeker: "Seeker",
+        pilgrim: "Pilgrim",
+        warrior: "Light Warrior",
+        master: "Master",
+        enlightened: "Enlightened"
+      }
     },
     pactOath: {
       title: "My Ascesis",
@@ -325,6 +417,16 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       birthDatePlaceholder: "Select your date of birth",
       birthDateRequired: "Date of birth is required",
       continueButton: "Continue"
+    },
+    gamification: {
+      energyPoints: "Energy Points",
+      levelUp: "Rank Up!",
+      newAchievement: "New Achievement!",
+      newMission: "New Mission!",
+      missionCompleted: "Mission Completed!",
+      rankTitle: "Your rank:",
+      pointsEarned: "Points earned:",
+      rewards: "Rewards:"
     }
   },
   es: {
@@ -422,7 +524,31 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       ],
       proTitle: "ASKET PRO",
       proDescription: "Desbloquea capacidades adicionales y mejora tu camino",
-      proButton: "Desbloquear el poder PRO ✨"
+      proButton: "Desbloquear el poder PRO ✨",
+      achievements: {
+        title: "Logros",
+        unlocked: "Logros desbloqueados",
+        locked: "Próximos logros",
+        empty: "Aún no tienes logros desbloqueados"
+      },
+      missions: {
+        title: "Misiones",
+        current: "Misión actual",
+        empty: "No tienes misiones activas",
+        get: "Obtener misión",
+        about: "Sobre misiones cósmicas",
+        description: "Las misiones cósmicas son tareas especiales del Universo que te ayudarán a fortalecer tu espíritu y obtener recompensas adicionales. Completa misiones y obtén puntos de energía y logros.",
+        rewards: "Recompensas exclusivas"
+      },
+      ranks: {
+        next: "hasta el rango de",
+        progress: "progreso",
+        seeker: "Buscador",
+        pilgrim: "Peregrino",
+        warrior: "Guerrero de Luz",
+        master: "Maestro",
+        enlightened: "Iluminado"
+      }
     },
     pactOath: {
       title: "Mi Ascesis",
@@ -442,6 +568,16 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       birthDatePlaceholder: "Selecciona tu fecha de nacimiento",
       birthDateRequired: "La fecha de nacimiento es obligatoria",
       continueButton: "Continuar"
+    },
+    gamification: {
+      energyPoints: "Puntos de Energía",
+      levelUp: "¡Subida de Rango!",
+      newAchievement: "¡Nuevo Logro!",
+      newMission: "¡Nueva Misión!",
+      missionCompleted: "¡Misión Completada!",
+      rankTitle: "Tu rango:",
+      pointsEarned: "Puntos ganados:",
+      rewards: "Recompensas:"
     }
   }
 };

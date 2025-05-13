@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -6,7 +5,7 @@ import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { CosmicButton } from '@/components/CosmicButton';
 import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
-import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { 
   Carousel,
@@ -15,6 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
 
 const MainPage: React.FC = () => {
@@ -24,10 +24,12 @@ const MainPage: React.FC = () => {
     markDayComplete, 
     setActiveScreen,
     syncPactsWithCurrentDate,
-    language
+    language,
+    userProfile
   } = useAppStore();
   const { t } = useTranslations();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
+  const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   
   // Sync pacts with current date when component mounts
   useEffect(() => {
@@ -126,9 +128,43 @@ const MainPage: React.FC = () => {
     }
   };
   
+  // Обработчик завершения дня с визуальным эффектом
+  const handleCompleteDayWithEffect = () => {
+    if (currentPact) {
+      markDayComplete(currentPact.id);
+      setShowEnergyEffect(true);
+      
+      setTimeout(() => {
+        setShowEnergyEffect(false);
+      }, 2000);
+    }
+  };
+  
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
+      
+      {/* Точки энергии - отображение вверху экрана */}
+      <div className="absolute top-4 right-4 z-20 flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">
+        <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
+        <span className="text-cosmic-gold font-medium">{userProfile.energyPoints}</span>
+      </div>
+      
+      {/* Ранг - отображение вверху экрана */}
+      <div className="absolute top-4 left-4 z-20">
+        <RankBadge size="sm" />
+      </div>
+      
+      {/* Визуальный эффект получения энергии */}
+      {showEnergyEffect && (
+        <div className="fixed inset-0 flex items-center justify-center z-30 pointer-events-none">
+          <div className="animate-pulse-slow">
+            <div className="text-cosmic-gold text-3xl font-bold animate-bounce">
+              +10
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8">
@@ -181,7 +217,7 @@ const MainPage: React.FC = () => {
             
             <CosmicButton 
               className="mt-8" 
-              onClick={() => currentPact && markDayComplete(currentPact.id)}
+              onClick={handleCompleteDayWithEffect}
             >
               {t.main.todayCompleted}
             </CosmicButton>

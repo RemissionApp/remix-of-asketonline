@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import { Pact, UniverseQuestion, UserProfile } from '@/types';
+import { Pact, UniverseQuestion, UserProfile, SpiritualRank, Achievement, Mission } from '@/types';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
 
 type AppLanguage = 'ru' | 'en' | 'es';
@@ -22,6 +22,13 @@ interface AppState {
   setLanguage: (language: AppLanguage) => void;
   updateUserProfile: (profileData: Partial<UserProfile>) => void;
   syncPactsWithCurrentDate: () => void;
+  
+  // Новые функции для геймификации
+  addEnergyPoints: (points: number) => void;
+  checkRankProgress: () => void;
+  unlockAchievement: (achievementId: string) => void;
+  assignMission: () => void;
+  completeMission: () => void;
 }
 
 // Example quotes
@@ -34,6 +41,72 @@ const quotes = [
   "Твоя воля — это мост между намерением и реальностью.",
   "Ограничивая себя внешне, ты расширяешься внутренне."
 ];
+
+// Достижения
+const defaultAchievements: Achievement[] = [
+  {
+    id: 'first-pact',
+    title: 'Первый договор',
+    description: 'Заключите свой первый договор с Вселенной',
+    icon: 'scroll',
+    unlocked: false
+  },
+  {
+    id: '7-days-streak',
+    title: '7 дней подряд',
+    description: 'Соблюдайте аскезу 7 дней подряд',
+    icon: 'calendar',
+    unlocked: false
+  },
+  {
+    id: '30-days-streak',
+    title: '30 дней подряд',
+    description: 'Соблюдайте аскезу 30 дней подряд',
+    icon: 'award',
+    unlocked: false
+  },
+  {
+    id: 'first-question',
+    title: 'Первый разговор',
+    description: 'Задайте первый вопрос Вселенной',
+    icon: 'message-square',
+    unlocked: false
+  }
+];
+
+// Доступные миссии
+const availableMissions: Mission[] = [
+  {
+    id: 'mission-1',
+    title: 'Первые шаги аскета',
+    description: 'Соблюдайте свою первую аскезу три дня подряд и получите энергетические очки',
+    requirements: ['Соблюдать аскезу 3 дня подряд'],
+    reward: {
+      energyPoints: 30
+    },
+    completed: false
+  },
+  {
+    id: 'mission-2',
+    title: 'Разговор с Вселенной',
+    description: 'Задайте три вопроса Вселенной и получите дополнительную мудрость',
+    requirements: ['Задать 3 вопроса Вселенной'],
+    reward: {
+      energyPoints: 50,
+      achievement: 'universe-seeker'
+    },
+    completed: false
+  }
+];
+
+// Требования для рангов
+const rankRequirements = {
+  seeker: 0,
+  pilgrim: 10,
+  warrior: 30,
+  master: 90,
+  enlightened: 365
+};
 
 // Helper function to get date string in YYYY-MM-DD format
 const getDateString = (date: Date): string => {
@@ -59,7 +132,9 @@ export const useAppStore = create<AppState>()((set, get) => ({
     totalDays: 0,
     energyPoints: 0,
     goal: 'Познать свою истинную силу',
-    isPro: false
+    isPro: false,
+    rank: 'seeker',
+    achievements: [...defaultAchievements]
   },
   activeScreen: 'welcome',
   onboardingComplete: false,
@@ -87,9 +162,28 @@ export const useAppStore = create<AppState>()((set, get) => ({
       status: 'active'
     };
     
-    set((state) => ({
-      pacts: [...state.pacts, newPact]
-    }));
+    set((state) => {
+      // Проверка на первую аскезу для достижения
+      const isFirstPact = state.pacts.length === 0;
+      if (isFirstPact) {
+        const updatedAchievements = state.userProfile.achievements.map(a => 
+          a.id === 'first-pact' ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+        
+        return {
+          pacts: [...state.pacts, newPact],
+          userProfile: {
+            ...state.userProfile,
+            achievements: updatedAchievements,
+            energyPoints: state.userProfile.energyPoints + 20 // Бонус за первую аскезу
+          }
+        };
+      }
+      
+      return {
+        pacts: [...state.pacts, newPact]
+      };
+    });
     
     // Sync with current date after adding a new pact
     setTimeout(() => {
@@ -122,14 +216,44 @@ export const useAppStore = create<AppState>()((set, get) => ({
           // Update total days in profile
           const totalDays = state.userProfile.totalDays + 1;
           const energyPoints = state.userProfile.energyPoints + 10;
+          const updatedProfile = {
+            ...state.userProfile,
+            totalDays,
+            energyPoints
+          };
+          
+          // Проверка на достижения по накопленным дням
+          let updatedAchievements = [...updatedProfile.achievements];
+          
+          // Проверяем 7-дневную серию
+          const consecutiveDays = pact.days.filter(d => d.completed).length;
+          if (consecutiveDays >= 7) {
+            updatedAchievements = updatedAchievements.map(a => 
+              a.id === '7-days-streak' && !a.unlocked ? 
+                { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+            );
+          }
+          
+          // Проверяем 30-дневную серию
+          if (consecutiveDays >= 30) {
+            updatedAchievements = updatedAchievements.map(a => 
+              a.id === '30-days-streak' && !a.unlocked ? 
+                { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+            );
+          }
+          
+          updatedProfile.achievements = updatedAchievements;
+          
+          // Проверяем, нужно ли повысить ранг
+          const newRank = get().checkRankProgress();
+          if (newRank !== updatedProfile.rank) {
+            updatedProfile.rank = newRank;
+            updatedProfile.energyPoints += 50; // Бонус за повышение ранга
+          }
           
           return {
             pacts,
-            userProfile: {
-              ...state.userProfile,
-              totalDays,
-              energyPoints
-            }
+            userProfile: updatedProfile
           };
         }
       }
@@ -147,9 +271,25 @@ export const useAppStore = create<AppState>()((set, get) => ({
       date: new Date().toISOString()
     };
     
-    set((state) => ({
-      activeQuestions: [newQuestion, ...state.activeQuestions]
-    }));
+    set((state) => {
+      // Проверка на первый вопрос для достижения
+      const isFirstQuestion = state.activeQuestions.length === 0;
+      const updatedProfile = { ...state.userProfile };
+      
+      if (isFirstQuestion) {
+        updatedProfile.achievements = updatedProfile.achievements.map(a => 
+          a.id === 'first-question' ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+        updatedProfile.energyPoints += 15; // Бонус за первый вопрос
+      } else {
+        updatedProfile.energyPoints += 5; // Обычные очки за вопрос
+      }
+      
+      return {
+        activeQuestions: [newQuestion, ...state.activeQuestions],
+        userProfile: updatedProfile
+      };
+    });
     
     return newQuestion;
   },
@@ -191,17 +331,108 @@ export const useAppStore = create<AppState>()((set, get) => ({
       
       // Only update state if there were changes
       if (totalNewCompletedDays > 0) {
+        const updatedProfile = {
+          ...state.userProfile,
+          totalDays: state.userProfile.totalDays + totalNewCompletedDays,
+          energyPoints: state.userProfile.energyPoints + (totalNewCompletedDays * 10)
+        };
+        
+        // Проверяем, нужно ли повысить ранг после обновления дней
+        const newRank = get().checkRankProgress();
+        if (newRank !== updatedProfile.rank) {
+          updatedProfile.rank = newRank;
+          updatedProfile.energyPoints += 50; // Бонус за повышение ранга
+        }
+        
         return {
           pacts: updatedPacts,
-          userProfile: {
-            ...state.userProfile,
-            totalDays: state.userProfile.totalDays + totalNewCompletedDays,
-            energyPoints: state.userProfile.energyPoints + (totalNewCompletedDays * 10)
-          }
+          userProfile: updatedProfile
         };
       }
       
       return { pacts: updatedPacts };
+    });
+  },
+  
+  // Новые функции для геймификации
+  addEnergyPoints: (points) => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        energyPoints: state.userProfile.energyPoints + points
+      }
+    }));
+  },
+  
+  checkRankProgress: () => {
+    const { userProfile } = get();
+    const { totalDays } = userProfile;
+    
+    if (totalDays >= rankRequirements.enlightened) return 'enlightened';
+    if (totalDays >= rankRequirements.master) return 'master';
+    if (totalDays >= rankRequirements.warrior) return 'warrior';
+    if (totalDays >= rankRequirements.pilgrim) return 'pilgrim';
+    return 'seeker';
+  },
+  
+  unlockAchievement: (achievementId) => {
+    set((state) => {
+      const updatedAchievements = state.userProfile.achievements.map(a => 
+        a.id === achievementId ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+      );
+      
+      return {
+        userProfile: {
+          ...state.userProfile,
+          achievements: updatedAchievements,
+          energyPoints: state.userProfile.energyPoints + 20 // Бонус за достижение
+        }
+      };
+    });
+  },
+  
+  assignMission: () => {
+    set((state) => {
+      // Если уже есть активная миссия, не назначаем новую
+      if (state.userProfile.activeMission) return state;
+      
+      // Выбираем случайную миссию из доступных
+      const availableMissionsCopy = [...availableMissions].filter(m => !m.completed);
+      if (availableMissionsCopy.length === 0) return state;
+      
+      const randomIndex = Math.floor(Math.random() * availableMissionsCopy.length);
+      const selectedMission = { ...availableMissionsCopy[randomIndex] };
+      
+      return {
+        userProfile: {
+          ...state.userProfile,
+          activeMission: selectedMission
+        }
+      };
+    });
+  },
+  
+  completeMission: () => {
+    set((state) => {
+      if (!state.userProfile.activeMission) return state;
+      
+      const { reward } = state.userProfile.activeMission;
+      let updatedProfile = {
+        ...state.userProfile,
+        energyPoints: state.userProfile.energyPoints + reward.energyPoints,
+        activeMission: undefined
+      };
+      
+      // Если миссия дает достижение, разблокируем его
+      if (reward.achievement) {
+        updatedProfile.achievements = updatedProfile.achievements.map(a => 
+          a.id === reward.achievement ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+      }
+      
+      return {
+        userProfile: updatedProfile
+      };
     });
   }
 }));

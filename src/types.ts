@@ -23,6 +23,29 @@ export interface UniverseQuestion {
   date: string;
 }
 
+export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
+export interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  reward: {
+    energyPoints: number;
+    achievement?: string;
+  };
+  completed: boolean;
+}
+
 export interface UserProfile {
   name: string;
   birthDate?: Date;
@@ -30,4 +53,7 @@ export interface UserProfile {
   energyPoints: number;
   goal: string;
   isPro: boolean;
+  rank: SpiritualRank;
+  achievements: Achievement[];
+  activeMission?: Mission;
 }
