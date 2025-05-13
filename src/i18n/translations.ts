@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -79,6 +78,15 @@ type TranslationKeys = {
     days: string;
     inReturn: string;
     confirmButton: string;
+  };
+  userProfile: {
+    title: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    nameRequired: string;
+    ageLabel: string;
+    agePlaceholder: string;
+    continueButton: string;
   };
 };
 
@@ -187,6 +195,15 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       days: "дней",
       inReturn: "Взамен я притягиваю в свою жизнь",
       confirmButton: "Подтверждаю Договор"
+    },
+    userProfile: {
+      title: "О тебе",
+      nameLabel: "Как тебя зовут",
+      namePlaceholder: "Введите ваше имя",
+      nameRequired: "Имя обязательно",
+      ageLabel: "Возраст",
+      agePlaceholder: "Введите ваш возраст",
+      continueButton: "Продолжить"
     }
   },
   en: {
@@ -293,6 +310,15 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       days: "days",
       inReturn: "In return I attract into my life",
       confirmButton: "Confirm Covenant"
+    },
+    userProfile: {
+      title: "About you",
+      nameLabel: "What's your name",
+      namePlaceholder: "Enter your name",
+      nameRequired: "Name is required",
+      ageLabel: "Age",
+      agePlaceholder: "Enter your age",
+      continueButton: "Continue"
     }
   },
   es: {
@@ -399,6 +425,15 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       days: "días",
       inReturn: "A cambio atraigo a mi vida",
       confirmButton: "Confirmar Pacto"
+    },
+    userProfile: {
+      title: "Acerca de ti",
+      nameLabel: "¿Cómo te llamas",
+      namePlaceholder: "Introduce tu nombre",
+      nameRequired: "El nombre es obligatorio",
+      ageLabel: "Edad",
+      agePlaceholder: "Introduce tu edad",
+      continueButton: "Continuar"
     }
   }
 };
