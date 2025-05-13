@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,6 +16,7 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const { t } = useTranslations();
   const [month, setMonth] = React.useState<Date>(props.defaultMonth || new Date());
   const currentYear = new Date().getFullYear();
   const yearRange = 50; // 50 years before and after current year
@@ -61,7 +63,7 @@ function Calendar({
       {/* Year Slider */}
       <div className="px-3 space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Год: {month.getFullYear()}</span>
+          <span className="text-muted-foreground">{t.calendar?.year || 'Year'}: {month.getFullYear()}</span>
         </div>
         <Slider
           defaultValue={[month.getFullYear()]}
@@ -77,7 +79,7 @@ function Calendar({
       {/* Month Slider */}
       <div className="px-3 space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Месяц: {month.getMonth() + 1}</span>
+          <span className="text-muted-foreground">{t.calendar?.month || 'Month'}: {month.getMonth() + 1}</span>
         </div>
         <Slider
           defaultValue={[month.getMonth() + 1]}
