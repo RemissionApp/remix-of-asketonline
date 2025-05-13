@@ -4,19 +4,47 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
+import { SupportedLanguage } from '@/i18n/translations';
 
 const WelcomePage: React.FC = () => {
   const { setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const [isAnimated, setIsAnimated] = useState(false);
+  const [cycleIndex, setCycleIndex] = useState(0);
+  const languages: SupportedLanguage[] = ['ru', 'en', 'es'];
   
+  // Текущий язык для циклической смены
+  const currentLang = languages[cycleIndex % languages.length];
+  
+  // Тексты для разных языков
+  const subtitles = {
+    ru: "Путь к внутренней силе",
+    en: "The path to inner strength",
+    es: "El camino hacia la fuerza interior"
+  };
+  
+  const buttonTexts = {
+    ru: "Начать путешествие",
+    en: "Begin the journey",
+    es: "Comenzar el viaje"
+  };
+  
+  // Анимация появления компонентов
   useEffect(() => {
-    // Start animation after component mounts
     const timeout = setTimeout(() => {
       setIsAnimated(true);
     }, 500);
     
     return () => clearTimeout(timeout);
+  }, []);
+  
+  // Эффект для смены языка каждую секунду
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCycleIndex(prevIndex => prevIndex + 1);
+    }, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
   
   const handleContinue = () => {
@@ -51,12 +79,12 @@ const WelcomePage: React.FC = () => {
           {t.welcome.title}
         </h1>
         
-        <p className="text-2xl text-cosmic-secondary mb-12">
-          {t.welcome.subtitle}
+        <p className="text-2xl text-cosmic-secondary mb-12 transition-all duration-300 ease-in-out">
+          {subtitles[currentLang]}
         </p>
         
-        <CosmicButton onClick={handleContinue} size="lg">
-          {t.welcome.startButton}
+        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
+          {buttonTexts[currentLang]}
         </CosmicButton>
       </div>
     </div>
