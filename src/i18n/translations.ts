@@ -127,7 +127,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     main: {
       days: "дней",
       todayCompleted: "Сегодня я выдержал",
-      askUniverse: "Спро��ить Вселенную",
+      askUniverse: "Спросить Вселенную",
       noPacts: "У тебя пока нет активных аскез",
       createPact: "Заключить договор",
       nav: {
@@ -191,7 +191,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       proButton: "Открыть силу PRO ✨"
     },
     pactOath: {
-      title: "Священный Договор",
+      title: "Моя Аскеза",
       subtitle: "Я даю обет",
       iPromise: "Я обещаю отказаться от",
       duration: "на срок",
@@ -308,7 +308,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       proButton: "Unlock PRO power ✨"
     },
     pactOath: {
-      title: "Sacred Covenant",
+      title: "My Ascesis",
       subtitle: "I take a vow",
       iPromise: "I promise to give up",
       duration: "for a period of",
@@ -425,7 +425,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       proButton: "Desbloquear el poder PRO ✨"
     },
     pactOath: {
-      title: "Pacto Sagrado",
+      title: "Mi Ascesis",
       subtitle: "Hago un voto",
       iPromise: "Prometo renunciar a",
       duration: "por un período de",
