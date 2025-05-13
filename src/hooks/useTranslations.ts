@@ -9,7 +9,10 @@ export const useTranslations = () => {
     calendar: {
       year: language === 'ru' ? 'Год' : language === 'es' ? 'Año' : 'Year',
       month: language === 'ru' ? 'Месяц' : language === 'es' ? 'Mes' : 'Month'
-    }
+    },
+    minimumPeriod: language === 'ru' ? 'Минимальный срок аскезы - 30 дней' : 
+                  language === 'es' ? 'Período mínimo de ascesis - 30 días' : 
+                  'Minimum ascesis period - 30 days'
   };
   
   return {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -189,7 +188,7 @@ const CreatePactPage: React.FC = () => {
                 className="cosmic-input w-full"
               />
               <p className="text-xs text-cosmic-secondary mt-2 text-center">
-                Минимальный срок аскезы - 30 дней
+                {t.minimumPeriod}
               </p>
             </div>
             
