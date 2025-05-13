@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -115,7 +116,7 @@ const CreatePactPage: React.FC = () => {
     switch (step) {
       case 0:
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
               {t.createPact.stepOneTitle}
             </h2>
@@ -143,13 +144,13 @@ const CreatePactPage: React.FC = () => {
             )}
             
             <div className="text-sm text-cosmic-secondary mb-8 text-center">
-              <p className="whitespace-pre-line">{t.createPact.ascesisWarning}</p>
+              <p className="whitespace-pre-line text-justify">{t.createPact.ascesisWarning}</p>
             </div>
           </div>
         );
       case 1:
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
               {t.createPact.stepTwoTitle}
             </h2>
@@ -202,7 +203,7 @@ const CreatePactPage: React.FC = () => {
         );
       case 2:
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-4 text-center">
               {t.createPact.stepThreeTitle}
             </h2>
@@ -220,21 +221,21 @@ const CreatePactPage: React.FC = () => {
 
             <div className="text-sm text-cosmic-secondary mb-8">
               {language === 'ru' ? (
-                <p className="whitespace-pre-line">
+                <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Цель:</span>{"\n"}
                   Должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы мысленно опишете или проговорите конечный результат, тем больше вероятность получить желаемое.{"\n\n"}
                   <span className="font-semibold">Добровольность:</span> Главное правило.{"\n"}
                   Договор нужно заключать осознанно, иначе вы только навредите себе.
                 </p>
               ) : language === 'es' ? (
-                <p className="whitespace-pre-line">
+                <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Objetivo:</span>{"\n"}
                   Debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describa o articule mentalmente el resultado final, mayor será la probabilidad de obtener lo que desea.{"\n\n"}
                   <span className="font-semibold">Voluntariedad:</span> La regla principal.{"\n"}
                   El pacto debe hacerse conscientemente, de lo contrario solo se hará daño a sí mismo.
                 </p>
               ) : (
-                <p className="whitespace-pre-line">
+                <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Goal:</span>{"\n"}
                   It must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you mentally describe or articulate the end result, the more likely you are to get what you want.{"\n\n"}
                   <span className="font-semibold">Voluntariness:</span> The main rule.{"\n"}
@@ -280,7 +281,7 @@ const CreatePactPage: React.FC = () => {
           </div>
           
           {/* Main content */}
-          <div className="relative z-10 flex-1 flex flex-col px-4 py-4 max-w-lg mx-auto w-full">
+          <div className="relative z-10 flex-1 flex flex-col px-4 py-4 mx-auto w-full items-center justify-center">
             {renderStep()}
           </div>
           
