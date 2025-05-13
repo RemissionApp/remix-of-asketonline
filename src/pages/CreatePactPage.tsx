@@ -181,6 +181,9 @@ const CreatePactPage: React.FC = () => {
                 value={duration}
                 onChange={(e) => handleDurationChange(parseInt(e.target.value) || 30)}
                 className="cosmic-input w-full"
+                placeholder={language === 'ru' ? "для ввода подробного описания" : 
+                           language === 'es' ? "para ingresar una descripción detallada" : 
+                           "for detailed description input"}
               />
               <p className="text-xs text-cosmic-secondary mt-2 text-center">
                 {t.minimumPeriod}
