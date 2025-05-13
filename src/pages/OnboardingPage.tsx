@@ -20,6 +20,13 @@ const OnboardingPage: React.FC = () => {
     }
   };
   
+  // Function to split text by newlines and render paragraphs
+  const renderContent = (content: string) => {
+    return content.split('\n').map((paragraph, index) => (
+      paragraph ? <p key={index} className="text-xl text-cosmic-secondary mb-4">{paragraph}</p> : <br key={index} />
+    ));
+  };
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
@@ -39,9 +46,9 @@ const OnboardingPage: React.FC = () => {
               {t.onboarding.steps[0].title}
             </h1>
             
-            <p className="text-xl text-cosmic-secondary mb-8">
-              {t.onboarding.steps[0].content}
-            </p>
+            <div className="mb-8">
+              {renderContent(t.onboarding.steps[0].content)}
+            </div>
             
             <CosmicButton onClick={handleNext}>
               {t.onboarding.buttons.enter}
@@ -53,9 +60,9 @@ const OnboardingPage: React.FC = () => {
               {t.onboarding.steps[step].title}
             </h1>
             
-            <p className="text-xl text-cosmic-secondary mb-8">
-              {t.onboarding.steps[step].content}
-            </p>
+            <div className="mb-8">
+              {renderContent(t.onboarding.steps[step].content)}
+            </div>
             
             <div className="flex justify-center mb-8">
               {t.onboarding.steps.map((_, i) => (

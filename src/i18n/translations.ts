@@ -1,3 +1,4 @@
+
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -102,7 +103,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       steps: [
         {
           title: "Портал Пробуждения",
-          content: "Ты чувствуешь зов. Он зовёт тебя вглубь себя"
+          content: "Что-то внутри тебя просится наружу.\nЭто не тревога. Это — пробуждение.\n\nТы на пороге новой версии себя. Добро пожаловать."
         },
         {
           title: "Что такое Аскеза",
@@ -218,7 +219,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       steps: [
         {
           title: "Awakening Portal",
-          content: "You feel the call. It beckons you deep within yourself"
+          content: "Something inside you is asking to come out.\nThis is not anxiety. This is awakening.\n\nYou are on the threshold of a new version of yourself. Welcome."
         },
         {
           title: "What is Ascesis",
@@ -334,7 +335,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       steps: [
         {
           title: "Portal del Despertar",
-          content: "Sientes la llamada. Te invita a profundizar en ti mismo"
+          content: "Algo dentro de ti pide salir.\nNo es ansiedad. Es despertar.\n\nEstás en el umbral de una nueva versión de ti mismo. Bienvenido."
         },
         {
           title: "Qué es la Ascesis",
