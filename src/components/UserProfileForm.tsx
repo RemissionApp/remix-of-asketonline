@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -8,16 +8,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { format } from 'date-fns';
+import { format, differenceInYears } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const UserProfileForm: React.FC = () => {
-  const { updateUserProfile, setActiveScreen } = useAppStore();
+  const { updateUserProfile, setActiveScreen, userProfile } = useAppStore();
   const { t } = useTranslations();
+  const [age, setAge] = useState<number | null>(null);
   
   // Create form schema based on language
   const formSchema = z.object({
@@ -29,13 +31,23 @@ const UserProfileForm: React.FC = () => {
     }),
   });
 
-  // Initialize form
+  // Initialize form with existing data or defaults
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      name: userProfile.name !== 'Искатель' ? userProfile.name : "",
+      birthDate: userProfile.birthDate || new Date(),
     },
   });
+  
+  // Calculate age whenever birthDate changes
+  useEffect(() => {
+    const birthDate = form.getValues('birthDate');
+    if (birthDate) {
+      const calculatedAge = differenceInYears(new Date(), birthDate);
+      setAge(calculatedAge);
+    }
+  }, [form.watch('birthDate')]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     updateUserProfile({
@@ -47,9 +59,19 @@ const UserProfileForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto text-center">
-      <h2 className="text-3xl font-serif text-white mb-8">
+      <div className="flex justify-center mb-4">
+        <UserAvatar size="lg" />
+      </div>
+      
+      <h2 className="text-3xl font-serif text-white mb-6">
         {t.userProfile?.title || "О тебе"}
       </h2>
+      
+      {age !== null && (
+        <div className="mb-6 text-cosmic-secondary font-medium">
+          {t.userProfile?.age || "Возраст"}: {age} {age === 1 ? (t.userProfile?.yearSingular || "год") : (t.userProfile?.yearPlural || "лет")}
+        </div>
+      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -125,6 +147,10 @@ const UserProfileForm: React.FC = () => {
           </div>
         </form>
       </Form>
+      
+      <div className="mt-6 text-cosmic-secondary text-sm">
+        {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP")}
+      </div>
     </div>
   );
 };
