@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -82,12 +81,11 @@ const CreatePactPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
-      addPact({
-        title: selectedItems.length > 0 ? selectedItems.join(', ') : title,
+      addPact(
+        selectedItems.length > 0 ? selectedItems.join(', ') : title,
         duration,
-        reward,
-        status: 'active'
-      });
+        reward
+      );
       setActiveScreen('main');
     }
   };

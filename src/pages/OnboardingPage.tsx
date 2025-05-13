@@ -7,7 +7,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 
 const OnboardingPage: React.FC = () => {
   const [step, setStep] = useState(0);
-  const { setOnboardingComplete, setActiveScreen } = useAppStore();
+  const { markOnboardingComplete, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   
   const handleNext = () => {
@@ -15,7 +15,7 @@ const OnboardingPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Complete onboarding
-      setOnboardingComplete(true);
+      markOnboardingComplete();
       setActiveScreen('main');
     }
   };

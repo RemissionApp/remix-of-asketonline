@@ -23,8 +23,8 @@ const UniversePage: React.FC = () => {
     setTimeout(() => {
       const response = askUniverse(question);
       setCurrentAnswer({
-        question: response.question,
-        answer: response.answer
+        question: question,
+        answer: response
       });
       setQuestion('');
       setIsAsking(false);

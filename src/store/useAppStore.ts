@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,7 +31,7 @@ interface AppState {
   syncPactsWithCurrentDate: () => void;
   
   // Universe
-  askUniverse: (question: string) => void;
+  askUniverse: (question: string) => string;
   
   // Pro features
   upgradeToPro: () => void;
@@ -213,17 +212,19 @@ export const useAppStore = create<AppState>()(
       
       // Universe
       askUniverse: (question) => {
+        // Find a matching question or generate a new answer
+        const existingMessage = universeMessages.find(
+          m => m.question.toLowerCase() === question.toLowerCase()
+        );
+        
+        const answer = existingMessage?.answer || 
+          "Вселенная слышит твой вопрос. Ответ придет, когда ты будешь готов его услышать.";
+        
         set((state) => {
-          // Find a matching question or generate a new answer
-          const existingMessage = universeMessages.find(
-            m => m.question.toLowerCase() === question.toLowerCase()
-          );
-          
           const newQuestion: UniverseQuestion = {
             id: uuidv4(),
             question,
-            answer: existingMessage?.answer || 
-              "Вселенная слышит твой вопрос. Ответ придет, когда ты будешь готов его услышать.",
+            answer,
             date: new Date().toISOString()
           };
           
@@ -235,6 +236,8 @@ export const useAppStore = create<AppState>()(
             }
           };
         });
+        
+        return answer;
       },
       
       // Pro features

@@ -24,7 +24,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   if (!mission) return null;
   
   const handleCompleteMission = () => {
-    completeMission();
+    completeMission(mission.id);
     if (onComplete) onComplete();
   };
   
