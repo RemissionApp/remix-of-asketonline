@@ -1,22 +1,52 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SparklesIcon } from 'lucide-react';
+import { SparklesIcon, MedalIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 interface SubscriptionBannerProps {
   className?: string;
+  variant?: 'default' | 'compact';
+  onUpgrade?: () => void;
 }
 
-export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ className = '' }) => {
+export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ 
+  className = '',
+  variant = 'default',
+  onUpgrade
+}) => {
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { upgradeToPro } = useAppStore();
   
   const handleUpgrade = () => {
-    navigate('/comparison');
+    if (onUpgrade) {
+      onUpgrade();
+    } else {
+      // Simulate upgrading to PRO for demo purposes
+      upgradeToPro();
+      navigate('/comparison');
+    }
   };
+  
+  if (variant === 'compact') {
+    return (
+      <Card className={`border-cosmic-gold/30 bg-gradient-to-r from-cosmic-dark/80 to-cosmic-accent/20 backdrop-blur-sm ${className}`}>
+        <CardContent className="p-3 flex items-center justify-between">
+          <div className="flex items-center">
+            <SparklesIcon size={20} className="text-cosmic-gold mr-2" />
+            <span className="text-sm text-cosmic-secondary">{t.subscription.bannerDesc}</span>
+          </div>
+          <CosmicButton onClick={handleUpgrade} size="sm">
+            {t.subscription.upgradeNow}
+          </CosmicButton>
+        </CardContent>
+      </Card>
+    );
+  }
   
   return (
     <Card className={`border-cosmic-gold/30 bg-gradient-to-r from-cosmic-dark/80 to-cosmic-accent/20 backdrop-blur-sm ${className}`}>
@@ -31,9 +61,14 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ classNam
           <div className="flex-grow text-center md:text-left mb-4 md:mb-0">
             <h3 className="text-lg font-serif text-white mb-1">{t.subscription.bannerTitle}</h3>
             <p className="text-sm text-cosmic-secondary">{t.subscription.bannerDesc}</p>
+            <div className="mt-2 flex items-center justify-center md:justify-start text-xs text-cosmic-gold">
+              <MedalIcon size={14} className="mr-1" />
+              <span>Unlimited meditations, multiple ascesis & more!</span>
+            </div>
           </div>
           
           <CosmicButton onClick={handleUpgrade} className="whitespace-nowrap">
+            <SparklesIcon size={16} className="mr-2" />
             {t.subscription.upgradeNow}
           </CosmicButton>
         </div>

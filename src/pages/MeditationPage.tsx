@@ -5,13 +5,18 @@ import { MeditationCard } from '@/components/MeditationCard';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { Home, Sparkles, MessageSquare, User } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft, SparklesIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
+import { ProBadge } from '@/components/ProBadge';
+import { useNavigate } from 'react-router-dom';
+import { CosmicButton } from '@/components/CosmicButton';
 
 const MeditationPage: React.FC = () => {
-  const { setActiveScreen, userProfile } = useAppStore();
+  const { setActiveScreen, userProfile, upgradeToPro } = useAppStore();
   const { t } = useTranslations();
   const [selectedCategory, setSelectedCategory] = useState("morning");
+  const navigate = useNavigate();
   
   // Check if user has PRO subscription
   const isPro = userProfile.isPro;
@@ -71,15 +76,31 @@ const MeditationPage: React.FC = () => {
   // Filter meditations by category
   const filteredMeditations = meditations.filter(meditation => meditation.category === selectedCategory);
 
+  const handleUpgrade = () => {
+    // For demo purposes, upgrade the user immediately
+    upgradeToPro();
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
 
+      {/* Header with back button and PRO badge if applicable */}
+      <div className="relative z-10 flex items-center justify-between px-4 pt-4">
+        <button onClick={() => setActiveScreen('main')} className="p-2 text-cosmic-accent">
+          <ArrowLeft size={24} />
+        </button>
+        {isPro && <ProBadge size="md" />}
+      </div>
+
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8">
-        <h1 className="text-2xl text-center uppercase font-serif text-white mb-6">
-          {t.meditation.pageTitle}
-        </h1>
+        <div className="flex items-center justify-center mb-6">
+          <Headphones size={24} className="text-cosmic-accent mr-2" />
+          <h1 className="text-2xl text-center uppercase font-serif text-white">
+            {t.meditation.pageTitle}
+          </h1>
+        </div>
 
         {isPro ? (
           <>
@@ -98,7 +119,7 @@ const MeditationPage: React.FC = () => {
 
               {Object.keys(t.meditation.categories).map((category) => (
                 <TabsContent key={category} value={category} className="w-full">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {filteredMeditations.map(meditation => (
                       <MeditationCard 
                         key={meditation.id} 
@@ -115,20 +136,39 @@ const MeditationPage: React.FC = () => {
           </>
         ) : (
           <div className="flex flex-col items-center w-full max-w-md">
-            <SubscriptionBanner className="mb-6" />
+            <SubscriptionBanner className="mb-6" onUpgrade={handleUpgrade} />
             
-            {/* Preview of locked content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full opacity-60">
-              {meditations.filter(med => med.category === 'morning').slice(0, 2).map(meditation => (
+            {/* Preview section with Pro Feature Overlay */}
+            <ProFeatureOverlay 
+              title="Unlock Meditation Library" 
+              message="Get access to our full collection of guided meditations with PRO"
+              className="w-full"
+            >
+              <div className="space-y-4 w-full">
                 <MeditationCard 
-                  key={meditation.id} 
-                  title={meditation.title}
-                  description={meditation.description}
-                  duration={meditation.duration}
-                  image={meditation.image}
-                  locked={true}
+                  title={t.meditation.morning.title1}
+                  description={t.meditation.morning.desc1}
+                  duration="10 min"
+                  image="/meditation/morning1.jpg"
                 />
-              ))}
+                <MeditationCard 
+                  title={t.meditation.evening.title1}
+                  description={t.meditation.evening.desc1}
+                  duration="12 min"
+                  image="/meditation/evening1.jpg"
+                />
+              </div>
+            </ProFeatureOverlay>
+            
+            {/* Free preview meditation */}
+            <div className="mt-8 w-full">
+              <h2 className="text-lg font-serif text-white mb-4">Free Preview</h2>
+              <MeditationCard 
+                title="Starter Meditation"
+                description="A short introduction to meditative practices"
+                duration="5 min"
+                image="/meditation/morning1.jpg"
+              />
             </div>
           </div>
         )}

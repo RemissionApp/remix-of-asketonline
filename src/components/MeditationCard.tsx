@@ -1,9 +1,11 @@
 
 import React from 'react';
-import { LockIcon, PlayCircleIcon } from 'lucide-react';
+import { LockIcon, PlayCircleIcon, SparklesIcon } from 'lucide-react';
 import { CosmicButton } from './CosmicButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
+import { useNavigate } from 'react-router-dom';
 
 interface MeditationCardProps {
   title: string;
@@ -11,6 +13,8 @@ interface MeditationCardProps {
   duration: string;
   image: string;
   locked?: boolean;
+  requiresPro?: boolean;
+  onPlay?: () => void;
 }
 
 export const MeditationCard: React.FC<MeditationCardProps> = ({
@@ -18,14 +22,33 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   description,
   duration,
   image,
-  locked = false
+  locked = false,
+  requiresPro = true,
+  onPlay
 }) => {
   const { t } = useTranslations();
+  const { userProfile, upgradeToPro } = useAppStore();
+  const navigate = useNavigate();
+  const isPro = userProfile.isPro;
 
   const handlePlay = () => {
     if (locked) return;
-    // Play meditation logic would go here
-    console.log(`Playing meditation: ${title}`);
+    if (requiresPro && !isPro) {
+      navigate('/comparison');
+      return;
+    }
+    if (onPlay) {
+      onPlay();
+    } else {
+      // Default play action
+      console.log(`Playing meditation: ${title}`);
+    }
+  };
+  
+  const handleUpgrade = () => {
+    // For demo purposes, immediately upgrade the user
+    upgradeToPro();
+    navigate('/comparison');
   };
   
   return (
@@ -41,6 +64,14 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
               <LockIcon size={32} className="text-cosmic-accent" />
             </div>
           )}
+          {requiresPro && !isPro && !locked && (
+            <div className="absolute top-2 right-2">
+              <div className="flex items-center gap-1 bg-black/60 text-cosmic-gold px-2 py-1 rounded-full text-xs">
+                <SparklesIcon size={12} />
+                <span>PRO</span>
+              </div>
+            </div>
+          )}
         </div>
         
         <CardContent className="p-0">
@@ -54,7 +85,8 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
                 {t.meditation.play}
               </CosmicButton>
             ) : (
-              <CosmicButton size="sm" variant="outline" onClick={() => window.location.href = '/comparison'}>
+              <CosmicButton size="sm" variant="outline" onClick={handleUpgrade}>
+                <SparklesIcon size={14} className="mr-1" />
                 {t.meditation.unlock}
               </CosmicButton>
             )}
