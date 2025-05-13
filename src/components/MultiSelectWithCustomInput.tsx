@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Check, ChevronDown, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -137,24 +138,26 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
       <PopoverContent className="w-full p-0 bg-cosmic-dark/90 border-cosmic-accent/30">
         <Command className="bg-transparent">
           <CommandInput placeholder={placeholder} className="text-white" />
-          <CommandEmpty>Нет подходящих вариантов</CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-auto">
-            {options.map((option) => (
-              <CommandItem
-                key={option.value}
-                onSelect={() => toggleOption(option.value)}
-                className="text-white"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value.includes(option.value) ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <CommandList>
+            <CommandEmpty>Нет подходящих вариантов</CommandEmpty>
+            <CommandGroup className="max-h-60 overflow-auto">
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  onSelect={() => toggleOption(option.value)}
+                  className="text-white"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value.includes(option.value) ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
           <div className="flex items-center p-2 border-t border-cosmic-accent/20">
             <Input
               ref={inputRef}
