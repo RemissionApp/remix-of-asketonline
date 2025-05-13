@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/carousel";
 import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const MainPage: React.FC = () => {
   const { 
@@ -279,7 +281,9 @@ const MainPage: React.FC = () => {
             className="flex flex-col items-center p-2 text-cosmic-secondary"
             onClick={() => setActiveScreen('profile')}
           >
-            <User size={24} />
+            <div className="relative">
+              <UserAvatar size="sm" showRankBorder={false} />
+            </div>
             <span className="text-xs mt-1">{t.main.nav.profile}</span>
           </button>
         </div>
