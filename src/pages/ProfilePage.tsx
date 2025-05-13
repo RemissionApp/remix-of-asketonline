@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { StarField } from '@/components/StarField';
-import { UserProfileForm } from '@/components/UserProfileForm';
+import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
