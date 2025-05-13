@@ -143,12 +143,7 @@ const CreatePactPage: React.FC = () => {
             )}
             
             <div className="text-sm text-cosmic-secondary mb-8 text-center">
-              <p>{t.createPact.whatRejecting}</p>
-              <ul className="list-disc pl-5 mt-2 space-y-1 mx-auto inline-block text-left">
-                {t.createPact.examples.map((example, i) => (
-                  <li key={i}>{example}</li>
-                ))}
-              </ul>
+              <p className="whitespace-pre-line">{t.createPact.ascesisWarning}</p>
             </div>
           </div>
         );

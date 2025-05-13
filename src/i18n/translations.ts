@@ -49,6 +49,7 @@ type TranslationKeys = {
       rejection: string;
       reward: string;
     };
+    ascesisWarning: string;
   };
   universe: {
     title: string;
@@ -160,7 +161,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       placeholders: {
         rejection: "Например: Сахар, Соцсети, Алкоголь...",
         reward: "Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность..."
-      }
+      },
+      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справитесь и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока..."
     },
     universe: {
       title: "Врата Вселенной",
@@ -276,7 +278,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       placeholders: {
         rejection: "For example: Sugar, Social Media, Alcohol...",
         reward: "For example: Strong health, Mental clarity, Financial stability..."
-      }
+      },
+      ascesisWarning: "You must understand that Ascesis is a serious practice and must be treated with the utmost responsibility. You give your word to the Universe to fulfill your obligations and ask in return for the fulfillment of a desire / the solution of some issue. If you fail and do not keep your word, the Universe will not take you seriously and there is a risk of falling out of the flow..."
     },
     universe: {
       title: "Gates of the Universe",
@@ -392,7 +395,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       placeholders: {
         rejection: "Por ejemplo: Azúcar, Redes Sociales, Alcohol...",
         reward: "Por ejemplo: Salud fuerte, Claridad mental, Estabilidad financiera..."
-      }
+      },
+      ascesisWarning: "Debes entender que la Ascesis es una práctica seria y debe ser tratada con la máxima responsabilidad. Das tu palabra al Universo de cumplir con tus obligaciones y pides a cambio el cumplimiento de un deseo o la solución de algún problema. Si fracasas y no mantienes tu palabra, el Universo no te tomará en serio y existe el riesgo de caer fuera del flujo..."
     },
     universe: {
       title: "Puertas del Universo",
@@ -444,3 +448,4 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
 };
 
 export default translations;
+
