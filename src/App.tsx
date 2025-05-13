@@ -52,16 +52,16 @@ const App = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
+        <TooltipProvider>
+          <BrowserRouter>
             <Routes>
               <Route path="/" element={<AppContent />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
             <Sonner />
-          </TooltipProvider>
-        </BrowserRouter>
+          </BrowserRouter>
+        </TooltipProvider>
       </QueryClientProvider>
     </React.StrictMode>
   );
