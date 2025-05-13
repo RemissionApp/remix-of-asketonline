@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -14,9 +14,15 @@ const MainPage: React.FC = () => {
     pacts, 
     dailyQuote, 
     markDayComplete, 
-    setActiveScreen 
+    setActiveScreen,
+    syncPactsWithCurrentDate
   } = useAppStore();
   const { t } = useTranslations();
+  
+  // Sync pacts with current date when component mounts
+  useEffect(() => {
+    syncPactsWithCurrentDate();
+  }, [syncPactsWithCurrentDate]);
   
   const activePact = pacts.find(p => p.status === 'active');
   

@@ -21,6 +21,7 @@ interface AppState {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
   updateUserProfile: (profileData: Partial<UserProfile>) => void;
+  syncPactsWithCurrentDate: () => void;
 }
 
 // Example quotes
@@ -33,6 +34,21 @@ const quotes = [
   "Твоя воля — это мост между намерением и реальностью.",
   "Ограничивая себя внешне, ты расширяешься внутренне."
 ];
+
+// Helper function to get date string in YYYY-MM-DD format
+const getDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+// Helper function to compare two dates (ignoring time)
+const isSameDay = (date1: string, date2: string): boolean => {
+  return date1.split('T')[0] === date2.split('T')[0];
+};
+
+// Helper function to check if date1 is before or equal to date2
+const isDateBeforeOrEqual = (date1: string, date2: string): boolean => {
+  return date1.split('T')[0] <= date2.split('T')[0];
+};
 
 export const useAppStore = create<AppState>()((set, get) => ({
   pacts: [],
@@ -74,6 +90,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set((state) => ({
       pacts: [...state.pacts, newPact]
     }));
+    
+    // Sync with current date after adding a new pact
+    setTimeout(() => {
+      get().syncPactsWithCurrentDate();
+    }, 0);
   },
   
   markDayComplete: (pactId) => {
@@ -131,5 +152,56 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }));
     
     return newQuestion;
+  },
+  
+  syncPactsWithCurrentDate: () => {
+    set((state) => {
+      const today = new Date();
+      const todayString = getDateString(today);
+      let totalNewCompletedDays = 0;
+      
+      const updatedPacts = state.pacts.map(pact => {
+        // Skip if pact is already completed
+        if (pact.status === 'completed') {
+          return pact;
+        }
+        
+        // Create a copy of the pact to update
+        const updatedPact = { ...pact };
+        let daysChanged = false;
+        
+        // Loop through each day and check if it should be automatically marked as completed
+        updatedPact.days = pact.days.map((day, index) => {
+          // Only process if the day is not already completed
+          if (!day.completed && isDateBeforeOrEqual(day.date, todayString)) {
+            totalNewCompletedDays++;
+            daysChanged = true;
+            return { ...day, completed: true };
+          }
+          return day;
+        });
+        
+        // Check if all days are now completed
+        if (daysChanged && updatedPact.days.every(day => day.completed)) {
+          updatedPact.status = 'completed';
+        }
+        
+        return updatedPact;
+      });
+      
+      // Only update state if there were changes
+      if (totalNewCompletedDays > 0) {
+        return {
+          pacts: updatedPacts,
+          userProfile: {
+            ...state.userProfile,
+            totalDays: state.userProfile.totalDays + totalNewCompletedDays,
+            energyPoints: state.userProfile.energyPoints + (totalNewCompletedDays * 10)
+          }
+        };
+      }
+      
+      return { pacts: updatedPacts };
+    });
   }
 }));
