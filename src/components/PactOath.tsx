@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -14,6 +15,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface PactOathProps {
   title: string;
@@ -32,6 +34,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 }) => {
   const [isReady, setIsReady] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [readConfirmed, setReadConfirmed] = useState(false);
   const { t } = useTranslations();
   const { language, userProfile } = useAppStore();
   const { toast } = useToast();
@@ -171,9 +174,14 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
 
   const handleReadAloud = () => {
     setDialogOpen(true);
+    setReadConfirmed(false); // Reset the confirmation when dialog opens
   };
 
   const handleConfirmReading = () => {
+    setReadConfirmed(true);
+  };
+
+  const handleSignContract = () => {
     setDialogOpen(false);
     toast({
       title: language === 'ru' ? 'Договор подписан' : language === 'es' ? 'Pacto firmado' : 'Covenant signed',
@@ -199,6 +207,16 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
       return "He leído en voz alta y confirmo";
     } else {
       return "I have read aloud and confirm";
+    }
+  };
+
+  const getSignButtonText = () => {
+    if (language === 'ru') {
+      return "Подписать договор";
+    } else if (language === 'es') {
+      return "Firmar contrato";
+    } else {
+      return "Sign Contract";
     }
   };
 
@@ -271,10 +289,20 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
                 </p>
               </div>
               
-              <DialogFooter>
-                <CosmicButton onClick={handleConfirmReading} className="w-full">
+              <DialogFooter className="flex flex-col gap-4">
+                <Button 
+                  onClick={handleConfirmReading} 
+                  variant={readConfirmed ? "default" : "secondary"}
+                  className={`w-full transition-colors ${readConfirmed ? "bg-green-500 hover:bg-green-600" : ""}`}
+                >
                   {getConfirmButtonText()}
-                </CosmicButton>
+                </Button>
+                
+                {readConfirmed && (
+                  <CosmicButton onClick={handleSignContract} className="w-full">
+                    {getSignButtonText()}
+                  </CosmicButton>
+                )}
               </DialogFooter>
             </DialogContent>
           </Dialog>
