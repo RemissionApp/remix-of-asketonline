@@ -55,11 +55,11 @@ const WelcomePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
       
-      {/* Cosmic background image */}
+      {/* Космическое фоновое изображение */}
       <div className="fixed inset-0 z-0">
         <div 
           className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
+          style={{ backgroundImage: "url('/путь_к_вашему_изображению.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
       </div>
