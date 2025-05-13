@@ -14,7 +14,7 @@ const CreatePactPage: React.FC = () => {
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
-  const [duration, setDuration] = useState(21);
+  const [duration, setDuration] = useState(30);
   const [reward, setReward] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   
@@ -54,9 +54,15 @@ const CreatePactPage: React.FC = () => {
   
   const isNextDisabled = () => {
     if (step === 0) return !title && selectedItems.length === 0;
-    if (step === 1) return !duration || duration < 1;
+    if (step === 1) return !duration || duration < 30;
     if (step === 2) return !reward || reward.length < 3;
     return false;
+  };
+  
+  // Обработчик изменения продолжительности с проверкой минимального значения
+  const handleDurationChange = (value: number) => {
+    const newDuration = Math.max(30, value); // Не позволяет установить значение меньше 30
+    setDuration(newDuration);
   };
   
   const renderStep = () => {
@@ -106,7 +112,7 @@ const CreatePactPage: React.FC = () => {
             </h2>
             
             <div className="flex justify-between gap-4 mb-8">
-              {[7, 21, 30, 90].map((days) => (
+              {[30, 60, 90].map((days) => (
                 <button
                   key={days}
                   className={`flex-1 py-3 px-1 rounded-lg border ${
@@ -127,12 +133,15 @@ const CreatePactPage: React.FC = () => {
               </label>
               <input
                 type="number"
-                min="1"
+                min="30"
                 max="365"
                 value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
+                onChange={(e) => handleDurationChange(parseInt(e.target.value) || 30)}
                 className="cosmic-input w-full"
               />
+              <p className="text-xs text-cosmic-secondary mt-2 text-center">
+                Минимальный срок аскезы - 30 дней
+              </p>
             </div>
             
             <div className="w-32 h-32 mx-auto">
