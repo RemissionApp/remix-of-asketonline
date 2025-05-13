@@ -6,7 +6,7 @@ import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { CosmicButton } from '@/components/CosmicButton';
 import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
-import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot, Headphones } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { 
   Carousel,
@@ -146,18 +146,18 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       
-      {/* Точки энергии - отображение вверху экрана */}
+      {/* Energy points display */}
       <div className="absolute top-4 right-4 z-20 flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">
         <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
         <span className="text-cosmic-gold font-medium">{userProfile.energyPoints}</span>
       </div>
       
-      {/* Ранг - отображение вверху экрана */}
+      {/* Rank badge */}
       <div className="absolute top-4 left-4 z-20">
         <RankBadge size="sm" />
       </div>
       
-      {/* Визуальный эффект получения энергии */}
+      {/* Energy effect animation */}
       {showEnergyEffect && (
         <div className="fixed inset-0 flex items-center justify-center z-30 pointer-events-none">
           <div className="animate-pulse-slow">
@@ -172,6 +172,7 @@ const MainPage: React.FC = () => {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8">
         {activePacts.length > 0 ? (
           <>
+            {/* Pact navigation controls */}
             {activePacts.length > 1 && (
               <div className="mb-4 flex items-center justify-center">
                 <button 
@@ -226,13 +227,24 @@ const MainPage: React.FC = () => {
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
             
-            <CosmicButton 
-              variant="outline" 
-              className="mt-6" 
-              onClick={() => setActiveScreen('universe')}
-            >
-              {t.main.askUniverse}
-            </CosmicButton>
+            {/* Add Meditation Button */}
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
+              <CosmicButton 
+                variant="outline" 
+                onClick={() => setActiveScreen('universe')}
+              >
+                {t.main.askUniverse}
+              </CosmicButton>
+              
+              <CosmicButton 
+                variant="outline"
+                onClick={() => setActiveScreen('meditation')}
+              >
+                <Headphones className="mr-2" size={18} />
+                {language === 'ru' ? 'Медитации' : 
+                 language === 'es' ? 'Meditaciones' : 'Meditations'}
+              </CosmicButton>
+            </div>
           </>
         ) : (
           <div className="text-center">
