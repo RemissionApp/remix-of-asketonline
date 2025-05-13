@@ -20,6 +20,7 @@ interface AppState {
   setOnboardingComplete: (completed: boolean) => void;
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
+  updateUserProfile: (profileData: Partial<UserProfile>) => void;
 }
 
 // Example quotes
@@ -51,6 +52,9 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setLanguage: (language) => set({ language }),
   setOnboardingComplete: (completed) => set({ onboardingComplete: completed }),
   setActiveScreen: (screen) => set({ activeScreen: screen }),
+  updateUserProfile: (profileData) => set((state) => ({
+    userProfile: { ...state.userProfile, ...profileData }
+  })),
   
   addPact: (pact) => {
     const createdAt = new Date().toISOString();
