@@ -97,7 +97,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     }
   };
   
-  // Функция для правильного отображения отказа пользователя с учетом языка
+  // Функция для правильного отображени�� отказа пользователя с учетом языка
   const formatRejection = (rejection: string): string => {
     // Проверяем, является ли строка предустановленным значением из списка
     const predefinedOptions: Record<string, Record<string, string>> = {
@@ -288,24 +288,32 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
                 </p>
               </div>
               
-              <DialogFooter className="flex flex-col gap-4 w-full">
-                <Button 
-                  onClick={handleConfirmReading} 
-                  variant={readConfirmed ? "default" : "secondary"}
-                  className={`w-full transition-colors ${readConfirmed ? "bg-green-500 hover:bg-green-600" : ""}`}
-                >
-                  {getConfirmButtonText()}
-                </Button>
-                
-                {readConfirmed && (
+              <div className="flex flex-row gap-4 mt-4 w-full">
+                {!readConfirmed ? (
                   <Button 
-                    onClick={handleSignContract} 
-                    className="w-full bg-cosmic-accent hover:bg-cosmic-accent2 text-white"
+                    onClick={handleConfirmReading} 
+                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white"
                   >
-                    {getSignButtonText()}
+                    {getConfirmButtonText()}
                   </Button>
+                ) : (
+                  <>
+                    <Button 
+                      className="w-1/2 py-3 bg-green-600 hover:bg-green-700 text-white"
+                      disabled
+                    >
+                      {getConfirmButtonText()}
+                    </Button>
+                    
+                    <Button 
+                      onClick={handleSignContract} 
+                      className="w-1/2 py-3 bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      {getSignButtonText()}
+                    </Button>
+                  </>
                 )}
-              </DialogFooter>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
