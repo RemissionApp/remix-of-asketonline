@@ -90,6 +90,22 @@ export const useTranslations = () => {
         universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
         profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile'
       }
+    },
+    userProfile: {
+      title: language === 'ru' ? 'О тебе' : language === 'es' ? 'Sobre ti' : 'About You',
+      nameLabel: language === 'ru' ? 'Как тебя зовут' : language === 'es' ? '¿Cómo te llamas?' : 'What\'s your name',
+      namePlaceholder: language === 'ru' ? 'Введите ваше имя' : language === 'es' ? 'Ingresa tu nombre' : 'Enter your name',
+      nameRequired: language === 'ru' ? 'Имя обязательно' : language === 'es' ? 'El nombre es obligatorio' : 'Name is required',
+      birthDateLabel: language === 'ru' ? 'Дата рождения' : language === 'es' ? 'Fecha de nacimiento' : 'Date of birth',
+      birthDatePlaceholder: language === 'ru' ? 'Выберите дату рождения' : language === 'es' ? 'Selecciona tu fecha de nacimiento' : 'Select your date of birth',
+      birthDateRequired: language === 'ru' ? 'Укажите дату рождения' : language === 'es' ? 'La fecha de nacimiento es obligatoria' : 'Date of birth is required',
+      continueButton: language === 'ru' ? 'Продолжить' : language === 'es' ? 'Continuar' : 'Continue',
+      age: language === 'ru' ? 'Возраст' : language === 'es' ? 'Edad' : 'Age',
+      yearSingular: language === 'ru' ? 'год' : language === 'es' ? 'año' : 'year',
+      yearPlural: language === 'ru' ? 'лет' : language === 'es' ? 'años' : 'years',
+      currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
+      languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
+      back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
     }
   };
   

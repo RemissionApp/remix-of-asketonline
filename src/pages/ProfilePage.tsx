@@ -8,10 +8,12 @@ import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { ProBadge } from '@/components/ProBadge';
 import { CosmicButton } from '@/components/CosmicButton';
 import { SparklesIcon, ChevronLeft } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen } = useAppStore();
   const navigate = useNavigate();
+  const { t } = useTranslations();
 
   const handleManageSubscription = () => {
     if (userProfile.isPro) {
@@ -35,14 +37,16 @@ const ProfilePage: React.FC = () => {
               aria-label="Return to main screen"
             >
               <ChevronLeft size={20} />
-              <span className="ml-1">Назад</span>
+              <span className="ml-1">{t.userProfile?.back || "Назад"}</span>
             </button>
             {userProfile.isPro && (
               <ProBadge size="md" />
             )}
           </div>
           
-          <h1 className="text-2xl text-white font-serif mb-4">Профиль</h1>
+          <h1 className="text-2xl text-white font-serif mb-4">
+            {t.main?.profile || "Профиль"}
+          </h1>
           
           <UserProfileForm />
           

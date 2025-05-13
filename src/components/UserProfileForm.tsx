@@ -9,15 +9,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { format, differenceInYears } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Languages } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { SupportedLanguage } from '@/i18n/translations';
 
 const UserProfileForm: React.FC = () => {
-  const { updateUserProfile, setActiveScreen, userProfile } = useAppStore();
+  const { updateUserProfile, setActiveScreen, userProfile, language, setLanguage } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
@@ -55,6 +63,16 @@ const UserProfileForm: React.FC = () => {
       birthDate: values.birthDate
     });
     setActiveScreen('onboarding');
+  };
+
+  const languages = [
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+  ];
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value as SupportedLanguage);
   };
 
   return (
@@ -142,6 +160,34 @@ const UserProfileForm: React.FC = () => {
               </FormItem>
             )}
           />
+          
+          <div className="text-left">
+            <FormLabel className="text-cosmic-secondary text-sm block mb-2">
+              {t.userProfile?.languageLabel || "Язык приложения"}
+            </FormLabel>
+            <Select value={language} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white">
+                <SelectValue>
+                  <div className="flex items-center">
+                    <span className="mr-2 text-lg">
+                      {languages.find(lang => lang.code === language)?.flag}
+                    </span>
+                    {languages.find(lang => lang.code === language)?.name}
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
+                {languages.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code} className="cursor-pointer">
+                    <div className="flex items-center">
+                      <span className="mr-2 text-lg">{lang.flag}</span>
+                      {lang.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
           <div className="pt-4">
             <CosmicButton className="w-full">
