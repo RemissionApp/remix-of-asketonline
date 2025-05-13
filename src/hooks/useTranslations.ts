@@ -106,6 +106,27 @@ export const useTranslations = () => {
       currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
       languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
       back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
+    },
+    auth: {
+      signIn: language === 'ru' ? 'Вход' : language === 'es' ? 'Iniciar sesión' : 'Sign In',
+      signUp: language === 'ru' ? 'Регистрация' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      email: language === 'ru' ? 'Email' : language === 'es' ? 'Correo electrónico' : 'Email',
+      password: language === 'ru' ? 'Пароль' : language === 'es' ? 'Contraseña' : 'Password',
+      forgotPassword: language === 'ru' ? 'Забыли пароль?' : language === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot password?',
+      noAccount: language === 'ru' ? 'Нет аккаунта?' : language === 'es' ? '¿No tienes cuenta?' : 'Don\'t have an account?',
+      haveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes cuenta?' : 'Already have an account?',
+      signInButton: language === 'ru' ? 'Войти' : language === 'es' ? 'Iniciar sesión' : 'Sign In',
+      signUpButton: language === 'ru' ? 'Зарегистрироваться' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      confirmPassword: language === 'ru' ? 'Подтвердите пароль' : language === 'es' ? 'Confirmar contraseña' : 'Confirm password',
+      passwordsDoNotMatch: language === 'ru' ? 'Пароли не совпадают' : language === 'es' ? 'Las contraseñas no coinciden' : 'Passwords do not match',
+      emailRequired: language === 'ru' ? 'Email обязателен' : language === 'es' ? 'El correo electrónico es obligatorio' : 'Email is required',
+      passwordRequired: language === 'ru' ? 'Пароль обязателен' : language === 'es' ? 'La contraseña es obligatoria' : 'Password is required',
+      invalidEmail: language === 'ru' ? 'Неверный формат email' : language === 'es' ? 'Formato de correo electrónico no válido' : 'Invalid email format',
+      minPassword: language === 'ru' ? 'Минимум 6 символов' : language === 'es' ? 'Mínimo 6 caracteres' : 'Minimum 6 characters',
+      orContinueWith: language === 'ru' ? 'или продолжить с' : language === 'es' ? 'o continuar con' : 'or continue with',
+      welcomeBack: language === 'ru' ? 'С возвращением' : language === 'es' ? 'Bienvenido de nuevo' : 'Welcome back',
+      createAccount: language === 'ru' ? 'Создать аккаунт' : language === 'es' ? 'Crear cuenta' : 'Create an account',
+      backToSignIn: language === 'ru' ? 'Вернуться ко входу' : language === 'es' ? 'Volver a iniciar sesión' : 'Back to sign in'
     }
   };
   
