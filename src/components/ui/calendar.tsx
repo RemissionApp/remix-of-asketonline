@@ -5,13 +5,6 @@ import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -21,22 +14,15 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
-  const [currentYear, setCurrentYear] = React.useState<number>(new Date().getFullYear());
-  const yearsRange = React.useMemo(() => {
-    const startYear = 1940;
-    const endYear = new Date().getFullYear();
-    return Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
-  }, []);
-
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
+      className={cn("p-3 pointer-events-auto", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium hidden",
+        caption_label: "text-sm font-medium",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -64,109 +50,11 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary z-50",
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-        Caption: ({ displayMonth }) => {
-          const month = displayMonth.getMonth();
-          const year = displayMonth.getFullYear();
-          
-          // All month names
-          const monthNames = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-          ];
-          
-          // Handle month change
-          const handleMonthChange = (newMonth: string) => {
-            const monthIndex = parseInt(newMonth);
-            const newDate = new Date(year, monthIndex);
-            if (props.onMonthChange) {
-              props.onMonthChange(newDate);
-            }
-          };
-          
-          // Handle year change
-          const handleYearChange = (newYear: string) => {
-            const yearValue = parseInt(newYear);
-            setCurrentYear(yearValue);
-            const newDate = new Date(yearValue, month);
-            if (props.onMonthChange) {
-              props.onMonthChange(newDate);
-            }
-          };
-
-          return (
-            <div className="flex justify-center items-center gap-2 relative w-full">
-              <div className="flex items-center gap-2 caption_dropdowns">
-                <Select 
-                  value={month.toString()} 
-                  onValueChange={handleMonthChange}
-                  open={undefined}
-                >
-                  <SelectTrigger 
-                    className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <SelectValue>{monthNames[month]}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent 
-                    className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50"
-                    position="popper"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {monthNames.map((monthName, idx) => (
-                      <SelectItem 
-                        key={idx} 
-                        value={idx.toString()} 
-                        className="cursor-pointer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {monthName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                <Select 
-                  value={year.toString()} 
-                  onValueChange={handleYearChange}
-                  open={undefined}
-                >
-                  <SelectTrigger 
-                    className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <SelectValue>{year}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent 
-                    className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50"
-                    position="popper"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {yearsRange.map((y) => (
-                      <SelectItem 
-                        key={y} 
-                        value={y.toString()} 
-                        className="cursor-pointer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {y}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          );
-        },
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
