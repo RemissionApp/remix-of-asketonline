@@ -5,6 +5,13 @@ import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -14,6 +21,13 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const [currentYear, setCurrentYear] = React.useState<number>(new Date().getFullYear());
+  const yearsRange = React.useMemo(() => {
+    const startYear = 1940;
+    const endYear = new Date().getFullYear();
+    return Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+  }, []);
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -22,7 +36,7 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium hidden",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -50,11 +64,51 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
+        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary",
         ...classNames,
       }}
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        Caption: ({ displayMonth, currentMonth }) => {
+          const month = displayMonth.getMonth();
+          const year = displayMonth.getFullYear();
+          
+          // Handle year change
+          const handleYearChange = (newYear: string) => {
+            const newDate = new Date(currentMonth);
+            newDate.setFullYear(parseInt(newYear));
+            setCurrentYear(parseInt(newYear));
+            if (props.onMonthChange) {
+              props.onMonthChange(newDate);
+            }
+          };
+
+          return (
+            <div className="flex justify-center items-center gap-2 relative w-full">
+              <div className="flex items-center gap-2 caption_dropdowns">
+                <span className="text-sm font-medium">
+                  {displayMonth.toLocaleDateString(undefined, { month: 'long' })}
+                </span>
+                <Select 
+                  value={year.toString()} 
+                  onValueChange={handleYearChange}
+                >
+                  <SelectTrigger className="h-7 w-[70px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
+                    <SelectValue>{year}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white">
+                    {yearsRange.map((y) => (
+                      <SelectItem key={y} value={y.toString()}>
+                        {y}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          );
+        },
       }}
       {...props}
     />
