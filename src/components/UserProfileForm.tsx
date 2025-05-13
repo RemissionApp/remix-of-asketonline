@@ -69,7 +69,10 @@ const UserProfileForm: React.FC = () => {
       
       {age !== null && (
         <div className="mb-6 text-cosmic-secondary font-medium">
-          {t.userProfile?.age || "Возраст"}: {age} {age === 1 ? (t.userProfile?.yearSingular || "год") : (t.userProfile?.yearPlural || "лет")}
+          {/* Using fallback text for missing translation keys */}
+          {t.userProfile?.age || "Возраст"}: {age} {age === 1 ? 
+            (t.userProfile?.yearSingular || "год") : 
+            (t.userProfile?.yearPlural || "лет")}
         </div>
       )}
       
@@ -149,6 +152,7 @@ const UserProfileForm: React.FC = () => {
       </Form>
       
       <div className="mt-6 text-cosmic-secondary text-sm">
+        {/* Using fallback text for missing translation key */}
         {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP")}
       </div>
     </div>
