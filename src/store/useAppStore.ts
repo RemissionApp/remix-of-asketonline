@@ -5,6 +5,9 @@ import { generateUniverseAnswer } from '@/utils/universeMessages';
 
 type AppLanguage = 'ru' | 'en' | 'es';
 
+// Update the type definition to include 'comparison'
+type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison';
+
 interface AppState {
   pacts: Pact[];
   activeQuestions: UniverseQuestion[];
@@ -14,8 +17,8 @@ interface AppState {
   addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => void;
   markDayComplete: (pactId: string) => void;
   askUniverse: (question: string) => UniverseQuestion;
-  setActiveScreen: (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile') => void;
-  activeScreen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile';
+  setActiveScreen: (screen: ActiveScreen) => void;
+  activeScreen: ActiveScreen;
   onboardingComplete: boolean;
   setOnboardingComplete: (completed: boolean) => void;
   language: AppLanguage;
