@@ -6,6 +6,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft } from 'lucide-react';
 import { PactOath } from '@/components/PactOath';
 import { useTranslations } from '@/hooks/useTranslations';
+import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen } = useAppStore();
@@ -15,6 +16,18 @@ const CreatePactPage: React.FC = () => {
   const [title, setTitle] = useState('');
   const [duration, setDuration] = useState(21);
   const [reward, setReward] = useState('');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  
+  // Начальные опции для мультиселекта
+  const rejectionOptions = [
+    { value: 'sugar', label: 'Сахар' },
+    { value: 'phone_after_22', label: 'Телефон после 22:00' },
+    { value: 'cigarettes', label: 'Сигареты' },
+    { value: 'procrastination', label: 'Прокрастинация' },
+    { value: 'social_media', label: 'Социальные сети' },
+    { value: 'alcohol', label: 'Алкоголь' },
+    { value: 'junk_food', label: 'Фастфуд' },
+  ];
   
   const handleNext = () => {
     if (step < 3) {
@@ -22,7 +35,7 @@ const CreatePactPage: React.FC = () => {
     } else {
       // Create pact and navigate to main screen
       addPact({
-        title,
+        title: selectedItems.length > 0 ? selectedItems.join(', ') : title,
         duration,
         reward,
         status: 'active'
@@ -40,7 +53,7 @@ const CreatePactPage: React.FC = () => {
   };
   
   const isNextDisabled = () => {
-    if (step === 0) return !title || title.length < 3;
+    if (step === 0) return !title && selectedItems.length === 0;
     if (step === 1) return !duration || duration < 1;
     if (step === 2) return !reward || reward.length < 3;
     return false;
@@ -51,21 +64,33 @@ const CreatePactPage: React.FC = () => {
       case 0:
         return (
           <div className="animate-fade-in">
-            <h2 className="text-2xl font-serif text-white mb-8">
+            <h2 className="text-2xl font-serif text-white mb-8 text-center">
               {t.createPact.stepOneTitle}
             </h2>
             
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t.createPact.placeholders.rejection}
-              className="cosmic-input w-full mb-6"
-            />
+            <div className="mb-6">
+              <MultiSelectWithCustomInput 
+                options={rejectionOptions}
+                value={selectedItems}
+                onChange={setSelectedItems}
+                placeholder={t.createPact.placeholders.rejection}
+                inputPlaceholder="Введите свой вариант..."
+              />
+            </div>
             
-            <div className="text-sm text-cosmic-secondary mb-8">
+            {selectedItems.length === 0 && (
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t.createPact.placeholders.rejection}
+                className="cosmic-input w-full mb-6"
+              />
+            )}
+            
+            <div className="text-sm text-cosmic-secondary mb-8 text-center">
               <p>{t.createPact.whatRejecting}</p>
-              <ul className="list-disc pl-5 mt-2 space-y-1">
+              <ul className="list-disc pl-5 mt-2 space-y-1 mx-auto inline-block text-left">
                 {t.createPact.examples.map((example, i) => (
                   <li key={i}>{example}</li>
                 ))}
@@ -76,7 +101,7 @@ const CreatePactPage: React.FC = () => {
       case 1:
         return (
           <div className="animate-fade-in">
-            <h2 className="text-2xl font-serif text-white mb-8">
+            <h2 className="text-2xl font-serif text-white mb-8 text-center">
               {t.createPact.stepTwoTitle}
             </h2>
             
@@ -97,7 +122,7 @@ const CreatePactPage: React.FC = () => {
             </div>
             
             <div className="mb-8">
-              <label className="block text-cosmic-secondary text-sm mb-2">
+              <label className="block text-cosmic-secondary text-sm mb-2 text-center">
                 {t.createPact.customDays}
               </label>
               <input
@@ -123,11 +148,11 @@ const CreatePactPage: React.FC = () => {
       case 2:
         return (
           <div className="animate-fade-in">
-            <h2 className="text-2xl font-serif text-white mb-4">
+            <h2 className="text-2xl font-serif text-white mb-4 text-center">
               {t.createPact.stepThreeTitle}
             </h2>
             
-            <p className="text-cosmic-secondary mb-8">
+            <p className="text-cosmic-secondary mb-8 text-center">
               {t.createPact.notAsking}
             </p>
             
@@ -142,7 +167,7 @@ const CreatePactPage: React.FC = () => {
       case 3:
         return (
           <PactOath
-            title={title}
+            title={selectedItems.length > 0 ? selectedItems.join(', ') : title}
             duration={duration}
             reward={reward}
             onConfirm={handleNext}
