@@ -15,6 +15,7 @@ import CreatePactPage from "./pages/CreatePactPage";
 import UniversePage from "./pages/UniversePage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
+import ComparisonPage from "./pages/ComparisonPage";
 
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient();
@@ -43,6 +44,8 @@ const AppContent = () => {
       return <UniversePage />;
     case 'profile':
       return <ProfilePage />;
+    case 'comparison':
+      return <ComparisonPage />;
     default:
       return <MainPage />;
   }
@@ -56,6 +59,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<AppContent />} />
+              <Route path="/comparison" element={<ComparisonPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />

@@ -124,6 +124,26 @@ type TranslationKeys = {
     pointsEarned: string;
     rewards: string;
   };
+  calendar: {
+    year: string;
+    month: string;
+  };
+  minimumPeriod: string;
+  comparison: {
+    title: string;
+    freePlan: string;
+    proPlan: string;
+    free: string;
+    pricing: string;
+    upgradeButton: string;
+    features: {
+      name: string;
+      free: boolean;
+      pro: boolean;
+      freeDescription: string;
+      proDescription?: string;
+    }[];
+  };
 };
 
 const translations: Record<SupportedLanguage, TranslationKeys> = {
@@ -161,7 +181,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     main: {
       days: "дней",
       todayCompleted: "Сегодня я выдержал",
-      askUniverse: "Спросить Вселенну��",
+      askUniverse: "Спросить Вселенну",
       noPacts: "У тебя пока нет активных аскез",
       createPact: "Заключить договор",
       nav: {
@@ -276,6 +296,111 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       rankTitle: "Ваш ранг:",
       pointsEarned: "Получено очков:",
       rewards: "Награды:"
+    },
+    calendar: {
+      year: 'Год',
+      month: 'Месяц'
+    },
+    minimumPeriod: 'Минимальный срок аскезы - 30 дней',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Бесплатно",
+      proPlan: "Платная подписка",
+      free: "Бесплатно",
+      pricing: "$4.99/мес или $29.99/год",
+      upgradeButton: "Открыть силу PRO ✨",
+      features: [
+        {
+          name: "Количество активных аскез",
+          free: true,
+          pro: true,
+          freeDescription: "1 одновременно",
+          proDescription: "До 5 одновременно"
+        },
+        {
+          name: "Категории отказа",
+          free: true,
+          pro: true,
+          freeDescription: "Все категории доступны"
+        },
+        {
+          name: "Вопросы Вселенной",
+          free: true,
+          pro: true,
+          freeDescription: "1 текстовый вопрос в день",
+          proDescription: "До 3 в день, включая голосовой вопрос"
+        },
+        {
+          name: "Ответы Вселенной",
+          free: true,
+          pro: true,
+          freeDescription: "Текстовые ответы",
+          proDescription: "Голосовые + расширенные текстовые (AI)"
+        },
+        {
+          name: "Круг Энергии",
+          free: true,
+          pro: true,
+          freeDescription: "Базовый круг с прогрессом",
+          proDescription: "Энергетический круг с анимацией силы"
+        },
+        {
+          name: "Темы оформления",
+          free: true,
+          pro: true,
+          freeDescription: "Тёмная тема",
+          proDescription: "Космические темы, музыка, фоны"
+        },
+        {
+          name: "Цитаты и мудрость",
+          free: true,
+          pro: true,
+          freeDescription: "Случайные цитаты",
+          proDescription: "Случайные цитаты + персональные духовные послания"
+        },
+        {
+          name: "Медитации",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Аудиомедитации, визуализации, голосовые практики"
+        },
+        {
+          name: "Космические миссии",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Ритуалы, челленджи, многодневные цепочки"
+        },
+        {
+          name: "Рекомендация на день",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Персональный совет от Вселенной"
+        },
+        {
+          name: "Разбор личности",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Анализ личности, архетип, рекомендация"
+        },
+        {
+          name: "Ритуалы силы",
+          free: true,
+          pro: true,
+          freeDescription: "Базовые (текст + визуал)",
+          proDescription: "Аудио/видео-ритуалы с озвучкой"
+        },
+        {
+          name: "Сообщество",
+          free: true,
+          pro: true,
+          freeDescription: "Просмотр прогресса других",
+          proDescription: "Создание групп, энергия поддержки"
+        }
+      ]
     }
   },
   en: {
@@ -427,6 +552,111 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       rankTitle: "Your rank:",
       pointsEarned: "Points earned:",
       rewards: "Rewards:"
+    },
+    calendar: {
+      year: 'Year',
+      month: 'Month'
+    },
+    minimumPeriod: 'Minimum ascesis period - 30 days',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Free",
+      proPlan: "Paid subscription",
+      free: "Free",
+      pricing: "$4.99/month or $29.99/year",
+      upgradeButton: "Unlock PRO power ✨",
+      features: [
+        {
+          name: "Active ascesis count",
+          free: true,
+          pro: true,
+          freeDescription: "1 simultaneously",
+          proDescription: "Up to 5 simultaneously"
+        },
+        {
+          name: "Rejection categories",
+          free: true,
+          pro: true,
+          freeDescription: "All categories available"
+        },
+        {
+          name: "Universe Questions",
+          free: true,
+          pro: true,
+          freeDescription: "1 text question per day",
+          proDescription: "Up to 3 per day, including voice questions"
+        },
+        {
+          name: "Universe Answers",
+          free: true,
+          pro: true,
+          freeDescription: "Text answers",
+          proDescription: "Voice + extended text answers (AI)"
+        },
+        {
+          name: "Energy Circle",
+          free: true,
+          pro: true,
+          freeDescription: "Basic circle with progress",
+          proDescription: "Energy circle with power animation"
+        },
+        {
+          name: "Themes",
+          free: true,
+          pro: true,
+          freeDescription: "Dark theme",
+          proDescription: "Cosmic themes, music, backgrounds"
+        },
+        {
+          name: "Quotes and wisdom",
+          free: true,
+          pro: true,
+          freeDescription: "Random quotes",
+          proDescription: "Random quotes + personal spiritual messages"
+        },
+        {
+          name: "Meditations",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Audio meditations, visualizations, voice practices"
+        },
+        {
+          name: "Cosmic missions",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Rituals, challenges, multi-day chains"
+        },
+        {
+          name: "Daily recommendation",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Personal advice from the Universe"
+        },
+        {
+          name: "Personality analysis",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Personality analysis, archetype, recommendation"
+        },
+        {
+          name: "Power rituals",
+          free: true,
+          pro: true,
+          freeDescription: "Basic (text + visual)",
+          proDescription: "Audio/video rituals with voiceover"
+        },
+        {
+          name: "Community",
+          free: true,
+          pro: true,
+          freeDescription: "View others' progress",
+          proDescription: "Create groups, support energy"
+        }
+      ]
     }
   },
   es: {
@@ -578,6 +808,111 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       rankTitle: "Tu rango:",
       pointsEarned: "Puntos ganados:",
       rewards: "Recompensas:"
+    },
+    calendar: {
+      year: 'Año',
+      month: 'Mes'
+    },
+    minimumPeriod: 'Período mínimo de ascesis - 30 días',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Gratis",
+      proPlan: "Suscripción de pago",
+      free: "Gratis",
+      pricing: "$4.99/mes o $29.99/año",
+      upgradeButton: "Desbloquear el poder PRO ✨",
+      features: [
+        {
+          name: "Número de ascesis activas",
+          free: true,
+          pro: true,
+          freeDescription: "1 simultáneamente",
+          proDescription: "Hasta 5 simultáneamente"
+        },
+        {
+          name: "Categorías de rechazo",
+          free: true,
+          pro: true,
+          freeDescription: "Todas las categorías disponibles"
+        },
+        {
+          name: "Preguntas al Universo",
+          free: true,
+          pro: true,
+          freeDescription: "1 pregunta de texto por día",
+          proDescription: "Hasta 3 por día, incluyendo preguntas por voz"
+        },
+        {
+          name: "Respuestas del Universo",
+          free: true,
+          pro: true,
+          freeDescription: "Respuestas de texto",
+          proDescription: "Respuestas por voz + texto extendido (IA)"
+        },
+        {
+          name: "Círculo de Energía",
+          free: true,
+          pro: true,
+          freeDescription: "Círculo básico con progreso",
+          proDescription: "Círculo energético con animación de poder"
+        },
+        {
+          name: "Temas",
+          free: true,
+          pro: true,
+          freeDescription: "Tema oscuro",
+          proDescription: "Temas cósmicos, música, fondos"
+        },
+        {
+          name: "Citas y sabiduría",
+          free: true,
+          pro: true,
+          freeDescription: "Citas aleatorias",
+          proDescription: "Citas aleatorias + mensajes espirituales personales"
+        },
+        {
+          name: "Meditaciones",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Meditaciones de audio, visualizaciones, prácticas de voz"
+        },
+        {
+          name: "Misiones cósmicas",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Rituales, desafíos, cadenas de varios días"
+        },
+        {
+          name: "Recomendación diaria",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Consejo personal del Universo"
+        },
+        {
+          name: "Análisis de personalidad",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Análisis de personalidad, arquetipo, recomendación"
+        },
+        {
+          name: "Rituales de poder",
+          free: true,
+          pro: true,
+          freeDescription: "Básicos (texto + visual)",
+          proDescription: "Rituales de audio/vídeo con voz en off"
+        },
+        {
+          name: "Comunidad",
+          free: true,
+          pro: true,
+          freeDescription: "Ver progreso de otros",
+          proDescription: "Crear grupos, energía de apoyo"
+        }
+      ]
     }
   }
 };
