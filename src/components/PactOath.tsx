@@ -1,10 +1,20 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Volume } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import type { SupportedLanguage } from '@/i18n/translations';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface PactOathProps {
   title: string;
@@ -22,9 +32,39 @@ export const PactOath: React.FC<PactOathProps> = ({
   onBack
 }) => {
   const [isReady, setIsReady] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { t } = useTranslations();
   const { language, userProfile } = useAppStore();
+  const { toast } = useToast();
   const userName = userProfile?.name || '';
+
+  const getOathText = () => {
+    if (language === 'ru') {
+      return `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${formatRejection(title)} на ${duration} ${getDaysText(duration)}.
+
+Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
+
+Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания ${formatReward(reward)}.
+
+Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`;
+    } else if (language === 'es') {
+      return `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${t.pactOath.days}.
+
+Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
+
+Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo ${formatReward(reward)}.
+
+Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`;
+    } else {
+      return `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${t.pactOath.days}.
+
+I consciously reject the temporary to open the path to the eternal.
+
+I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire ${formatReward(reward)}.
+
+For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.`;
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -130,6 +170,49 @@ export const PactOath: React.FC<PactOathProps> = ({
     }
   };
 
+  const handleReadAloud = () => {
+    setDialogOpen(true);
+  };
+
+  const handleConfirmReading = () => {
+    setDialogOpen(false);
+    toast({
+      title: language === 'ru' ? 'Договор подписан' : language === 'es' ? 'Pacto firmado' : 'Covenant signed',
+      description: language === 'ru' ? 'Ваша аскеза начинается сейчас' : language === 'es' ? 'Tu ascesis comienza ahora' : 'Your ascesis begins now',
+    });
+    onConfirm();
+  };
+
+  const getDialogInstructions = () => {
+    if (language === 'ru') {
+      return "Прочтите свой обет аскезы вслух. Произнося эти слова, вы заключаете священный договор с Вселенной.";
+    } else if (language === 'es') {
+      return "Lee tu voto de ascesis en voz alta. Al pronunciar estas palabras, estás haciendo un pacto sagrado con el Universo.";
+    } else {
+      return "Read your ascesis vow aloud. By speaking these words, you are making a sacred covenant with the Universe.";
+    }
+  };
+
+  const getConfirmButtonText = () => {
+    if (language === 'ru') {
+      return "Я прочитал(а) вслух и подтверждаю";
+    } else if (language === 'es') {
+      return "He leído en voz alta y confirmo";
+    } else {
+      return "I have read aloud and confirm";
+    }
+  };
+
+  const getReadAloudButtonText = () => {
+    if (language === 'ru') {
+      return "Прочитать вслух";
+    } else if (language === 'es') {
+      return "Leer en voz alta";
+    } else {
+      return "Read Aloud";
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center">
       <StarField starCount={150} />
@@ -164,37 +247,39 @@ export const PactOath: React.FC<PactOathProps> = ({
           
           <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
             <p className="text-white text-lg mb-6 whitespace-pre-line">
-              {language === 'ru' ? (
-                `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${formatRejection(title)} на ${duration} ${getDaysText(duration)}.
-
-Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
-
-Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания ${formatReward(reward)}.
-
-Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`
-              ) : language === 'es' ? (
-                `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${t.pactOath.days}.
-
-Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
-
-Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo ${formatReward(reward)}.
-
-Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`
-              ) : (
-                `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${t.pactOath.days}.
-
-I consciously reject the temporary to open the path to the eternal.
-
-I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire ${formatReward(reward)}.
-
-For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.`
-              )}
+              {getOathText()}
             </p>
           </div>
           
-          <CosmicButton onClick={onConfirm} className="w-full">
-            {t.pactOath.confirmButton}
+          <CosmicButton onClick={handleReadAloud} className="w-full">
+            <Volume className="mr-2" size={18} />
+            {getReadAloudButtonText()}
           </CosmicButton>
+
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="bg-cosmic-dark border-cosmic-accent text-white max-w-md">
+              <DialogHeader>
+                <DialogTitle className="cosmic-gradient-text text-xl">
+                  {t.pactOath.title}
+                </DialogTitle>
+                <DialogDescription className="text-cosmic-secondary">
+                  {getDialogInstructions()}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="my-4 p-4 bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-md max-h-60 overflow-y-auto">
+                <p className="whitespace-pre-line">
+                  {getOathText()}
+                </p>
+              </div>
+              
+              <DialogFooter>
+                <CosmicButton onClick={handleConfirmReading} className="w-full">
+                  {getConfirmButtonText()}
+                </CosmicButton>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
