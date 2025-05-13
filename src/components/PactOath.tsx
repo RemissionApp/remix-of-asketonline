@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
-import { ArrowLeft, Volume } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import type { SupportedLanguage } from '@/i18n/translations';
@@ -252,7 +251,6 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
           </div>
           
           <CosmicButton onClick={handleReadAloud} className="w-full">
-            <Volume className="mr-2" size={18} />
             {getReadAloudButtonText()}
           </CosmicButton>
 
