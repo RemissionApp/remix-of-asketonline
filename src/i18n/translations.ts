@@ -1,3 +1,4 @@
+
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -102,7 +103,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       steps: [
         {
           title: "Добро пожаловать",
-          content: "Что-то внутри тебя просится наружу.\nЭто не тревога. Это — пробуждение.\n\nТы на пороге новой версии себя. Добро пожаловать."
+          content: "Что-то внутри тебя просится наружу.\nЭто не тревога. Это — пробуждение.\n\nТы на пороге новой версии себя."
         },
         {
           title: "Что такое Аскеза",
