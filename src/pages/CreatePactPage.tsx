@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -9,7 +8,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 
 const CreatePactPage: React.FC = () => {
-  const { addPact, setActiveScreen } = useAppStore();
+  const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
   
   const [step, setStep] = useState(0);
@@ -17,6 +16,28 @@ const CreatePactPage: React.FC = () => {
   const [duration, setDuration] = useState(30);
   const [reward, setReward] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  
+  // Функция для правильного склонения в русском языке
+  const getDaysText = (count: number): string => {
+    if (language !== 'ru') {
+      return t.main.days;
+    }
+    
+    // Правило для русского языка
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+    
+    if (lastDigit === 1 && lastTwoDigits !== 11) {
+      return 'день';
+    } else if (
+      (lastDigit === 2 || lastDigit === 3 || lastDigit === 4) && 
+      !(lastTwoDigits >= 12 && lastTwoDigits <= 14)
+    ) {
+      return 'дня';
+    } else {
+      return 'дней';
+    }
+  };
   
   // Начальные опции для мультиселекта
   const rejectionOptions = [
@@ -122,7 +143,7 @@ const CreatePactPage: React.FC = () => {
                   }`}
                   onClick={() => setDuration(days)}
                 >
-                  {days} {t.main.days}
+                  {days} {getDaysText(days)}
                 </button>
               ))}
             </div>
@@ -148,7 +169,7 @@ const CreatePactPage: React.FC = () => {
               <div className="energy-circle w-32 h-32 animate-circle-expand">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{duration}</p>
-                  <p className="text-xs text-cosmic-accent">{t.main.days}</p>
+                  <p className="text-xs text-cosmic-accent">{getDaysText(duration)}</p>
                 </div>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 interface PactOathProps {
   title: string;
@@ -22,6 +23,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 }) => {
   const [isReady, setIsReady] = useState(false);
   const { t } = useTranslations();
+  const { language } = useAppStore();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -30,6 +32,28 @@ export const PactOath: React.FC<PactOathProps> = ({
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Функция для правильного склонения в русском языке
+  const getDaysText = (count: number): string => {
+    if (language !== 'ru') {
+      return t.pactOath.days;
+    }
+    
+    // Правило для русского языка
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+    
+    if (lastDigit === 1 && lastTwoDigits !== 11) {
+      return 'день';
+    } else if (
+      (lastDigit === 2 || lastDigit === 3 || lastDigit === 4) && 
+      !(lastTwoDigits >= 12 && lastTwoDigits <= 14)
+    ) {
+      return 'дня';
+    } else {
+      return 'дней';
+    }
+  };
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center">
@@ -73,7 +97,7 @@ export const PactOath: React.FC<PactOathProps> = ({
             <p className="text-white text-lg mb-6">
               <span className="text-cosmic-accent">{t.pactOath.duration}</span>
               <br />
-              <span className="font-bold">{duration} {t.pactOath.days}</span>
+              <span className="font-bold">{duration} {getDaysText(duration)}</span>
             </p>
             
             <p className="text-white text-lg">
@@ -91,3 +115,4 @@ export const PactOath: React.FC<PactOathProps> = ({
     </div>
   );
 };
+

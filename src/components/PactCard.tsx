@@ -2,6 +2,8 @@
 import React from 'react';
 import { EnergyCircle } from './EnergyCircle';
 import { Pact } from '@/types';
+import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 interface PactCardProps {
   pact: Pact;
@@ -11,6 +13,30 @@ interface PactCardProps {
 export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
   const daysCompleted = pact.days.filter(day => day.completed).length;
   const progress = Math.round((daysCompleted / pact.duration) * 100);
+  const { language } = useAppStore();
+  const { t } = useTranslations();
+  
+  // Функция для правильного склонения в русском языке
+  const getDaysText = (count: number): string => {
+    if (language !== 'ru') {
+      return t.main.days;
+    }
+    
+    // Правило для русского языка
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+    
+    if (lastDigit === 1 && lastTwoDigits !== 11) {
+      return 'день';
+    } else if (
+      (lastDigit === 2 || lastDigit === 3 || lastDigit === 4) && 
+      !(lastTwoDigits >= 12 && lastTwoDigits <= 14)
+    ) {
+      return 'дня';
+    } else {
+      return 'дней';
+    }
+  };
   
   return (
     <div 
@@ -20,7 +46,7 @@ export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
       <EnergyCircle progress={progress} size="sm">
         <div className="text-center">
           <p className="text-lg font-bold text-white">{daysCompleted}/{pact.duration}</p>
-          <p className="text-sm text-cosmic-accent">дней</p>
+          <p className="text-sm text-cosmic-accent">{getDaysText(daysCompleted)}</p>
         </div>
       </EnergyCircle>
       
@@ -33,3 +59,4 @@ export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
     </div>
   );
 };
+
