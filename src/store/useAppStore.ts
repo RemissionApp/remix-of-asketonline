@@ -1,291 +1,464 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { v4 as uuidv4 } from 'uuid';
-import { SupportedLanguage } from '@/i18n/translations';
-import type { Session, User } from '@supabase/supabase-js';
-import { Pact, PactStatus, UniverseQuestion, UserProfile, SpiritualRank } from '@/types';
+import { Pact, UniverseQuestion, UserProfile, SpiritualRank, Achievement, Mission } from '@/types';
+import { generateUniverseAnswer } from '@/utils/universeMessages';
+
+type AppLanguage = 'ru' | 'en' | 'es';
+
+// Update the type definition to include 'comparison' and 'meditation'
+type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation';
 
 interface AppState {
-  activeScreen: string;
-  language: SupportedLanguage;
-  userProfile: UserProfile;
-  onboardingComplete: boolean;
   pacts: Pact[];
-  dailyQuote: string;
   activeQuestions: UniverseQuestion[];
-  session: Session | null;
-  user: User | null;
+  dailyQuote: string;
+  userProfile: UserProfile;
   
-  setActiveScreen: (screen: string) => void;
-  setLanguage: (language: SupportedLanguage) => void;
-  updateUserProfile: (data: Partial<UserProfile>) => void;
-  markOnboardingComplete: () => void;
-  
-  // Authentication
-  setSession: (session: Session | null) => void;
-  setUser: (user: User | null) => void;
-  
-  // Pacts
-  addPact: (title: string, duration: number, reward: string) => void;
+  addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => void;
   markDayComplete: (pactId: string) => void;
+  askUniverse: (question: string) => UniverseQuestion;
+  setActiveScreen: (screen: ActiveScreen) => void;
+  activeScreen: ActiveScreen;
+  onboardingComplete: boolean;
+  setOnboardingComplete: (completed: boolean) => void;
+  language: AppLanguage;
+  setLanguage: (language: AppLanguage) => void;
+  updateUserProfile: (profileData: Partial<UserProfile>) => void;
   syncPactsWithCurrentDate: () => void;
   
-  // Universe
-  askUniverse: (question: string) => string;
+  // Existing functions for gamification
+  addEnergyPoints: (points: number) => void;
+  checkRankProgress: () => SpiritualRank;
+  unlockAchievement: (achievementId: string) => void;
+  assignMission: () => void;
+  completeMission: () => void;
   
-  // Pro features
+  // New functions for PRO features
   upgradeToPro: () => void;
   cancelProSubscription: () => void;
-  
-  // Missions
-  completeMission: (missionId: string) => void;
 }
 
-// Generate random cosmos wisdom quotes
-const cosmicQuotes = [
-  "Тьма — это всего лишь отсутствие света. Найди свет внутри себя.",
-  "Вселенная не наказывает и не награждает. Она просто откликается на твои вибрации.",
-  "Каждое испытание — это приглашение к росту и трансформации.",
-  "Самая великая свобода — это свобода от своего эго.",
-  "То, что ты ищешь, тоже ищет тебя.",
-  "Путь к мастерству начинается с того, что ты действуешь так, будто уже достиг его.",
-  "Вознесение — это не уход от реальности. Это полное принятие всего, что есть.",
-  "The darkness is just an absence of light. Find the light within you.",
-  "The universe doesn't punish or reward. It simply responds to your vibrations.",
-  "Every challenge is an invitation for growth and transformation.",
-  "The greatest freedom is freedom from your ego.",
-  "What you seek is also seeking you.",
-  "The path to mastery begins by acting as if you've already achieved it.",
-  "Ascension isn't an escape from reality. It's a complete acceptance of all that is.",
+// Example quotes
+const quotes = [
+  "Ты отказываешься от малого, чтобы вместить великое.",
+  "В искушении ты проверяешь намерение. Иди до конца.",
+  "Каждый день твоей аскезы — нить, соединяющая тебя с высшим.",
+  "Истинная сила не в овладении, а в осознанном отказе.",
+  "Отбрось то, что тянет тебя вниз, и воспари над обыденностью.",
+  "Твоя воля — это мост между намерением и реальностью.",
+  "Ограничивая себя внешне, ты расширяешься внутренне."
 ];
 
-// Universe wisdom messages
-const universeMessages = [
+// Достижения
+const defaultAchievements: Achievement[] = [
   {
-    question: "Как мне найти свой путь?",
-    answer: "Твой путь уже найден, просто ты его пока не осознал. Смотри внутрь, а не наружу."
+    id: 'first-pact',
+    title: 'Первый договор',
+    description: 'Заключите свой первый договор с Вселенной',
+    icon: 'scroll',
+    unlocked: false
   },
   {
-    question: "How can I find my path?",
-    answer: "Your path is already found, you just haven't realized it yet. Look inward, not outward."
+    id: '7-days-streak',
+    title: '7 дней подряд',
+    description: 'Соблюдайте аскезу 7 дней подряд',
+    icon: 'calendar',
+    unlocked: false
   },
+  {
+    id: '30-days-streak',
+    title: '30 дней подряд',
+    description: 'Соблюдайте аскезу 30 дней подряд',
+    icon: 'award',
+    unlocked: false
+  },
+  {
+    id: 'first-question',
+    title: 'Первый разговор',
+    description: 'Задайте первый вопрос Вселенной',
+    icon: 'message-square',
+    unlocked: false
+  }
 ];
 
-const defaultUserProfile: UserProfile = {
-  name: 'Искатель',
-  totalDays: 0,
-  energyPoints: 0,
-  goal: '',
-  isPro: false,
-  rank: 'seeker',
-  achievements: [],
+// Доступные миссии
+const availableMissions: Mission[] = [
+  {
+    id: 'mission-1',
+    title: 'Первые шаги аскета',
+    description: 'Соблюдайте свою первую аскезу три дня подряд и получите энергетические очки',
+    requirements: ['Соблюдать аскезу 3 дня подряд'],
+    reward: {
+      energyPoints: 30
+    },
+    completed: false
+  },
+  {
+    id: 'mission-2',
+    title: 'Разговор с Вселенной',
+    description: 'Задайте три вопроса Вселенной и получите дополнительную мудрость',
+    requirements: ['Задать 3 вопроса Вселенной'],
+    reward: {
+      energyPoints: 50,
+      achievement: 'universe-seeker'
+    },
+    completed: false
+  }
+];
+
+// Требования для рангов
+const rankRequirements = {
+  seeker: 0,
+  pilgrim: 10,
+  warrior: 30,
+  master: 90,
+  enlightened: 365
 };
 
-export const useAppStore = create<AppState>()(
-  persist(
-    (set, get) => ({
-      activeScreen: 'welcome',
-      language: 'ru',
-      userProfile: defaultUserProfile,
-      onboardingComplete: false,
-      pacts: [],
-      dailyQuote: cosmicQuotes[Math.floor(Math.random() * cosmicQuotes.length)],
-      activeQuestions: [],
-      session: null,
-      user: null,
-      
-      setActiveScreen: (screen) => set({ activeScreen: screen }),
-      setLanguage: (language) => set({ language }),
-      updateUserProfile: (data) => set((state) => ({ 
-        userProfile: { ...state.userProfile, ...data } 
-      })),
-      markOnboardingComplete: () => set({ onboardingComplete: true }),
-      
-      // Authentication
-      setSession: (session) => set({ session }),
-      setUser: (user) => set({ user }),
-      
-      // Pacts
-      addPact: (title, duration, reward) => {
-        const days = Array(duration).fill(null).map((_, i) => ({
-          date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          completed: false
-        }));
-        
-        const newPact: Pact = {
-          id: uuidv4(),
-          title,
-          duration,
-          days,
-          reward,
-          status: 'active',
-          createdAt: new Date().toISOString(),
-        };
-        
-        set((state) => ({ pacts: [...state.pacts, newPact] }));
-      },
-      
-      markDayComplete: (pactId) => {
-        set((state) => {
-          const today = new Date().toISOString().split('T')[0];
-          
-          const updatedPacts = state.pacts.map(pact => {
-            if (pact.id !== pactId) return pact;
-            
-            // Find today's day entry
-            const todayIndex = pact.days.findIndex(day => day.date === today);
-            if (todayIndex === -1) return pact;
-            
-            // Create a new days array with today marked as complete
-            const updatedDays = [...pact.days];
-            updatedDays[todayIndex] = { ...updatedDays[todayIndex], completed: true };
-            
-            // Check if pact is completed
-            const completedCount = updatedDays.filter(day => day.completed).length;
-            const status: PactStatus = completedCount === pact.duration ? 'completed' : 'active';
-            
-            return { ...pact, days: updatedDays, status };
-          });
-          
-          // Update user profile with energy points and total days
-          const updatedProfile = { ...state.userProfile };
-          updatedProfile.totalDays += 1;
-          updatedProfile.energyPoints += 10;
-          
-          // Check for rank upgrades
-          if (updatedProfile.totalDays >= 100) {
-            updatedProfile.rank = 'enlightened';
-          } else if (updatedProfile.totalDays >= 50) {
-            updatedProfile.rank = 'master';
-          } else if (updatedProfile.totalDays >= 25) {
-            updatedProfile.rank = 'warrior';
-          } else if (updatedProfile.totalDays >= 10) {
-            updatedProfile.rank = 'pilgrim';
-          }
-          
-          return { 
-            pacts: updatedPacts,
-            userProfile: updatedProfile,
-            dailyQuote: cosmicQuotes[Math.floor(Math.random() * cosmicQuotes.length)]
-          };
-        });
-      },
-      
-      syncPactsWithCurrentDate: () => {
-        set((state) => {
-          const today = new Date().toISOString().split('T')[0];
-          
-          const updatedPacts = state.pacts.map(pact => {
-            // Skip completed or broken pacts
-            if (pact.status !== 'active') return pact;
-            
-            // Check if the pact has today's entry
-            const hasToday = pact.days.some(day => day.date === today);
-            
-            // If today is already in the pact days, return as is
-            if (hasToday) return pact;
-            
-            // Get the latest day in the pact
-            const latestDay = pact.days.reduce((latest, current) => {
-              return new Date(current.date) > new Date(latest.date) ? current : latest;
-            }, pact.days[0]);
-            
-            // Calculate days passed since latest day
-            const latestDate = new Date(latestDay.date);
-            const todayDate = new Date(today);
-            const daysPassed = Math.floor((todayDate.getTime() - latestDate.getTime()) / (24 * 60 * 60 * 1000));
-            
-            // If more than 1 day passed and previous day was not completed, mark pact as broken
-            if (daysPassed > 1 && !latestDay.completed) {
-              return { ...pact, status: 'broken' as PactStatus };
-            }
-            
-            // Add today to the pact days
-            const updatedDays = [...pact.days, { date: today, completed: false }];
-            
-            return { ...pact, days: updatedDays };
-          });
-          
-          return { pacts: updatedPacts };
-        });
-      },
-      
-      // Universe
-      askUniverse: (question) => {
-        // Find a matching question or generate a new answer
-        const existingMessage = universeMessages.find(
-          m => m.question.toLowerCase() === question.toLowerCase()
+// Helper function to get date string in YYYY-MM-DD format
+const getDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+// Helper function to compare two dates (ignoring time)
+const isSameDay = (date1: string, date2: string): boolean => {
+  return date1.split('T')[0] === date2.split('T')[0];
+};
+
+// Helper function to check if date1 is before or equal to date2
+const isDateBeforeOrEqual = (date1: string, date2: string): boolean => {
+  return date1.split('T')[0] <= date2.split('T')[0];
+};
+
+export const useAppStore = create<AppState>()((set, get) => ({
+  pacts: [],
+  activeQuestions: [],
+  dailyQuote: quotes[Math.floor(Math.random() * quotes.length)],
+  userProfile: {
+    name: 'Искатель',
+    totalDays: 0,
+    energyPoints: 0,
+    goal: 'Познать свою истинную силу',
+    isPro: false, // Add isPro property to userProfile
+    rank: 'seeker',
+    achievements: [...defaultAchievements]
+  },
+  activeScreen: 'welcome',
+  onboardingComplete: false,
+  language: 'ru',
+  
+  setLanguage: (language) => set({ language }),
+  setOnboardingComplete: (completed) => set({ onboardingComplete: completed }),
+  setActiveScreen: (screen) => set({ activeScreen: screen }),
+  updateUserProfile: (profileData) => set((state) => ({
+    userProfile: { ...state.userProfile, ...profileData }
+  })),
+  
+  addPact: (pact) => {
+    const createdAt = new Date().toISOString();
+    const days = Array.from({ length: pact.duration }, (_, i) => ({
+      date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
+      completed: false
+    }));
+    
+    const newPact: Pact = {
+      ...pact,
+      id: Date.now().toString(),
+      createdAt,
+      days,
+      status: 'active'
+    };
+    
+    set((state) => {
+      // Проверка на первую аскезу для достижения
+      const isFirstPact = state.pacts.length === 0;
+      if (isFirstPact) {
+        const updatedAchievements = state.userProfile.achievements.map(a => 
+          a.id === 'first-pact' ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
         );
         
-        const answer = existingMessage?.answer || 
-          "Вселенная слышит твой вопрос. Ответ придет, когда ты будешь готов его услышать.";
-        
-        set((state) => {
-          const newQuestion: UniverseQuestion = {
-            id: uuidv4(),
-            question,
-            answer,
-            date: new Date().toISOString()
-          };
-          
-          return { 
-            activeQuestions: [...state.activeQuestions, newQuestion],
-            userProfile: {
-              ...state.userProfile,
-              energyPoints: state.userProfile.energyPoints + 5
-            }
-          };
-        });
-        
-        return answer;
-      },
-      
-      // Pro features
-      upgradeToPro: () => {
-        set((state) => ({
+        return {
+          pacts: [...state.pacts, newPact],
           userProfile: {
             ...state.userProfile,
-            isPro: true
+            achievements: updatedAchievements,
+            energyPoints: state.userProfile.energyPoints + 20 // Бонус за первую аскезу
           }
-        }));
-      },
-      
-      cancelProSubscription: () => {
-        set((state) => ({
-          userProfile: {
-            ...state.userProfile,
-            isPro: false
-          }
-        }));
-      },
-      
-      // Missions
-      completeMission: (missionId) => {
-        set((state) => {
-          const { userProfile } = state;
-          
-          if (!userProfile.activeMission) return { userProfile };
-          
-          if (userProfile.activeMission.id !== missionId) return { userProfile };
-          
-          // Mark mission as completed and add rewards
-          const completedMission = {
-            ...userProfile.activeMission,
-            completed: true
-          };
-          
-          const updatedProfile = {
-            ...userProfile,
-            activeMission: undefined,
-            energyPoints: userProfile.energyPoints + completedMission.reward.energyPoints
-          };
-          
-          return { userProfile: updatedProfile };
-        });
+        };
       }
-    }),
-    {
-      name: 'ascesis-app-storage'
-    }
-  )
-);
+      
+      return {
+        pacts: [...state.pacts, newPact]
+      };
+    });
+    
+    // Sync with current date after adding a new pact
+    setTimeout(() => {
+      get().syncPactsWithCurrentDate();
+    }, 0);
+  },
+  
+  markDayComplete: (pactId) => {
+    set((state) => {
+      const pacts = [...state.pacts];
+      const pactIndex = pacts.findIndex(p => p.id === pactId);
+      
+      if (pactIndex >= 0) {
+        const pact = {...pacts[pactIndex]};
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Find first incomplete day
+        const dayIndex = pact.days.findIndex(d => !d.completed);
+        
+        if (dayIndex >= 0) {
+          pact.days[dayIndex].completed = true;
+          pacts[pactIndex] = pact;
+          
+          // Check if all days are complete
+          const allComplete = pact.days.every(d => d.completed);
+          if (allComplete) {
+            pact.status = 'completed';
+          }
+          
+          // Update total days in profile
+          const totalDays = state.userProfile.totalDays + 1;
+          const energyPoints = state.userProfile.energyPoints + 10;
+          const updatedProfile = {
+            ...state.userProfile,
+            totalDays,
+            energyPoints
+          };
+          
+          // Проверка на достижения по накопленным дням
+          let updatedAchievements = [...updatedProfile.achievements];
+          
+          // Проверяем 7-дневную серию
+          const consecutiveDays = pact.days.filter(d => d.completed).length;
+          if (consecutiveDays >= 7) {
+            updatedAchievements = updatedAchievements.map(a => 
+              a.id === '7-days-streak' && !a.unlocked ? 
+                { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+            );
+          }
+          
+          // Проверяем 30-дневную серию
+          if (consecutiveDays >= 30) {
+            updatedAchievements = updatedAchievements.map(a => 
+              a.id === '30-days-streak' && !a.unlocked ? 
+                { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+            );
+          }
+          
+          updatedProfile.achievements = updatedAchievements;
+          
+          // Проверяем, нужно ли повысить ранг
+          const newRank = get().checkRankProgress();
+          if (newRank !== updatedProfile.rank) {
+            updatedProfile.rank = newRank;
+            updatedProfile.energyPoints += 50; // Бонус за повышение ранга
+          }
+          
+          return {
+            pacts,
+            userProfile: updatedProfile
+          };
+        }
+      }
+      
+      return state;
+    });
+  },
+  
+  askUniverse: (question) => {
+    const answer = generateUniverseAnswer();
+    const newQuestion: UniverseQuestion = {
+      id: Date.now().toString(),
+      question,
+      answer,
+      date: new Date().toISOString()
+    };
+    
+    set((state) => {
+      // Проверка на первый вопрос для достижения
+      const isFirstQuestion = state.activeQuestions.length === 0;
+      const updatedProfile = { ...state.userProfile };
+      
+      if (isFirstQuestion) {
+        updatedProfile.achievements = updatedProfile.achievements.map(a => 
+          a.id === 'first-question' ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+        updatedProfile.energyPoints += 15; // Бонус за первый вопрос
+      } else {
+        updatedProfile.energyPoints += 5; // Обычные очки за вопрос
+      }
+      
+      return {
+        activeQuestions: [newQuestion, ...state.activeQuestions],
+        userProfile: updatedProfile
+      };
+    });
+    
+    return newQuestion;
+  },
+  
+  syncPactsWithCurrentDate: () => {
+    set((state) => {
+      const today = new Date();
+      const todayString = getDateString(today);
+      let totalNewCompletedDays = 0;
+      
+      const updatedPacts = state.pacts.map(pact => {
+        // Skip if pact is already completed
+        if (pact.status === 'completed') {
+          return pact;
+        }
+        
+        // Create a copy of the pact to update
+        const updatedPact = { ...pact };
+        let daysChanged = false;
+        
+        // Loop through each day and check if it should be automatically marked as completed
+        updatedPact.days = pact.days.map((day, index) => {
+          // Only process if the day is not already completed
+          if (!day.completed && isDateBeforeOrEqual(day.date, todayString)) {
+            totalNewCompletedDays++;
+            daysChanged = true;
+            return { ...day, completed: true };
+          }
+          return day;
+        });
+        
+        // Check if all days are now completed
+        if (daysChanged && updatedPact.days.every(day => day.completed)) {
+          updatedPact.status = 'completed';
+        }
+        
+        return updatedPact;
+      });
+      
+      // Only update state if there were changes
+      if (totalNewCompletedDays > 0) {
+        const updatedProfile = {
+          ...state.userProfile,
+          totalDays: state.userProfile.totalDays + totalNewCompletedDays,
+          energyPoints: state.userProfile.energyPoints + (totalNewCompletedDays * 10)
+        };
+        
+        // Проверяем, нужно ли повысить ранг после обновления дней
+        const newRank = get().checkRankProgress();
+        if (newRank !== updatedProfile.rank) {
+          updatedProfile.rank = newRank;
+          updatedProfile.energyPoints += 50; // Бонус за повышение ранга
+        }
+        
+        return {
+          pacts: updatedPacts,
+          userProfile: updatedProfile
+        };
+      }
+      
+      return { pacts: updatedPacts };
+    });
+  },
+  
+  // Existing functions for gamification
+  addEnergyPoints: (points) => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        energyPoints: state.userProfile.energyPoints + points
+      }
+    }));
+  },
+  
+  checkRankProgress: () => {
+    const { userProfile } = get();
+    const { totalDays } = userProfile;
+    
+    if (totalDays >= rankRequirements.enlightened) return 'enlightened';
+    if (totalDays >= rankRequirements.master) return 'master';
+    if (totalDays >= rankRequirements.warrior) return 'warrior';
+    if (totalDays >= rankRequirements.pilgrim) return 'pilgrim';
+    return 'seeker';
+  },
+  
+  unlockAchievement: (achievementId) => {
+    set((state) => {
+      const updatedAchievements = state.userProfile.achievements.map(a => 
+        a.id === achievementId ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+      );
+      
+      return {
+        userProfile: {
+          ...state.userProfile,
+          achievements: updatedAchievements,
+          energyPoints: state.userProfile.energyPoints + 20 // Бонус за достижение
+        }
+      };
+    });
+  },
+  
+  assignMission: () => {
+    set((state) => {
+      // Если уже есть активная миссия, не назначаем новую
+      if (state.userProfile.activeMission) return state;
+      
+      // Выбираем случайную миссию из доступных
+      const availableMissionsCopy = [...availableMissions].filter(m => !m.completed);
+      if (availableMissionsCopy.length === 0) return state;
+      
+      const randomIndex = Math.floor(Math.random() * availableMissionsCopy.length);
+      const selectedMission = { ...availableMissionsCopy[randomIndex] };
+      
+      return {
+        userProfile: {
+          ...state.userProfile,
+          activeMission: selectedMission
+        }
+      };
+    });
+  },
+  
+  completeMission: () => {
+    set((state) => {
+      if (!state.userProfile.activeMission) return state;
+      
+      const { reward } = state.userProfile.activeMission;
+      let updatedProfile = {
+        ...state.userProfile,
+        energyPoints: state.userProfile.energyPoints + reward.energyPoints,
+        activeMission: undefined
+      };
+      
+      // Если миссия дает достижение, разблокируем его
+      if (reward.achievement) {
+        updatedProfile.achievements = updatedProfile.achievements.map(a => 
+          a.id === reward.achievement ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+      }
+      
+      return {
+        userProfile: updatedProfile
+      };
+    });
+  },
+  
+  // New functions for PRO subscription
+  upgradeToPro: () => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: true,
+        energyPoints: state.userProfile.energyPoints + 100 // Bonus points for upgrading
+      }
+    }));
+  },
+  
+  cancelProSubscription: () => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: false
+      }
+    }));
+  }
+}));

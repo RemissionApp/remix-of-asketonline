@@ -82,11 +82,12 @@ const CreatePactPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
-      addPact(
-        selectedItems.length > 0 ? selectedItems.join(', ') : title,
+      addPact({
+        title: selectedItems.length > 0 ? selectedItems.join(', ') : title,
         duration,
-        reward
-      );
+        reward,
+        status: 'active'
+      });
       setActiveScreen('main');
     }
   };
@@ -333,7 +334,7 @@ const CreatePactPage: React.FC = () => {
                 className="w-full"
                 disabled={isNextDisabled()}
               >
-                {t.createPact.nextButton}
+                {step === 2 ? t.createPact.nextButton : t.createPact.nextButton}
               </CosmicButton>
             )}
           </div>

@@ -5,7 +5,7 @@ import { MeditationCard } from '@/components/MeditationCard';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft, SparklesIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { ProBadge } from '@/components/ProBadge';
