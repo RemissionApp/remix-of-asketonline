@@ -74,6 +74,22 @@ function Calendar({
           const month = displayMonth.getMonth();
           const year = displayMonth.getFullYear();
           
+          // All month names
+          const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ];
+          
+          // Handle month change
+          const handleMonthChange = (newMonth: string) => {
+            const monthIndex = parseInt(newMonth);
+            const newDate = new Date(displayMonth);
+            newDate.setMonth(monthIndex);
+            if (props.onMonthChange) {
+              props.onMonthChange(newDate);
+            }
+          };
+          
           // Handle year change
           const handleYearChange = (newYear: string) => {
             const newDate = new Date(displayMonth);
@@ -87,9 +103,22 @@ function Calendar({
           return (
             <div className="flex justify-center items-center gap-2 relative w-full">
               <div className="flex items-center gap-2 caption_dropdowns">
-                <span className="text-sm font-medium">
-                  {displayMonth.toLocaleDateString(undefined, { month: 'long' })}
-                </span>
+                <Select 
+                  value={month.toString()} 
+                  onValueChange={handleMonthChange}
+                >
+                  <SelectTrigger className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
+                    <SelectValue>{monthNames[month]}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white">
+                    {monthNames.map((monthName, idx) => (
+                      <SelectItem key={idx} value={idx.toString()}>
+                        {monthName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
                 <Select 
                   value={year.toString()} 
                   onValueChange={handleYearChange}
