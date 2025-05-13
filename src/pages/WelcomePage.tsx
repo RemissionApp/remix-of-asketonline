@@ -17,12 +17,6 @@ const WelcomePage: React.FC = () => {
   const currentLang = languages[cycleIndex % languages.length];
   
   // Тексты для разных языков
-  const subtitles = {
-    ru: "Путь к внутренней силе",
-    en: "The path to inner strength",
-    es: "El camino hacia la fuerza interior"
-  };
-  
   const buttonTexts = {
     ru: "Начать путешествие",
     en: "Begin the journey",
@@ -64,7 +58,7 @@ const WelcomePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
       </div>
       
-      <div className={`relative z-10 text-center transition-all duration-1000 ${
+      <div className={`relative z-10 text-center px-6 max-w-2xl transition-all duration-1000 ${
         isAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}>
         <div className="w-56 h-56 mx-auto mb-8 relative">
@@ -75,12 +69,19 @@ const WelcomePage: React.FC = () => {
           <div className="absolute inset-16 rounded-full bg-cosmic-accent/50 animate-circle-expand"></div>
         </div>
         
-        <h1 className="text-5xl font-serif text-white mb-6 cosmic-gradient-text">
+        <h1 className="text-4xl md:text-5xl font-serif text-white mb-6 cosmic-gradient-text">
           {t.welcome.title}
         </h1>
         
-        <p className="text-2xl text-cosmic-secondary mb-12 transition-all duration-300 ease-in-out">
-          {subtitles[currentLang]}
+        <p className="text-xl md:text-2xl text-cosmic-secondary mb-4">
+          Что-то внутри тебя просится наружу.
+        </p>
+        <p className="text-xl md:text-2xl text-cosmic-secondary mb-8">
+          Это не тревога. Это — пробуждение.
+        </p>
+        
+        <p className="text-xl md:text-2xl text-cosmic-secondary mb-12">
+          Ты на пороге новой версии себя. Добро пожаловать.
         </p>
         
         <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
