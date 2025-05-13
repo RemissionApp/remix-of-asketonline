@@ -97,6 +97,18 @@ const MainPage: React.FC = () => {
     return translations[rejectionText] || rejectionText;
   };
   
+  // Get the prefix for the ascesis title based on language
+  const getAscesisPrefix = () => {
+    switch (language) {
+      case 'ru':
+        return 'Аскеза от';
+      case 'es':
+        return 'Ascesis de';
+      default:
+        return 'Ascesis from';
+    }
+  };
+  
   // Change handlers for the carousel
   const handlePrevPact = () => {
     if (currentPactIndex > 0) {
@@ -155,7 +167,7 @@ const MainPage: React.FC = () => {
             )}
             
             <h1 className="text-xl text-center uppercase font-serif text-white mb-1">
-              {formatRejection(currentPact?.title || '')}
+              {`${getAscesisPrefix()} ${formatRejection(currentPact?.title || '')}`}
             </h1>
             
             <EnergyCircle progress={progress} size="lg">
