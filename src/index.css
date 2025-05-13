@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -73,8 +72,8 @@
   }
   
   .star {
-    @apply absolute rounded-full bg-white;
-    box-shadow: 0 0 4px 1px rgba(255,255,255,0.4);
+    @apply absolute rounded-full;
+    box-shadow: 0 0 4px 1px rgba(255,255,255,0.6);
   }
   
   .energy-circle {
@@ -101,12 +100,24 @@
 @keyframes star-shine {
   0% {
     opacity: 0.2;
+    transform: scale(0.8);
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.9;
+    transform: scale(1.2);
   }
   100% {
     opacity: 0.2;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes galaxy-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -132,6 +143,10 @@
   
   .animate-star-shine {
     animation: star-shine 4s infinite;
+  }
+  
+  .animate-galaxy-rotate {
+    animation: galaxy-rotate 60s linear infinite;
   }
   
   .animate-circle-expand {
