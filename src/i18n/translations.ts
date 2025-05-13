@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -102,7 +101,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     onboarding: {
       steps: [
         {
-          title: "Портал Пробуждения",
+          title: "Добро пожаловать",
           content: "Что-то внутри тебя просится наружу.\nЭто не тревога. Это — пробуждение.\n\nТы на пороге новой версии себя. Добро пожаловать."
         },
         {
@@ -218,8 +217,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     onboarding: {
       steps: [
         {
-          title: "Awakening Portal",
-          content: "Something inside you is asking to come out.\nThis is not anxiety. This is awakening.\n\nYou are on the threshold of a new version of yourself. Welcome."
+          title: "Welcome",
+          content: "Something inside you is asking to come out.\nThis is not anxiety. This is awakening.\n\nYou are on the threshold of a new version of yourself."
         },
         {
           title: "What is Ascesis",
@@ -334,8 +333,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     onboarding: {
       steps: [
         {
-          title: "Portal del Despertar",
-          content: "Algo dentro de ti pide salir.\nNo es ansiedad. Es despertar.\n\nEstás en el umbral de una nueva versión de ti mismo. Bienvenido."
+          title: "Bienvenido",
+          content: "Algo dentro de ti pide salir.\nNo es ansiedad. Es despertar.\n\nEstás en el umbral de una nueva versión de ti mismo."
         },
         {
           title: "Qué es la Ascesis",
