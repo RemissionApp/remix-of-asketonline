@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { useAppStore } from "./store/useAppStore";
+import WelcomePage from "./pages/WelcomePage";
+import LanguagePage from "./pages/LanguagePage";
 import OnboardingPage from "./pages/OnboardingPage";
 import MainPage from "./pages/MainPage";
 import CreatePactPage from "./pages/CreatePactPage";
@@ -20,7 +22,15 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const { activeScreen, onboardingComplete } = useAppStore();
   
-  if (!onboardingComplete) {
+  if (activeScreen === 'welcome') {
+    return <WelcomePage />;
+  }
+  
+  if (activeScreen === 'language') {
+    return <LanguagePage />;
+  }
+  
+  if (!onboardingComplete && activeScreen === 'onboarding') {
     return <OnboardingPage />;
   }
   

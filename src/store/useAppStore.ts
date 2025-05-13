@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { Pact, UniverseQuestion, UserProfile } from '@/types';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
 
+type AppLanguage = 'ru' | 'en' | 'es';
+
 interface AppState {
   pacts: Pact[];
   activeQuestions: UniverseQuestion[];
@@ -12,10 +14,12 @@ interface AppState {
   addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => void;
   markDayComplete: (pactId: string) => void;
   askUniverse: (question: string) => UniverseQuestion;
-  setActiveScreen: (screen: 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile') => void;
-  activeScreen: 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile';
+  setActiveScreen: (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile') => void;
+  activeScreen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile';
   onboardingComplete: boolean;
   setOnboardingComplete: (completed: boolean) => void;
+  language: AppLanguage;
+  setLanguage: (language: AppLanguage) => void;
 }
 
 // Example quotes
@@ -40,11 +44,12 @@ export const useAppStore = create<AppState>()((set, get) => ({
     goal: 'Познать свою истинную силу',
     isPro: false
   },
-  activeScreen: 'onboarding',
+  activeScreen: 'welcome',
   onboardingComplete: false,
+  language: 'ru',
   
+  setLanguage: (language) => set({ language }),
   setOnboardingComplete: (completed) => set({ onboardingComplete: completed }),
-  
   setActiveScreen: (screen) => set({ activeScreen: screen }),
   
   addPact: (pact) => {
