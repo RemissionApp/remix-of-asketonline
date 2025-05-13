@@ -4,9 +4,12 @@ import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Globe } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
+import { SupportedLanguage } from '@/i18n/translations';
 
 const LanguagePage: React.FC = () => {
   const { setActiveScreen, setLanguage } = useAppStore();
+  const { t } = useTranslations();
   
   const languages = [
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
@@ -14,7 +17,7 @@ const LanguagePage: React.FC = () => {
     { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
   
-  const handleSelectLanguage = (langCode: 'ru' | 'en' | 'es') => {
+  const handleSelectLanguage = (langCode: SupportedLanguage) => {
     setLanguage(langCode);
     setActiveScreen('onboarding');
   };
@@ -37,7 +40,7 @@ const LanguagePage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-center mb-6">
               <Globe className="w-6 h-6 text-cosmic-accent mr-2" />
-              <h2 className="text-2xl font-serif text-white">Выберите язык</h2>
+              <h2 className="text-2xl font-serif text-white">Выберите язык / Select language / Seleccione idioma</h2>
             </div>
             
             <div className="flex flex-col space-y-3">
@@ -45,7 +48,7 @@ const LanguagePage: React.FC = () => {
                 <button
                   key={lang.code}
                   className="flex items-center p-4 rounded-lg border border-cosmic-accent/30 bg-cosmic-dark/50 text-white hover:bg-cosmic-accent/20 transition-colors"
-                  onClick={() => handleSelectLanguage(lang.code as 'ru' | 'en' | 'es')}
+                  onClick={() => handleSelectLanguage(lang.code as SupportedLanguage)}
                 >
                   <span className="text-2xl mr-3">{lang.flag}</span>
                   <span className="text-lg">{lang.name}</span>

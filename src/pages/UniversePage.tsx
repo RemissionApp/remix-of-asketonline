@@ -4,9 +4,11 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Send } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState<null | {
@@ -42,7 +44,7 @@ const UniversePage: React.FC = () => {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-          Врата Вселенной
+          {t.universe.title}
         </h1>
       </div>
       
@@ -52,14 +54,14 @@ const UniversePage: React.FC = () => {
           <div className="animate-fade-in w-full">
             <div className="cosmic-card mb-6">
               <h2 className="text-lg font-serif text-cosmic-accent mb-2">
-                Твой вопрос
+                {t.universe.yourQuestion}
               </h2>
               <p className="text-white">{currentAnswer.question}</p>
             </div>
             
             <div className="cosmic-card bg-cosmic-accent/10">
               <h2 className="text-lg font-serif text-cosmic-gold mb-4">
-                Ответ Вселенной
+                {t.universe.universeAnswer}
               </h2>
               <p className="text-xl font-serif text-white italic leading-relaxed">
                 "{currentAnswer.answer}"
@@ -70,7 +72,7 @@ const UniversePage: React.FC = () => {
                   onClick={() => setCurrentAnswer(null)} 
                   variant="outline"
                 >
-                  Задать новый вопрос
+                  {t.universe.newQuestion}
                 </CosmicButton>
               </div>
             </div>
@@ -89,19 +91,19 @@ const UniversePage: React.FC = () => {
             </div>
             
             <p className="text-cosmic-secondary text-center">
-              Вселенная обдумывает ответ...
+              {t.universe.thinking}
             </p>
           </div>
         ) : (
           <div className="w-full animate-fade-in">
             <h2 className="text-2xl font-serif text-white mb-6 text-center">
-              Что ты хочешь спросить у Вселенной?
+              {t.universe.question}
             </h2>
             
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Задай свой вопрос..."
+              placeholder={t.universe.question}
               className="cosmic-input w-full h-40 resize-none mb-8"
             />
             
@@ -111,13 +113,13 @@ const UniversePage: React.FC = () => {
               disabled={question.length < 3}
             >
               <Send size={18} className="mr-2" />
-              Отправить вопрос
+              {t.universe.askButton}
             </CosmicButton>
             
             {activeQuestions.length > 0 && (
               <div className="mt-12">
                 <h3 className="text-lg font-serif text-cosmic-secondary mb-4">
-                  Предыдущие вопросы
+                  {t.universe.previousQuestions}
                 </h3>
                 
                 <div className="space-y-4">

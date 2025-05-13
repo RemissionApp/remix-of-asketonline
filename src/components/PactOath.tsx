@@ -1,7 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useAppStore } from '@/store/useAppStore';
+import { StarField } from '@/components/StarField';
+import { CosmicButton } from '@/components/CosmicButton';
+import { ArrowLeft } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface PactOathProps {
   title: string;
@@ -11,138 +13,80 @@ interface PactOathProps {
   onBack: () => void;
 }
 
-export const PactOath: React.FC<PactOathProps> = ({ 
-  title, 
-  duration, 
-  reward, 
+export const PactOath: React.FC<PactOathProps> = ({
+  title,
+  duration,
+  reward,
   onConfirm,
-  onBack 
+  onBack
 }) => {
-  const { userProfile } = useAppStore();
   const [isReady, setIsReady] = useState(false);
-  const [showText, setShowText] = useState(false);
-  
-  // Simulating the "portal opening" effect
+  const { t } = useTranslations();
+
   useEffect(() => {
-    const timer1 = setTimeout(() => setIsReady(true), 500);
-    const timer2 = setTimeout(() => setShowText(true), 1000);
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 1000);
     
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      {/* Cosmic background image */}
-      <div className="fixed inset-0 z-0">
+    <div className="relative min-h-screen flex flex-col items-center justify-center">
+      <StarField starCount={150} />
+      
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 z-0">
         <div 
-          className="w-full h-full bg-cover bg-center opacity-90"
+          className="w-full h-full bg-cover bg-center opacity-60"
           style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
-      </div>
-
-      <div 
-        className={`relative z-10 max-w-lg w-full mx-auto overflow-hidden transition-all duration-1000 ${
-          isReady ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
-      >
-        {/* Portal awakening effect */}
-        <div className="relative w-full aspect-square max-w-md mx-auto mb-6">
-          {/* Background subtle glow */}
-          <div className="absolute inset-0 bg-cosmic-dark rounded-full blur-xl opacity-60" />
-          
-          {/* Main glowing circle */}
-          <div className="absolute inset-4 rounded-full border-2 border-cosmic-gold/80 animate-spin-slow shadow-[0_0_40px_rgba(245,158,11,0.5)]" 
-               style={{animationDuration: '30s'}} />
-          
-          {/* Inner circle - brighter */}
-          <div className="absolute inset-10 rounded-full border border-cosmic-gold shadow-[0_0_20px_rgba(245,158,11,0.8)] animate-spin-slow"
-               style={{animationDuration: '20s', animationDirection: 'reverse'}} />
-          
-          {/* Center glow */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3/4 h-3/4 rounded-full bg-cosmic-gold/5 filter blur-md animate-pulse-slow" />
-          </div>
-          
-          {/* Bright ring */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-1/2 h-1/2 rounded-full border-2 border-cosmic-gold shadow-[0_0_30px_rgba(245,158,11,0.9)] animate-pulse-slow" />
-          </div>
-          
-          {/* Small particles */}
-          {[...Array(6)].map((_, i) => (
-            <div 
-              key={i} 
-              className="absolute w-1 h-1 bg-cosmic-gold rounded-full blur-[1px] animate-spin-slow" 
-              style={{
-                top: `${50 + 35 * Math.cos(i * (Math.PI / 3))}%`, 
-                left: `${50 + 35 * Math.sin(i * (Math.PI / 3))}%`,
-                animationDuration: `${15 + i * 2}s`
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Main content */}
-        <div className={`cosmic-card backdrop-blur-lg bg-cosmic-dark/40 relative z-10 transition-opacity duration-1000 ${
-          showText ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <h2 className="text-2xl font-serif text-center text-white mb-4">
-            Текст Аскезы
-          </h2>
-          
-          <div className="space-y-4 text-cosmic-secondary">
-            <p className="text-center">«Я осознанно вхожу в этот Путь.</p>
-
-            <p className="text-center">Я выбираю добровольный отказ —<br />
-            не как жертву, но как источник силы.</p>
-
-            <p className="text-center">Я отказываюсь от <span className="text-cosmic-accent">{title}</span>,<br />
-            чтобы раскрыть в себе глубину,<br />
-            освободить пространство для нового<br />
-            и обрести ясность воли.</p>
-
-            <p className="text-center">Пусть каждый день моего выбора<br />
-            будет шагом к Силе, к Целостности, к Истинному Себе.</p>
-
-            <p className="text-center">Я заключаю договор с Вселенной —<br />
-            на <span className="text-cosmic-accent">{duration}</span> дней я соблюдаю аскезу<br />
-            во имя <span className="text-cosmic-accent">{reward}</span>.</p>
-
-            <p className="text-center">Я признаю искушения как учителей.<br />
-            Я принимаю трудность как топливо.<br />
-            Я вхожу в этот обет с полной ответственностью.</p>
-
-            <p className="text-center">Пусть Вселенная станет свидетелем моего намерения.</p>
-
-            <p className="text-center">Да будет Сила внутри меня.»</p>
-          </div>
-
-          <div className="mt-6 text-right text-cosmic-gold italic">
-            <p>{userProfile.name} — Дитя Воли</p>
-          </div>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/90" />
       </div>
       
-      <div className={`flex gap-4 mt-6 transition-all duration-1000 z-20 relative ${
-        showText ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-      }`}>
-        <Button
-          variant="outline"
+      <div className="relative z-10 w-full max-w-lg p-4">
+        <button
+          className="absolute top-4 left-4 p-2 text-cosmic-accent"
           onClick={onBack}
-          className="text-cosmic-secondary border-cosmic-accent/30 hover:bg-cosmic-accent/20 backdrop-blur-md"
         >
-          Назад
-        </Button>
-        <Button
-          onClick={onConfirm}
-          className="bg-cosmic-gold text-black hover:bg-cosmic-gold/80 animate-pulse-slow"
-        >
-          Заключить Пакт
-        </Button>
+          <ArrowLeft size={24} />
+        </button>
+        
+        <div className={`text-center transition-all duration-1000 ${
+          isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+          <h1 className="text-3xl font-serif text-white mb-3 cosmic-gradient-text">
+            {t.pactOath.title}
+          </h1>
+          
+          <p className="text-cosmic-secondary mb-12">
+            {t.pactOath.subtitle}
+          </p>
+          
+          <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
+            <p className="text-white text-lg mb-6">
+              <span className="text-cosmic-accent">{t.pactOath.iPromise}</span>
+              <br />
+              <span className="font-bold">{title}</span>
+            </p>
+            
+            <p className="text-white text-lg mb-6">
+              <span className="text-cosmic-accent">{t.pactOath.duration}</span>
+              <br />
+              <span className="font-bold">{duration} {t.pactOath.days}</span>
+            </p>
+            
+            <p className="text-white text-lg">
+              <span className="text-cosmic-accent">{t.pactOath.inReturn}</span>
+              <br />
+              <span className="font-bold">{reward}</span>
+            </p>
+          </div>
+          
+          <CosmicButton onClick={onConfirm} className="w-full">
+            {t.pactOath.confirmButton}
+          </CosmicButton>
+        </div>
       </div>
     </div>
   );

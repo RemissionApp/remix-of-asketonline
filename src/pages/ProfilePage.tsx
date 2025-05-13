@@ -4,9 +4,11 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Star } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
   
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -21,7 +23,7 @@ const ProfilePage: React.FC = () => {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-          Профиль
+          {t.profile.title}
         </h1>
       </div>
       
@@ -52,7 +54,7 @@ const ProfilePage: React.FC = () => {
                 {userProfile.totalDays}
               </p>
               <p className="text-sm text-cosmic-secondary">
-                Дней аскезы
+                {t.profile.daysOfAscesis}
               </p>
             </div>
             
@@ -61,7 +63,7 @@ const ProfilePage: React.FC = () => {
                 {userProfile.energyPoints}
               </p>
               <p className="text-sm text-cosmic-secondary">
-                Энергии
+                {t.profile.energy}
               </p>
             </div>
           </div>
@@ -70,21 +72,15 @@ const ProfilePage: React.FC = () => {
         <div className="cosmic-card mb-6 bg-gradient-to-br from-cosmic-accent/20 to-cosmic-gold/10">
           <div className="flex items-center">
             <Star className="text-cosmic-gold mr-3" />
-            <h3 className="text-lg font-serif text-white">ASKET PRO</h3>
+            <h3 className="text-lg font-serif text-white">{t.profile.proTitle}</h3>
           </div>
           
           <p className="text-cosmic-secondary mt-4 mb-6">
-            Разблокируй дополнительные возможности и усиль свой путь
+            {t.profile.proDescription}
           </p>
           
           <ul className="space-y-3 mb-6">
-            {[
-              'До 5 аскез одновременно',
-              'Доступ к премиум-медитациям',
-              'Визуальные темы оформления',
-              'Дополнительные вопросы к Вселенной',
-              'Ритуалы силы и прорывные практики'
-            ].map((feature, i) => (
+            {t.profile.proFeatures.map((feature, i) => (
               <li key={i} className="flex items-center">
                 <div className="w-4 h-4 rounded-full bg-cosmic-gold/20 flex items-center justify-center mr-3">
                   <div className="w-2 h-2 rounded-full bg-cosmic-gold"></div>
@@ -95,22 +91,17 @@ const ProfilePage: React.FC = () => {
           </ul>
           
           <CosmicButton className="w-full">
-            Открыть силу PRO ✨
+            {t.profile.proButton}
           </CosmicButton>
         </div>
         
         <div className="cosmic-card mb-6">
           <h3 className="text-lg font-serif text-white mb-4">
-            Настройки
+            {t.profile.settings}
           </h3>
           
           <ul className="space-y-4">
-            {[
-              'Уведомления',
-              'Темы оформления',
-              'Звук',
-              'Язык'
-            ].map((setting, i) => (
+            {t.profile.settingsItems.map((setting, i) => (
               <li key={i} className="flex justify-between items-center pb-3 border-b border-cosmic-accent/10">
                 <span className="text-cosmic-secondary">{setting}</span>
                 <span className="text-cosmic-accent">

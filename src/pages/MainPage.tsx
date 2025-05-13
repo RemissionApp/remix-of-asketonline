@@ -7,6 +7,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
 import { Home, Sparkles, MessageSquare, User } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const MainPage: React.FC = () => {
   const { 
@@ -15,6 +16,7 @@ const MainPage: React.FC = () => {
     markDayComplete, 
     setActiveScreen 
   } = useAppStore();
+  const { t } = useTranslations();
   
   const activePact = pacts.find(p => p.status === 'active');
   
@@ -43,7 +45,7 @@ const MainPage: React.FC = () => {
                 <p className="text-4xl font-bold font-serif text-white">
                   {activeDaysCompleted}/{activePact.duration}
                 </p>
-                <p className="text-lg text-cosmic-accent mt-2">дней</p>
+                <p className="text-lg text-cosmic-accent mt-2">{t.main.days}</p>
               </div>
             </EnergyCircle>
             
@@ -51,7 +53,7 @@ const MainPage: React.FC = () => {
               className="mt-8" 
               onClick={() => markDayComplete(activePact.id)}
             >
-              Сегодня я выдержал
+              {t.main.todayCompleted}
             </CosmicButton>
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
@@ -61,20 +63,20 @@ const MainPage: React.FC = () => {
               className="mt-6" 
               onClick={() => setActiveScreen('universe')}
             >
-              Спросить Вселенную
+              {t.main.askUniverse}
             </CosmicButton>
           </>
         ) : (
           <div className="text-center">
             <h1 className="text-2xl font-serif text-white mb-4">
-              У тебя пока нет активных аскез
+              {t.main.noPacts}
             </h1>
             
             <CosmicButton 
               onClick={() => setActiveScreen('create-pact')}
               className="mt-4"
             >
-              Заключить договор
+              {t.main.createPact}
             </CosmicButton>
           </div>
         )}
@@ -88,7 +90,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('main')}
           >
             <Home size={24} />
-            <span className="text-xs mt-1">Путь</span>
+            <span className="text-xs mt-1">{t.main.nav.path}</span>
           </button>
           
           <button 
@@ -96,7 +98,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('create-pact')}
           >
             <Sparkles size={24} />
-            <span className="text-xs mt-1">Аскезы</span>
+            <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
           </button>
           
           <button 
@@ -104,7 +106,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('universe')}
           >
             <MessageSquare size={24} />
-            <span className="text-xs mt-1">Вселенная</span>
+            <span className="text-xs mt-1">{t.main.nav.universe}</span>
           </button>
           
           <button 
@@ -112,7 +114,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('profile')}
           >
             <User size={24} />
-            <span className="text-xs mt-1">Профиль</span>
+            <span className="text-xs mt-1">{t.main.nav.profile}</span>
           </button>
         </div>
       </div>

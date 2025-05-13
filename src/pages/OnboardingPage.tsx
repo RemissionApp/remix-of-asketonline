@@ -3,32 +3,15 @@ import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const OnboardingPage: React.FC = () => {
   const [step, setStep] = useState(0);
   const { setOnboardingComplete, setActiveScreen } = useAppStore();
-  
-  const steps = [
-    {
-      title: "Портал Пробуждения",
-      content: "Ты чувствуешь зов. Он зовёт тебя вглубь себя"
-    },
-    {
-      title: "Что такое Аскеза",
-      content: "Аскеза — это священный договор с Вселенной. Каждый день отказа от чего-то низкого повышает твою вибрацию и раскрывает внутреннюю силу."
-    },
-    {
-      title: "Почему она работает",
-      content: "Отказываясь от искушения, ты усиливаешь свою волю и настраиваешься на высшие энергии. Вселенная видит твои усилия и отвечает взаимностью."
-    },
-    {
-      title: "Кем ты станешь",
-      content: "Человеком, чьи желания подчинены воле. Тем, кто способен формировать реальность через осознанный отказ и притяжение высшего. Властелином своей судьбы."
-    }
-  ];
+  const { t } = useTranslations();
   
   const handleNext = () => {
-    if (step < steps.length - 1) {
+    if (step < t.onboarding.steps.length - 1) {
       setStep(step + 1);
     } else {
       // Complete onboarding
@@ -53,29 +36,29 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <h1 className="text-4xl font-serif text-white mb-6">
-              {steps[step].title}
+              {t.onboarding.steps[0].title}
             </h1>
             
             <p className="text-xl text-cosmic-secondary mb-8">
-              {steps[step].content}
+              {t.onboarding.steps[0].content}
             </p>
             
             <CosmicButton onClick={handleNext}>
-              Войти
+              {t.onboarding.buttons.enter}
             </CosmicButton>
           </div>
         ) : (
           <div className="animate-fade-in text-center">
             <h1 className="text-3xl font-serif text-white mb-6">
-              {steps[step].title}
+              {t.onboarding.steps[step].title}
             </h1>
             
             <p className="text-xl text-cosmic-secondary mb-8">
-              {steps[step].content}
+              {t.onboarding.steps[step].content}
             </p>
             
             <div className="flex justify-center mb-8">
-              {steps.map((_, i) => (
+              {t.onboarding.steps.map((_, i) => (
                 <div 
                   key={i}
                   className={`w-3 h-3 mx-1 rounded-full ${i === step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'}`}
@@ -84,7 +67,7 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <CosmicButton onClick={handleNext}>
-              {step < steps.length - 1 ? 'Далее' : 'Начать путь'}
+              {step < t.onboarding.steps.length - 1 ? t.onboarding.buttons.next : t.onboarding.buttons.startJourney}
             </CosmicButton>
           </div>
         )}

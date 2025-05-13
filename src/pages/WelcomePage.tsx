@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const WelcomePage: React.FC = () => {
   const { setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
   const [isAnimated, setIsAnimated] = useState(false);
   
   useEffect(() => {
@@ -46,15 +48,15 @@ const WelcomePage: React.FC = () => {
         </div>
         
         <h1 className="text-5xl font-serif text-white mb-6 cosmic-gradient-text">
-          ASKET
+          {t.welcome.title}
         </h1>
         
         <p className="text-2xl text-cosmic-secondary mb-12">
-          Путь к внутренней силе
+          {t.welcome.subtitle}
         </p>
         
         <CosmicButton onClick={handleContinue} size="lg">
-          Начать путешествие
+          {t.welcome.startButton}
         </CosmicButton>
       </div>
     </div>

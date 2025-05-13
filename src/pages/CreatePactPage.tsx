@@ -5,9 +5,11 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft } from 'lucide-react';
 import { PactOath } from '@/components/PactOath';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -50,25 +52,23 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in">
             <h2 className="text-2xl font-serif text-white mb-8">
-              От чего ты отказываешься?
+              {t.createPact.stepOneTitle}
             </h2>
             
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Например: Сахар, Соцсети, Алкоголь..."
+              placeholder={t.createPact.placeholders.rejection}
               className="cosmic-input w-full mb-6"
             />
             
             <div className="text-sm text-cosmic-secondary mb-8">
-              <p>Примеры:</p>
+              <p>{t.createPact.whatRejecting}</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
-                <li>Сахар</li>
-                <li>Телефон после 22:00</li>
-                <li>Сигареты</li>
-                <li>Прокрастинация</li>
-                <li>Социальные сети</li>
+                {t.createPact.examples.map((example, i) => (
+                  <li key={i}>{example}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -77,7 +77,7 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in">
             <h2 className="text-2xl font-serif text-white mb-8">
-              Срок испытания
+              {t.createPact.stepTwoTitle}
             </h2>
             
             <div className="flex justify-between gap-4 mb-8">
@@ -91,14 +91,14 @@ const CreatePactPage: React.FC = () => {
                   }`}
                   onClick={() => setDuration(days)}
                 >
-                  {days} дней
+                  {days} {t.main.days}
                 </button>
               ))}
             </div>
             
             <div className="mb-8">
               <label className="block text-cosmic-secondary text-sm mb-2">
-                Или укажите своё количество дней:
+                {t.createPact.customDays}
               </label>
               <input
                 type="number"
@@ -114,7 +114,7 @@ const CreatePactPage: React.FC = () => {
               <div className="energy-circle w-32 h-32 animate-circle-expand">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{duration}</p>
-                  <p className="text-xs text-cosmic-accent">дней</p>
+                  <p className="text-xs text-cosmic-accent">{t.main.days}</p>
                 </div>
               </div>
             </div>
@@ -124,17 +124,17 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in">
             <h2 className="text-2xl font-serif text-white mb-4">
-              Что ты хочешь получить?
+              {t.createPact.stepThreeTitle}
             </h2>
             
             <p className="text-cosmic-secondary mb-8">
-              Ты не просишь. Ты настраиваешь реальность.
+              {t.createPact.notAsking}
             </p>
             
             <textarea
               value={reward}
               onChange={(e) => setReward(e.target.value)}
-              placeholder="Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность..."
+              placeholder={t.createPact.placeholders.reward}
               className="cosmic-input w-full h-40 resize-none mb-8"
             />
           </div>
@@ -170,7 +170,7 @@ const CreatePactPage: React.FC = () => {
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-              Создание Аскезы
+              {t.createPact.title}
             </h1>
           </div>
           
@@ -198,7 +198,7 @@ const CreatePactPage: React.FC = () => {
                 className="w-full"
                 disabled={isNextDisabled()}
               >
-                {step === 2 ? 'Далее' : 'Далее'}
+                {step === 2 ? t.createPact.nextButton : t.createPact.nextButton}
               </CosmicButton>
             )}
           </div>
