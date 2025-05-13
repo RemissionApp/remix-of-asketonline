@@ -288,30 +288,22 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
                 </p>
               </div>
               
-              <div className="flex flex-row gap-4 mt-4 w-full">
-                {!readConfirmed ? (
+              <div className="flex flex-col gap-4 mt-4 w-full">
+                <Button 
+                  onClick={!readConfirmed ? handleConfirmReading : undefined} 
+                  className={`w-full py-3 ${readConfirmed ? "bg-green-600 hover:bg-green-600" : "bg-green-600 hover:bg-green-700"} text-white`}
+                  disabled={readConfirmed}
+                >
+                  {getConfirmButtonText()}
+                </Button>
+                
+                {readConfirmed && (
                   <Button 
-                    onClick={handleConfirmReading} 
-                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={handleSignContract} 
+                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white"
                   >
-                    {getConfirmButtonText()}
+                    {getSignButtonText()}
                   </Button>
-                ) : (
-                  <>
-                    <Button 
-                      className="w-1/2 py-3 bg-green-600 hover:bg-green-700 text-white"
-                      disabled
-                    >
-                      {getConfirmButtonText()}
-                    </Button>
-                    
-                    <Button 
-                      onClick={handleSignContract} 
-                      className="w-1/2 py-3 bg-purple-600 hover:bg-purple-700 text-white"
-                    >
-                      {getSignButtonText()}
-                    </Button>
-                  </>
                 )}
               </div>
             </DialogContent>
