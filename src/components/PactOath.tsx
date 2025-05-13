@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -289,7 +288,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
                 </p>
               </div>
               
-              <DialogFooter className="flex flex-col gap-4">
+              <DialogFooter className="flex flex-col gap-4 w-full">
                 <Button 
                   onClick={handleConfirmReading} 
                   variant={readConfirmed ? "default" : "secondary"}
@@ -299,9 +298,12 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
                 </Button>
                 
                 {readConfirmed && (
-                  <CosmicButton onClick={handleSignContract} className="w-full">
+                  <Button 
+                    onClick={handleSignContract} 
+                    className="w-full bg-cosmic-accent hover:bg-cosmic-accent2 text-white"
+                  >
                     {getSignButtonText()}
-                  </CosmicButton>
+                  </Button>
                 )}
               </DialogFooter>
             </DialogContent>
