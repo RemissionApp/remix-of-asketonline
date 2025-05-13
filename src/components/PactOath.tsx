@@ -23,7 +23,8 @@ export const PactOath: React.FC<PactOathProps> = ({
 }) => {
   const [isReady, setIsReady] = useState(false);
   const { t } = useTranslations();
-  const { language } = useAppStore();
+  const { language, user } = useAppStore();
+  const userName = user?.name || '';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -88,22 +89,32 @@ export const PactOath: React.FC<PactOathProps> = ({
           </p>
           
           <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
-            <p className="text-white text-lg mb-6">
-              <span className="text-cosmic-accent">{t.pactOath.iPromise}</span>
-              <br />
-              <span className="font-bold">{title}</span>
-            </p>
-            
-            <p className="text-white text-lg mb-6">
-              <span className="text-cosmic-accent">{t.pactOath.duration}</span>
-              <br />
-              <span className="font-bold">{duration} {getDaysText(duration)}</span>
-            </p>
-            
-            <p className="text-white text-lg">
-              <span className="text-cosmic-accent">{t.pactOath.inReturn}</span>
-              <br />
-              <span className="font-bold">{reward}</span>
+            <p className="text-white text-lg mb-6 whitespace-pre-line">
+              {language === 'ru' ? (
+                `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${title} на ${duration} ${getDaysText(duration)}.
+
+Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
+
+Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания (${reward}).
+
+Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`
+              ) : language === 'es' ? (
+                `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${title} durante ${duration} ${t.pactOath.days}.
+
+Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
+
+Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo (${reward}).
+
+Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`
+              ) : (
+                `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${title} for ${duration} ${t.pactOath.days}.
+
+I consciously reject the temporary to open the path to the eternal.
+
+I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire (${reward}).
+
+For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.`
+              )}
             </p>
           </div>
           
@@ -115,4 +126,3 @@ export const PactOath: React.FC<PactOathProps> = ({
     </div>
   );
 };
-
