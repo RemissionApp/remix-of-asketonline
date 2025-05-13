@@ -223,19 +223,22 @@ const CreatePactPage: React.FC = () => {
                 <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Цель:</span>{"\n"}
                   Должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы мысленно опишете или проговорите конечный результат, тем больше вероятность получить желаемое.{"\n\n"}
-                  <span className="font-semibold">Главное правило:</span> Договор нужно заключать осознанно, иначе вы только навредите себе.
+                  <span className="font-semibold">Главное правило:</span>{"\n"}
+                  Договор нужно заключать осознанно, иначе вы только навредите себе.
                 </p>
               ) : language === 'es' ? (
                 <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Objetivo:</span>{"\n"}
                   Debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describa o articule mentalmente el resultado final, mayor será la probabilidad de obtener lo que desea.{"\n\n"}
-                  <span className="font-semibold">La regla principal:</span> El pacto debe hacerse conscientemente, de lo contrario solo se hará daño a sí mismo.
+                  <span className="font-semibold">La regla principal:</span>{"\n"}
+                  El pacto debe hacerse conscientemente, de lo contrario solo se hará daño a sí mismo.
                 </p>
               ) : (
                 <p className="whitespace-pre-line text-justify">
                   <span className="font-semibold">Goal:</span>{"\n"}
                   It must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you mentally describe or articulate the end result, the more likely you are to get what you want.{"\n\n"}
-                  <span className="font-semibold">The main rule:</span> The covenant must be made consciously, otherwise you will only harm yourself.
+                  <span className="font-semibold">The main rule:</span>{"\n"}
+                  The covenant must be made consciously, otherwise you will only harm yourself.
                 </p>
               )}
             </div>
