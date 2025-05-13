@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -14,6 +15,7 @@ const CreatePactPage: React.FC = () => {
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
   const [duration, setDuration] = useState(30);
+  const [durationText, setDurationText] = useState('30');
   const [reward, setReward] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   
@@ -109,6 +111,33 @@ const CreatePactPage: React.FC = () => {
   const handleDurationChange = (value: number) => {
     const newDuration = Math.max(30, value); // Не позволяет установить значение меньше 30
     setDuration(newDuration);
+    setDurationText(newDuration.toString());
+  };
+  
+  // Обработчик для ручного ввода текста
+  const handleDurationTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setDurationText(text);
+    
+    // Convert to number if possible
+    const num = parseInt(text);
+    if (!isNaN(num)) {
+      const validNum = Math.max(30, num);
+      setDuration(validNum);
+    }
+  };
+  
+  // Handle blur to enforce minimum value
+  const handleDurationBlur = () => {
+    if (durationText === '' || isNaN(parseInt(durationText))) {
+      setDurationText('30');
+      setDuration(30);
+    } else {
+      const num = parseInt(durationText);
+      const validNum = Math.max(30, num);
+      setDurationText(validNum.toString());
+      setDuration(validNum);
+    }
   };
   
   const renderStep = () => {
@@ -163,7 +192,10 @@ const CreatePactPage: React.FC = () => {
                       ? 'border-cosmic-accent bg-cosmic-accent/20 text-white'
                       : 'border-cosmic-accent/30 text-cosmic-secondary'
                   }`}
-                  onClick={() => setDuration(days)}
+                  onClick={() => {
+                    setDuration(days);
+                    setDurationText(days.toString());
+                  }}
                 >
                   {days} {getDaysText(days)}
                 </button>
@@ -175,15 +207,14 @@ const CreatePactPage: React.FC = () => {
                 {t.createPact.customDays}
               </label>
               <input
-                type="number"
-                min="30"
-                max="365"
-                value={duration}
-                onChange={(e) => handleDurationChange(parseInt(e.target.value) || 30)}
+                type="text"
+                value={durationText}
+                onChange={handleDurationTextChange}
+                onBlur={handleDurationBlur}
                 className="cosmic-input w-full"
-                placeholder={language === 'ru' ? "для ввода подробного описания" : 
-                           language === 'es' ? "para ingresar una descripción detallada" : 
-                           "for detailed description input"}
+                placeholder={language === 'ru' ? "Введите количество дней (мин. 30)" : 
+                           language === 'es' ? "Ingrese el número de días (mín. 30)" : 
+                           "Enter number of days (min. 30)"}
               />
               <p className="text-xs text-cosmic-secondary mt-2 text-center">
                 {t.minimumPeriod}
