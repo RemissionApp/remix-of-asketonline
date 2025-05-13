@@ -1,12 +1,11 @@
-
 import { create } from 'zustand';
 import { Pact, UniverseQuestion, UserProfile, SpiritualRank, Achievement, Mission } from '@/types';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
 
 type AppLanguage = 'ru' | 'en' | 'es';
 
-// Update the type definition to include 'comparison'
-type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison';
+// Update the type definition to include 'comparison' and 'meditation'
+type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation';
 
 interface AppState {
   pacts: Pact[];
@@ -26,12 +25,16 @@ interface AppState {
   updateUserProfile: (profileData: Partial<UserProfile>) => void;
   syncPactsWithCurrentDate: () => void;
   
-  // Новые функции для геймификации
+  // Existing functions for gamification
   addEnergyPoints: (points: number) => void;
   checkRankProgress: () => SpiritualRank;
   unlockAchievement: (achievementId: string) => void;
   assignMission: () => void;
   completeMission: () => void;
+  
+  // New functions for PRO features
+  upgradeToPro: () => void;
+  cancelProSubscription: () => void;
 }
 
 // Example quotes
@@ -135,7 +138,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     totalDays: 0,
     energyPoints: 0,
     goal: 'Познать свою истинную силу',
-    isPro: false,
+    isPro: false, // Add isPro property to userProfile
     rank: 'seeker',
     achievements: [...defaultAchievements]
   },
@@ -357,7 +360,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     });
   },
   
-  // Новые функции для геймификации
+  // Existing functions for gamification
   addEnergyPoints: (points) => {
     set((state) => ({
       userProfile: {
@@ -437,5 +440,25 @@ export const useAppStore = create<AppState>()((set, get) => ({
         userProfile: updatedProfile
       };
     });
+  },
+  
+  // New functions for PRO subscription
+  upgradeToPro: () => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: true,
+        energyPoints: state.userProfile.energyPoints + 100 // Bonus points for upgrading
+      }
+    }));
+  },
+  
+  cancelProSubscription: () => {
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: false
+      }
+    }));
   }
 }));

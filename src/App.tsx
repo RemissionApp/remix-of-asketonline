@@ -16,6 +16,7 @@ import UniversePage from "./pages/UniversePage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
+import MeditationPage from "./pages/MeditationPage";
 
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient();
@@ -46,6 +47,8 @@ const AppContent = () => {
       return <ProfilePage />;
     case 'comparison':
       return <ComparisonPage />;
+    case 'meditation':
+      return <MeditationPage />;
     default:
       return <MainPage />;
   }
@@ -60,6 +63,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<AppContent />} />
               <Route path="/comparison" element={<ComparisonPage />} />
+              <Route path="/meditation" element={<MeditationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />

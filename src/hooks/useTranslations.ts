@@ -1,4 +1,3 @@
-
 import { useAppStore } from '@/store/useAppStore';
 import translations from '@/i18n/translations';
 
@@ -27,10 +26,69 @@ export const useTranslations = () => {
           pro: true,
           freeDescription: language === 'ru' ? '1 одновременно' : language === 'es' ? '1 simultáneamente' : '1 simultaneously',
           proDescription: language === 'ru' ? 'До 5 одновременно' : language === 'es' ? 'Hasta 5 simultáneamente' : 'Up to 5 simultaneously'
-        },
-        // More feature translations would follow here...
-        // For brevity, I'm not including all features in the default translations
+        }
       ]
+    },
+    meditation: {
+      pageTitle: language === 'ru' ? 'Медитации силы' : language === 'es' ? 'Meditaciones de poder' : 'Power Meditations',
+      play: language === 'ru' ? 'Слушать' : language === 'es' ? 'Escuchar' : 'Listen',
+      unlock: language === 'ru' ? 'Открыть PRO' : language === 'es' ? 'Desbloquear PRO' : 'Unlock PRO',
+      categories: {
+        morning: language === 'ru' ? 'Утренние' : language === 'es' ? 'Mañana' : 'Morning',
+        evening: language === 'ru' ? 'Вечерние' : language === 'es' ? 'Noche' : 'Evening',
+        stress: language === 'ru' ? 'Антистресс' : language === 'es' ? 'Antiestrés' : 'Anti-stress',
+        mantra: language === 'ru' ? 'Мантры' : language === 'es' ? 'Mantras' : 'Mantras',
+        visual: language === 'ru' ? 'Визуализации' : language === 'es' ? 'Visualización' : 'Visualization'
+      },
+      morning: {
+        title1: language === 'ru' ? 'Настрой на день' : language === 'es' ? 'Preparación para el día' : 'Day Setup',
+        desc1: language === 'ru' ? 'Зарядись энергией на весь день' : language === 'es' ? 'Cárgate de energía para todo el día' : 'Charge with energy for the whole day',
+        title2: language === 'ru' ? 'Благодарность' : language === 'es' ? 'Gratitud' : 'Gratitude',
+        desc2: language === 'ru' ? 'Практика благодарности Вселенной' : language === 'es' ? 'Práctica de gratitud al Universo' : 'Practice of gratitude to the Universe'
+      },
+      evening: {
+        title1: language === 'ru' ? 'Прощение' : language === 'es' ? 'Perdón' : 'Forgiveness',
+        desc1: language === 'ru' ? 'Отпусти прошлое с легкостью' : language === 'es' ? 'Deja ir el pasado con facilidad' : 'Let go of the past with ease'
+      },
+      stress: {
+        title1: language === 'ru' ? 'Заземление' : language === 'es' ? 'Conexión a tierra' : 'Grounding',
+        desc1: language === 'ru' ? 'Восстановление внутреннего равновесия' : language === 'es' ? 'Restauración del equilibrio interior' : 'Restoring inner balance'
+      },
+      mantra: {
+        title1: language === 'ru' ? 'Голос наставника' : language === 'es' ? 'Voz del guía' : 'Guide\'s Voice',
+        desc1: language === 'ru' ? 'Интеграция высшей энергии' : language === 'es' ? 'Integración de energía superior' : 'Integration of higher energy'
+      },
+      visualization: {
+        title1: language === 'ru' ? 'Космический полёт' : language === 'es' ? 'Vuelo cósmico' : 'Cosmic Flight',
+        desc1: language === 'ru' ? 'Путешествие сквозь звёзды' : language === 'es' ? 'Viaje a través de las estrellas' : 'Journey through the stars'
+      }
+    },
+    subscription: {
+      bannerTitle: language === 'ru' ? 'Раскройте свой потенциал с ASKET PRO' : 
+                   language === 'es' ? 'Desbloquea tu potencial con ASKET PRO' : 
+                   'Unlock your potential with ASKET PRO',
+      bannerDesc: language === 'ru' ? 'Доступ к медитациям, расширенным практикам и многому другому' : 
+                  language === 'es' ? 'Acceso a meditaciones, prácticas avanzadas y mucho más' : 
+                  'Access to meditations, advanced practices and much more',
+      upgradeNow: language === 'ru' ? 'Улучшить сейчас' : language === 'es' ? 'Mejorar ahora' : 'Upgrade Now'
+    },
+    main: {
+      path: language === 'ru' ? 'Путь' : language === 'es' ? 'Camino' : 'Path',
+      ascesis: language === 'ru' ? 'Аскеза' : language === 'es' ? 'Ascesis' : 'Ascesis',
+      universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
+      profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile',
+      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
+      todayCompleted: language === 'ru' ? 'Сегодня завершено' : language === 'es' ? 'Hoy completado' : 'Today Completed',
+      askUniverse: language === 'ru' ? 'Спросить Вселенную' : language === 'es' ? 'Preguntar al Universo' : 'Ask the Universe',
+      noPacts: language === 'ru' ? 'Нет активных аскез' : language === 'es' ? 'No hay ascesis activas' : 'No active ascesis',
+      createPact: language === 'ru' ? 'Создать аскезу' : language === 'es' ? 'Crear ascesis' : 'Create Ascesis',
+      meditation: language === 'ru' ? 'Медитации' : language === 'es' ? 'Meditaciones' : 'Meditations',
+      nav: {
+        path: language === 'ru' ? 'Путь' : language === 'es' ? 'Camino' : 'Path',
+        ascesis: language === 'ru' ? 'Аскеза' : language === 'es' ? 'Ascesis' : 'Ascesis',
+        universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
+        profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile'
+      }
     }
   };
   
