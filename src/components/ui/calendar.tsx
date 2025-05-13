@@ -64,7 +64,7 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary",
+        caption_dropdowns: "flex justify-center gap-1 text-cosmic-secondary pointer-events-auto",
         ...classNames,
       }}
       components={{
@@ -107,12 +107,12 @@ function Calendar({
                   value={month.toString()} 
                   onValueChange={handleMonthChange}
                 >
-                  <SelectTrigger className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
+                  <SelectTrigger className="h-7 w-[110px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white pointer-events-auto">
                     <SelectValue>{monthNames[month]}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white">
+                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50">
                     {monthNames.map((monthName, idx) => (
-                      <SelectItem key={idx} value={idx.toString()}>
+                      <SelectItem key={idx} value={idx.toString()} className="cursor-pointer">
                         {monthName}
                       </SelectItem>
                     ))}
@@ -123,12 +123,12 @@ function Calendar({
                   value={year.toString()} 
                   onValueChange={handleYearChange}
                 >
-                  <SelectTrigger className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
+                  <SelectTrigger className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white pointer-events-auto">
                     <SelectValue>{year}</SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white">
+                  <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white z-50">
                     {yearsRange.map((y) => (
-                      <SelectItem key={y} value={y.toString()}>
+                      <SelectItem key={y} value={y.toString()} className="cursor-pointer">
                         {y}
                       </SelectItem>
                     ))}
