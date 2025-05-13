@@ -127,6 +127,30 @@ export const useTranslations = () => {
       welcomeBack: language === 'ru' ? 'С возвращением' : language === 'es' ? 'Bienvenido de nuevo' : 'Welcome back',
       createAccount: language === 'ru' ? 'Создать аккаунт' : language === 'es' ? 'Crear cuenta' : 'Create an account',
       backToSignIn: language === 'ru' ? 'Вернуться ко входу' : language === 'es' ? 'Volver a iniciar sesión' : 'Back to sign in'
+    },
+    pactOath: {
+      title: language === 'ru' ? 'Клятва аскезы' : language === 'es' ? 'Juramento de Ascesis' : 'Ascesis Oath',
+      subtitle: language === 'ru' ? 'Произнесите клятву вслух, чтобы заключить договор с Вселенной' : 
+              language === 'es' ? 'Di el juramento en voz alta para hacer un contrato con el Universo' : 
+              'Say the oath aloud to make a contract with the Universe',
+      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days'
+    },
+    createPact: {
+      stepOneTitle: language === 'ru' ? 'От чего вы отказываетесь?' : language === 'es' ? '¿A qué renuncias?' : 'What are you rejecting?',
+      stepTwoTitle: language === 'ru' ? 'Выберите продолжительность' : language === 'es' ? 'Elige la duración' : 'Choose duration',
+      stepThreeTitle: language === 'ru' ? 'Что вы хотите получить?' : language === 'es' ? '¿Qué quieres recibir?' : 'What do you want to receive?',
+      nextButton: language === 'ru' ? 'Далее' : language === 'es' ? 'Siguiente' : 'Next',
+      ascesisWarning: language === 'ru' ? 'Отказ должен быть значимым для вас. Чем сильнее привязанность, тем больше энергии высвободится при отказе.' : 
+                      language === 'es' ? 'La renuncia debe ser significativa para ti. Cuanto más fuerte sea el apego, más energía se liberará al dejarlo ir.' : 
+                      'The rejection must be significant to you. The stronger the attachment, the more energy will be released when you let go.',
+      customDays: language === 'ru' ? 'Указать своё количество дней' : language === 'es' ? 'Establecer número personalizado de días' : 'Set custom number of days',
+      notAsking: language === 'ru' ? 'Не просите у Вселенной материальных благ. Сосредоточьтесь на внутренних изменениях.' : 
+                language === 'es' ? 'No pidas bienes materiales al Universo. Concéntrate en cambios internos.' : 
+                'Don\'t ask the Universe for material goods. Focus on internal changes.',
+      placeholders: {
+        rejection: language === 'ru' ? 'От чего вы отказываетесь?' : language === 'es' ? '¿A qué renuncias?' : 'What are you rejecting?',
+        reward: language === 'ru' ? 'Опишите ваше желание...' : language === 'es' ? 'Describe tu deseo...' : 'Describe your desire...'
+      }
     }
   };
   

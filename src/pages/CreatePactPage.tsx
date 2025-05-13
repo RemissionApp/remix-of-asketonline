@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -332,7 +333,7 @@ const CreatePactPage: React.FC = () => {
                 className="w-full"
                 disabled={isNextDisabled()}
               >
-                {step === 2 ? t.createPact.nextButton : t.createPact.nextButton}
+                {t.createPact.nextButton}
               </CosmicButton>
             )}
           </div>

@@ -75,6 +75,23 @@ interface Translations {
     rewardPlaceholder: string;
     createButton: string;
     addCustom: string;
+    // New properties
+    stepOneTitle: string;
+    stepTwoTitle: string;
+    stepThreeTitle: string;
+    nextButton: string;
+    ascesisWarning: string;
+    customDays: string;
+    notAsking: string;
+    placeholders: {
+      rejection: string;
+      reward: string;
+    };
+  };
+  pactOath: {
+    title: string;
+    subtitle: string;
+    days: string;
   };
   universe: {
     title: string;
@@ -92,6 +109,36 @@ interface Translations {
     duration: string;
     play: string;
     comingSoon: string;
+    unlock: string; // Added missing property
+    categories: {
+      morning: string;
+      evening: string;
+      stress: string;
+      mantra: string;
+      visual: string;
+    };
+    morning: {
+      title1: string;
+      desc1: string;
+      title2: string;
+      desc2: string;
+    };
+    evening: {
+      title1: string;
+      desc1: string;
+    };
+    stress: {
+      title1: string;
+      desc1: string;
+    };
+    mantra: {
+      title1: string;
+      desc1: string;
+    };
+    visualization: {
+      title1: string;
+      desc1: string;
+    };
   };
 }
 
@@ -170,6 +217,23 @@ export const translations: Record<SupportedLanguage, Translations> = {
       rewardPlaceholder: 'Что вы себе позволите, когда выполните аскезу?',
       createButton: 'Создать аскезу',
       addCustom: 'Добавить своё',
+      // Added new properties
+      stepOneTitle: 'От чего вы отказываетесь?',
+      stepTwoTitle: 'Выберите продолжительность',
+      stepThreeTitle: 'Что вы хотите получить?',
+      nextButton: 'Далее',
+      ascesisWarning: 'Отказ должен быть значимым для вас. Чем сильнее привязанность, тем больше энергии высвободится при отказе.',
+      customDays: 'Указать своё количество дней',
+      notAsking: 'Не просите у Вселенной материальных благ. Сосредоточьтесь на внутренних изменениях.',
+      placeholders: {
+        rejection: 'От чего вы отказываетесь?',
+        reward: 'Опишите ваше желание...'
+      }
+    },
+    pactOath: {
+      title: 'Клятва аскезы',
+      subtitle: 'Произнесите клятву вслух, чтобы заключить договор с Вселенной',
+      days: 'дней'
     },
     universe: {
       title: 'Спросите у Вселенной',
@@ -187,6 +251,36 @@ export const translations: Record<SupportedLanguage, Translations> = {
       duration: 'мин',
       play: 'Играть',
       comingSoon: 'Скоро',
+      unlock: 'Открыть PRO',
+      categories: {
+        morning: 'Утренние',
+        evening: 'Вечерние',
+        stress: 'Антистресс',
+        mantra: 'Мантры',
+        visual: 'Визуализации'
+      },
+      morning: {
+        title1: 'Настрой на день',
+        desc1: 'Зарядись энергией на весь день',
+        title2: 'Благодарность',
+        desc2: 'Практика благодарности Вселенной'
+      },
+      evening: {
+        title1: 'Прощение',
+        desc1: 'Отпусти прошлое с легкостью'
+      },
+      stress: {
+        title1: 'Заземление',
+        desc1: 'Восстановление внутреннего равновесия'
+      },
+      mantra: {
+        title1: 'Голос наставника',
+        desc1: 'Интеграция высшей энергии'
+      },
+      visualization: {
+        title1: 'Космический полёт',
+        desc1: 'Путешествие сквозь звёзды'
+      }
     }
   },
   en: {
@@ -263,6 +357,23 @@ export const translations: Record<SupportedLanguage, Translations> = {
       rewardPlaceholder: 'What will you allow yourself when you complete the ascesis?',
       createButton: 'Create ascesis',
       addCustom: 'Add custom',
+      // Added new properties
+      stepOneTitle: 'What are you rejecting?',
+      stepTwoTitle: 'Choose duration',
+      stepThreeTitle: 'What do you want to receive?',
+      nextButton: 'Next',
+      ascesisWarning: 'The rejection must be significant to you. The stronger the attachment, the more energy will be released when you let go.',
+      customDays: 'Set custom number of days',
+      notAsking: 'Don\'t ask the Universe for material goods. Focus on internal changes.',
+      placeholders: {
+        rejection: 'What are you rejecting?',
+        reward: 'Describe your desire...'
+      }
+    },
+    pactOath: {
+      title: 'Ascesis Oath',
+      subtitle: 'Say the oath aloud to make a contract with the Universe',
+      days: 'days'
     },
     universe: {
       title: 'Ask the Universe',
@@ -280,6 +391,36 @@ export const translations: Record<SupportedLanguage, Translations> = {
       duration: 'min',
       play: 'Play',
       comingSoon: 'Coming Soon',
+      unlock: 'Unlock PRO',
+      categories: {
+        morning: 'Morning',
+        evening: 'Evening',
+        stress: 'Anti-stress',
+        mantra: 'Mantras',
+        visual: 'Visualization'
+      },
+      morning: {
+        title1: 'Day Setup',
+        desc1: 'Charge with energy for the whole day',
+        title2: 'Gratitude',
+        desc2: 'Practice of gratitude to the Universe'
+      },
+      evening: {
+        title1: 'Forgiveness',
+        desc1: 'Let go of the past with ease'
+      },
+      stress: {
+        title1: 'Grounding',
+        desc1: 'Restoring inner balance'
+      },
+      mantra: {
+        title1: 'Guide\'s Voice',
+        desc1: 'Integration of higher energy'
+      },
+      visualization: {
+        title1: 'Cosmic Flight',
+        desc1: 'Journey through the stars'
+      }
     }
   },
   es: {
@@ -356,6 +497,23 @@ export const translations: Record<SupportedLanguage, Translations> = {
       rewardPlaceholder: '¿Qué te permitirás cuando completes la ascesis?',
       createButton: 'Crear ascesis',
       addCustom: 'Añadir personalizado',
+      // Added new properties
+      stepOneTitle: '¿A qué renuncias?',
+      stepTwoTitle: 'Elige la duración',
+      stepThreeTitle: '¿Qué quieres recibir?',
+      nextButton: 'Siguiente',
+      ascesisWarning: 'La renuncia debe ser significativa para ti. Cuanto más fuerte sea el apego, más energía se liberará al dejarlo ir.',
+      customDays: 'Establecer número personalizado de días',
+      notAsking: 'No pidas bienes materiales al Universo. Concéntrate en cambios internos.',
+      placeholders: {
+        rejection: '¿A qué renuncias?',
+        reward: 'Describe tu deseo...'
+      }
+    },
+    pactOath: {
+      title: 'Juramento de Ascesis',
+      subtitle: 'Di el juramento en voz alta para hacer un contrato con el Universo',
+      days: 'días'
     },
     universe: {
       title: 'Pregunta al Universo',
@@ -373,6 +531,36 @@ export const translations: Record<SupportedLanguage, Translations> = {
       duration: 'min',
       play: 'Reproducir',
       comingSoon: 'Próximamente',
+      unlock: 'Desbloquear PRO',
+      categories: {
+        morning: 'Mañana',
+        evening: 'Noche',
+        stress: 'Antiestrés',
+        mantra: 'Mantras',
+        visual: 'Visualización'
+      },
+      morning: {
+        title1: 'Preparación para el día',
+        desc1: 'Cárgate de energía para todo el día',
+        title2: 'Gratitud',
+        desc2: 'Práctica de gratitud al Universo'
+      },
+      evening: {
+        title1: 'Perdón',
+        desc1: 'Deja ir el pasado con facilidad'
+      },
+      stress: {
+        title1: 'Conexión a tierra',
+        desc1: 'Restauración del equilibrio interior'
+      },
+      mantra: {
+        title1: 'Voz del guía',
+        desc1: 'Integración de energía superior'
+      },
+      visualization: {
+        title1: 'Vuelo cósmico',
+        desc1: 'Viaje a través de las estrellas'
+      }
     }
   },
 };
