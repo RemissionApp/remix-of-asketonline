@@ -55,6 +55,25 @@ export const PactOath: React.FC<PactOathProps> = ({
       return 'дней';
     }
   };
+  
+  // Функция для правильного отображения желания пользователя с учетом языка и склонения
+  const formatReward = (rewardText: string): string => {
+    // Для русского языка нужно проверить, начинается ли текст с прописной буквы
+    // и нужно ли добавлять скобки
+    if (language === 'ru') {
+      let formattedReward = rewardText.trim();
+      
+      // Если текст не начинается со скобки, добавляем скобки
+      if (!formattedReward.startsWith('(') && !formattedReward.endsWith(')')) {
+        formattedReward = `(${formattedReward})`;
+      }
+      
+      return formattedReward;
+    } else {
+      // Для других языков просто возвращаем в скобках
+      return `(${rewardText})`;
+    }
+  };
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center">
@@ -95,7 +114,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 
 Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
 
-Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания (${reward}).
+Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания ${formatReward(reward)}.
 
 Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`
               ) : language === 'es' ? (
@@ -103,7 +122,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 
 Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
 
-Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo (${reward}).
+Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo ${formatReward(reward)}.
 
 Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`
               ) : (
@@ -111,7 +130,7 @@ Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`
 
 I consciously reject the temporary to open the path to the eternal.
 
-I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire (${reward}).
+I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire ${formatReward(reward)}.
 
 For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.`
               )}
