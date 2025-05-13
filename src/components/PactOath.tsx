@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import type { SupportedLanguage } from '@/i18n/translations';
 
 interface PactOathProps {
   title: string;
@@ -53,6 +53,61 @@ export const PactOath: React.FC<PactOathProps> = ({
       return 'дня';
     } else {
       return 'дней';
+    }
+  };
+  
+  // Функция для правильного отображения отказа пользователя с учетом языка
+  const formatRejection = (rejection: string): string => {
+    // Проверяем, является ли строка предустановленным значением из списка
+    const predefinedOptions: Record<string, Record<string, string>> = {
+      ru: {
+        'sugar': 'сахара',
+        'phone_after_22': 'телефона после 22:00',
+        'cigarettes': 'сигарет',
+        'procrastination': 'прокрастинации',
+        'social_media': 'социальных сетей',
+        'alcohol': 'алкоголя',
+        'junk_food': 'фастфуда'
+      },
+      en: {
+        'sugar': 'sugar',
+        'phone_after_22': 'phone after 10 PM',
+        'cigarettes': 'cigarettes',
+        'procrastination': 'procrastination',
+        'social_media': 'social media',
+        'alcohol': 'alcohol',
+        'junk_food': 'junk food'
+      },
+      es: {
+        'sugar': 'azúcar',
+        'phone_after_22': 'teléfono después de las 22:00',
+        'cigarettes': 'cigarrillos',
+        'procrastination': 'procrastinación',
+        'social_media': 'redes sociales',
+        'alcohol': 'alcohol',
+        'junk_food': 'comida rápida'
+      }
+    };
+    
+    // Если отказ содержит разделители, значит это несколько отказов
+    if (rejection.includes(',')) {
+      const items = rejection.split(',').map(item => item.trim());
+      
+      const translatedItems = items.map(item => {
+        const translations = predefinedOptions[language as SupportedLanguage];
+        return translations[item] || item;
+      });
+      
+      // Соединяем переведенные элементы по правилам языка
+      if (language === 'ru') {
+        return translatedItems.join(', ');
+      } else {
+        return translatedItems.join(', ');
+      }
+    } else {
+      // Это одиночный отказ
+      const translations = predefinedOptions[language as SupportedLanguage];
+      return translations[rejection] || rejection;
     }
   };
   
@@ -110,7 +165,7 @@ export const PactOath: React.FC<PactOathProps> = ({
           <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
             <p className="text-white text-lg mb-6 whitespace-pre-line">
               {language === 'ru' ? (
-                `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${title} на ${duration} ${getDaysText(duration)}.
+                `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${formatRejection(title)} на ${duration} ${getDaysText(duration)}.
 
 Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
 
@@ -118,7 +173,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 
 Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`
               ) : language === 'es' ? (
-                `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${title} durante ${duration} ${t.pactOath.days}.
+                `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${t.pactOath.days}.
 
 Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
 
@@ -126,7 +181,7 @@ Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimient
 
 Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`
               ) : (
-                `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${title} for ${duration} ${t.pactOath.days}.
+                `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${t.pactOath.days}.
 
 I consciously reject the temporary to open the path to the eternal.
 
@@ -145,4 +200,3 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     </div>
   );
 };
-
