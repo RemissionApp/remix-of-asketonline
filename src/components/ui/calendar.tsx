@@ -70,13 +70,13 @@ function Calendar({
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-        Caption: ({ displayMonth, currentMonth }) => {
+        Caption: ({ displayMonth }) => {
           const month = displayMonth.getMonth();
           const year = displayMonth.getFullYear();
           
           // Handle year change
           const handleYearChange = (newYear: string) => {
-            const newDate = new Date(currentMonth);
+            const newDate = new Date(displayMonth);
             newDate.setFullYear(parseInt(newYear));
             setCurrentYear(parseInt(newYear));
             if (props.onMonthChange) {
@@ -94,7 +94,7 @@ function Calendar({
                   value={year.toString()} 
                   onValueChange={handleYearChange}
                 >
-                  <SelectTrigger className="h-7 w-[70px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
+                  <SelectTrigger className="h-7 w-[90px] bg-cosmic-dark/90 border-cosmic-accent/30 text-white">
                     <SelectValue>{year}</SelectValue>
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px] overflow-y-auto bg-cosmic-dark border-cosmic-accent/30 text-white">
