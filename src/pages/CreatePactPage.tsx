@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -39,16 +40,41 @@ const CreatePactPage: React.FC = () => {
     }
   };
   
-  // Начальные опции для мультиселекта
-  const rejectionOptions = [
-    { value: 'sugar', label: 'Сахар' },
-    { value: 'phone_after_22', label: 'Телефон после 22:00' },
-    { value: 'cigarettes', label: 'Сигареты' },
-    { value: 'procrastination', label: 'Прокрастинация' },
-    { value: 'social_media', label: 'Социальные сети' },
-    { value: 'alcohol', label: 'Алкоголь' },
-    { value: 'junk_food', label: 'Фастфуд' },
-  ];
+  // Опции для мультиселекта, переведенные на нужный язык
+  const getRejectionOptions = () => {
+    if (language === 'ru') {
+      return [
+        { value: 'sugar', label: 'Сахар' },
+        { value: 'phone_after_22', label: 'Телефон после 22:00' },
+        { value: 'cigarettes', label: 'Сигареты' },
+        { value: 'procrastination', label: 'Прокрастинация' },
+        { value: 'social_media', label: 'Социальные сети' },
+        { value: 'alcohol', label: 'Алкоголь' },
+        { value: 'junk_food', label: 'Фастфуд' },
+      ];
+    } else if (language === 'es') {
+      return [
+        { value: 'sugar', label: 'Azúcar' },
+        { value: 'phone_after_22', label: 'Teléfono después de las 22:00' },
+        { value: 'cigarettes', label: 'Cigarrillos' },
+        { value: 'procrastination', label: 'Procrastinación' },
+        { value: 'social_media', label: 'Redes sociales' },
+        { value: 'alcohol', label: 'Alcohol' },
+        { value: 'junk_food', label: 'Comida rápida' },
+      ];
+    } else {
+      // English by default
+      return [
+        { value: 'sugar', label: 'Sugar' },
+        { value: 'phone_after_22', label: 'Phone after 10 PM' },
+        { value: 'cigarettes', label: 'Cigarettes' },
+        { value: 'procrastination', label: 'Procrastination' },
+        { value: 'social_media', label: 'Social Media' },
+        { value: 'alcohol', label: 'Alcohol' },
+        { value: 'junk_food', label: 'Junk Food' },
+      ];
+    }
+  };
   
   const handleNext = () => {
     if (step < 3) {
@@ -97,11 +123,13 @@ const CreatePactPage: React.FC = () => {
             
             <div className="mb-6">
               <MultiSelectWithCustomInput 
-                options={rejectionOptions}
+                options={getRejectionOptions()}
                 value={selectedItems}
                 onChange={setSelectedItems}
                 placeholder={t.createPact.placeholders.rejection}
-                inputPlaceholder="Введите свой вариант..."
+                inputPlaceholder={language === 'ru' ? "Введите свой вариант..." : 
+                                 language === 'es' ? "Ingrese su opción..." : 
+                                 "Enter your option..."}
               />
             </div>
             

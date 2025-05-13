@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useAppStore } from '@/store/useAppStore';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface Option {
   value: string;
@@ -34,17 +36,40 @@ interface MultiSelectWithCustomInputProps {
 }
 
 const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
-  placeholder = "Выберите опции...",
+  placeholder,
   options: initialOptions,
   value,
   onChange,
   className,
-  inputPlaceholder = "Введите свой вариант..."
+  inputPlaceholder
 }) => {
+  const { language } = useAppStore();
+  const { t } = useTranslations();
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>(initialOptions);
   const [customValue, setCustomValue] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Translate placeholder texts based on language
+  const getPlaceholder = () => placeholder || (language === 'ru' ? "Выберите опции..." : 
+                                              language === 'es' ? "Seleccione opciones..." : 
+                                              "Select options...");
+  
+  const getInputPlaceholder = () => inputPlaceholder || (language === 'ru' ? "Введите свой вариант..." : 
+                                                        language === 'es' ? "Ingrese su opción..." : 
+                                                        "Enter your option...");
+  
+  const getNoMatchesText = () => {
+    return language === 'ru' ? "Нет подходящих вариантов" : 
+           language === 'es' ? "No hay opciones coincidentes" : 
+           "No matches found";
+  };
+  
+  const getSelectedCountText = (count: number) => {
+    return language === 'ru' ? `${count} выбрано` : 
+           language === 'es' ? `${count} seleccionados` : 
+           `${count} selected`;
+  };
   
   // Функция для добавления пользовательского варианта
   const addCustomOption = () => {
@@ -99,7 +124,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
             <div className="flex flex-wrap gap-1 w-full">
               {value.length > 2 ? (
                 <Badge className="rounded-md bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30">
-                  {value.length} выбрано
+                  {getSelectedCountText(value.length)}
                 </Badge>
               ) : (
                 value.map((val) => {
@@ -130,16 +155,16 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
               )}
             </div>
           ) : (
-            <span className="text-cosmic-secondary">{placeholder}</span>
+            <span className="text-cosmic-secondary">{getPlaceholder()}</span>
           )}
           <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-cosmic-dark/90 border-cosmic-accent/30">
         <Command className="bg-transparent">
-          <CommandInput placeholder={placeholder} className="text-white" />
+          <CommandInput placeholder={getPlaceholder()} className="text-white" />
           <CommandList>
-            <CommandEmpty>Нет подходящих вариантов</CommandEmpty>
+            <CommandEmpty>{getNoMatchesText()}</CommandEmpty>
             <CommandGroup className="max-h-60 overflow-auto">
               {options.map((option) => (
                 <CommandItem
@@ -164,7 +189,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
               value={customValue}
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={inputPlaceholder}
+              placeholder={getInputPlaceholder()}
               className="flex-1 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
             />
             <Button 
