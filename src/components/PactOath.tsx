@@ -23,8 +23,8 @@ export const PactOath: React.FC<PactOathProps> = ({
 }) => {
   const [isReady, setIsReady] = useState(false);
   const { t } = useTranslations();
-  const { language, user } = useAppStore();
-  const userName = user?.name || '';
+  const { language, userProfile } = useAppStore();
+  const userName = userProfile?.name || '';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -126,3 +126,4 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     </div>
   );
 };
+
