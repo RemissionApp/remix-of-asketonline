@@ -81,6 +81,7 @@ export default {
 			fontFamily: {
 				'serif': ['Cinzel', 'serif'],
 				'sans': ['Inter', 'sans-serif'],
+				'cormorant': ['Cormorant', 'serif'],
 			},
 			keyframes: {
 				'accordion-down': {
