@@ -84,8 +84,9 @@ type TranslationKeys = {
     nameLabel: string;
     namePlaceholder: string;
     nameRequired: string;
-    ageLabel: string;
-    agePlaceholder: string;
+    birthDateLabel: string;
+    birthDatePlaceholder: string;
+    birthDateRequired: string;
     continueButton: string;
   };
 };
@@ -201,8 +202,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       nameLabel: "Как тебя зовут",
       namePlaceholder: "Введите ваше имя",
       nameRequired: "Имя обязательно",
-      ageLabel: "Возраст",
-      agePlaceholder: "Введите ваш возраст",
+      birthDateLabel: "Дата рождения",
+      birthDatePlaceholder: "Выберите дату рождения",
+      birthDateRequired: "Укажите дату рождения",
       continueButton: "Продолжить"
     }
   },
@@ -316,8 +318,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       nameLabel: "What's your name",
       namePlaceholder: "Enter your name",
       nameRequired: "Name is required",
-      ageLabel: "Age",
-      agePlaceholder: "Enter your age",
+      birthDateLabel: "Date of birth",
+      birthDatePlaceholder: "Select your date of birth",
+      birthDateRequired: "Date of birth is required",
       continueButton: "Continue"
     }
   },
@@ -431,8 +434,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       nameLabel: "¿Cómo te llamas",
       namePlaceholder: "Introduce tu nombre",
       nameRequired: "El nombre es obligatorio",
-      ageLabel: "Edad",
-      agePlaceholder: "Introduce tu edad",
+      birthDateLabel: "Fecha de nacimiento",
+      birthDatePlaceholder: "Selecciona tu fecha de nacimiento",
+      birthDateRequired: "La fecha de nacimiento es obligatoria",
       continueButton: "Continuar"
     }
   }
