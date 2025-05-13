@@ -25,7 +25,7 @@ interface AppState {
   
   // Новые функции для геймификации
   addEnergyPoints: (points: number) => void;
-  checkRankProgress: () => void;
+  checkRankProgress: () => SpiritualRank;
   unlockAchievement: (achievementId: string) => void;
   assignMission: () => void;
   completeMission: () => void;
