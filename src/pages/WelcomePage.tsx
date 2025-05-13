@@ -38,11 +38,11 @@ const WelcomePage: React.FC = () => {
     return () => clearTimeout(timeout);
   }, []);
   
-  // Эффект для смены языка каждую секунду
+  // Эффект для смены языка каждые две секунды
   useEffect(() => {
     const interval = setInterval(() => {
       setCycleIndex(prevIndex => prevIndex + 1);
-    }, 1000);
+    }, 2000);
     
     return () => clearInterval(interval);
   }, []);
