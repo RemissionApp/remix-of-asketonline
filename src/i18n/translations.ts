@@ -323,7 +323,7 @@ export const translations: Translations = {
         rejection: "Выберите или введите от чего вы отказываетесь",
         reward: "Что вы получите взамен..."
       },
-      ascesisWarning: "Аскеза — это не просто воздержание, а инструмент духовного роста и самосовершенствования.",
+      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока...",
       customDays: "Уставновить количество дней",
       notAsking: "Я не прошу ничего взамен",
       nextButton: "Далее"
@@ -381,7 +381,7 @@ export const translations: Translations = {
       title: "Медитация",
       description: "Выберите медитацию",
       startButton: "Начать",
-      play: "Включ��ть",
+      play: "Включить",
       unlock: "Разблокировать",
       pageTitle: "Медитации",
       categories: {
@@ -427,7 +427,7 @@ export const translations: Translations = {
       successMessage: "Подписка успешно активирована",
       errorMessage: "Ошибка активации подписки",
       bannerTitle: "Повысьте свой духовный опыт",
-      bannerDesc: "Откройте по��ный доступ ко всем медитациям и функциям",
+      bannerDesc: "Откройте полный доступ ко всем медитациям и функциям",
       upgradeNow: "Повысить сейчас"
     },
     nav: {
@@ -917,3 +917,6 @@ export const translations: Translations = {
     }
   }
 };
+
+// Add SupportedLanguage type export
+export type SupportedLanguage = 'ru' | 'en' | 'es';

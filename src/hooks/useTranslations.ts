@@ -1,9 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { translations } from '@/i18n/translations';
+import { translations, SupportedLanguage } from '@/i18n/translations';
 import { useAppStore } from '@/store/useAppStore';
-
-export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 // Helper function for pluralization in Russian
 export const getYearWord = (age: number): string => {
@@ -21,6 +19,8 @@ export const getYearWord = (age: number): string => {
     return 'лет';
   }
 };
+
+export { SupportedLanguage };
 
 export const useTranslations = () => {
   const { language } = useAppStore();
