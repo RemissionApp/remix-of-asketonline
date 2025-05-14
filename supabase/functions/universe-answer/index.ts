@@ -44,7 +44,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini", // Using an accessible model
+          model: "gpt-4o-mini", // Using a more accessible model
           messages: [
             {
               role: "system",
