@@ -121,19 +121,9 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     return () => clearInterval(timer);
   }, [pactId, pacts]);
   
-  // Get countdown text
-  const getCountdownText = () => {
-    switch (language) {
-      case 'ru': return 'До завершения аскезы';
-      case 'es': return 'Hasta el fin de la ascesis';
-      default: return 'Until ascesis ends';
-    }
-  };
-
   return (
     <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20">
       <div className="flex items-center justify-center text-xs">
-        <span className="text-cosmic-secondary mr-2">{getCountdownText()}:</span>
         <div className="flex items-center space-x-2">
           <div className="flex flex-col items-center">
             <span className="text-cosmic-accent font-medium">{timeLeft.days.toString().padStart(2, '0')}</span>
