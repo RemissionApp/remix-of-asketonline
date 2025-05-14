@@ -6,6 +6,16 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { UserAvatar } from './UserAvatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+// Define a mapping between route paths and ActiveScreen values
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup'> = {
+  '/main': 'main',
+  '/create-pact': 'create-pact',
+  '/universe': 'universe',
+  '/profile': 'profile',
+  '/comparison': 'comparison',
+  '/meditation': 'meditation'
+};
+
 export const BottomNavigation: React.FC = () => {
   const { setActiveScreen, activeScreen } = useAppStore();
   const { t } = useTranslations();
@@ -15,7 +25,7 @@ export const BottomNavigation: React.FC = () => {
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;
   
-  const handleNavigation = (screen: string, path: string) => {
+  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
