@@ -54,7 +54,14 @@ const ProfilePage: React.FC = () => {
       
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <div className="mb-6 w-full">
-          {/* Removed duplicated avatar and kept only the title */}
+          <div className="flex items-center justify-between mb-4">
+            {userProfile?.isPro && (
+              <ProBadge size="md" />
+            )}
+            
+            <UserAvatar size="md" />
+          </div>
+          
           <h1 className="text-2xl text-white font-serif mb-4">
             {t.main?.profile || "Профиль"}
           </h1>
@@ -77,7 +84,7 @@ const ProfilePage: React.FC = () => {
                 <SelectTrigger className="bg-cosmic-dark/60 border-cosmic-accent/30 text-white">
                   <SelectValue>
                     {language === 'en' ? 'English 🇬🇧' : 
-                     language === 'es' ? 'Español 🇪��' : 
+                     language === 'es' ? 'Español 🇪🇸' : 
                      'Русский 🇷🇺'}
                   </SelectValue>
                 </SelectTrigger>
@@ -239,7 +246,7 @@ const ProfilePage: React.FC = () => {
               <p>Используя приложение ASKET, вы соглашаетесь соблюдать настоящие Правила использования. Если вы не согласны с этими условиями, пожалуйста, не используйте наше приложение.</p>
               
               <h3 className="text-white text-base font-medium">2. Описание услуг</h3>
-              <p>Приложение ASKET предоставляет платформу для создания и отслеживания личных пактов аскезы, получения духовных советов и отслеживания личного прогресса. Мы оставляем ��а собой право изменять, приостанавливать или прекращать любой аспект услуги в любое время.</p>
+              <p>Приложение ASKET предоставляет платформу для создания и отслеживания личных пактов аскезы, получения духовных советов и отслеживания личного прогресса. Мы оставляем за собой право изменять, приостанавливать или прекращать любой аспект услуги в любое время.</p>
               
               <h3 className="text-white text-base font-medium">3. Пользовательские аккаунты</h3>
               <p>Для использования некоторых функций приложения вам необходимо создать аккаунт. Вы несете ответственность за сохранение конфиденциальности своих учетных данных и за все действия, которые происходят под вашей учетной записью.</p>
