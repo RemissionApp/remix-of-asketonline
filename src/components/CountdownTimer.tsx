@@ -101,7 +101,7 @@ export const CountdownTimer: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20 border-b border-cosmic-accent/20">
+    <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20">
       <div className="flex items-center justify-center space-x-2 text-xs">
         <div className="flex flex-col items-center">
           <span className="text-cosmic-accent font-medium">{timeLeft.days.toString().padStart(2, '0')}</span>
