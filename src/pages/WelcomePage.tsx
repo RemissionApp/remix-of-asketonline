@@ -5,6 +5,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { SupportedLanguage } from '@/i18n/translations';
+import { Link } from 'react-router-dom';
 
 const WelcomePage: React.FC = () => {
   const { setActiveScreen } = useAppStore();
@@ -13,10 +14,10 @@ const WelcomePage: React.FC = () => {
   const [cycleIndex, setCycleIndex] = useState(0);
   const languages: SupportedLanguage[] = ['ru', 'en', 'es'];
   
-  // Текущий язык для циклической смены
+  // Current language for cycling
   const currentLang = languages[cycleIndex % languages.length];
   
-  // Тексты для разных языков
+  // Texts for different languages
   const subtitles = {
     ru: "Путь к внутренней силе",
     en: "The path to inner strength",
@@ -29,7 +30,7 @@ const WelcomePage: React.FC = () => {
     es: "Comenzar el viaje"
   };
   
-  // Анимация появления компонентов
+  // Animation for component appearance
   useEffect(() => {
     const timeout = setTimeout(() => {
       setIsAnimated(true);
@@ -38,7 +39,7 @@ const WelcomePage: React.FC = () => {
     return () => clearTimeout(timeout);
   }, []);
   
-  // Эффект для смены языка каждые две секунды
+  // Effect for language change every two seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCycleIndex(prevIndex => prevIndex + 1);
@@ -55,11 +56,11 @@ const WelcomePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
       
-      {/* Космическое фоновое изображение */}
+      {/* Cosmic background image */}
       <div className="fixed inset-0 z-0">
         <div 
           className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/путь_к_вашему_изображению.jpg')" }}
+          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
       </div>
@@ -76,16 +77,18 @@ const WelcomePage: React.FC = () => {
         </div>
         
         <h1 className="text-5xl font-serif text-white mb-6 cosmic-gradient-text">
-          {t.welcome.title}
+          {t?.welcome?.title || "ASKET"}
         </h1>
         
         <p className="text-2xl text-cosmic-secondary mb-12 transition-all duration-300 ease-in-out">
           {subtitles[currentLang]}
         </p>
         
-        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
-          {buttonTexts[currentLang]}
-        </CosmicButton>
+        <Link to="/language">
+          <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
+            {buttonTexts[currentLang]}
+          </CosmicButton>
+        </Link>
       </div>
     </div>
   );
