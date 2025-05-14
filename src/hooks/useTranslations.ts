@@ -24,6 +24,25 @@ const getRussianYearDeclension = (age: number): string => {
   }
 };
 
+// Define our UserProfileTranslations interface
+export interface UserProfileTranslations {
+  title: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  nameRequired: string;
+  birthDateLabel: string;
+  birthDatePlaceholder: string;
+  birthDateRequired: string;
+  continueButton: string;
+  savingButton: string;
+  age: string;
+  yearSingular: string;
+  yearPlural: string;
+  currentDate: string;
+  languageLabel: string;
+  back: string;
+}
+
 export const useTranslations = () => {
   const { language } = useAppStore();
   
@@ -36,25 +55,6 @@ export const useTranslations = () => {
       return age === 1 ? 'year' : 'years';
     }
   };
-  
-  // Make sure we explicitly type the userProfile object to include savingButton
-  interface UserProfileTranslations {
-    title: string;
-    nameLabel: string;
-    namePlaceholder: string;
-    nameRequired: string;
-    birthDateLabel: string;
-    birthDatePlaceholder: string;
-    birthDateRequired: string;
-    continueButton: string;
-    savingButton: string;
-    age: string;
-    yearSingular: string;
-    yearPlural: string;
-    currentDate: string;
-    languageLabel: string;
-    back: string;
-  }
   
   // Define our translations with proper typing
   const defaultTranslations = {
@@ -159,7 +159,7 @@ export const useTranslations = () => {
       currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
       languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
       back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
-    } as UserProfileTranslations,
+    },
     onboarding: {
       steps: [
         // This will be filled from i18n/translations.ts, but we need to define the type
