@@ -133,6 +133,7 @@ export const useTranslations = () => {
       birthDatePlaceholder: language === 'ru' ? 'Выберите дату рождения' : language === 'es' ? 'Selecciona tu fecha de nacimiento' : 'Select your date of birth',
       birthDateRequired: language === 'ru' ? 'Укажите дату рождения' : language === 'es' ? 'La fecha de nacimiento es obligatoria' : 'Date of birth is required',
       continueButton: language === 'ru' ? 'Продолжить' : language === 'es' ? 'Continuar' : 'Continue',
+      savingButton: language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : 'Saving...',
       age: language === 'ru' ? 'Возраст' : language === 'es' ? 'Edad' : 'Age',
       yearSingular: language === 'ru' ? 'год' : language === 'es' ? 'año' : 'year',
       yearPlural: language === 'ru' ? 'лет' : language === 'es' ? 'años' : 'years',
