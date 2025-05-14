@@ -55,6 +55,7 @@ export const useTranslations = () => {
       title: language === 'ru' ? 'Добро пожаловать' : language === 'es' ? 'Bienvenido' : 'Welcome',
       description: language === 'ru' ? 'Погрузитесь в мир самопознания и духовного роста' : language === 'es' ? 'Sumérgete en un mundo de autodescubrimiento y crecimiento espiritual' : 'Dive into a world of self-discovery and spiritual growth',
       startButton: language === 'ru' ? 'Начать' : language === 'es' ? 'Comenzar' : 'Start',
+      subtitle: language === 'ru' ? 'Путь к внутренней силе' : language === 'es' ? 'El camino hacia la fuerza interior' : 'The path to inner strength',
     },
     login: {
       title: language === 'ru' ? 'Войти' : language === 'es' ? 'Iniciar sesión' : 'Login',
@@ -148,11 +149,19 @@ export const useTranslations = () => {
       durationRequired: language === 'ru' ? 'Длительность обязательна' : language === 'es' ? 'La duración es obligatoria' : 'Duration is required',
       durationInvalid: language === 'ru' ? 'Длительность должна быть числом' : language === 'es' ? 'La duración debe ser un número' : 'Duration must be a number',
       stepOneTitle: language === 'ru' ? 'От чего ты отказываешься?' : language === 'es' ? '¿A qué renuncias?' : 'What are you giving up?',
+      stepTwoTitle: language === 'ru' ? 'Срок испытания' : language === 'es' ? 'Período de prueba' : 'Trial period',
+      stepThreeTitle: language === 'ru' ? 'Что ты хочешь получить?' : language === 'es' ? '¿Qué deseas recibir?' : 'What do you want to receive?',
+      customDays: language === 'ru' ? 'Или укажите своё количество дней:' : language === 'es' ? 'O especifica tu número de días:' : 'Or specify your number of days:',
+      notAsking: language === 'ru' ? 'Ты не просишь. Ты настраиваешь реальность.' : language === 'es' ? 'No estás pidiendo. Estás configurando la realidad.' : 'You are not asking. You are configuring reality.',
+      nextButton: language === 'ru' ? 'Далее' : language === 'es' ? 'Siguiente' : 'Next',
       placeholders: {
         rejection: language === 'ru' ? 'Например: Сахар, Соцсети, Алкоголь...' : language === 'es' ? 'Por ejemplo: Azúcar, Redes Sociales, Alcohol...' : 'For example: Sugar, Social Media, Alcohol...',
         reward: language === 'ru' ? 'Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность...' : language === 'es' ? 'Por ejemplo: Salud fuerte, Claridad mental, Estabilidad financiera...' : 'For example: Strong health, Mental clarity, Financial stability...'
       },
       days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
+      ascesisWarning: language === 'ru' ? 'Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока...' 
+      : language === 'es' ? 'Debes entender que la Ascesis es una práctica seria y debe ser tratada con la máxima responsabilidad. Das tu palabra al Universo de cumplir con tus obligaciones y pides a cambio el cumplimiento de un deseo o la solución de algún problema. Si fracasas y no mantienes tu palabra, el Universo no te tomará en serio y existe el riesgo de caer fuera del flujo...' 
+      : 'You must understand that Ascesis is a serious practice and must be treated with the utmost responsibility. You give your word to the Universe to fulfill your obligations and ask in return for the fulfillment of a desire / the solution of some issue. If you fail and do not keep your word, the Universe will not take you seriously and there is a risk of falling out of the flow...',
     },
     universe: {
       title: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
@@ -193,7 +202,35 @@ export const useTranslations = () => {
     calendar: {
       year: language === 'ru' ? 'Год' : language === 'es' ? 'Año' : 'Year',
       month: language === 'ru' ? 'Месяц' : language === 'es' ? 'Mes' : 'Month',
-    }
+    },
+    auth: {
+      signIn: language === 'ru' ? 'Вход' : language === 'es' ? 'Iniciar sesión' : 'Sign In',
+      signUp: language === 'ru' ? 'Регистрация' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      signOut: language === 'ru' ? 'Выход' : language === 'es' ? 'Cerrar sesión' : 'Sign Out',
+      email: language === 'ru' ? 'Email' : language === 'es' ? 'Correo electrónico' : 'Email',
+      password: language === 'ru' ? 'Пароль' : language === 'es' ? 'Contraseña' : 'Password',
+      confirmPassword: language === 'ru' ? 'Подтвердите пароль' : language === 'es' ? 'Confirmar contraseña' : 'Confirm Password',
+      forgotPassword: language === 'ru' ? 'Забыли пароль?' : language === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot password?',
+      backToSignIn: language === 'ru' ? 'Вернуться к входу' : language === 'es' ? 'Volver a iniciar sesión' : 'Back to Sign In',
+      createAccount: language === 'ru' ? 'Создать аккаунт' : language === 'es' ? 'Crear cuenta' : 'Create Account',
+      alreadyHaveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?',
+      resetPassword: language === 'ru' ? 'Сбросить пароль' : language === 'es' ? 'Restablecer contraseña' : 'Reset Password',
+      resetPasswordButton: language === 'ru' ? 'Отправить ссылку для сброса' : language === 'es' ? 'Enviar enlace de restablecimiento' : 'Send Reset Link',
+      resetPasswordSuccess: language === 'ru' ? 'Проверьте вашу почту для сброса пароля' : language === 'es' ? 'Revisa tu correo para restablecer tu contraseña' : 'Check your email to reset your password',
+      resetPasswordError: language === 'ru' ? 'Ошибка сброса пароля' : language === 'es' ? 'Error al restablecer la contraseña' : 'Error resetting password',
+      signInError: language === 'ru' ? 'Ошибка при входе' : language === 'es' ? 'Error al iniciar sesión' : 'Error signing in',
+      signUpError: language === 'ru' ? 'Ошибка при регистрации' : language === 'es' ? 'Error al registrarse' : 'Error signing up',
+      passwordMismatch: language === 'ru' ? 'Пароли не совпадают' : language === 'es' ? 'Las contraseñas no coinciden' : 'Passwords do not match',
+      welcomeBack: language === 'ru' ? 'С возвращением' : language === 'es' ? 'Bienvenido de nuevo' : 'Welcome back',
+      noAccount: language === 'ru' ? 'Нет аккаунта?' : language === 'es' ? '¿No tienes una cuenta?' : 'Don\'t have an account?',
+      orContinueWith: language === 'ru' ? 'Или продолжить с' : language === 'es' ? 'O continuar con' : 'Or continue with',
+      signInButton: language === 'ru' ? 'Войти' : language === 'es' ? 'Iniciar sesión' : 'Sign In',
+      signUpButton: language === 'ru' ? 'Зарегистрироваться' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      haveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?',
+      passwordLength: language === 'ru' ? 'Пароль должен содержать минимум 6 символов' : language === 'es' ? 'La contraseña debe tener al menos 6 caracteres' : 'Password must be at least 6 characters',
+      guestSignIn: language === 'ru' ? 'Войти как гость' : language === 'es' ? 'Entrar como invitado' : 'Sign in as guest'
+    },
+    minimumPeriod: language === 'ru' ? 'Минимальный срок аскезы - 30 дней' : language === 'es' ? 'Período mínimo de ascesis - 30 días' : 'Minimum ascesis period - 30 days',
   };
 
   return {
