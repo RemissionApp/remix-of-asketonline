@@ -163,13 +163,13 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Display QuoteDisplay (universe message) */}
+            {/* Первым отображаем QuoteDisplay (приветствие) */}
             <QuoteDisplay quote={dailyQuote} className="mt-6 mb-4" />
             
-            {/* Then display the ZodiacBadgeDisplay right under the quote */}
+            {/* Затем отображаем ZodiacBadgeDisplay (прямо под приветствием) */}
             <ZodiacBadgeDisplay />
             
-            {/* Move ActionButtons below ZodiacBadgeDisplay */}
+            {/* И в конце размещаем ActionButtons (ниже зодиака) */}
             <ActionButtons />
           </>
         ) : (
