@@ -20,35 +20,33 @@ import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
 import MeditationPage from "./pages/MeditationPage";
 
-// Create a new QueryClient instance outside of the component
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/language" element={<LanguagePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/profile-setup" element={<UserProfilePage />} />
-              <Route path="/onboarding" element={<OnboardingPage />} />
-              <Route path="/main" element={<MainPage />} />
-              <Route path="/create-pact" element={<CreatePactPage />} />
-              <Route path="/universe" element={<UniversePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/comparison" element={<ComparisonPage />} />
-              <Route path="/meditation" element={<MeditationPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<WelcomePage />} />
+            <Route path="/language" element={<LanguagePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/profile-setup" element={<UserProfilePage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/main" element={<MainPage />} />
+            <Route path="/create-pact" element={<CreatePactPage />} />
+            <Route path="/universe" element={<UniversePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/comparison" element={<ComparisonPage />} />
+            <Route path="/meditation" element={<MeditationPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+          <Sonner />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
