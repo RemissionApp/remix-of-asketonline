@@ -39,16 +39,7 @@ export const useTranslations = () => {
             'Ruler',
       traits: language === 'ru' ? 'Характеристики' :
              language === 'es' ? 'Rasgos' : 
-             'Traits',
-      editBirthDate: language === 'ru' ? 'Изменить дату рождения' :
-                    language === 'es' ? 'Editar fecha de nacimiento' :
-                    'Edit birth date',
-      saveBirthDate: language === 'ru' ? 'Сохранить' :
-                    language === 'es' ? 'Guardar' :
-                    'Save',
-      cancelBirthDate: language === 'ru' ? 'Отмена' :
-                      language === 'es' ? 'Cancelar' :
-                      'Cancel'
+             'Traits'
     }
   });
 
@@ -67,16 +58,7 @@ export const useTranslations = () => {
               'Ruler',
         traits: language === 'ru' ? 'Характеристики' :
                language === 'es' ? 'Rasgos' : 
-               'Traits',
-        editBirthDate: language === 'ru' ? 'Изменить дату рождения' :
-                      language === 'es' ? 'Editar fecha de nacimiento' :
-                      'Edit birth date',
-        saveBirthDate: language === 'ru' ? 'Сохранить' :
-                      language === 'es' ? 'Guardar' :
-                      'Save',
-        cancelBirthDate: language === 'ru' ? 'Отмена' :
-                        language === 'es' ? 'Cancelar' :
-                        'Cancel'
+               'Traits'
       }
     });
   }, [language]);

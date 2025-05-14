@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { format, differenceInYears } from 'date-fns';
 import { ru, es, enUS } from 'date-fns/locale';
-import { CalendarIcon, Edit2Icon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,6 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ZodiacInfo } from './ZodiacInfo';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
@@ -30,8 +28,6 @@ const UserProfileForm: React.FC = () => {
   const [age, setAge] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingBirthDate, setEditingBirthDate] = useState(false);
-  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(null);
   
   // Get locale based on selected language
   const getLocale = () => {
@@ -207,76 +203,10 @@ const UserProfileForm: React.FC = () => {
     }
   };
 
-  // Handle birth date edit button click
-  const handleEditBirthDate = () => {
-    setTempBirthDate(userProfile?.birthDate || null);
-    setEditingBirthDate(true);
-  };
-
-  // Save the new birth date
-  const handleSaveBirthDate = async () => {
-    if (!user || !tempBirthDate) {
-      setEditingBirthDate(false);
-      return;
-    }
-    
-    try {
-      // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = format(tempBirthDate, 'yyyy-MM-dd');
-      
-      // Update directly in Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          birth_date: formattedBirthDate
-        })
-        .eq('id', user.id);
-      
-      if (error) {
-        throw error;
-      }
-      
-      // Also update the local store and form
-      await updateUserProfile({
-        ...userProfile,
-        birthDate: tempBirthDate
-      });
-      
-      form.setValue('birthDate', tempBirthDate);
-      
-      // Calculate and set age
-      const calculatedAge = differenceInYears(new Date(), tempBirthDate);
-      setAge(calculatedAge);
-      
-      toast({
-        title: "Дата рождения обновлена",
-        description: "Ваши данные успешно сохранены"
-      });
-    } catch (error: any) {
-      console.error("Error updating birth date:", error);
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось обновить дату рождения",
-        variant: "destructive"
-      });
-    } finally {
-      setEditingBirthDate(false);
-    }
-  };
-
   return (
     <div className="w-full max-w-md mx-auto text-center">
-      <div className="flex justify-center mb-4 relative">
+      <div className="flex justify-center mb-4">
         <UserAvatar size="lg" />
-        {userProfile?.birthDate && (
-          <div 
-            className="absolute top-0 right-0 bg-cosmic-accent/20 rounded-full p-1 cursor-pointer"
-            onClick={handleEditBirthDate}
-            title={t.zodiac?.editBirthDate || "Edit birth date"}
-          >
-            <Edit2Icon size={16} className="text-cosmic-accent" />
-          </div>
-        )}
       </div>
       
       {location.pathname !== '/profile' && (
@@ -381,49 +311,6 @@ const UserProfileForm: React.FC = () => {
       <div className="mt-6 text-cosmic-secondary text-sm">
         {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP", { locale: getLocale() })}
       </div>
-      
-      {/* Zodiac section */}
-      {userProfile?.birthDate && <ZodiacInfo />}
-      
-      {/* Birth Date Edit Dialog */}
-      <Dialog open={editingBirthDate} onOpenChange={setEditingBirthDate}>
-        <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-cosmic-accent">
-              {t.zodiac?.editBirthDate || "Edit birth date"}
-            </DialogTitle>
-            <DialogDescription className="text-cosmic-secondary">
-              {t.userProfile?.birthDateLabel || "Дата рождения"}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <Calendar
-              mode="single"
-              selected={tempBirthDate || undefined}
-              onSelect={(date) => setTempBirthDate(date)}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
-              }
-              initialFocus
-              className="mx-auto pointer-events-auto"
-            />
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setEditingBirthDate(false)}
-              className="border-cosmic-accent/30 text-cosmic-secondary"
-            >
-              {t.zodiac?.cancelBirthDate || "Cancel"}
-            </Button>
-            <CosmicButton onClick={handleSaveBirthDate}>
-              {t.zodiac?.saveBirthDate || "Save"}
-            </CosmicButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
