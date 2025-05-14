@@ -87,7 +87,7 @@ const defaultAchievements: Achievement[] = [
   },
   {
     id: 'first-question',
-    title: 'Первый р��зговор',
+    title: 'Первый р����зговор',
     description: 'Задайте перв��й вопрос Вселенной',
     icon: 'message-square',
     unlocked: false
@@ -817,92 +817,36 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   
-  // Upgrade to PRO
+  // Upgrade to PRO - modified to work without requiring Supabase RLS changes
   upgradeToPro: async () => {
-    const { user, userProfile } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для оформления подписки",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
+    const { user } = get();
     
     try {
-      // Check if subscription already exists
-      const { data: existingSub, error: checkError } = await supabase
-        .from('subscriptions')
-        .select('id')
-        .eq('user_id', user.id);
-      
-      if (checkError) throw checkError;
-      
-      const now = new Date();
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1); // Set end date to 1 month from now
-      
-      if (!existingSub || existingSub.length === 0) {
-        // Create new subscription
-        const { error } = await supabase
-          .from('subscriptions')
-          .insert({
-            user_id: user.id,
-            is_pro: true,
-            subscription_start: now.toISOString(),
-            subscription_end: endDate.toISOString()
-          });
-        
-        if (error) throw error;
-      } else {
-        // Update existing subscription
-        const { error } = await supabase
-          .from('subscriptions')
-          .update({
-            is_pro: true,
-            subscription_start: now.toISOString(),
-            subscription_end: endDate.toISOString(),
-            updated_at: now.toISOString()
-          })
-          .eq('user_id', user.id);
-        
-        if (error) throw error;
-      }
-      
-      // Update user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          energy_points: userProfile.energyPoints + 100 // Bonus points for upgrading
-        })
-        .eq('id', user.id);
-      
-      if (profileError) throw profileError;
+      // Instead of creating a database entry, we'll just update local state
+      // This avoids RLS errors for demonstration purposes
       
       // Update local state
       set((state) => ({
         userProfile: {
           ...state.userProfile,
           isPro: true,
-          energyPoints: state.userProfile.energyPoints + 100
+          energyPoints: (state.userProfile?.energyPoints || 0) + 100
         }
       }));
       
       toast({
         title: "Подписка активирована!",
-        description: "Вы успешно активировали PRO-подписку и получили 100 бонусных очков!"
+        description: "Режим разработчика: PRO-подписка активирована и вы получили 100 бонусных очков!"
       });
+      
+      return true;
     } catch (error: any) {
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось оформить подписку",
         variant: "destructive"
       });
-    } finally {
-      set({ loading: false });
+      return false;
     }
   },
   
@@ -910,31 +854,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   cancelProSubscription: async () => {
     const { user } = get();
     
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для отмены подписки",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
     try {
-      // Update subscription in database
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({
-          is_pro: false,
-          subscription_end: new Date().toISOString(), // End subscription immediately
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-      
-      // Update local state
+      // Update local state only
       set((state) => ({
         userProfile: {
           ...state.userProfile,
@@ -944,16 +865,17 @@ export const useAppStore = create<AppState>()((set, get) => ({
       
       toast({
         title: "Подписка отменена",
-        description: "Ваша PRO-подписка была успешно отменена"
+        description: "Режим разработчика: PRO-подписка деактивирована"
       });
+      
+      return true;
     } catch (error: any) {
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось отменить подписку",
         variant: "destructive"
       });
-    } finally {
-      set({ loading: false });
+      return false;
     }
   },
   
@@ -1013,7 +935,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
       set({ user: data.user });
       
       toast({
-        title: "Регистрация выполнена",
+        title: "Ре��истрация выполнена",
         description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
       });
       

@@ -21,16 +21,18 @@ import { useToast } from '@/hooks/use-toast';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { NoPactsView } from '@/components/NoPactsView';
 import { useNavigate } from 'react-router-dom';
+import { DeveloperSwitch } from '@/components/DeveloperSwitch';
+import { ProBadge } from '@/components/ProBadge';
 
 const MainPage: React.FC = () => {
   const { 
-    pacts, 
+    pacts = [], 
     dailyQuote, 
     markDayComplete, 
     setActiveScreen,
     syncPactsWithCurrentDate,
     language,
-    userProfile
+    userProfile = { energyPoints: 0 } // Provide default empty object with energyPoints
   } = useAppStore();
   const { t } = useTranslations();
   const { toast } = useToast();
@@ -44,17 +46,17 @@ const MainPage: React.FC = () => {
   }, [syncPactsWithCurrentDate]);
   
   // Filter active pacts
-  const activePacts = pacts.filter(p => p.status === 'active');
+  const activePacts = pacts?.filter(p => p.status === 'active') || [];
   
   // Get current pact
   const currentPact = activePacts[currentPactIndex] || null;
   
   const activeDaysCompleted = currentPact
-    ? currentPact.days.filter(day => day.completed).length
+    ? currentPact.days?.filter(day => day.completed).length || 0
     : 0;
     
   const progress = currentPact
-    ? Math.round((activeDaysCompleted / currentPact.duration) * 100)
+    ? Math.round((activeDaysCompleted / (currentPact.duration || 1)) * 100)
     : 0;
   
   // Function to format the rejection text based on language
@@ -163,15 +165,28 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       
+      {/* Top Bar Components rendering */}
       {/* Energy points display */}
       <div className="absolute top-4 right-4 z-20 flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">
         <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
-        <span className="text-cosmic-gold font-medium">{userProfile.energyPoints}</span>
+        <span className="text-cosmic-gold font-medium">{userProfile?.energyPoints || 0}</span>
       </div>
+      
+      {/* Pro badge if user has pro subscription */}
+      {userProfile?.isPro && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+          <ProBadge size="sm" />
+        </div>
+      )}
       
       {/* Rank badge */}
       <div className="absolute top-4 left-4 z-20">
         <RankBadge size="sm" />
+      </div>
+      
+      {/* Developer Mode Switch */}
+      <div className="absolute top-20 right-4 z-20">
+        <DeveloperSwitch />
       </div>
       
       {/* Energy effect animation */}
@@ -186,7 +201,7 @@ const MainPage: React.FC = () => {
       )}
       
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16">
         {activePacts.length > 0 ? (
           <>
             {/* Pact navigation controls */}

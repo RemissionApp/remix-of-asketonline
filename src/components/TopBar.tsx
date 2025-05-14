@@ -3,6 +3,7 @@ import React from 'react';
 import { CircleDot } from 'lucide-react';
 import { RankBadge } from './RankBadge';
 import { useAppStore } from '@/store/useAppStore';
+import { ProBadge } from './ProBadge';
 
 export const TopBar: React.FC = () => {
   const { userProfile } = useAppStore();
@@ -14,6 +15,13 @@ export const TopBar: React.FC = () => {
         <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
         <span className="text-cosmic-gold font-medium">{userProfile?.energyPoints || 0}</span>
       </div>
+      
+      {/* Pro badge if user has pro subscription */}
+      {userProfile?.isPro && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+          <ProBadge size="sm" />
+        </div>
+      )}
       
       {/* Rank badge */}
       <div className="absolute top-4 left-4 z-20">
