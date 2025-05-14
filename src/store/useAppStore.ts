@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Pact, UniverseQuestion, UserProfile, SpiritualRank, Achievement, Mission } from '@/types';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
-import { supabase } from '@/lib/supabase';
+import { supabase, cleanupAuthState, isProfileComplete } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 type AppLanguage = 'ru' | 'en' | 'es';
@@ -171,7 +171,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   // Set active screen
   setActiveScreen: (screen) => set({ activeScreen: screen }),
   
-  // Update user profile
+  // Update user profile - modified to return void instead of boolean
   updateUserProfile: async (profileData) => {
     const { user } = get();
     
@@ -211,14 +211,13 @@ export const useAppStore = create<AppState>()((set, get) => ({
         description: "Ваш профиль был успешно обновлен"
       });
       
-      return true; // Indicate success
+      // Do not return boolean value to match the Promise<void> return type
     } catch (error: any) {
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось обновить профиль",
         variant: "destructive"
       });
-      return false;
     } finally {
       set({ loading: false });
     }
