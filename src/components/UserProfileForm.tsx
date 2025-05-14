@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { format, differenceInYears } from 'date-fns';
+import { ru, es, enUS } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -22,6 +23,18 @@ const UserProfileForm: React.FC = () => {
   const { updateUserProfile, userProfile, language } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
+  
+  // Get locale based on selected language
+  const getLocale = () => {
+    switch (language) {
+      case 'ru':
+        return ru;
+      case 'es':
+        return es;
+      default:
+        return enUS;
+    }
+  };
   
   // Create form schema based on language
   const formSchema = z.object({
@@ -116,7 +129,7 @@ const UserProfileForm: React.FC = () => {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "PPP", { locale: getLocale() })
                         ) : (
                           <span>{t.userProfile?.birthDatePlaceholder || "Выберите дату рождения"}</span>
                         )}
@@ -154,7 +167,7 @@ const UserProfileForm: React.FC = () => {
       </Form>
       
       <div className="mt-6 text-cosmic-secondary text-sm">
-        {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP")}
+        {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP", { locale: getLocale() })}
       </div>
     </div>
   );
