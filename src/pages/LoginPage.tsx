@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -96,10 +95,10 @@ const LoginPage: React.FC = () => {
       <div className="relative z-10 max-w-md w-full mx-auto px-4">
         <h1 className="text-4xl font-serif text-white text-center mb-8">Asket</h1>
         
-        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/30 border-cosmic-accent/30">
+        <Card className="backdrop-blur-md bg-cosmic-dark/20 border-cosmic-accent/30 shadow-lg">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/40">
                 <TabsTrigger value="login">Вход</TabsTrigger>
                 <TabsTrigger value="signup">Регистрация</TabsTrigger>
               </TabsList>
@@ -116,7 +115,7 @@ const LoginPage: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
-                        className="pl-10 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+                        className="pl-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
                         required
                       />
                     </div>
@@ -132,7 +131,7 @@ const LoginPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+                        className="pl-10 pr-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
                         required
                       />
                       <button 
@@ -183,7 +182,7 @@ const LoginPage: React.FC = () => {
                       <div className="w-full border-t border-cosmic-accent/20"></div>
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="bg-cosmic-dark/50 px-2 text-xs text-cosmic-accent">или</span>
+                      <span className="bg-cosmic-dark/30 px-2 text-xs text-cosmic-accent">или</span>
                     </div>
                   </div>
 
@@ -191,7 +190,7 @@ const LoginPage: React.FC = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                      className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/20"
                       onClick={handleGuestLogin}
                     >
                       Войти как гость
@@ -212,7 +211,7 @@ const LoginPage: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
-                        className="pl-10 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+                        className="pl-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
                         required
                       />
                     </div>
@@ -228,7 +227,7 @@ const LoginPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+                        className="pl-10 pr-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
                         required
                       />
                       <button 
