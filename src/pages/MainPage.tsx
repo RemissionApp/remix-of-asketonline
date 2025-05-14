@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -25,6 +26,8 @@ import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { ProBadge } from '@/components/ProBadge';
 import { TopBar } from '@/components/TopBar';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
+import { CountdownTimer } from '@/components/CountdownTimer';
+import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 
 const MainPage: React.FC = () => {
   const { 
@@ -242,6 +245,12 @@ const MainPage: React.FC = () => {
             >
               {t.main.todayCompleted}
             </CosmicButton>
+            
+            {/* Add countdown timer here */}
+            <CountdownTimer />
+            
+            {/* Add ZodiacBadgeDisplay here */}
+            <ZodiacBadgeDisplay />
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
             
