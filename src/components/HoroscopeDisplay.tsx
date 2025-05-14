@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
@@ -119,7 +118,7 @@ export const HoroscopeDisplay: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full">
+      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full max-w-lg mx-auto">
         <p className="text-cosmic-accent italic">{loadingText}</p>
         <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
         <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
@@ -128,7 +127,7 @@ export const HoroscopeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full">
+    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full max-w-lg mx-auto">
       <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
         {horoscope?.description || getDefaultMessage(language)}
       </p>
