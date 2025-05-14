@@ -3,6 +3,7 @@ import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import { defaultAchievements } from '../data/constants';
 
 export interface AuthSlice {
   user: any | null;

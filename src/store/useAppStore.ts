@@ -11,7 +11,7 @@ import { createAuthSlice } from './slices/authSlice';
 import { defaultAchievements } from './data/constants';
 
 // Creating the store with all the slices
-export const useAppStore = create<AppState>()((set, get) => ({
+export const useAppStore = create<AppState>()((set, get, api) => ({
   // Initial state
   pacts: [],
   activeQuestions: [],
@@ -29,10 +29,10 @@ export const useAppStore = create<AppState>()((set, get) => ({
   loading: false,
   
   // Combine all slices
-  ...createUISlice(set, get),
-  ...createPactsSlice(set, get),
-  ...createUniverseSlice(set, get),
-  ...createGamificationSlice(set, get),
-  ...createProFeaturesSlice(set, get),
-  ...createAuthSlice(set, get)
+  ...createUISlice(set, get, api),
+  ...createPactsSlice(set, get, api),
+  ...createUniverseSlice(set, get, api),
+  ...createGamificationSlice(set, get, api),
+  ...createProFeaturesSlice(set, get, api),
+  ...createAuthSlice(set, get, api)
 }));
