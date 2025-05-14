@@ -18,18 +18,35 @@ const MainPage: React.FC = () => {
     markDayComplete, 
     syncPactsWithCurrentDate,
     language,
+    user,
+    loadUserProfile,
+    userProfile,
     setActiveScreen
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   
-  // Sync pacts with current date when component mounts
+  // Check if user is logged in and load user profile if needed
   useEffect(() => {
-    syncPactsWithCurrentDate();
-  }, [syncPactsWithCurrentDate]);
+    const initializeUserData = async () => {
+      setIsLoading(true);
+      
+      // If user is logged in but we don't have profile data yet, load it
+      if (user && !userProfile) {
+        await loadUserProfile();
+      }
+      
+      // Then sync pacts with current date
+      syncPactsWithCurrentDate();
+      setIsLoading(false);
+    };
+    
+    initializeUserData();
+  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate]);
   
   // Filter active pacts
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
@@ -93,6 +110,7 @@ const MainPage: React.FC = () => {
         currentPactIndex={currentPactIndex}
         currentPact={currentPact}
         dailyQuote={dailyQuote}
+        isLoading={isLoading}
         showEnergyEffect={showEnergyEffect}
         handlePrevPact={handlePrevPact}
         handleNextPact={handleNextPact}

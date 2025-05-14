@@ -11,12 +11,16 @@ import { useToast } from '@/hooks/use-toast';
 
 interface BriefHoroscope {
   description: string;
+  mood?: string;
+  color?: string;
+  lucky_number?: string;
+  lucky_time?: string;
 }
 
 export const HoroscopeDisplay: React.FC = () => {
   const [horoscope, setHoroscope] = useState<BriefHoroscope | null>(null);
   const [loading, setLoading] = useState(true);
-  const { userProfile, language } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -75,7 +79,7 @@ export const HoroscopeDisplay: React.FC = () => {
         }
         
         // Call our edge function to generate a horoscope
-        const { data, error } = await supabase.functions.invoke('generate-horoscope', {
+        const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
           body: { 
             sign,
             language,
@@ -83,8 +87,13 @@ export const HoroscopeDisplay: React.FC = () => {
           }
         });
         
-        if (error || !data.success) {
-          throw new Error(error?.message || 'Failed to generate horoscope');
+        if (error) {
+          console.error("Supabase function error:", error);
+          throw new Error(error.message || 'Failed to fetch horoscope');
+        }
+        
+        if (!data.success) {
+          throw new Error('Invalid response from fetch-horoscope function');
         }
         
         // Set the horoscope and cache it
@@ -103,8 +112,15 @@ export const HoroscopeDisplay: React.FC = () => {
       }
     };
     
-    fetchHoroscope();
-  }, [userProfile?.birthDate, language, toast]);
+    // Only fetch horoscope when user is logged in and we have their profile
+    if (user && userProfile) {
+      fetchHoroscope();
+    } else {
+      // If not logged in, show default message
+      setHoroscope({ description: getDefaultMessage(language) });
+      setLoading(false);
+    }
+  }, [userProfile?.birthDate, language, toast, user, userProfile]);
 
   const handleSeeMore = () => {
     // Check if user is PRO

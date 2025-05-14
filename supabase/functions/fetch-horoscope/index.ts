@@ -4,6 +4,7 @@
 // This enables autocomplete, go to definition, etc.
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.21.0";
 
 interface HoroscopeResponse {
   date_range: string;
@@ -38,42 +39,65 @@ serve(async (req) => {
       );
     }
     
-    // Make request to the Aztro API
-    const response = await fetch(`https://aztro.sameerkumar.website/?sign=${sign}&day=${day}`, {
-      method: 'POST'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Error fetching horoscope: ${response.statusText}`);
-    }
-    
-    const data: HoroscopeResponse = await response.json();
-    
-    // Generate fallback data if needed
-    const fallbackData = {
-      mood: language === 'ru' ? 'спокойный' : language === 'es' ? 'tranquilo' : 'calm',
-      color: language === 'ru' ? 'синий' : language === 'es' ? 'azul' : 'blue',
-      lucky_number: Math.floor(Math.random() * 100).toString(),
-      lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-    };
-    
-    // Merge with fallback data for any missing properties
-    const horoscope = {
-      ...fallbackData,
-      ...data,
-    };
-    
-    return new Response(
-      JSON.stringify({ 
-        success: true,
-        data: horoscope
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    // Create a Supabase client for database operations if needed
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+    
+    // Try to make request to the Aztro API
+    try {
+      const response = await fetch(`https://aztro.sameerkumar.website/?sign=${sign}&day=${day}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error fetching horoscope: ${response.statusText}`);
+      }
+      
+      const data: HoroscopeResponse = await response.json();
+      
+      // Return successful response with horoscope data
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          data
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    } catch (apiError) {
+      console.error("Error in fetch-horoscope API call:", apiError.message);
+      
+      // Generate fallback data since API call failed
+      const fallbackData = {
+        date_range: "",
+        current_date: new Date().toLocaleDateString(),
+        description: getRandomHoroscopeText(language),
+        compatibility: "",
+        mood: language === 'ru' ? 'задумчивый' : language === 'es' ? 'pensativo' : 'reflective',
+        color: language === 'ru' ? 'фиолетовый' : language === 'es' ? 'púrpura' : 'purple',
+        lucky_number: Math.floor(Math.random() * 100).toString(),
+        lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
+      };
+      
+      // Return fallback horoscope data
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          data: fallbackData,
+          originalError: apiError.message 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   } catch (error) {
     console.error("Error in fetch-horoscope:", error.message);
     
-    // Create minimal fallback horoscope data
+    // Create minimal fallback horoscope data for any unexpected errors
+    const language = 'en'; // Default to English for the error case
     const defaultResponse = {
       date_range: "",
       current_date: new Date().toLocaleDateString(),
