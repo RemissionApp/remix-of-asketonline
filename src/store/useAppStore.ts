@@ -87,7 +87,7 @@ const defaultAchievements: Achievement[] = [
   },
   {
     id: 'first-question',
-    title: 'Первый разговор',
+    title: 'Первый р��зговор',
     description: 'Задайте перв��й вопрос Вселенной',
     icon: 'message-square',
     unlocked: false
@@ -999,7 +999,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   
-  // Authentication Methods
+  // Authentication Methods - Update signIn method
   signIn: async (email, password) => {
     set({ loading: true });
     
@@ -1018,12 +1018,16 @@ export const useAppStore = create<AppState>()((set, get) => ({
       await get().loadPacts();
       await get().loadUniverseQuestions();
       
+      const { userProfile } = get();
+      
       toast({
         title: "Вход выполнен",
         description: "Вы успешно вошли в систему"
       });
       
-      set({ activeScreen: 'profile' }); // Changed from 'main' to 'profile'
+      // Don't set activeScreen here - we'll handle navigation in the component
+      // based on the profile data that's loaded
+      
       return true; // Return true on success
     } catch (error: any) {
       toast({

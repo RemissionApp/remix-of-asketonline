@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -9,14 +8,14 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/lib/supabase';
+import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading } = useAppStore();
+  const { signIn, signUp, loading, user, userProfile } = useAppStore();
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');
@@ -26,14 +25,29 @@ const LoginPage: React.FC = () => {
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clean up auth state before signing in to prevent issues
+    cleanupAuthState();
+    
     const success = await signIn(email, password);
     if (success) {
-      navigate('/profile-setup');
+      // Check if user already has completed profile setup
+      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+        // If profile is already setup, go directly to main
+        navigate('/main');
+      } else {
+        // Otherwise, go to profile setup
+        navigate('/profile-setup');
+      }
     }
   };
   
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clean up auth state before signing up
+    cleanupAuthState();
+    
     await signUp(email, password);
   };
 

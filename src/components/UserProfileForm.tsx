@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -20,7 +19,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserProfile, userProfile, language } = useAppStore();
+  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
@@ -64,12 +63,21 @@ const UserProfileForm: React.FC = () => {
     }
   }, [form.watch('birthDate')]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateUserProfile({
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Update the profile in Supabase
+    await updateUserProfile({
       name: values.name,
       birthDate: values.birthDate
     });
-    navigate('/onboarding');
+    
+    // Check if onboarding is complete or not
+    if (onboardingComplete) {
+      // If onboarding was already completed, go to main
+      navigate('/main');
+    } else {
+      // Otherwise go to onboarding
+      navigate('/onboarding');
+    }
   };
 
   return (
