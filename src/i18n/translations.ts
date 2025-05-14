@@ -166,6 +166,9 @@ interface Translations {
         yourReading: string;
         analyzing: string;
         startNew: string;
+        shortDescription: string;
+        nameRequired: string;
+        dateRequired: string;
       };
     };
     profile: {
@@ -327,7 +330,10 @@ export const translations: Translations = {
         newReading: "Новое чтение",
         yourReading: "Ваше Космическое Чтение",
         analyzing: "Анализ космических паттернов...",
-        startNew: "Давайте создадим новое чтение. Я уже знаю кое-что о вас, но не стесняйтесь обновить свою информацию."
+        startNew: "Давайте создадим новое чтение. Я уже знаю кое-что о вас, но не стесняйтесь обновить свою информацию.",
+        shortDescription: "Откройте свои космические паттерны через нумерологию и астрологию",
+        nameRequired: "Пожалуйста, введите ваше имя",
+        dateRequired: "Пожалуйста, введите дату рождения"
       }
     },
     // ... keep existing code (other Russian translations)
@@ -369,7 +375,10 @@ export const translations: Translations = {
         newReading: "New Reading",
         yourReading: "Your Cosmic Reading",
         analyzing: "Analyzing cosmic patterns...",
-        startNew: "Let's create a new reading. I already know some things about you, but feel free to update your information."
+        startNew: "Let's create a new reading. I already know some things about you, but feel free to update your information.",
+        shortDescription: "Discover your cosmic patterns through numerology and astrology",
+        nameRequired: "Please enter your name",
+        dateRequired: "Please enter your birth date"
       }
     },
     // ... keep existing code (other English translations)
@@ -411,7 +420,10 @@ export const translations: Translations = {
         newReading: "Nueva Lectura",
         yourReading: "Tu Lectura Cósmica",
         analyzing: "Analizando patrones cósmicos...",
-        startNew: "Vamos a crear una nueva lectura. Ya sé algunas cosas sobre ti, pero siéntete libre de actualizar tu información."
+        startNew: "Vamos a crear una nueva lectura. Ya sé algunas cosas sobre ti, pero siéntete libre de actualizar tu información.",
+        shortDescription: "Descubre tus patrones cósmicos a través de la numerología y la astrología",
+        nameRequired: "Por favor ingresa tu nombre",
+        dateRequired: "Por favor ingresa tu fecha de nacimiento"
       }
     },
     // ... keep existing code (other Spanish translations)
