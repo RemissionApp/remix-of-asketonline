@@ -99,7 +99,7 @@ serve(async (req) => {
       const languageKey = (language in colors) ? language : 'en';
       
       additionalData = {
-        lucky_number: Math.floor(Math.random() * 100).toString(),
+        lucky_number: String(Math.floor(Math.random() * 100)),
         lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
         color: colors[languageKey as keyof typeof colors][Math.floor(Math.random() * colors[languageKey as keyof typeof colors].length)],
         mood: moods[languageKey as keyof typeof moods][Math.floor(Math.random() * moods[languageKey as keyof typeof moods].length)]

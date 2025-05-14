@@ -147,14 +147,24 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         
       } catch (error) {
         console.error('Error in horoscope generation:', error);
-        toast.error("Произошла ошибка при получении гороскопа");
+        toast.error(language === 'ru' ? "Произошла ошибка при получении гороскопа" : 
+                   language === 'es' ? "Se produjo un error al obtener el horóscopo" : 
+                   "An error occurred while retrieving the horoscope");
         
         // Set default content if everything fails
         const defaultSections = {
-          work: 'Сегодня благоприятный день для деловых начинаний. Доверяйте своей интуиции при принятии финансовых решений.',
-          love: 'Проявите внимание к партнеру. Одиноким звезды советуют быть более открытыми для новых знакомств.',
-          health: 'Следите за своим эмоциональным состоянием. Небольшая прогулка на свежем воздухе поможет восстановить силы.',
-          advice: 'Сегодня хороший день для планирования будущего. Запишите свои цели и мечты.'
+          work: language === 'ru' ? 'Сегодня благоприятный день для деловых начинаний. Доверяйте своей интуиции при принятии финансовых решений.' :
+                language === 'es' ? 'Hoy es un día favorable para iniciativas comerciales. Confía en tu intuición al tomar decisiones financieras.' :
+                'Today is a favorable day for business initiatives. Trust your intuition when making financial decisions.',
+          love: language === 'ru' ? 'Проявите внимание к партнеру. Одиноким звезды советуют быть более открытыми для новых знакомств.' :
+               language === 'es' ? 'Muestra atención a tu pareja. A los solteros, las estrellas les aconsejan estar más abiertos a nuevos conocidos.' :
+               'Show attention to your partner. Singles are advised by the stars to be more open to new acquaintances.',
+          health: language === 'ru' ? 'Следите за своим эмоциональным состоянием. Небольшая прогулка на свежем воздухе поможет восстановить силы.' :
+                 language === 'es' ? 'Vigila tu estado emocional. Un paseo corto al aire libre te ayudará a recuperar fuerzas.' :
+                 'Monitor your emotional state. A short walk in the fresh air will help restore your strength.',
+          advice: language === 'ru' ? 'Сегодня хороший день для планирования будущего. Запишите свои цели и мечты.' :
+                language === 'es' ? 'Hoy es un buen día para planificar el futuro. Escribe tus metas y sueños.' :
+                'Today is a good day for planning the future. Write down your goals and dreams.'
         };
         
         setHoroscopeSections(defaultSections);
@@ -162,8 +172,10 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
           lucky_number: String(Math.floor(Math.random() * 100)),
           lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
           color: language === 'ru' ? ['красный', 'синий', 'зеленый', 'желтый', 'фиолетовый'][Math.floor(Math.random() * 5)] : 
+                 language === 'es' ? ['rojo', 'azul', 'verde', 'amarillo', 'púrpura'][Math.floor(Math.random() * 5)] :
                  ['red', 'blue', 'green', 'yellow', 'purple'][Math.floor(Math.random() * 5)],
           mood: language === 'ru' ? ['спокойный', 'энергичный', 'задумчивый', 'творческий'][Math.floor(Math.random() * 4)] :
+                language === 'es' ? ['tranquilo', 'enérgico', 'reflexivo', 'creativo'][Math.floor(Math.random() * 4)] :
                 ['calm', 'energetic', 'reflective', 'creative'][Math.floor(Math.random() * 4)]
         });
       } finally {
@@ -176,7 +188,9 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
     } else {
       // No birth date set
       setLoading(false);
-      toast.error("Дата рождения не указана. Пожалуйста, заполните профиль.");
+      toast.error(language === 'ru' ? "Дата рождения не указана. Пожалуйста, заполните профиль." :
+                language === 'es' ? "Fecha de nacimiento no especificada. Por favor, complete su perfil." :
+                "Birth date not specified. Please complete your profile.");
     }
   }, [userProfile?.birthDate, language, zodiacSign]);
   
@@ -214,7 +228,7 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   }
   
   return (
-    <div className={`p-4 ${className}`}>
+    <div className={`p-4 rounded-lg bg-cosmic-dark/70 ${className}`}>
       <div className="text-center mb-6">
         <h2 className="text-2xl text-cosmic-gold font-serif mb-1 flex items-center justify-center gap-2">
           <span className="text-amber-500">⭐</span>
@@ -252,34 +266,34 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         </p>
       </div>
       
-      {/* Additional info */}
-      <div className="mt-4 grid grid-cols-2 gap-y-4 text-base">
-        <div className="flex items-center gap-2">
-          <span className="text-cosmic-secondary">
+      {/* Additional info - updated to match the reference image */}
+      <div className="mt-6 grid grid-cols-2 gap-y-4 text-base">
+        <div>
+          <span className="text-cosmic-secondary mr-2">
             {language === 'ru' ? 'Счастливое число:' : 
              language === 'es' ? 'Número de la suerte:' : 
              'Lucky number:'}
           </span>
           <span className="text-indigo-400 font-medium">{additionalInfo.lucky_number}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-cosmic-secondary">
+        <div>
+          <span className="text-cosmic-secondary mr-2">
             {language === 'ru' ? 'Удачное время:' : 
              language === 'es' ? 'Hora de la suerte:' : 
              'Lucky time:'}
           </span>
           <span className="text-indigo-400 font-medium">{additionalInfo.lucky_time}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-cosmic-secondary">
+        <div>
+          <span className="text-cosmic-secondary mr-2">
             {language === 'ru' ? 'Цвет дня:' : 
              language === 'es' ? 'Color del día:' : 
              'Color of the day:'}
           </span>
           <span className="text-indigo-400 font-medium">{additionalInfo.color}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-cosmic-secondary">
+        <div>
+          <span className="text-cosmic-secondary mr-2">
             {language === 'ru' ? 'Настроение:' : 
              language === 'es' ? 'Estado de ánimo:' : 
              'Mood:'}

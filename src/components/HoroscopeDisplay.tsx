@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
@@ -20,7 +19,7 @@ interface BriefHoroscope {
 export const HoroscopeDisplay: React.FC = () => {
   const [horoscope, setHoroscope] = useState<BriefHoroscope | null>(null);
   const [loading, setLoading] = useState(true);
-  const { userProfile, language, user } = useAppStore();
+  const { userProfile, language, user, setActiveScreen } = useAppStore();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -40,7 +39,7 @@ export const HoroscopeDisplay: React.FC = () => {
 
   // Translations for loading text
   const loadingText = {
-    ru: 'Соединяемся с космосом...',
+    ru: 'Соедин��емся с космосом...',
     en: 'Connecting with the cosmos...',
     es: 'Conectando con el cosmos...',
   }[language] || 'Connecting with the cosmos...';
@@ -123,14 +122,10 @@ export const HoroscopeDisplay: React.FC = () => {
   }, [userProfile?.birthDate, language, toast, user, userProfile]);
 
   const handleSeeMore = () => {
-    // Check if user is PRO
-    if (userProfile?.isPro) {
-      // Navigate to detailed horoscope page
-      navigate('/detailed-horoscope');
-    } else {
-      // Navigate to PRO subscription page
-      navigate('/comparison');
-    }
+    // Set active screen to detailed horoscope
+    setActiveScreen('detailedHoroscope');
+    // Navigate to detailed horoscope page
+    navigate('/detailed-horoscope');
   };
   
   if (loading) {
