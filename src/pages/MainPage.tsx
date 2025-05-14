@@ -18,6 +18,7 @@ import {
 import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
+import { useToast } from '@/hooks/use-toast';
 
 const MainPage: React.FC = () => {
   const { 
@@ -30,6 +31,7 @@ const MainPage: React.FC = () => {
     userProfile
   } = useAppStore();
   const { t } = useTranslations();
+  const { toast } = useToast();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   
@@ -135,6 +137,12 @@ const MainPage: React.FC = () => {
     if (currentPact) {
       markDayComplete(currentPact.id);
       setShowEnergyEffect(true);
+      
+      // Show success toast
+      toast({
+        title: language === 'ru' ? 'День отмечен!' : language === 'es' ? '¡Día completado!' : 'Day completed!',
+        description: language === 'ru' ? '+10 энергии' : language === 'es' ? '+10 de energía' : '+10 energy',
+      });
       
       setTimeout(() => {
         setShowEnergyEffect(false);
@@ -261,7 +269,8 @@ const MainPage: React.FC = () => {
               onClick={handleCreatePact}
               className="mt-4"
             >
-              {t.main.createPact}
+              {language === 'ru' ? 'Заключить договор' : 
+               language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
             </CosmicButton>
           </div>
         )}
