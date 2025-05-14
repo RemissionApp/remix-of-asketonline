@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -80,8 +79,7 @@ const LoginPage: React.FC = () => {
       </div>
       
       <div className="relative z-10 max-w-md w-full mx-auto px-4">
-        <h1 className="text-4xl font-serif text-white text-center mb-4">Аскеза</h1>
-        <h2 className="text-2xl text-cosmic-accent text-center mb-8">Добро пожаловать в путешествие</h2>
+        <h1 className="text-4xl font-serif text-white text-center mb-8">Asket</h1>
         
         <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40 border-cosmic-accent/30">
           <CardContent className="pt-6">
