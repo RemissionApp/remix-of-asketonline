@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -23,7 +24,7 @@ const CreatePactPage: React.FC = () => {
   // Функция для правильного склонения в русском языке
   const getDaysText = (count: number): string => {
     if (language !== 'ru') {
-      return t.main.days;
+      return t.main?.days || "days";
     }
     
     // Правило для русского языка
@@ -149,7 +150,7 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
-              {t.createPact.stepOneTitle}
+              {t.createPact?.stepOneTitle || "Choose ascesis type"}
             </h2>
             
             <div className="mb-6">
@@ -157,7 +158,7 @@ const CreatePactPage: React.FC = () => {
                 options={getRejectionOptions()}
                 value={selectedItems}
                 onChange={setSelectedItems}
-                placeholder={t.createPact.placeholders.rejection}
+                placeholder={t.createPact?.placeholders?.rejection || "Select or enter what you're giving up"}
                 inputPlaceholder={language === 'ru' ? "Введите свой вариант..." : 
                                  language === 'es' ? "Ingrese su opción..." : 
                                  "Enter your option..."}
@@ -169,13 +170,13 @@ const CreatePactPage: React.FC = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={t.createPact.placeholders.rejection}
+                placeholder={t.createPact?.placeholders?.title || "Enter a title..."}
                 className="cosmic-input w-full mb-6"
               />
             )}
             
             <div className="text-sm text-cosmic-secondary mb-8 text-center">
-              <p className="whitespace-pre-line text-justify">{t.createPact.ascesisWarning}</p>
+              <p className="whitespace-pre-line text-justify">{t.createPact?.ascesisWarning || "Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement."}</p>
             </div>
           </div>
         );
@@ -183,7 +184,7 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
-              {t.createPact.stepTwoTitle}
+              {t.createPact?.stepTwoTitle || "Choose duration"}
             </h2>
             
             <div className="flex justify-between gap-4 mb-8">
@@ -207,7 +208,7 @@ const CreatePactPage: React.FC = () => {
             
             <div className="mb-8">
               <label className="block text-cosmic-secondary text-sm mb-2 text-center">
-                {t.createPact.customDays}
+                {t.createPact?.customDays || "Set custom days"}
               </label>
               <input
                 type="text"
@@ -220,7 +221,7 @@ const CreatePactPage: React.FC = () => {
                            "Enter number of days (min. 30)"}
               />
               <p className="text-xs text-cosmic-secondary mt-2 text-center">
-                {t.minimumPeriod}
+                {t.minimumPeriod || "Minimum ascesis period is 30 days"}
               </p>
             </div>
             
@@ -238,17 +239,17 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-4 text-center">
-              {t.createPact.stepThreeTitle}
+              {t.createPact?.stepThreeTitle || "Create contract"}
             </h2>
             
             <p className="text-cosmic-secondary mb-8 text-center">
-              {t.createPact.notAsking}
+              {t.createPact?.notAsking || "I'm not asking for anything in return"}
             </p>
             
             <textarea
               value={reward}
               onChange={(e) => setReward(e.target.value)}
-              placeholder={t.createPact.placeholders.reward}
+              placeholder={t.createPact?.placeholders?.reward || "What you will get in return..."}
               className="cosmic-input w-full h-40 resize-none mb-4"
             />
 
@@ -309,7 +310,7 @@ const CreatePactPage: React.FC = () => {
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-              {t.createPact.title}
+              {t.createPact?.title || "Create Ascesis"}
             </h1>
           </div>
           
@@ -337,7 +338,7 @@ const CreatePactPage: React.FC = () => {
                 className="w-full"
                 disabled={isNextDisabled()}
               >
-                {step === 2 ? t.createPact.nextButton : t.createPact.nextButton}
+                {t.createPact?.nextButton || "Next"}
               </CosmicButton>
             )}
           </div>

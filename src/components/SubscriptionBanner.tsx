@@ -38,10 +38,10 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
         <CardContent className="p-3 flex items-center justify-between">
           <div className="flex items-center">
             <SparklesIcon size={20} className="text-cosmic-gold mr-2" />
-            <span className="text-sm text-cosmic-secondary">{t.subscription.bannerDesc}</span>
+            <span className="text-sm text-cosmic-secondary">{t.subscription.description || "Unlock full potential with PRO"}</span>
           </div>
           <CosmicButton onClick={handleUpgrade} size="sm">
-            {t.subscription.upgradeNow}
+            {t.subscription.upgradeButton || "Upgrade Now"}
           </CosmicButton>
         </CardContent>
       </Card>
@@ -59,8 +59,8 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
           </div>
           
           <div className="flex-grow text-center md:text-left mb-4 md:mb-0">
-            <h3 className="text-lg font-serif text-white mb-1">{t.subscription.bannerTitle}</h3>
-            <p className="text-sm text-cosmic-secondary">{t.subscription.bannerDesc}</p>
+            <h3 className="text-lg font-serif text-white mb-1">{t.subscription.title || "PRO Subscription"}</h3>
+            <p className="text-sm text-cosmic-secondary">{t.subscription.description || "Unlock the full potential of the app"}</p>
             <div className="mt-2 flex items-center justify-center md:justify-start text-xs text-cosmic-gold">
               <MedalIcon size={14} className="mr-1" />
               <span>Unlimited meditations, multiple ascesis & more!</span>
@@ -69,7 +69,7 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
           
           <CosmicButton onClick={handleUpgrade} className="whitespace-nowrap">
             <SparklesIcon size={16} className="mr-2" />
-            {t.subscription.upgradeNow}
+            {t.subscription.upgradeButton || "Upgrade Now"}
           </CosmicButton>
         </div>
       </CardContent>

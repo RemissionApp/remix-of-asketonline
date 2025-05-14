@@ -1,66 +1,104 @@
 
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
-import { Card, CardContent } from '@/components/ui/card';
-import { Globe } from 'lucide-react';
-import { SupportedLanguage } from '@/i18n/translations';
+import { CosmicButton } from '@/components/CosmicButton';
+import { StarField } from '@/components/StarField';
+import { SupportedLanguage } from '@/hooks/useTranslations';
 
-const LanguagePage: React.FC = () => {
+const LanguagePage = () => {
   const navigate = useNavigate();
-  const { setLanguage } = useAppStore();
+  const { language, setLanguage } = useAppStore();
+  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(language as SupportedLanguage);
+  const [isReady, setIsReady] = useState(false);
+  
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
+  
+  const handleContinue = () => {
+    setLanguage(selectedLang);
+    
+    // Check if user was already onboarded
+    const onboarded = localStorage.getItem('onboarded');
+    
+    if (onboarded === 'true') {
+      navigate('/login');
+    } else {
+      navigate('/profile-setup');
+    }
+  };
   
   const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
   
-  const handleSelectLanguage = (langCode: SupportedLanguage) => {
-    setLanguage(langCode);
-    navigate('/login');
+  const getWelcomeText = () => {
+    switch (selectedLang) {
+      case 'ru':
+        return 'Выберите язык приложения';
+      case 'es':
+        return 'Elige tu idioma';
+      default:
+        return 'Select your language';
+    }
+  };
+  
+  const getContinueText = () => {
+    switch (selectedLang) {
+      case 'ru':
+        return 'Продолжить';
+      case 'es':
+        return 'Continuar';
+      default:
+        return 'Continue';
+    }
   };
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
-      <StarField starCount={150} />
+    <div className="min-h-screen overflow-hidden flex flex-col items-center justify-center relative p-4">
+      <StarField starCount={100} />
       
-      {/* Cosmic background image */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
-      </div>
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
+        style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80 z-0" />
       
-      <div className="relative z-10 max-w-md w-full mx-auto">
-        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center mb-6">
-              <Globe className="w-6 h-6 text-cosmic-accent mr-2" />
-              <h2 className="text-2xl text-white">
-                <span className="block font-serif">Select language</span>
-                <span className="block font-serif">Seleccione idioma</span>
-                <span className="block font-cormorant">Выберите язык</span>
-              </h2>
-            </div>
-            
-            <div className="flex flex-col space-y-3">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  className="flex items-center p-4 rounded-lg border border-cosmic-accent/30 bg-cosmic-dark/50 text-white hover:bg-cosmic-accent/20 transition-colors"
-                  onClick={() => handleSelectLanguage(lang.code as SupportedLanguage)}
-                >
-                  <span className="text-2xl mr-3">{lang.flag}</span>
-                  <span className="text-lg">{lang.name}</span>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="relative z-10 w-full max-w-md">
+        <div className={`text-center transition-all duration-1000 ${
+          isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+          <h1 className="text-4xl font-serif text-white mb-8">Asket</h1>
+          
+          <p className="text-cosmic-secondary text-lg mb-12">
+            {getWelcomeText()}
+          </p>
+        
+          <div className="space-y-4 mb-12">
+            {languages.map((lang) => (
+              <Button
+                key={lang.code}
+                onClick={() => setSelectedLang(lang.code as SupportedLanguage)}
+                className={`w-full py-6 justify-start text-left px-6 ${
+                  selectedLang === lang.code
+                    ? 'bg-cosmic-accent/40 hover:bg-cosmic-accent/50 border border-cosmic-accent'
+                    : 'bg-cosmic-dark/40 hover:bg-cosmic-dark/60 border border-cosmic-accent/30'
+                }`}
+              >
+                <span className="text-2xl mr-4">{lang.flag}</span>
+                <span className="text-lg">{lang.name}</span>
+              </Button>
+            ))}
+          </div>
+          
+          <CosmicButton onClick={handleContinue} className="w-full">
+            {getContinueText()}
+          </CosmicButton>
+        </div>
       </div>
     </div>
   );

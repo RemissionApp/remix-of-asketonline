@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { ArrowLeft } from 'lucide-react';
-import { useTranslations } from '@/hooks/useTranslations';
+import { useTranslations, SupportedLanguage } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
-import type { SupportedLanguage } from '@/i18n/translations';
 import {
   Dialog,
   DialogContent,
@@ -49,7 +48,7 @@ export const PactOath: React.FC<PactOathProps> = ({
 
 Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`;
     } else if (language === 'es') {
-      return `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${t.pactOath.days}.
+      return `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${getDaysText(duration)}.
 
 Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
 
@@ -57,7 +56,7 @@ Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimient
 
 Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`;
     } else {
-      return `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${t.pactOath.days}.
+      return `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${getDaysText(duration)}.
 
 I consciously reject the temporary to open the path to the eternal.
 
@@ -78,7 +77,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
   // Функция для правильного склонения в русском языке
   const getDaysText = (count: number): string => {
     if (language !== 'ru') {
-      return t.pactOath.days;
+      return 'days';
     }
     
     // Правило для русского языка
@@ -97,7 +96,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     }
   };
   
-  // Функция для правильного отображени�� отказа пользователя с учетом языка
+  // Функция для правильного отображения отказа пользователя с учетом языка
   const formatRejection = (rejection: string): string => {
     // Проверяем, является ли строка предустановленным значением из списка
     const predefinedOptions: Record<string, Record<string, string>> = {
@@ -229,6 +228,8 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     }
   };
 
+  
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center">
       <StarField starCount={150} />
@@ -254,11 +255,11 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
           isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <h1 className="text-3xl font-serif text-white mb-3 cosmic-gradient-text">
-            {t.pactOath.title}
+            {t.pactOath?.title || "Contract with the Universe"}
           </h1>
           
           <p className="text-cosmic-secondary mb-12">
-            {t.pactOath.subtitle}
+            {t.pactOath?.subtitle || "Before you begin, take an oath"}
           </p>
           
           <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
@@ -275,7 +276,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
             <DialogContent className="bg-cosmic-dark border-cosmic-accent text-white max-w-md">
               <DialogHeader>
                 <DialogTitle className="cosmic-gradient-text text-xl">
-                  {t.pactOath.title}
+                  {t.pactOath?.title || "Contract with the Universe"}
                 </DialogTitle>
                 <DialogDescription className="text-cosmic-secondary">
                   {getDialogInstructions()}

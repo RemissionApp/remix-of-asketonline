@@ -39,7 +39,7 @@ export const BottomNavigation: React.FC = () => {
           onClick={() => handleNavigation('main', '/main')}
         >
           <Home size={24} />
-          <span className="text-xs mt-1">{t.main.nav.path}</span>
+          <span className="text-xs mt-1">{t.main.path || 'Путь'}</span>
         </button>
         
         <button 
@@ -47,7 +47,7 @@ export const BottomNavigation: React.FC = () => {
           onClick={() => handleNavigation('create-pact', '/create-pact')}
         >
           <Sparkles size={24} />
-          <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
+          <span className="text-xs mt-1">{t.main.ascesis || 'Аскеза'}</span>
         </button>
         
         <button 
@@ -55,7 +55,7 @@ export const BottomNavigation: React.FC = () => {
           onClick={() => handleNavigation('universe', '/universe')}
         >
           <MessageSquare size={24} />
-          <span className="text-xs mt-1">{t.main.nav.universe}</span>
+          <span className="text-xs mt-1">{t.universe?.title || t.main.universe || 'Вселенная'}</span>
         </button>
         
         <button 
@@ -63,7 +63,7 @@ export const BottomNavigation: React.FC = () => {
           onClick={() => handleNavigation('profile', '/profile')}
         >
           <UserRound size={24} />
-          <span className="text-xs mt-1">{t.main.nav.profile}</span>
+          <span className="text-xs mt-1">{t.profile?.title || t.main.profile || 'Профиль'}</span>
         </button>
       </div>
     </div>

@@ -37,7 +37,7 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
           <p className="text-4xl font-bold font-serif text-white">
             {activeDaysCompleted}/{pact.duration}
           </p>
-          <p className="text-lg text-cosmic-accent mt-2">{t.main.days}</p>
+          <p className="text-lg text-cosmic-accent mt-2">{t.main?.days || "days"}</p>
         </div>
       </EnergyCircle>
       
@@ -45,7 +45,7 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
         className="mt-8" 
         onClick={onCompleteDayClick}
       >
-        {t.main.todayCompleted}
+        {t.main?.todayCompleted || "Complete today"}
       </CosmicButton>
     </>
   );
