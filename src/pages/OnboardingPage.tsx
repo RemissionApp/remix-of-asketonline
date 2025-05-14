@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -8,9 +7,22 @@ import { useNavigate } from 'react-router-dom';
 
 const OnboardingPage: React.FC = () => {
   const [step, setStep] = useState(0);
-  const { setOnboardingComplete, setActiveScreen } = useAppStore();
+  const { setOnboardingComplete, setActiveScreen, user, userProfile, updateUserProfile } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  
+  // Check if user is logged in and redirect if necessary
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    // If user has already completed onboarding, redirect to main page
+    if (userProfile?.onboardingComplete) {
+      navigate('/main');
+    }
+  }, [user, userProfile, navigate]);
   
   const handleNext = () => {
     if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
@@ -21,11 +33,19 @@ const OnboardingPage: React.FC = () => {
     }
   };
   
-  const completeOnboarding = () => {
-    // Set onboarding complete and navigate to main screen
+  const completeOnboarding = async () => {
+    // Set onboarding complete in local state and in backend
     setOnboardingComplete(true);
+    await updateUserProfile({ onboardingComplete: true });
+    
+    // Set active screen and navigate to main
     setActiveScreen('main');
     navigate('/main');
+  };
+  
+  // Function to skip onboarding
+  const skipOnboarding = async () => {
+    await completeOnboarding();
   };
   
   // Function to split text by newlines and render paragraphs
@@ -42,10 +62,10 @@ const OnboardingPage: React.FC = () => {
       {/* Skip link */}
       <div className="absolute top-6 right-6 z-20">
         <button 
-          onClick={completeOnboarding}
+          onClick={skipOnboarding}
           className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm"
         >
-          {t.onboarding.buttons.skip || "Пропустить"}
+          {t.onboarding?.buttons?.skip || "Пропустить"}
         </button>
       </div>
       

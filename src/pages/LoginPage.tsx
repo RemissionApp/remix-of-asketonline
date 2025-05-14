@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading, user, userProfile } = useAppStore();
+  const { signIn, signUp, loading, user, userProfile, loadUserProfile } = useAppStore();
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');
@@ -29,8 +29,21 @@ const LoginPage: React.FC = () => {
     if (user) {
       console.log("Login page: user is logged in", { user, userProfile });
       
-      // Navigate directly to main page if the user exists
-      navigate('/main');
+      // Check if user profile is complete (has name and birthdate)
+      if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
+        console.log("User profile incomplete, redirecting to profile setup");
+        navigate('/profile-setup');
+      }
+      // If user has not completed onboarding
+      else if (!userProfile.onboardingComplete) {
+        console.log("User profile complete but onboarding incomplete, redirecting to onboarding");
+        navigate('/onboarding');
+      }
+      // If user has completed profile and onboarding
+      else {
+        console.log("User profile and onboarding complete, redirecting to main");
+        navigate('/main');
+      }
     }
   }, [user, userProfile, navigate]);
   
@@ -42,9 +55,11 @@ const LoginPage: React.FC = () => {
     
     const success = await signIn(email, password);
     if (success) {
-      console.log("Sign in successful, redirecting to main page");
-      // Navigate directly to the main page
-      navigate('/main');
+      console.log("Sign in successful, checking profile status");
+      // Load user profile explicitly to ensure we have latest data
+      await loadUserProfile();
+      
+      // Navigation will be handled by the useEffect above
     }
   };
   
@@ -55,6 +70,8 @@ const LoginPage: React.FC = () => {
     cleanupAuthState();
     
     await signUp(email, password);
+    // After signup, the user will be automatically signed in and the useEffect above
+    // will handle redirection to profile setup
   };
 
   const handleForgotPassword = async () => {

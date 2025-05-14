@@ -16,6 +16,7 @@ interface AppState {
   userProfile: UserProfile;
   user: any | null;
   loading: boolean;
+  setUser: (user: any | null) => void;
   
   addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
@@ -87,7 +88,7 @@ const defaultAchievements: Achievement[] = [
   },
   {
     id: 'first-question',
-    title: 'Первый р����зговор',
+    title: 'Первый ������зговор',
     description: 'Задайте перв��й вопрос Вселенной',
     icon: 'message-square',
     unlocked: false

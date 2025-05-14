@@ -25,14 +25,14 @@ const UserProfilePage: React.FC = () => {
       return;
     }
 
-    // Only redirect to main if not loading and user has completed profile
+    // Only redirect to onboarding if the profile is already completed
     // User has completed profile if they have a name other than default and a birthdate
     if (!loading && 
         userProfile && 
         userProfile.name !== 'Искатель' && 
         userProfile.birthDate) {
-      console.log("Profile already completed, redirecting to main");
-      navigate('/main');
+      console.log("Profile already completed, redirecting to onboarding");
+      navigate('/onboarding');
     }
   }, [userProfile, user, loading, navigate]);
 
