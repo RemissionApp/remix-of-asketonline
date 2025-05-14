@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -19,7 +18,8 @@ const MainPage: React.FC = () => {
     dailyQuote, 
     markDayComplete, 
     syncPactsWithCurrentDate,
-    language
+    language,
+    setActiveScreen
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
@@ -67,7 +67,7 @@ const MainPage: React.FC = () => {
 
   // Navigate to create pact page
   const handleCreatePact = () => {
-    navigate('/create-pact');
+    setActiveScreen('create-pact');
   };
   
   // Function to format the rejection text based on language

@@ -1,3 +1,4 @@
+
 import { useAppStore } from '@/store/useAppStore';
 import translations from '@/i18n/translations';
 
@@ -176,15 +177,6 @@ export const useTranslations = () => {
       haveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?',
       passwordLength: language === 'ru' ? 'Пароль должен содержать минимум 6 символов' : language === 'es' ? 'La contraseña debe tener al menos 6 caracteres' : 'Password must be at least 6 characters',
       guestSignIn: language === 'ru' ? 'Войти как гость' : language === 'es' ? 'Entrar como invitado' : 'Sign in as guest'
-    },
-    subscription: {
-      bannerTitle: language === 'ru' ? 'Раскройте свой потенциал с ASKET PRO' : 
-                   language === 'es' ? 'Desbloquea tu potencial con ASKET PRO' : 
-                   'Unlock your potential with ASKET PRO',
-      bannerDesc: language === 'ru' ? 'Доступ к медитациям, расширенным практикам и многому другому' : 
-                  language === 'es' ? 'Acceso a meditaciones, prácticas avanzadas y mucho más' : 
-                  'Access to meditations, advanced practices and much more',
-      upgradeNow: language === 'ru' ? 'Улучшить сейчас' : language === 'es' ? 'Mejorar ahora' : 'Upgrade Now'
     }
   };
   
