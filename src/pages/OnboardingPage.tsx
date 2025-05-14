@@ -15,9 +15,14 @@ const OnboardingPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Complete onboarding
-      setOnboardingComplete(true);
-      setActiveScreen('main');
+      completeOnboarding();
     }
+  };
+  
+  const completeOnboarding = () => {
+    // Set onboarding complete and navigate to main screen
+    setOnboardingComplete(true);
+    setActiveScreen('main');
   };
   
   // Function to split text by newlines and render paragraphs
@@ -30,6 +35,16 @@ const OnboardingPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
+      
+      {/* Skip link */}
+      <div className="absolute top-6 right-6 z-20">
+        <button 
+          onClick={completeOnboarding}
+          className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm"
+        >
+          {t.onboarding.buttons.skip || "Пропустить"}
+        </button>
+      </div>
       
       <div className="relative z-10 w-full max-w-lg px-4">
         {step === 0 ? (
