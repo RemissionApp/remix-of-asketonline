@@ -20,7 +20,8 @@ export const getYearWord = (age: number): string => {
   }
 };
 
-export { SupportedLanguage };
+// Re-export the type correctly
+export type { SupportedLanguage };
 
 export const useTranslations = () => {
   const { language } = useAppStore();

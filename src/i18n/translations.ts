@@ -226,6 +226,15 @@ interface Translations {
       nameRequired: string;
       emailRequired: string;
       dobRequired: string;
+      nameLabel: string;
+      birthDateLabel: string;
+      namePlaceholder: string;
+      birthDatePlaceholder: string;
+      title: string;
+      age: string;
+      continueButton: string;
+      currentDate: string;
+      languageLabel: string;
     };
   };
 }
@@ -913,7 +922,16 @@ export const translations: Translations = {
       savingButton: "Guardando...",
       nameRequired: "El nombre es obligatorio",
       emailRequired: "El correo electrónico es obligatorio",
-      dobRequired: "La fecha de nacimiento es obligatoria"
+      dobRequired: "La fecha de nacimiento es obligatoria",
+      nameLabel: "Nombre",
+      birthDateLabel: "Fecha de Nacimiento",
+      namePlaceholder: "Ingrese su nombre",
+      birthDatePlaceholder: "Elija su fecha de nacimiento",
+      title: "Perfil de Usuario",
+      age: "Edad",
+      continueButton: "Continuar",
+      currentDate: "Fecha actual",
+      languageLabel: "Idioma"
     }
   }
 };
