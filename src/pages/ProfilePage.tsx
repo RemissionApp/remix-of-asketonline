@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import UserProfileForm from '@/components/UserProfileForm';
@@ -21,7 +20,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { UserAvatar } from '@/components/UserAvatar';
 
 const ProfilePage: React.FC = () => {
@@ -55,15 +53,11 @@ const ProfilePage: React.FC = () => {
       
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <div className="mb-6 w-full">
-          {/* Removed duplicated avatar and kept only the title */}
           <h1 className="text-2xl text-white font-serif mb-4">
             {t.main?.profile || "Профиль"}
           </h1>
           
           <UserProfileForm />
-          
-          {/* Zodiac Information */}
-          <ZodiacBadgeDisplay />
           
           <div className="mt-8">
             <h2 className="text-xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "App language"}</h2>
