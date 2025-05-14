@@ -1,20 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { CosmicButton } from '@/components/CosmicButton';
-import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
 import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot, Headphones } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';

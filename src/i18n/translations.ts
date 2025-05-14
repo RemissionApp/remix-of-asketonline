@@ -1,5 +1,7 @@
 import { Quote } from "@/components/QuoteDisplay";
 
+export type SupportedLanguage = 'ru' | 'en' | 'es';
+
 export const translations = {
   en: {
     main: {

@@ -1,9 +1,10 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SupportedLanguage } from '@/hooks/useTranslations';
+import { SupportedLanguage } from '@/i18n/translations';
 import { Pact, PactStatus, Mission, PactDay, UniverseQuestion } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { Quote } from '@/components/QuoteDisplay';
 
 // Define types
 export interface UserProfile {
@@ -14,12 +15,6 @@ export interface UserProfile {
   experience: number;
   isPro: boolean;
   energyPoints: number; // Added missing property
-}
-
-// Quote type
-export interface Quote {
-  text: string;
-  author: string;
 }
 
 interface AppState {
@@ -55,7 +50,9 @@ interface AppState {
   
   // Universe Questions
   universeQuestions: UniverseQuestion[];
+  activeQuestions?: UniverseQuestion[];
   addUniverseQuestion: (question: string, answer: string) => void;
+  askUniverse: (question: string) => { question: string; answer: string };
 }
 
 // Create store with persistence
@@ -175,6 +172,7 @@ export const useAppStore = create<AppState>()(
       
       // Universe Questions
       universeQuestions: [],
+      activeQuestions: [],
       addUniverseQuestion: (question, answer) => set((state) => {
         const newQuestion: UniverseQuestion = {
           id: uuidv4(),
@@ -184,7 +182,37 @@ export const useAppStore = create<AppState>()(
         };
         
         return { universeQuestions: [...state.universeQuestions, newQuestion] };
-      })
+      }),
+      askUniverse: (question) => {
+        // Generate a pseudo-random philosophical answer
+        const answers = [
+          "Путь, который ты ищешь, уже под твоими ногами.",
+          "То, что ты отдаёшь Вселенной, возвращается к тебе многократно.",
+          "Истина находится не снаружи, а внутри тебя.",
+          "Сильнейший тот, кто победил себя.",
+          "Твоё настоящее — результат твоих прошлых мыслей."
+        ];
+        
+        const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+        
+        // Create a new question
+        const newQuestion: UniverseQuestion = {
+          id: uuidv4(),
+          question,
+          answer: randomAnswer,
+          date: new Date().toISOString()
+        };
+        
+        // Update the state in the next tick
+        setTimeout(() => {
+          set((state) => ({
+            universeQuestions: [...state.universeQuestions, newQuestion],
+            activeQuestions: [newQuestion, ...(state.activeQuestions || []).slice(0, 9)]
+          }));
+        }, 0);
+        
+        return { question, answer: randomAnswer };
+      }
     }),
     {
       name: 'asket-storage', // Name for localStorage
