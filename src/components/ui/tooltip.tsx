@@ -4,7 +4,15 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
 
-const TooltipProvider = TooltipPrimitive.Provider
+// Define TooltipProvider correctly without using forwardRef
+const TooltipProvider = ({ 
+  children,
+  ...props
+}: TooltipPrimitive.TooltipProviderProps) => (
+  <TooltipPrimitive.Provider {...props}>
+    {children}
+  </TooltipPrimitive.Provider>
+)
 TooltipProvider.displayName = "TooltipProvider"
 
 const Tooltip = TooltipPrimitive.Root

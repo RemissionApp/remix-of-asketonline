@@ -103,7 +103,7 @@ const UniversePage: React.FC = () => {
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder={t.universe.questionPlaceholder}
+              placeholder={t.universe.question}
               className="cosmic-input w-full h-40 resize-none mb-8"
             />
             

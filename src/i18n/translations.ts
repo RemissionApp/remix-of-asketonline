@@ -1,17 +1,605 @@
-import { Quote } from "@/components/QuoteDisplay";
-
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
-export const translations = {
-  en: {
+type TranslationKeys = {
+  welcome: {
+    title: string;
+    subtitle: string;
+    startButton: string;
+  };
+  onboarding: {
+    steps: {
+      title: string;
+      content: string;
+    }[];
+    buttons: {
+      next: string;
+      enter: string;
+      startJourney: string;
+    };
+  };
+  main: {
+    days: string;
+    todayCompleted: string;
+    askUniverse: string;
+    noPacts: string;
+    createPact: string;
+    profile: string;
+    nav: {
+      path: string;
+      ascesis: string;
+      universe: string;
+      profile: string;
+    };
+  };
+  createPact: {
+    title: string;
+    stepOneTitle: string;
+    stepTwoTitle: string;
+    stepThreeTitle: string;
+    whatRejecting: string;
+    examples: string[];
+    trialPeriod: string;
+    customDays: string;
+    days: string;
+    whatWant: string;
+    notAsking: string;
+    nextButton: string;
+    startPathButton: string;
+    placeholders: {
+      rejection: string;
+      reward: string;
+    };
+    ascesisWarning: string;
+  };
+  universe: {
+    title: string;
+    question: string;
+    placeholder: string;
+    askButton: string;
+    thinking: string;
+    yourQuestion: string;
+    universeAnswer: string;
+    newQuestion: string;
+    previousQuestions: string;
+    emptyState: string;
+  };
+  profile: {
+    title: string;
+    daysOfAscesis: string;
+    energy: string;
+    settings: string;
+    settingsItems: string[];
+    proFeatures: string[];
+    proTitle: string;
+    proDescription: string;
+    proButton: string;
+    achievements: {
+      title: string;
+      unlocked: string;
+      locked: string;
+      empty: string;
+    };
+    missions: {
+      title: string;
+      current: string;
+      empty: string;
+      get: string;
+      about: string;
+      description: string;
+      rewards: string;
+    };
+    ranks: {
+      next: string;
+      progress: string;
+      seeker: string;
+      pilgrim: string;
+      warrior: string;
+      master: string;
+      enlightened: string;
+    };
+  };
+  pactOath: {
+    title: string;
+    subtitle: string;
+    iPromise: string;
+    duration: string;
+    days: string;
+    inReturn: string;
+    confirmButton: string;
+  };
+  userProfile: {
+    title: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    nameRequired: string;
+    birthDateLabel: string;
+    birthDatePlaceholder: string;
+    birthDateRequired: string;
+    continueButton: string;
+    age: string;
+    yearSingular: string;
+    yearPlural: string;
+    currentDate: string;
+    languageLabel: string;
+    back: string;
+  };
+  gamification: {
+    energyPoints: string;
+    levelUp: string;
+    newAchievement: string;
+    newMission: string;
+    missionCompleted: string;
+    rankTitle: string;
+    pointsEarned: string;
+    rewards: string;
+  };
+  calendar: {
+    year: string;
+    month: string;
+  };
+  minimumPeriod: string;
+  comparison: {
+    title: string;
+    freePlan: string;
+    proPlan: string;
+    free: string;
+    pricing: string;
+    upgradeButton: string;
+    features: {
+      name: string;
+      free: boolean;
+      pro: boolean;
+      freeDescription: string;
+      proDescription?: string;
+    }[];
+  };
+  meditation: {
+    pageTitle: string;
+    subtitle: string;
+    proFeatures: string;
+    basic: string;
+    pro: string;
+    duration: string;
+    play: string;
+    unlock: string;
+    comingSoon: string;
+    categories: {
+      morning: string;
+      evening: string;
+      stress: string;
+      mantra: string;
+      visual: string;
+    };
+    morning: {
+      title1: string;
+      desc1: string;
+      title2: string;
+      desc2: string;
+    };
+    evening: {
+      title1: string;
+      desc1: string;
+    };
+    stress: {
+      title1: string;
+      desc1: string;
+    };
+    mantra: {
+      title1: string;
+      desc1: string;
+    };
+    visualization: {
+      title1: string;
+      desc1: string;
+    };
+  };
+  auth: {
+    signIn: string;
+    signUp: string;
+    signOut: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    forgotPassword: string;
+    backToSignIn: string;
+    createAccount: string;
+    alreadyHaveAccount: string;
+    resetPassword: string;
+    resetPasswordButton: string;
+    resetPasswordSuccess: string;
+    resetPasswordError: string;
+    signInError: string;
+    signUpError: string;
+    passwordMismatch: string;
+    welcomeBack: string;
+    noAccount: string;
+    orContinueWith: string;
+    signInButton: string;
+    signUpButton: string;
+    haveAccount: string;
+    passwordLength: string;
+  };
+  subscription: {
+    bannerTitle: string;
+    bannerDesc: string;
+    upgradeNow: string;
+  };
+};
+
+const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
+  ru: {
+    welcome: {
+      title: "ASKET",
+      subtitle: "Путь к внутренней силе",
+      startButton: "Начать путешествие",
+    },
+    onboarding: {
+      steps: [
+        {
+          title: "Добро пожаловать",
+          content: "Что-то внутри тебя просится наружу.\nЭто не тревога. Это — пробуждение.\n\nТы на пороге новой версии себя."
+        },
+        {
+          title: "Что такое Аскеза",
+          content: "Аскеза — это священный договор с Вселенной. Каждый день отказа от чего-то низкого повышает твою вибрацию и раскрывает внутреннюю силу."
+        },
+        {
+          title: "Почему она работает",
+          content: "Отказываясь от искушения, ты усиливаешь свою волю и настраиваешься на высшие энергии. Вселенная видит твои усилия и отвечает взаимностью."
+        },
+        {
+          title: "Кем ты станешь",
+          content: "Человеком, чьи желания подчинены воле. Тем, кто способен формировать реальность через осознанный отказ и притяжение высшего. Властелином своей судьбы."
+        }
+      ],
+      buttons: {
+        next: "Далее",
+        enter: "Войти",
+        startJourney: "Начать путь"
+      }
+    },
     main: {
-      title: "Cosmic Ascesis",
-      subtitle: "Embrace the journey within",
-      noPacts: "No ascesis yet. Create one to start your journey.",
-      createPact: "Create Ascesis",
-      todayCompleted: "Today's Ascesis Completed",
-      days: "Days",
+      days: "дней",
+      todayCompleted: "Сегодня я выдержал",
+      askUniverse: "Спросить Вселенну",
+      noPacts: "У тебя пока нет активных аскез",
+      createPact: "Заключить договор",
+      profile: "Профиль",
+      nav: {
+        path: "Путь",
+        ascesis: "Аскезы",
+        universe: "Вселенная",
+        profile: "Профиль"
+      }
+    },
+    createPact: {
+      title: "Создание Аскезы",
+      stepOneTitle: "От чего ты отказываешься?",
+      stepTwoTitle: "Срок испытания",
+      stepThreeTitle: "Что ты хочешь получить?",
+      whatRejecting: "От чего ты отказываешься?",
+      examples: [
+        "Сахар", 
+        "Телефон после 22:00", 
+        "Сигареты", 
+        "Прокрастинация", 
+        "Социальные сети"
+      ],
+      trialPeriod: "Срок испытания",
+      customDays: "Или укажите своё количество дней:",
+      days: "дней",
+      whatWant: "Что ты хочешь получить?",
+      notAsking: "Ты не просишь. Ты настраиваешь реальность.",
+      nextButton: "Далее",
+      startPathButton: "Начать путь",
+      placeholders: {
+        rejection: "Например: Сахар, Соцсети, Алкоголь...",
+        reward: "Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность..."
+      },
+      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока..."
+    },
+    universe: {
+      title: "Врата Вселенной",
+      question: "Что ты хочешь спросить у Вселенной?",
+      placeholder: "Напиши свой вопрос здесь...",
+      askButton: "Отправить вопрос",
+      thinking: "Вселенная обдумывает ответ...",
+      yourQuestion: "Твой вопрос",
+      universeAnswer: "Ответ Вселенной",
+      newQuestion: "Задать новый вопрос",
+      previousQuestions: "Предыдущие вопросы",
+      emptyState: "У тебя еще нет вопросов к Вселенной"
+    },
+    profile: {
+      title: "Профиль",
+      daysOfAscesis: "Дней аскезы",
+      energy: "Энергии",
+      settings: "Настройки",
+      settingsItems: ['Уведомления', 'Темы оформления', 'Звук', 'Язык'],
+      proFeatures: [
+        'До 5 аскез одновременно',
+        'Доступ к премиум-медитациям',
+        'Визуальные темы оформления',
+        'Дополнительные вопросы к Вселенной',
+        'Ритуалы силы и прорывные практики'
+      ],
+      proTitle: "ASKET PRO",
+      proDescription: "Разблокируй дополнительные возможности и усиль свой путь",
+      proButton: "Открыть силу PRO ✨",
+      achievements: {
+        title: "Достижения",
+        unlocked: "Разблокированные достижения",
+        locked: "Предстоящие достижения",
+        empty: "У вас пока нет разблокированных достижений"
+      },
+      missions: {
+        title: "Миссии",
+        current: "Текущая миссия",
+        empty: "У вас нет активных миссий",
+        get: "Получить миссию",
+        about: "О космических миссиях",
+        description: "Космические миссии — это специальные задания от Вселенной, которые помогут вам укрепить вашу силу духа и получить дополнительные награды. Завершайте миссии и получайте энергетические очки и достижения.",
+        rewards: "Эксклюзивные награды"
+      },
+      ranks: {
+        next: "до ранга",
+        progress: "прогресс",
+        seeker: "Искатель",
+        pilgrim: "Пилигрим",
+        warrior: "Воин Света",
+        master: "Мастер",
+        enlightened: "Просветлённый"
+      }
+    },
+    pactOath: {
+      title: "Моя Аскеза",
+      subtitle: "Я даю обет",
+      iPromise: "Я обещаю отказаться от",
+      duration: "на срок",
+      days: "дней",
+      inReturn: "Взамен я притягиваю в свою жизнь",
+      confirmButton: "Подтверждаю Договор"
+    },
+    userProfile: {
+      title: "О тебе",
+      nameLabel: "Как тебя зовут",
+      namePlaceholder: "Введите ваше имя",
+      nameRequired: "Имя обязательно",
+      birthDateLabel: "Дата рождения",
+      birthDatePlaceholder: "Выберите дату рождения",
+      birthDateRequired: "Укажите дату рождения",
+      continueButton: "Продолжить",
+      age: "Возраст",
+      yearSingular: "год",
+      yearPlural: "лет",
+      currentDate: "Текущая дата",
+      languageLabel: "Язык приложения",
+      back: "Назад"
+    },
+    gamification: {
+      energyPoints: "Очки энергии",
+      levelUp: "Повышение ранга!",
+      newAchievement: "Новое достижение!",
+      newMission: "Новая миссия!",
+      missionCompleted: "Миссия выполнена!",
+      rankTitle: "Ваш ранг:",
+      pointsEarned: "Получено очков:",
+      rewards: "Награды:"
+    },
+    calendar: {
+      year: 'Год',
+      month: 'Месяц'
+    },
+    minimumPeriod: 'Минимальный срок аскезы - 30 дней',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Бесплатно",
+      proPlan: "Платная подписка",
+      free: "Бесплатно",
+      pricing: "$4.99/мес или $29.99/год",
+      upgradeButton: "Открыть силу PRO ✨",
+      features: [
+        {
+          name: "Количество активных аскез",
+          free: true,
+          pro: true,
+          freeDescription: "1 одновременно",
+          proDescription: "До 5 одновременно"
+        },
+        {
+          name: "Категории отказа",
+          free: true,
+          pro: true,
+          freeDescription: "Все категории доступны"
+        },
+        {
+          name: "Вопросы Вселенной",
+          free: true,
+          pro: true,
+          freeDescription: "1 текстовый вопрос в день",
+          proDescription: "До 3 в день, включая голосовой вопрос"
+        },
+        {
+          name: "Ответы Вселенной",
+          free: true,
+          pro: true,
+          freeDescription: "Текстовые ответы",
+          proDescription: "Голосовые + расширенные текстовые (AI)"
+        },
+        {
+          name: "Круг Энергии",
+          free: true,
+          pro: true,
+          freeDescription: "Базовый круг с прогрессом",
+          proDescription: "Энергетический круг с анимацией силы"
+        },
+        {
+          name: "Темы оформления",
+          free: true,
+          pro: true,
+          freeDescription: "Тёмная тема",
+          proDescription: "Космические темы, музыка, фоны"
+        },
+        {
+          name: "Цитаты и мудрость",
+          free: true,
+          pro: true,
+          freeDescription: "Случайные цитаты",
+          proDescription: "Случайные цитаты + персональные духовные послания"
+        },
+        {
+          name: "Медитации",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Аудиомедитации, визуализации, голосовые практики"
+        },
+        {
+          name: "Космические миссии",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Ритуалы, челленджи, многодневные цепочки"
+        },
+        {
+          name: "Рекомендация на день",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Персональный совет от Вселенной"
+        },
+        {
+          name: "Разбор личности",
+          free: false,
+          pro: true,
+          freeDescription: "Недоступно",
+          proDescription: "Анализ личности, архетип, рекомендация"
+        },
+        {
+          name: "Ритуалы силы",
+          free: true,
+          pro: true,
+          freeDescription: "Базовые (текст + визуал)",
+          proDescription: "Аудио/видео-ритуалы с озвучкой"
+        },
+        {
+          name: "Сообщество",
+          free: true,
+          pro: true,
+          freeDescription: "Просмотр прогресса других",
+          proDescription: "Создание групп, энергия поддержки"
+        }
+      ]
+    },
+    meditation: {
+      pageTitle: "Медитации силы",
+      subtitle: "Откройте доступ к медитациям с ASKET PRO",
+      proFeatures: "Особенности PRO медитаций",
+      basic: "Базовая версия",
+      pro: "PRO версия",
+      duration: "Длительность",
+      play: "Слушать",
+      unlock: "Открыть PRO",
+      comingSoon: "Скоро будет доступно",
+      categories: {
+        morning: "Утренние",
+        evening: "Вечерние",
+        stress: "Антистресс",
+        mantra: "Мантры",
+        visual: "Визуализации"
+      },
+      morning: {
+        title1: "Настрой на день",
+        desc1: "Зарядись энергией на весь день",
+        title2: "Благодарность",
+        desc2: "Практика благодарности Вселенной"
+      },
+      evening: {
+        title1: "Прощение",
+        desc1: "Отпусти прошлое с легкостью"
+      },
+      stress: {
+        title1: "Заземление",
+        desc1: "Восстановление внутреннего равновесия"
+      },
+      mantra: {
+        title1: "Голос наставника",
+        desc1: "Интеграция высшей энергии"
+      },
+      visualization: {
+        title1: "Космический полёт",
+        desc1: "Путешествие сквозь звёзды"
+      }
+    },
+    auth: {
+      signIn: "Вход",
+      signUp: "Регистрация",
+      signOut: "Выход",
+      email: "Email",
+      password: "Пароль",
+      confirmPassword: "Подтвердите пароль",
+      forgotPassword: "Забыли пароль?",
+      backToSignIn: "Вернуться к входу",
+      createAccount: "Создать аккаунт",
+      alreadyHaveAccount: "Уже есть аккаунт?",
+      resetPassword: "Сбросить пароль",
+      resetPasswordButton: "Отправить ссылку для сброса",
+      resetPasswordSuccess: "Проверьте вашу почту для сброса пароля",
+      resetPasswordError: "Ошибка сброса пароля",
+      signInError: "Ошибка при входе",
+      signUpError: "Ошибка при регистрации",
+      passwordMismatch: "Пароли не совпадают",
+      welcomeBack: "С возвращением",
+      noAccount: "Нет аккаунта?",
+      orContinueWith: "Или продолжить с",
+      signInButton: "Войти",
+      signUpButton: "Зарегистрироваться",
+      haveAccount: "Уже есть аккаунт?",
+      passwordLength: "Пароль должен содержать минимум 6 симво��ов"
+    },
+    subscription: {
+      bannerTitle: "Раскройте свой потенциал с ASKET PRO",
+      bannerDesc: "Доступ к медитациям, расширенным практикам и многому другому",
+      upgradeNow: "Улучшить сейчас"
+    }
+  },
+  en: {
+    welcome: {
+      title: "ASKET",
+      subtitle: "The path to inner strength",
+      startButton: "Begin the journey",
+    },
+    onboarding: {
+      steps: [
+        {
+          title: "Welcome",
+          content: "Something inside you is asking to come out.\nThis is not anxiety. This is awakening.\n\nYou are on the threshold of a new version of yourself."
+        },
+        {
+          title: "What is Ascesis",
+          content: "Ascesis is a sacred contract with the Universe. Each day of rejecting something lower raises your vibration and reveals inner strength."
+        },
+        {
+          title: "Why it works",
+          content: "By rejecting temptation, you strengthen your will and tune into higher energies. The Universe sees your efforts and responds in kind."
+        },
+        {
+          title: "Who you will become",
+          content: "A person whose desires are subject to will. One who is able to shape reality through conscious rejection and attraction of the higher. The master of your destiny."
+        }
+      ],
+      buttons: {
+        next: "Next",
+        enter: "Enter",
+        startJourney: "Start the path"
+      }
+    },
+    main: {
+      days: "days",
+      todayCompleted: "Today I endured",
       askUniverse: "Ask the Universe",
+      noPacts: "You don't have any active ascesis yet",
+      createPact: "Create covenant",
       profile: "Profile",
       nav: {
         path: "Path",
@@ -20,490 +608,334 @@ export const translations = {
         profile: "Profile"
       }
     },
-    calendar: {
-      year: "Year",
-      month: "Month",
-      today: "Today",
-      selectDate: "Select date",
-      previousMonth: "Previous month",
-      nextMonth: "Next month",
-      days: {
-        monday: "Mon",
-        tuesday: "Tue",
-        wednesday: "Wed",
-        thursday: "Thu",
-        friday: "Fri",
-        saturday: "Sat",
-        sunday: "Sun"
-      }
-    },
-    welcome: {
-      title: "Welcome to Cosmic Ascesis",
-      subtitle: "Embark on a transformative journey of self-improvement and spiritual growth.",
-      startButton: "Get Started"
-    },
-    language: {
-      title: "Choose Your Language",
-      selectLanguage: "Select Language"
-    },
-    onboarding: {
-      title: "Welcome!",
-      steps: [
-        {
-          title: "Set Your Intention",
-          content: "Define what you wish to abstain from. Be specific and honest with yourself."
-        },
-        {
-          title: "Commit to a Duration",
-          content: "Choose how long you'll maintain your ascesis. Start small for greater success."
-        },
-        {
-          title: "Reflect and Grow",
-          content: "Use this journey to understand yourself better. Track your progress and celebrate milestones."
-        }
-      ],
-      buttons: {
-        enter: "Enter",
-        next: "Next",
-        startJourney: "Begin Your Journey"
-      },
-      step1: {
-        title: "Set Your Intention",
-        description: "Define what you wish to abstain from. Be specific and honest with yourself."
-      },
-      step2: {
-        title: "Commit to a Duration",
-        description: "Choose how long you'll maintain your ascesis. Start small for greater success."
-      },
-      step3: {
-        title: "Reflect and Grow",
-        description: "Use this journey to understand yourself better. Track your progress and celebrate milestones."
-      },
-      startButton: "Begin Your Journey"
-    },
     createPact: {
-      title: "Create Your Ascesis",
-      intention: "My Intention",
-      duration: "Duration (days)",
-      createButton: "Create Ascesis",
-      rejectionExamples: "e.g., sugar, phone after 22:00, cigarettes",
-      durationExamples: "e.g., 7, 14, 30",
-      successMessage: "Ascesis created successfully!",
-      errorMessage: "Failed to create ascesis. Please try again.",
-      stepOneTitle: "What will you abstain from?",
-      stepTwoTitle: "For how long?",
-      stepThreeTitle: "What do you wish to receive in return?",
-      notAsking: "This is not asking for material goods but for spiritual guidance and fulfillment",
-      customDays: "Custom duration",
+      title: "Create Ascesis",
+      stepOneTitle: "What are you giving up?",
+      stepTwoTitle: "Trial period",
+      stepThreeTitle: "What do you want to receive?",
+      whatRejecting: "What are you giving up?",
+      examples: [
+        "Sugar", 
+        "Phone after 10 PM", 
+        "Cigarettes", 
+        "Procrastination", 
+        "Social media"
+      ],
+      trialPeriod: "Trial period",
+      customDays: "Or specify your number of days:",
+      days: "days",
+      whatWant: "What do you want to receive?",
+      notAsking: "You are not asking. You are configuring reality.",
       nextButton: "Next",
+      startPathButton: "Start the path",
       placeholders: {
-        rejection: "I will abstain from...",
-        reward: "I wish to receive..."
+        rejection: "For example: Sugar, Social Media, Alcohol...",
+        reward: "For example: Strong health, Mental clarity, Financial stability..."
       },
-      ascesisWarning: "Choose what you're willing to give up. This covenant represents your commitment to personal growth through conscious sacrifice."
+      ascesisWarning: "You must understand that Ascesis is a serious practice and must be treated with the utmost responsibility. You give your word to the Universe to fulfill your obligations and ask in return for the fulfillment of a desire / the solution of some issue. If you fail and do not keep your word, the Universe will not take you seriously and there is a risk of falling out of the flow..."
     },
-    minimumPeriod: "Minimum 30 days required",
     universe: {
-      title: "Ask the Cosmic Universe",
-      question: "What would you like to ask the universe?",
-      questionPlaceholder: "Ask your question...",
-      submitButton: "Ask",
-      responseTitle: "The Universe Says:",
-      errorMessage: "Failed to get an answer. Please try again.",
-      yourQuestion: "Your Question",
-      universeAnswer: "The Universe Answers",
-      newQuestion: "Ask Another Question",
-      thinking: "The universe is contemplating your question...",
-      askButton: "Ask the Universe",
-      previousQuestions: "Previous Questions"
+      title: "Gates of the Universe",
+      question: "What do you want to ask the Universe?",
+      placeholder: "Write your question here...",
+      askButton: "Send question",
+      thinking: "The Universe is contemplating the answer...",
+      yourQuestion: "Your question",
+      universeAnswer: "Universe's answer",
+      newQuestion: "Ask a new question",
+      previousQuestions: "Previous questions",
+      emptyState: "You haven't asked any questions yet"
     },
     profile: {
-      title: "My Profile",
-      energyPoints: "Energy Points",
-      level: "Level",
-      editProfile: "Edit Profile",
-      signOut: "Sign Out",
-      deleteAccount: "Delete Account",
-      areYouSureDeleteAccount: "Are you sure you want to delete your account?",
-      deleteAccountWarning: "This action cannot be undone.",
-      cancel: "Cancel",
-      confirmDelete: "Delete Account",
-      signOutConfirmation: "Are you sure you want to sign out?",
-      confirmSignOut: "Sign Out",
-    },
-    comparison: {
-      title: "Cosmic Ascesis PRO",
-      subtitle: "Unlock premium features and elevate your journey.",
-      feature1: "Unlimited Ascesis Creation",
-      feature2: "Advanced Analytics",
-      feature3: "Personalized Guidance",
-      feature4: "Ad-Free Experience",
-      upgradeButton: "Upgrade to PRO",
-      restoreButton: "Restore Purchase",
-      successMessage: "Upgrade successful!",
-      errorMessage: "Failed to upgrade. Please try again."
-    },
-    subscription: {
-      bannerTitle: "Unlock Full Potential",
-      bannerDesc: "Upgrade to PRO for unlimited features",
-      upgradeNow: "Upgrade Now"
+      title: "Profile",
+      daysOfAscesis: "Days of ascesis",
+      energy: "Energy",
+      settings: "Settings",
+      settingsItems: ['Notifications', 'Themes', 'Sound', 'Language'],
+      proFeatures: [
+        'Up to 5 ascesis simultaneously',
+        'Access to premium meditations',
+        'Visual themes',
+        'Additional questions to the Universe',
+        'Power rituals and breakthrough practices'
+      ],
+      proTitle: "ASKET PRO",
+      proDescription: "Unlock additional capabilities and enhance your path",
+      proButton: "Unlock PRO power ✨",
+      achievements: {
+        title: "Achievements",
+        unlocked: "Unlocked achievements",
+        locked: "Upcoming achievements",
+        empty: "You have no unlocked achievements yet"
+      },
+      missions: {
+        title: "Missions",
+        current: "Current mission",
+        empty: "You have no active missions",
+        get: "Get mission",
+        about: "About cosmic missions",
+        description: "Cosmic missions are special tasks from the Universe that will help you strengthen your spirit and earn additional rewards. Complete missions to earn energy points and achievements.",
+        rewards: "Exclusive rewards"
+      },
+      ranks: {
+        next: "until rank",
+        progress: "progress",
+        seeker: "Seeker",
+        pilgrim: "Pilgrim",
+        warrior: "Light Warrior",
+        master: "Master",
+        enlightened: "Enlightened"
+      }
     },
     pactOath: {
-      title: "Ascesis Oath",
-      subtitle: "Make your covenant with the Universe",
+      title: "My Ascesis",
+      subtitle: "I take a vow",
+      iPromise: "I promise to give up",
+      duration: "for a period of",
       days: "days",
-      readAloud: "Read Aloud",
-      confirmReading: "I have read aloud and confirm",
-      signContract: "Sign Contract",
-      instructions: "Read your ascesis vow aloud. By speaking these words, you are making a sacred covenant with the Universe."
+      inReturn: "In return I attract into my life",
+      confirmButton: "Confirm Covenant"
     },
     userProfile: {
-      title: "About You",
-      age: "Age",
-      nameLabel: "Your Name",
+      title: "About you",
+      nameLabel: "What's your name",
       namePlaceholder: "Enter your name",
       nameRequired: "Name is required",
-      birthDateLabel: "Birth Date",
-      birthDatePlaceholder: "Select your birth date",
-      birthDateRequired: "Birth date is required",
-      languageLabel: "App Language",
+      birthDateLabel: "Date of birth",
+      birthDatePlaceholder: "Select your date of birth",
+      birthDateRequired: "Date of birth is required",
       continueButton: "Continue",
-      currentDate: "Current date"
+      age: "Age",
+      yearSingular: "year",
+      yearPlural: "years",
+      currentDate: "Current date",
+      languageLabel: "App language",
+      back: "Back"
+    },
+    gamification: {
+      energyPoints: "Energy Points",
+      levelUp: "Rank Up!",
+      newAchievement: "New Achievement!",
+      newMission: "New Mission!",
+      missionCompleted: "Mission Completed!",
+      rankTitle: "Your rank:",
+      pointsEarned: "Points earned:",
+      rewards: "Rewards:"
+    },
+    calendar: {
+      year: 'Year',
+      month: 'Month'
+    },
+    minimumPeriod: 'Minimum ascesis period - 30 days',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Free",
+      proPlan: "Paid subscription",
+      free: "Free",
+      pricing: "$4.99/month or $29.99/year",
+      upgradeButton: "Unlock PRO power ✨",
+      features: [
+        {
+          name: "Active ascesis count",
+          free: true,
+          pro: true,
+          freeDescription: "1 simultaneously",
+          proDescription: "Up to 5 simultaneously"
+        },
+        {
+          name: "Rejection categories",
+          free: true,
+          pro: true,
+          freeDescription: "All categories available"
+        },
+        {
+          name: "Universe Questions",
+          free: true,
+          pro: true,
+          freeDescription: "1 text question per day",
+          proDescription: "Up to 3 per day, including voice questions"
+        },
+        {
+          name: "Universe Answers",
+          free: true,
+          pro: true,
+          freeDescription: "Text answers",
+          proDescription: "Voice + extended text answers (AI)"
+        },
+        {
+          name: "Energy Circle",
+          free: true,
+          pro: true,
+          freeDescription: "Basic circle with progress",
+          proDescription: "Energy circle with power animation"
+        },
+        {
+          name: "Themes",
+          free: true,
+          pro: true,
+          freeDescription: "Dark theme",
+          proDescription: "Cosmic themes, music, backgrounds"
+        },
+        {
+          name: "Quotes and wisdom",
+          free: true,
+          pro: true,
+          freeDescription: "Random quotes",
+          proDescription: "Random quotes + personal spiritual messages"
+        },
+        {
+          name: "Meditations",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Audio meditations, visualizations, voice practices"
+        },
+        {
+          name: "Cosmic missions",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Rituals, challenges, multi-day chains"
+        },
+        {
+          name: "Daily recommendation",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Personal advice from the Universe"
+        },
+        {
+          name: "Personality analysis",
+          free: false,
+          pro: true,
+          freeDescription: "Unavailable",
+          proDescription: "Personality analysis, archetype, recommendation"
+        },
+        {
+          name: "Power rituals",
+          free: true,
+          pro: true,
+          freeDescription: "Basic (text + visual)",
+          proDescription: "Audio/video rituals with voiceover"
+        },
+        {
+          name: "Community",
+          free: true,
+          pro: true,
+          freeDescription: "View others' progress",
+          proDescription: "Create groups, support energy"
+        }
+      ]
     },
     meditation: {
-      title: "Meditation",
-      pageTitle: "Meditations",
-      subtitle: "Find your inner peace",
-      start: "Start",
-      pause: "Pause",
-      resume: "Resume",
-      stop: "Stop",
+      pageTitle: "Power Meditations",
+      subtitle: "Get access to meditations with ASKET PRO",
+      proFeatures: "PRO meditation features",
+      basic: "Basic version",
+      pro: "PRO version",
       duration: "Duration",
-      minutes: "minutes",
-      play: "Play",
-      unlock: "Unlock",
-      breathe: {
-        in: "Breathe In",
-        hold: "Hold",
-        out: "Breathe Out",
-        rest: "Rest"
-      },
-      types: {
-        guided: "Guided",
-        breathing: "Breathing",
-        silent: "Silent"
-      },
+      play: "Listen",
+      unlock: "Unlock PRO",
+      comingSoon: "Coming soon",
       categories: {
         morning: "Morning",
         evening: "Evening",
-        stress: "Stress",
-        mantra: "Mantra",
-        visual: "Visual"
+        stress: "Anti-stress",
+        mantra: "Mantras",
+        visual: "Visualization"
       },
       morning: {
-        title1: "Morning Clarity",
-        desc1: "Start your day with clarity and purpose",
-        title2: "Sunrise Energy",
-        desc2: "Energize your body and mind for the day ahead"
+        title1: "Day Setup",
+        desc1: "Charge with energy for the whole day",
+        title2: "Gratitude",
+        desc2: "Practice of gratitude to the Universe"
       },
       evening: {
-        title1: "Evening Unwind",
-        desc1: "Release the tension of the day and prepare for rest"
+        title1: "Forgiveness",
+        desc1: "Let go of the past with ease"
       },
       stress: {
-        title1: "Stress Release",
-        desc1: "Find calm in moments of tension and anxiety"
+        title1: "Grounding",
+        desc1: "Restoring inner balance"
       },
       mantra: {
-        title1: "Power Mantras",
-        desc1: "Ancient phrases to focus and center your energy"
+        title1: "Guide's Voice",
+        desc1: "Integration of higher energy"
       },
       visualization: {
-        title1: "Cosmic Journey",
-        desc1: "Travel through the cosmos in your mind"
+        title1: "Cosmic Flight",
+        desc1: "Journey through the stars"
       }
     },
     auth: {
       signIn: "Sign In",
-      signInButton: "Sign In",
-      signUp: "Sign Up", 
-      signUpButton: "Sign Up",
-      signInSuccess: "Sign in successful!",
-      welcomeBack: "Welcome back to Cosmic Ascesis",
-      signInError: "Sign in error",
-      signUpSuccess: "Sign up successful!",
-      accountCreated: "Your account has been created",
-      signUpError: "Sign up error",
-      tryAgain: "Please try again",
-      enterCredentials: "Enter your credentials to continue",
+      signUp: "Sign Up",
+      signOut: "Sign Out",
       email: "Email",
       password: "Password",
-      name: "Name",
-      namePlaceholder: "Enter your name",
       confirmPassword: "Confirm Password",
-      processing: "Processing...",
-      noAccount: "Don't have an account?",
-      signUpNow: "Sign up now",
+      forgotPassword: "Forgot password?",
+      backToSignIn: "Back to Sign In",
+      createAccount: "Create Account",
       alreadyHaveAccount: "Already have an account?",
-      signInNow: "Sign in now",
-      createAccountPrompt: "Create your account to begin your journey"
-    }
-  },
-  ru: {
-    main: {
-      title: "Космический Аскетизм",
-      subtitle: "Прими путешествие внутрь себя",
-      noPacts: "Пока нет аскез. Создайте, чтобы начать свой путь.",
-      createPact: "Создать Аскезу",
-      todayCompleted: "Аскеза на сегодня выполнена",
-      days: "Дней",
-      askUniverse: "Спросить у Вселенной",
-      profile: "Профиль",
-      nav: {
-        path: "Путь",
-        ascesis: "Аскеза",
-        universe: "Вселенная",
-        profile: "Профиль"
-      }
-    },
-    calendar: {
-      year: "Год",
-      month: "Месяц",
-      today: "Сегодня",
-      selectDate: "Выберите дату",
-      previousMonth: "Предыдущий месяц",
-      nextMonth: "Следующий месяц",
-      days: {
-        monday: "Пн",
-        tuesday: "Вт",
-        wednesday: "Ср",
-        thursday: "Чт",
-        friday: "Пт",
-        saturday: "Сб",
-        sunday: "Вс"
-      }
-    },
-    welcome: {
-      title: "Добро пожаловать в Cosmic Ascesis",
-      subtitle: "Отправьтесь в преобразующее путешествие самосовершенствования и духовного роста.",
-      startButton: "Начать"
-    },
-    language: {
-      title: "Выберите Язык",
-      selectLanguage: "Выберите Язык"
-    },
-    onboarding: {
-      title: "Добро пожаловать!",
-      steps: [
-        {
-          title: "Установите Свое Намерение",
-          content: "Определите, от чего вы хотите воздержаться. Будьте конкретны и честны с собой."
-        },
-        {
-          title: "Определите Продолжительность",
-          content: "Выберите, как долго вы будете поддерживать свою аскезу. Начните с малого для большего успеха."
-        },
-        {
-          title: "Размышляйте и Растите",
-          content: "Используйте это путешествие, чтобы лучше понять себя. Отслеживайте свой прогресс и отмечайте вехи."
-        }
-      ],
-      buttons: {
-        enter: "Войти",
-        next: "Далее",
-        startJourney: "Начать Путь"
-      },
-      step1: {
-        title: "Установите Свое Намерение",
-        description: "Определите, от чего вы хотите воздержаться. Будьте конкретны и честны с собой."
-      },
-      step2: {
-        title: "Определите Продолжительность",
-        description: "Выберите, как долго вы будете поддерживать свою аскезу. Начните с малого для большего успеха."
-      },
-      step3: {
-        title: "Размышляйте и Растите",
-        description: "Используйте это путешествие, чтобы лучше понять себя. Отслеживайте свой прогресс и отмечайте вехи."
-      },
-      startButton: "Начните Свой Путь"
-    },
-    createPact: {
-      title: "Создайте Свою Аскезу",
-      intention: "Мое Намерение",
-      duration: "Продолжительность (дни)",
-      createButton: "Создать Аскезу",
-      rejectionExamples: "например, сахар, телефон после 22:00, сигареты",
-      durationExamples: "например, 7, 14, 30",
-      successMessage: "Аскеза успешно создана!",
-      errorMessage: "Не удалось создать аскезу. Пожалуйста, попробуйте еще раз.",
-      stepOneTitle: "От чего вы откажетесь?",
-      stepTwoTitle: "На какой срок?",
-      stepThreeTitle: "Что вы хотите получить взамен?",
-      notAsking: "Мы не просим материальных благ, а духовного руководства и исполнения",
-      customDays: "Своя продолжительность",
-      nextButton: "Далее",
-      placeholders: {
-        rejection: "Я воздержусь от...",
-        reward: "Я хочу получить..."
-      },
-      ascesisWarning: "Выберите то, от чего вы готовы отказаться. Этот договор представляет ваше обязательство к личностному росту через осознанную жертву."
-    },
-    minimumPeriod: "Минимум 30 дней",
-    universe: {
-      title: "Спросите у Космической Вселенной",
-      question: "Что бы вы хотели спросить у вселенной?",
-      questionPlaceholder: "Задайте свой вопрос...",
-      submitButton: "Спросить",
-      responseTitle: "Вселенная Говорит:",
-      errorMessage: "Не удалось получить ответ. Пожалуйста, попробуйте еще раз.",
-      yourQuestion: "Ваш Вопрос",
-      universeAnswer: "Ответ Вселенной",
-      newQuestion: "Задать Другой Вопрос",
-      thinking: "Вселенная обдумывает ваш вопрос...",
-      askButton: "Спросить Вселенную",
-      previousQuestions: "Предыдущие Вопросы"
-    },
-    profile: {
-      title: "Мой Профиль",
-      energyPoints: "Очки Энергии",
-      level: "Уровень",
-      editProfile: "Редактировать Профиль",
-      signOut: "Выйти",
-      deleteAccount: "Удалить Аккаунт",
-      areYouSureDeleteAccount: "Вы уверены, что хотите удалить свой аккаунт?",
-      deleteAccountWarning: "Это действие нельзя отменить.",
-      cancel: "Отмена",
-      confirmDelete: "Удалить Аккаунт",
-      signOutConfirmation: "Вы уверены, что хотите выйти?",
-      confirmSignOut: "Выйти",
-    },
-    comparison: {
-      title: "Cosmic Ascesis PRO",
-      subtitle: "Откройте премиум-функции и улучшите свое путешествие.",
-      feature1: "Неограниченное Создание Аскез",
-      feature2: "Расширенная Аналитика",
-      feature3: "Персонализированное Руководство",
-      feature4: "Без Рекламы",
-      upgradeButton: "Перейти на PRO",
-      restoreButton: "Восстановить Покупку",
-      successMessage: "Обновление прошло успешно!",
-      errorMessage: "Не удалось обновить. Пожалуйста, попробуйте еще раз."
+      resetPassword: "Reset Password",
+      resetPasswordButton: "Send Reset Link",
+      resetPasswordSuccess: "Check your email to reset your password",
+      resetPasswordError: "Error resetting password",
+      signInError: "Error signing in",
+      signUpError: "Error signing up",
+      passwordMismatch: "Passwords do not match",
+      welcomeBack: "Welcome back",
+      noAccount: "Don't have an account?",
+      orContinueWith: "Or continue with",
+      signInButton: "Sign In",
+      signUpButton: "Sign Up",
+      haveAccount: "Already have an account?",
+      passwordLength: "Password must be at least 6 characters"
     },
     subscription: {
-      bannerTitle: "Раскройте Полный Потенциал",
-      bannerDesc: "Перейдите на PRO для неограниченных возможностей",
-      upgradeNow: "Обновить Сейчас"
-    },
-    pactOath: {
-      title: "Клятва Аскезы",
-      subtitle: "Заключите договор со Вселенной",
-      days: "дней",
-      readAloud: "Прочитать вслух",
-      confirmReading: "Я прочитал(а) вслух и подтверждаю",
-      signContract: "Подписать договор",
-      instructions: "Прочтите свой обет аскезы вслух. Произнося эти слова, вы заключаете священный договор с Вселенной."
-    },
-    userProfile: {
-      title: "О тебе",
-      age: "Возраст",
-      nameLabel: "Как тебя зовут",
-      namePlaceholder: "Введите ваше имя",
-      nameRequired: "Имя обязательно",
-      birthDateLabel: "Дата рождения",
-      birthDatePlaceholder: "Выберите дату рождения",
-      birthDateRequired: "Укажите дату рождения",
-      languageLabel: "Язык приложения",
-      continueButton: "Продолжить",
-      currentDate: "Текущая дата"
-    },
-    meditation: {
-      title: "Медитация",
-      pageTitle: "Медитации",
-      subtitle: "Найди свой внутренний покой",
-      start: "Начать",
-      pause: "Пауза",
-      resume: "Продолжить",
-      stop: "Стоп",
-      duration: "Длительность",
-      minutes: "минут",
-      play: "Слушать",
-      unlock: "Разблокировать",
-      breathe: {
-        in: "Вдох",
-        hold: "Задержка",
-        out: "Выдох",
-        rest: "Отдых"
-      },
-      types: {
-        guided: "С гидом",
-        breathing: "Дыхательная",
-        silent: "Тишина"
-      },
-      categories: {
-        morning: "Утро",
-        evening: "Вечер",
-        stress: "Стресс",
-        mantra: "Мантра",
-        visual: "Визуализация"
-      },
-      morning: {
-        title1: "Утренняя ясность",
-        desc1: "Начни свой день с ясности и цели",
-        title2: "Энергия рассвета",
-        desc2: "Зарядись энергией на весь день"
-      },
-      evening: {
-        title1: "Вечернее расслабление",
-        desc1: "Отпусти напряжение дня и подготовься к отдыху"
-      },
-      stress: {
-        title1: "Снятие стресса",
-        desc1: "Найди спокойствие в моменты напряжения"
-      },
-      mantra: {
-        title1: "Сильные мантры",
-        desc1: "Древние фразы для фокусировки энергии"
-      },
-      visualization: {
-        title1: "Космическое путешествие",
-        desc1: "Путешествие через космос в твоём сознании"
-      }
-    },
-    auth: {
-      signIn: "Войти",
-      signInButton: "Войти",
-      signUp: "Регистрация",
-      signUpButton: "Зарегистрироваться",
-      signInSuccess: "Вход выполнен успешно!",
-      welcomeBack: "Добро пожаловать обратно в Космический Аскетизм",
-      signInError: "Ошибка входа",
-      signUpSuccess: "Регистрация прошла успешно!",
-      accountCreated: "Ваш аккаунт создан",
-      signUpError: "Ошибка регистрации",
-      tryAgain: "Пожалуйста, попробуйте снова",
-      enterCredentials: "Введите свои данные для продолжения",
-      email: "Электронная почта",
-      password: "Пароль",
-      name: "Имя",
-      namePlaceholder: "Ваше имя",
-      confirmPassword: "Подтвердите пароль",
-      processing: "Обработка...",
-      noAccount: "Нет аккаунта?",
-      signUpNow: "Зарегистрируйтесь сейчас",
-      alreadyHaveAccount: "Уже есть аккаунт?",
-      signInNow: "Войти сейчас",
-      createAccountPrompt: "Создайте аккаунт, чтобы начать свое путешествие"
+      bannerTitle: "Unlock your potential with ASKET PRO",
+      bannerDesc: "Access to meditations, advanced practices and much more",
+      upgradeNow: "Upgrade Now"
     }
   },
   es: {
+    welcome: {
+      title: "ASKET",
+      subtitle: "El camino hacia la fuerza interior",
+      startButton: "Comenzar el viaje",
+    },
+    onboarding: {
+      steps: [
+        {
+          title: "Bienvenido",
+          content: "Algo dentro de ti pide salir.\nNo es ansiedad. Es despertar.\n\nEstás en el umbral de una nueva versión de ti mismo."
+        },
+        {
+          title: "Qué es la Ascesis",
+          content: "La ascesis es un contrato sagrado con el Universo. Cada día de rechazo a algo inferior eleva tu vibración y revela tu fuerza interior."
+        },
+        {
+          title: "Por qué funciona",
+          content: "Al rechazar la tentación, fortaleces tu voluntad y te sintonizas con energías superiores. El Universo ve tus esfuerzos y responde de la misma manera."
+        },
+        {
+          title: "En quién te convertirás",
+          content: "Una persona cuyos deseos están sujetos a la voluntad. Alguien capaz de dar forma a la realidad a través del rechazo consciente y la atracción de lo superior. El maestro de tu destino."
+        }
+      ],
+      buttons: {
+        next: "Siguiente",
+        enter: "Entrar",
+        startJourney: "Iniciar el camino"
+      }
+    },
     main: {
-      title: "Ascesis Cósmica",
-      subtitle: "Abraza el viaje interior",
-      noPacts: "Aún no hay ascesis. Crea uno para comenzar tu viaje.",
-      createPact: "Crear Ascesis",
-      todayCompleted: "Ascesis de Hoy Completada",
-      days: "Días",
+      days: "días",
+      todayCompleted: "Hoy resistí",
       askUniverse: "Preguntar al Universo",
+      noPacts: "Aún no tienes ascesis activas",
+      createPact: "Crear pacto",
       profile: "Perfil",
       nav: {
         path: "Camino",
@@ -512,233 +944,297 @@ export const translations = {
         profile: "Perfil"
       }
     },
-    calendar: {
-      year: "Año",
-      month: "Mes",
-      today: "Hoy",
-      selectDate: "Seleccionar fecha",
-      previousMonth: "Mes anterior",
-      nextMonth: "Mes siguiente",
-      days: {
-        monday: "Lun",
-        tuesday: "Mar",
-        wednesday: "Mié",
-        thursday: "Jue",
-        friday: "Vie",
-        saturday: "Sáb",
-        sunday: "Dom"
-      }
-    },
-    welcome: {
-      title: "Bienvenido a Ascesis Cósmica",
-      subtitle: "Embárcate en un viaje transformador de superación personal y crecimiento espiritual.",
-      startButton: "Comenzar"
-    },
-    language: {
-      title: "Elige Tu Idioma",
-      selectLanguage: "Seleccionar Idioma"
-    },
-    onboarding: {
-      title: "¡Bienvenido!",
-      steps: [
-        {
-          title: "Establece Tu Intención",
-          content: "Define de qué deseas abstenerte. Sé específico y honesto contigo mismo."
-        },
-        {
-          title: "Comprométete a una Duración",
-          content: "Elige cuánto tiempo mantendrás tu ascesis. Comienza poco a poco para un mayor éxito."
-        },
-        {
-          title: "Reflexiona y Crece",
-          content: "Utiliza este viaje para comprenderte mejor. Realiza un seguimiento de tu progreso y celebra los hitos."
-        }
-      ],
-      buttons: {
-        enter: "Entrar",
-        next: "Siguiente",
-        startJourney: "Comenzar Viaje"
-      },
-      step1: {
-        title: "Establece Tu Intención",
-        description: "Define de qué deseas abstenerte. Sé específico y honesto contigo mismo."
-      },
-      step2: {
-        title: "Comprométete a una Duración",
-        description: "Elige cuánto tiempo mantendrás tu ascesis. Comienza poco a poco para un mayor éxito."
-      },
-      step3: {
-        title: "Reflexiona y Crece",
-        description: "Utiliza este viaje para comprenderte mejor. Realiza un seguimiento de tu progreso y celebra los hitos."
-      },
-      startButton: "Comienza Tu Viaje"
-    },
     createPact: {
-      title: "Crea Tu Ascesis",
-      intention: "Mi Intención",
-      duration: "Duración (días)",
-      createButton: "Crear Ascesis",
-      rejectionExamples: "ej., azúcar, teléfono después de las 22:00, cigarrillos",
-      durationExamples: "ej., 7, 14, 30",
-      successMessage: "¡Ascesis creada con éxito!",
-      errorMessage: "No se pudo crear la ascesis. Por favor, inténtalo de nuevo.",
-      stepOneTitle: "¿De qué te abstendrás?",
-      stepTwoTitle: "¿Por cuánto tiempo?",
-      stepThreeTitle: "¿Qué deseas recibir a cambio?",
-      notAsking: "Esto no pide bienes materiales sino guía espiritual y plenitud",
-      customDays: "Duración personalizada",
+      title: "Crear Ascesis",
+      stepOneTitle: "¿A qué renuncias?",
+      stepTwoTitle: "Período de prueba",
+      stepThreeTitle: "¿Qué deseas recibir?",
+      whatRejecting: "¿A qué renuncias?",
+      examples: [
+        "Azúcar", 
+        "Teléfono después de las 22:00", 
+        "Cigarrillos", 
+        "Procrastinación", 
+        "Redes sociales"
+      ],
+      trialPeriod: "Período de prueba",
+      customDays: "O especifica tu número de días:",
+      days: "días",
+      whatWant: "¿Qué deseas recibir?",
+      notAsking: "No estás pidiendo. Estás configurando la realidad.",
       nextButton: "Siguiente",
+      startPathButton: "Iniciar el camino",
       placeholders: {
-        rejection: "Me abstendré de...",
-        reward: "Deseo recibir..."
+        rejection: "Por ejemplo: Azúcar, Redes Sociales, Alcohol...",
+        reward: "Por ejemplo: Salud fuerte, Claridad mental, Estabilidad financiera..."
       },
-      ascesisWarning: "Elige aquello a lo que estás dispuesto a renunciar. Este pacto representa tu compromiso con el crecimiento personal a través del sacrificio consciente."
+      ascesisWarning: "Debes entender que la Ascesis es una práctica seria y debe ser tratada con la máxima responsabilidad. Das tu palabra al Universo de cumplir con tus obligaciones y pides a cambio el cumplimiento de un deseo o la solución de algún problema. Si fracasas y no mantienes tu palabra, el Universo no te tomará en serio y existe el riesgo de caer fuera del flujo..."
     },
-    minimumPeriod: "Se requiere un mínimo de 30 días",
     universe: {
-      title: "Pregunta al Universo Cósmico",
-      question: "¿Qué te gustaría preguntarle al universo?",
-      questionPlaceholder: "Haz tu pregunta...",
-      submitButton: "Preguntar",
-      responseTitle: "El Universo Dice:",
-      errorMessage: "No se pudo obtener una respuesta. Por favor, inténtalo de nuevo.",
-      yourQuestion: "Tu Pregunta",
-      universeAnswer: "El Universo Responde",
-      newQuestion: "Hacer Otra Pregunta",
-      thinking: "El universo está contemplando tu pregunta...",
-      askButton: "Preguntar al Universo",
-      previousQuestions: "Preguntas Anteriores"
+      title: "Puertas del Universo",
+      question: "¿Qué quieres preguntar al Universo?",
+      placeholder: "Escribe tu pregunta aquí...",
+      askButton: "Enviar pregunta",
+      thinking: "El Universo está contemplando la respuesta...",
+      yourQuestion: "Tu pregunta",
+      universeAnswer: "Respuesta del Universo",
+      newQuestion: "Hacer una nueva pregunta",
+      previousQuestions: "Preguntas anteriores",
+      emptyState: "Aún no has hecho preguntas al Universo"
     },
     profile: {
-      title: "Mi Perfil",
-      energyPoints: "Puntos de Energía",
-      level: "Nivel",
-      editProfile: "Editar Perfil",
-      signOut: "Cerrar Sesión",
-      deleteAccount: "Eliminar Cuenta",
-      areYouSureDeleteAccount: "¿Estás seguro de que quieres eliminar tu cuenta?",
-      deleteAccountWarning: "Esta acción no se puede deshacer.",
-      cancel: "Cancelar",
-      confirmDelete: "Eliminar Cuenta",
-      signOutConfirmation: "¿Estás seguro de que quieres cerrar sesión?",
-      confirmSignOut: "Cerrar Sesión",
-    },
-    comparison: {
-      title: "Cosmic Ascesis PRO",
-      subtitle: "Desbloquea funciones premium y eleva tu viaje.",
-      feature1: "Creación Ilimitada de Ascesis",
-      feature2: "Análisis Avanzado",
-      feature3: "Guía Personalizada",
-      feature4: "Experiencia Sin Anuncios",
-      upgradeButton: "Actualizar a PRO",
-      restoreButton: "Restaurar Compra",
-      successMessage: "¡Actualización exitosa!",
-      errorMessage: "No se pudo actualizar. Por favor, inténtalo de nuevo."
-    },
-    subscription: {
-      bannerTitle: "Desbloquea Todo el Potencial",
-      bannerDesc: "Actualiza a PRO para funciones ilimitadas",
-      upgradeNow: "Actualizar Ahora"
+      title: "Perfil",
+      daysOfAscesis: "Días de ascesis",
+      energy: "Energía",
+      settings: "Configuración",
+      settingsItems: ['Notificaciones', 'Temas', 'Sonido', 'Idioma'],
+      proFeatures: [
+        'Hasta 5 ascesis simultáneamente',
+        'Acceso a meditaciones premium',
+        'Temas visuales',
+        'Preguntas adicionales al Universo',
+        'Rituales de poder y prácticas de avance'
+      ],
+      proTitle: "ASKET PRO",
+      proDescription: "Desbloquea capacidades adicionales y mejora tu camino",
+      proButton: "Desbloquear el poder PRO ✨",
+      achievements: {
+        title: "Logros",
+        unlocked: "Logros desbloqueados",
+        locked: "Próximos logros",
+        empty: "Aún no tienes logros desbloqueados"
+      },
+      missions: {
+        title: "Misiones",
+        current: "Misión actual",
+        empty: "No tienes misiones activas",
+        get: "Obtener misión",
+        about: "Sobre misiones cósmicas",
+        description: "Las misiones cósmicas son tareas especiales del Universo que te ayudarán a fortalecer tu espíritu y obtener recompensas adicionales. Completa misiones y obtén puntos de energía y logros.",
+        rewards: "Recompensas exclusivas"
+      },
+      ranks: {
+        next: "hasta el rango de",
+        progress: "progreso",
+        seeker: "Buscador",
+        pilgrim: "Peregrino",
+        warrior: "Guerrero de Luz",
+        master: "Maestro",
+        enlightened: "Iluminado"
+      }
     },
     pactOath: {
-      title: "Juramento de Ascesis",
-      subtitle: "Haz tu pacto con el Universo",
+      title: "Mi Ascesis",
+      subtitle: "Hago un voto",
+      iPromise: "Prometo renunciar a",
+      duration: "por un período de",
       days: "días",
-      readAloud: "Leer en voz alta",
-      confirmReading: "He leído en voz alta y confirmo",
-      signContract: "Firmar contrato",
-      instructions: "Lee tu voto de ascesis en voz alta. Al pronunciar estas palabras, estás haciendo un pacto sagrado con el Universo."
+      inReturn: "A cambio atraigo a mi vida",
+      confirmButton: "Confirmar Pacto"
     },
     userProfile: {
-      title: "Sobre ti",
-      age: "Edad",
-      nameLabel: "Tu Nombre",
-      namePlaceholder: "Ingresa tu nombre",
-      nameRequired: "El nombre es requerido",
-      birthDateLabel: "Fecha de Nacimiento",
+      title: "Acerca de ti",
+      nameLabel: "¿Cómo te llamas?",
+      namePlaceholder: "Introduce tu nombre",
+      nameRequired: "El nombre es obligatorio",
+      birthDateLabel: "Fecha de nacimiento",
       birthDatePlaceholder: "Selecciona tu fecha de nacimiento",
-      birthDateRequired: "La fecha de nacimiento es requerida",
-      languageLabel: "Idioma de la aplicación",
+      birthDateRequired: "La fecha de nacimiento es obligatoria",
       continueButton: "Continuar",
-      currentDate: "Fecha actual"
+      age: "Edad",
+      yearSingular: "año",
+      yearPlural: "años",
+      currentDate: "Fecha actual",
+      languageLabel: "Idioma de la aplicación",
+      back: "Atrás"
+    },
+    gamification: {
+      energyPoints: "Puntos de Energía",
+      levelUp: "¡Subida de Rango!",
+      newAchievement: "¡Nuevo Logro!",
+      newMission: "¡Nueva Misión!",
+      missionCompleted: "¡Misión Completada!",
+      rankTitle: "Tu rango:",
+      pointsEarned: "Puntos ganados:",
+      rewards: "Recompensas:"
+    },
+    calendar: {
+      year: 'Año',
+      month: 'Mes'
+    },
+    minimumPeriod: 'Período mínimo de ascesis - 30 días',
+    comparison: {
+      title: "ASKET vs ASKET PRO",
+      freePlan: "Gratis",
+      proPlan: "Suscripción de pago",
+      free: "Gratis",
+      pricing: "$4.99/mes o $29.99/año",
+      upgradeButton: "Desbloquear el poder PRO ✨",
+      features: [
+        {
+          name: "Número de ascesis activas",
+          free: true,
+          pro: true,
+          freeDescription: "1 simultáneamente",
+          proDescription: "Hasta 5 simultáneamente"
+        },
+        {
+          name: "Categorías de rechazo",
+          free: true,
+          pro: true,
+          freeDescription: "Todas las categorías disponibles"
+        },
+        {
+          name: "Preguntas al Universo",
+          free: true,
+          pro: true,
+          freeDescription: "1 pregunta de texto por día",
+          proDescription: "Hasta 3 por día, incluyendo preguntas por voz"
+        },
+        {
+          name: "Respuestas del Universo",
+          free: true,
+          pro: true,
+          freeDescription: "Respuestas de texto",
+          proDescription: "Respuestas por voz + texto extendido (IA)"
+        },
+        {
+          name: "Círculo de Energía",
+          free: true,
+          pro: true,
+          freeDescription: "Círculo básico con progreso",
+          proDescription: "Círculo energético con animación de poder"
+        },
+        {
+          name: "Temas",
+          free: true,
+          pro: true,
+          freeDescription: "Tema oscuro",
+          proDescription: "Temas cósmicos, música, fondos"
+        },
+        {
+          name: "Citas y sabiduría",
+          free: true,
+          pro: true,
+          freeDescription: "Citas aleatorias",
+          proDescription: "Citas aleatorias + mensajes espirituales personales"
+        },
+        {
+          name: "Meditaciones",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Meditaciones de audio, visualizaciones, prácticas de voz"
+        },
+        {
+          name: "Misiones cósmicas",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Rituales, desafíos, cadenas de varios días"
+        },
+        {
+          name: "Recomendación diaria",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Consejo personal del Universo"
+        },
+        {
+          name: "Análisis de personalidad",
+          free: false,
+          pro: true,
+          freeDescription: "No disponible",
+          proDescription: "Análisis de personalidad, arquetipo, recomendación"
+        },
+        {
+          name: "Rituales de poder",
+          free: true,
+          pro: true,
+          freeDescription: "Básicos (texto + visual)",
+          proDescription: "Rituales de audio/vídeo con voz en off"
+        },
+        {
+          name: "Comunidad",
+          free: true,
+          pro: true,
+          freeDescription: "Ver progreso de otros",
+          proDescription: "Crear grupos, energía de apoyo"
+        }
+      ]
     },
     meditation: {
-      title: "Meditación",
-      pageTitle: "Meditaciones",
-      subtitle: "Encuentra tu paz interior",
-      start: "Comenzar",
-      pause: "Pausar",
-      resume: "Continuar",
-      stop: "Detener",
+      pageTitle: "Meditaciones de poder",
+      subtitle: "Obtén acceso a meditaciones con ASKET PRO",
+      proFeatures: "Características de meditaciones PRO",
+      basic: "Versión básica",
+      pro: "Versión PRO",
       duration: "Duración",
-      minutes: "minutos",
-      play: "Reproducir",
-      unlock: "Desbloquear",
-      breathe: {
-        in: "Inhala",
-        hold: "Mantén",
-        out: "Exhala",
-        rest: "Descansa"
-      },
-      types: {
-        guided: "Guiada",
-        breathing: "Respiración",
-        silent: "Silenciosa"
-      },
+      play: "Escuchar",
+      unlock: "Desbloquear PRO",
+      comingSoon: "Próximamente",
       categories: {
         morning: "Mañana",
         evening: "Noche",
-        stress: "Estrés",
-        mantra: "Mantra",
-        visual: "Visual"
+        stress: "Antiestrés",
+        mantra: "Mantras",
+        visual: "Visualización"
       },
       morning: {
-        title1: "Claridad Matutina",
-        desc1: "Comienza tu día con claridad y propósito",
-        title2: "Energía del Amanecer",
-        desc2: "Llénate de energía para el día"
+        title1: "Preparación para el día",
+        desc1: "Cárgate de energía para todo el día",
+        title2: "Gratitud",
+        desc2: "Práctica de gratitud al Universo"
       },
       evening: {
-        title1: "Relajación Nocturna",
-        desc1: "Libera la tensión del día y prepárate para descansar"
+        title1: "Perdón",
+        desc1: "Deja ir el pasado con facilidad"
       },
       stress: {
-        title1: "Liberación de Estrés",
-        desc1: "Encuentra calma en momentos de tensión"
+        title1: "Conexión a tierra",
+        desc1: "Restauración del equilibrio interior"
       },
       mantra: {
-        title1: "Mantras Poderosos",
-        desc1: "Frases antiguas para enfocar tu energía"
+        title1: "Voz del guía",
+        desc1: "Integración de energía superior"
       },
       visualization: {
-        title1: "Viaje Cósmico",
-        desc1: "Viaja a través del cosmos en tu mente"
+        title1: "Vuelo cósmico",
+        desc1: "Viaje a través de las estrellas"
       }
     },
     auth: {
-      signIn: "Iniciar Sesión",
-      signInButton: "Iniciar Sesión",
+      signIn: "Iniciar sesión",
       signUp: "Registrarse",
-      signUpButton: "Registrarse",
-      signInSuccess: "¡Inicio de sesión exitoso!",
-      welcomeBack: "Bienvenido de nuevo a Ascesis Cósmica",
-      signInError: "Error al iniciar sesión",
-      signUpSuccess: "¡Registro exitoso!",
-      accountCreated: "Tu cuenta ha sido creada",
-      signUpError: "Error al registrarse",
-      tryAgain: "Por favor, inténtalo de nuevo",
-      enterCredentials: "Ingresa tus credenciales para continuar",
+      signOut: "Cerrar sesión",
       email: "Correo electrónico",
       password: "Contraseña",
-      name: "Nombre",
-      namePlaceholder: "Tu nombre",
       confirmPassword: "Confirmar contraseña",
-      processing: "Procesando...",
-      noAccount: "¿No tienes cuenta?",
-      signUpNow: "Regístrate ahora",
-      alreadyHaveAccount: "¿Ya tienes cuenta?",
-      signInNow: "Inicia sesión ahora",
-      createAccountPrompt: "Crea tu cuenta para comenzar tu viaje"
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      backToSignIn: "Volver a iniciar sesión",
+      createAccount: "Crear cuenta",
+      alreadyHaveAccount: "¿Ya tienes una cuenta?",
+      resetPassword: "Restablecer contraseña",
+      resetPasswordButton: "Enviar enlace de restablecimiento",
+      resetPasswordSuccess: "Revisa tu correo para restablecer tu contraseña",
+      resetPasswordError: "Error al restablecer la contraseña",
+      signInError: "Error al iniciar sesión",
+      signUpError: "Error al registrarse",
+      passwordMismatch: "Las contraseñas no coinciden",
+      welcomeBack: "Bienvenido de nuevo",
+      noAccount: "¿No tienes una cuenta?",
+      orContinueWith: "O continuar con",
+      signInButton: "Iniciar sesión",
+      signUpButton: "Registrarse",
+      haveAccount: "¿Ya tienes una cuenta?",
+      passwordLength: "La contraseña debe tener al menos 6 caracteres"
+    },
+    subscription: {
+      bannerTitle: "Desbloquea tu potencial con ASKET PRO",
+      bannerDesc: "Acceso a meditaciones, prácticas avanzadas y mucho más",
+      upgradeNow: "Mejorar ahora"
     }
-  },
+  }
 };
+
+export default translations;

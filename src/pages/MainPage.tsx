@@ -1,5 +1,5 @@
+
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -130,7 +130,7 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Handler for completing the day with visual effect
+  // Обработчик завершения дня с визуальным эффектом
   const handleCompleteDayWithEffect = () => {
     if (currentPact) {
       markDayComplete(currentPact.id);
@@ -227,7 +227,7 @@ const MainPage: React.FC = () => {
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
             
-            {/* Add Meditation and Universe buttons */}
+            {/* Add Meditation Button */}
             <div className="flex flex-wrap justify-center gap-4 mt-6">
               <CosmicButton 
                 variant="outline" 
@@ -241,7 +241,8 @@ const MainPage: React.FC = () => {
                 onClick={() => setActiveScreen('meditation')}
               >
                 <Headphones className="mr-2" size={18} />
-                {t.meditation.pageTitle}
+                {language === 'ru' ? 'Медитации' : 
+                 language === 'es' ? 'Meditaciones' : 'Meditations'}
               </CosmicButton>
             </div>
           </>

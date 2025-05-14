@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -8,16 +7,16 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { SupportedLanguage } from '@/i18n/translations';
 
 const WelcomePage: React.FC = () => {
-  const { t } = useTranslations();
   const { setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
   const [isAnimated, setIsAnimated] = useState(false);
   const [cycleIndex, setCycleIndex] = useState(0);
   const languages: SupportedLanguage[] = ['ru', 'en', 'es'];
   
-  // Current language for cycling
+  // Текущий язык для циклической смены
   const currentLang = languages[cycleIndex % languages.length];
   
-  // Texts for different languages
+  // Тексты для разных языков
   const subtitles = {
     ru: "Путь к внутренней силе",
     en: "The path to inner strength",
@@ -30,7 +29,7 @@ const WelcomePage: React.FC = () => {
     es: "Comenzar el viaje"
   };
   
-  // Animation for component appearance
+  // Анимация появления компонентов
   useEffect(() => {
     const timeout = setTimeout(() => {
       setIsAnimated(true);
@@ -39,7 +38,7 @@ const WelcomePage: React.FC = () => {
     return () => clearTimeout(timeout);
   }, []);
   
-  // Effect for changing language every two seconds
+  // Эффект для смены языка каждые две секунды
   useEffect(() => {
     const interval = setInterval(() => {
       setCycleIndex(prevIndex => prevIndex + 1);
@@ -48,7 +47,7 @@ const WelcomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
   
-  const handleBeginJourney = () => {
+  const handleContinue = () => {
     setActiveScreen('language');
   };
   
@@ -56,7 +55,7 @@ const WelcomePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
       
-      {/* Cosmic background image */}
+      {/* Космическое фоновое изображение */}
       <div className="fixed inset-0 z-0">
         <div 
           className="w-full h-full bg-cover bg-center opacity-90"
@@ -84,11 +83,7 @@ const WelcomePage: React.FC = () => {
           {subtitles[currentLang]}
         </p>
         
-        <CosmicButton 
-          size="lg" 
-          className="transition-all duration-300 ease-in-out"
-          onClick={handleBeginJourney}
-        >
+        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
           {buttonTexts[currentLang]}
         </CosmicButton>
       </div>

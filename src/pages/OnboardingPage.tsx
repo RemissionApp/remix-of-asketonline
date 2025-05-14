@@ -10,24 +10,8 @@ const OnboardingPage: React.FC = () => {
   const { setOnboardingComplete, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   
-  // Create steps array from structure
-  const steps = [
-    {
-      title: t.onboarding?.steps?.[0]?.title || t.onboarding?.step1?.title,
-      content: t.onboarding?.steps?.[0]?.content || t.onboarding?.step1?.description
-    },
-    {
-      title: t.onboarding?.steps?.[1]?.title || t.onboarding?.step2?.title,
-      content: t.onboarding?.steps?.[1]?.content || t.onboarding?.step2?.description
-    },
-    {
-      title: t.onboarding?.steps?.[2]?.title || t.onboarding?.step3?.title,
-      content: t.onboarding?.steps?.[2]?.content || t.onboarding?.step3?.description
-    }
-  ];
-  
   const handleNext = () => {
-    if (step < steps.length - 1) {
+    if (step < t.onboarding.steps.length - 1) {
       setStep(step + 1);
     } else {
       // Complete onboarding
@@ -59,29 +43,29 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <h1 className="text-4xl font-serif text-white mb-6">
-              {t.onboarding.title}
+              {t.onboarding.steps[0].title}
             </h1>
             
             <div className="mb-8">
-              {renderContent(steps[0].content)}
+              {renderContent(t.onboarding.steps[0].content)}
             </div>
             
             <CosmicButton onClick={handleNext}>
-              {t.onboarding?.buttons?.enter || t.onboarding?.startButton}
+              {t.onboarding.buttons.enter}
             </CosmicButton>
           </div>
         ) : (
           <div className="animate-fade-in text-center">
             <h1 className="text-3xl font-serif text-white mb-6">
-              {steps[step].title}
+              {t.onboarding.steps[step].title}
             </h1>
             
             <div className="mb-8">
-              {renderContent(steps[step].content)}
+              {renderContent(t.onboarding.steps[step].content)}
             </div>
             
             <div className="flex justify-center mb-8">
-              {steps.map((_, i) => (
+              {t.onboarding.steps.map((_, i) => (
                 <div 
                   key={i}
                   className={`w-3 h-3 mx-1 rounded-full ${i === step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'}`}
@@ -90,9 +74,7 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <CosmicButton onClick={handleNext}>
-              {step < steps.length - 1 ? 
-                (t.onboarding?.buttons?.next || "Next") : 
-                (t.onboarding?.buttons?.startJourney || t.onboarding?.startButton)}
+              {step < t.onboarding.steps.length - 1 ? t.onboarding.buttons.next : t.onboarding.buttons.startJourney}
             </CosmicButton>
           </div>
         )}

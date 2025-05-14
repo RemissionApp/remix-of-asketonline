@@ -37,7 +37,7 @@ const ProfilePage: React.FC = () => {
           </div>
           
           <h1 className="text-2xl text-white font-serif mb-4">
-            {t.profile?.title || "Профиль"}
+            {t.main?.profile || "Профиль"}
           </h1>
           
           <UserProfileForm />
