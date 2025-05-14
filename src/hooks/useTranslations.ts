@@ -149,6 +149,33 @@ export const useTranslations = () => {
         startJourney: language === 'ru' ? 'Начать путь' : language === 'es' ? 'Comenzar el camino' : 'Start Journey',
         skip: language === 'ru' ? 'Пропустить' : language === 'es' ? 'Omitir' : 'Skip'
       }
+    },
+    auth: {
+      signIn: language === 'ru' ? 'Вход' : language === 'es' ? 'Iniciar sesión' : 'Sign In',
+      signUp: language === 'ru' ? 'Регистрация' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      signOut: language === 'ru' ? 'Выход' : language === 'es' ? 'Cerrar sesión' : 'Sign Out',
+      email: language === 'ru' ? 'Email' : language === 'es' ? 'Correo electrónico' : 'Email',
+      password: language === 'ru' ? 'Пароль' : language === 'es' ? 'Contraseña' : 'Password',
+      confirmPassword: language === 'ru' ? 'Подтвердите пароль' : language === 'es' ? 'Confirmar contraseña' : 'Confirm Password',
+      forgotPassword: language === 'ru' ? 'Забыли пароль?' : language === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot password?',
+      backToSignIn: language === 'ru' ? 'Вернуться к входу' : language === 'es' ? 'Volver a iniciar sesión' : 'Back to Sign In',
+      createAccount: language === 'ru' ? 'Создать аккаунт' : language === 'es' ? 'Crear cuenta' : 'Create Account',
+      alreadyHaveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?',
+      resetPassword: language === 'ru' ? 'Сбросить пароль' : language === 'es' ? 'Restablecer contraseña' : 'Reset Password',
+      resetPasswordButton: language === 'ru' ? 'Пожалуйста, введите email для восстановления пароля' : language === 'es' ? 'Por favor, introduce tu correo electrónico para restablecer la contraseña' : 'Please enter your email to reset your password',
+      resetPasswordSuccess: language === 'ru' ? 'Проверьте вашу электронную почту для инструкций по сбросу пароля' : language === 'es' ? 'Revisa tu correo para restablecer tu contraseña' : 'Check your email to reset your password',
+      resetPasswordError: language === 'ru' ? 'Ошибка' : language === 'es' ? 'Error' : 'Error',
+      signInError: language === 'ru' ? 'Ошибка при входе' : language === 'es' ? 'Error al iniciar sesión' : 'Error signing in',
+      signUpError: language === 'ru' ? 'Ошибка при регистрации' : language === 'es' ? 'Error al registrarse' : 'Error signing up',
+      passwordMismatch: language === 'ru' ? 'Пароли не совпадают' : language === 'es' ? 'Las contraseñas no coinciden' : 'Passwords do not match',
+      welcomeBack: language === 'ru' ? 'Гостевой режим' : language === 'es' ? 'Modo invitado' : 'Guest mode',
+      noAccount: language === 'ru' ? 'Нет аккаунта?' : language === 'es' ? '¿No tienes una cuenta?' : 'Don\'t have an account?',
+      orContinueWith: language === 'ru' ? 'или' : language === 'es' ? 'o' : 'or',
+      signInButton: language === 'ru' ? 'Внимание: прогресс пользователя не будет сохранен' : language === 'es' ? 'Atención: el progreso del usuario no se guardará' : 'Warning: user progress will not be saved',
+      signUpButton: language === 'ru' ? 'Создать аккаунт' : language === 'es' ? 'Registrarse' : 'Sign Up',
+      haveAccount: language === 'ru' ? 'Уже есть аккаунт?' : language === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?',
+      passwordLength: language === 'ru' ? 'Пароль должен содержать минимум 6 символов' : language === 'es' ? 'La contraseña debe tener al menos 6 caracteres' : 'Password must be at least 6 characters',
+      guestSignIn: language === 'ru' ? 'Войти как гость' : language === 'es' ? 'Entrar como invitado' : 'Sign in as guest'
     }
   };
   

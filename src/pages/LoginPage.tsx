@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -27,7 +28,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     const success = await signIn(email, password);
     if (success) {
-      navigate('/profile-setup'); // Changed from '/profile' to '/profile-setup'
+      navigate('/profile-setup');
     }
   };
   
@@ -39,8 +40,8 @@ const LoginPage: React.FC = () => {
   const handleForgotPassword = async () => {
     if (!email) {
       toast({
-        title: "Ошибка",
-        description: "Пожалуйста, введите email для восстановления пароля",
+        title: t.auth.resetPasswordError,
+        description: t.auth.resetPasswordButton,
         variant: "destructive"
       });
       return;
@@ -54,13 +55,13 @@ const LoginPage: React.FC = () => {
       if (error) throw error;
 
       toast({
-        title: "Сброс пароля",
-        description: "Проверьте вашу электронную почту для инструкций по сбросу пароля"
+        title: t.auth.resetPassword,
+        description: t.auth.resetPasswordSuccess
       });
     } catch (error: any) {
       toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось отправить инструкции по сбросу пароля",
+        title: t.auth.resetPasswordError,
+        description: error.message || t.auth.resetPasswordError,
         variant: "destructive"
       });
     }
@@ -68,8 +69,8 @@ const LoginPage: React.FC = () => {
 
   const handleGuestLogin = () => {
     toast({
-      title: "Гостевой режим",
-      description: "Внимание: прогресс пользователя не будет сохранен",
+      title: t.auth.welcomeBack,
+      description: t.auth.signInButton,
       variant: "warning"
     });
     
@@ -103,14 +104,14 @@ const LoginPage: React.FC = () => {
           <CardContent className="pt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
-                <TabsTrigger value="login">Вход</TabsTrigger>
-                <TabsTrigger value="signup">Регистрация</TabsTrigger>
+                <TabsTrigger value="login">{t.auth.signIn}</TabsTrigger>
+                <TabsTrigger value="signup">{t.auth.signUp}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="login">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white">Email</Label>
+                    <Label htmlFor="email" className="text-white">{t.auth.email}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -126,7 +127,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white">Пароль</Label>
+                    <Label htmlFor="password" className="text-white">{t.auth.password}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -154,7 +155,7 @@ const LoginPage: React.FC = () => {
                       onClick={handleForgotPassword}
                       className="text-cosmic-accent hover:text-cosmic-accent/80 text-sm transition-colors"
                     >
-                      Забыли пароль?
+                      {t.auth.forgotPassword}
                     </button>
                   </div>
                   
@@ -164,19 +165,19 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? "Загрузка..." : "Войти"}
+                      {loading ? t.auth.signInButton : t.auth.signInButton}
                     </CosmicButton>
                   </div>
 
                   <div className="text-center pt-2">
                     <p className="text-white text-sm">
-                      Нет аккаунта?{" "}
+                      {t.auth.noAccount}{" "}
                       <button
                         type="button"
                         onClick={() => setActiveTab("signup")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
-                        Зарегистрироваться
+                        {t.auth.signUp}
                       </button>
                     </p>
                   </div>
@@ -186,7 +187,7 @@ const LoginPage: React.FC = () => {
                       <div className="w-full border-t border-cosmic-accent/20"></div>
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="bg-cosmic-dark/10 backdrop-blur-sm px-2 text-xs text-cosmic-accent">или</span>
+                      <span className="bg-cosmic-dark/10 backdrop-blur-sm px-2 text-xs text-cosmic-accent">{t.auth.orContinueWith}</span>
                     </div>
                   </div>
 
@@ -197,7 +198,7 @@ const LoginPage: React.FC = () => {
                       className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
                       onClick={handleGuestLogin}
                     >
-                      Войти как гость
+                      {t.auth.guestSignIn || "Sign in as guest"}
                     </Button>
                   </div>
                 </form>
@@ -206,7 +207,7 @@ const LoginPage: React.FC = () => {
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-white">Email</Label>
+                    <Label htmlFor="signup-email" className="text-white">{t.auth.email}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -222,7 +223,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-white">Пароль</Label>
+                    <Label htmlFor="signup-password" className="text-white">{t.auth.password}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -250,19 +251,19 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? "Загрузка..." : "Создать аккаунт"}
+                      {loading ? t.auth.signUpButton : t.auth.signUpButton}
                     </CosmicButton>
                   </div>
 
                   <div className="text-center pt-2">
                     <p className="text-white text-sm">
-                      Уже есть аккаунт?{" "}
+                      {t.auth.haveAccount}{" "}
                       <button
                         type="button"
                         onClick={() => setActiveTab("login")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
-                        Войти
+                        {t.auth.signIn}
                       </button>
                     </p>
                   </div>
