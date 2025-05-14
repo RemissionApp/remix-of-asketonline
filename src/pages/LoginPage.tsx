@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -28,7 +27,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     const success = await signIn(email, password);
     if (success) {
-      navigate('/profile'); // Changed from '/main' to '/profile'
+      navigate('/profile-setup'); // Changed from '/profile' to '/profile-setup'
     }
   };
   
