@@ -19,7 +19,7 @@ const LanguagePage: React.FC = () => {
   
   const handleSelectLanguage = (langCode: SupportedLanguage) => {
     setLanguage(langCode);
-    navigate('/profile-setup');
+    navigate('/login');
   };
   
   return (

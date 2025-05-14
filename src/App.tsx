@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useAppStore } from "./store/useAppStore";
 import WelcomePage from "./pages/WelcomePage";
 import LanguagePage from "./pages/LanguagePage";
+import LoginPage from "./pages/LoginPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import OnboardingPage from "./pages/OnboardingPage";
 import MainPage from "./pages/MainPage";
@@ -31,6 +32,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<WelcomePage />} />
               <Route path="/language" element={<LanguagePage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/profile-setup" element={<UserProfilePage />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/main" element={<MainPage />} />
