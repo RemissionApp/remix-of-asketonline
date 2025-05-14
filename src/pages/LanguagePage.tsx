@@ -40,10 +40,10 @@ const LanguagePage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-center mb-6">
               <Globe className="w-6 h-6 text-cosmic-accent mr-2" />
-              <h2 className="text-2xl font-serif text-white">
-                <span className="block">Select language</span>
-                <span className="block">Seleccione idioma</span>
-                <span className="block">Выберите язык</span>
+              <h2 className="text-2xl text-white">
+                <span className="block font-serif">Select language</span>
+                <span className="block font-serif">Seleccione idioma</span>
+                <span className="block font-cormorant">Выберите язык</span>
               </h2>
             </div>
             
