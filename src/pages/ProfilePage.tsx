@@ -21,6 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { ZodiacInfo } from '@/components/ZodiacInfo';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage, signOut } = useAppStore();
@@ -30,7 +31,7 @@ const ProfilePage: React.FC = () => {
   const [showTermsOfUse, setShowTermsOfUse] = useState(false);
 
   const handleManageSubscription = () => {
-    if (userProfile.isPro) {
+    if (userProfile?.isPro) {
       // For demo purposes, just toggle the subscription
       cancelProSubscription();
     } else {
@@ -54,7 +55,7 @@ const ProfilePage: React.FC = () => {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <div className="mb-6 w-full">
           <div className="flex items-center justify-between mb-4">
-            {userProfile.isPro && (
+            {userProfile?.isPro && (
               <ProBadge size="md" />
             )}
           </div>
@@ -64,6 +65,14 @@ const ProfilePage: React.FC = () => {
           </h1>
           
           <UserProfileForm />
+          
+          {/* Zodiac Information */}
+          {userProfile?.birthDate && (
+            <div className="mt-6">
+              <h2 className="text-xl text-white font-serif mb-4">Ваш знак зодиака</h2>
+              <ZodiacInfo />
+            </div>
+          )}
           
           <div className="mt-8">
             <h2 className="text-xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "App language"}</h2>

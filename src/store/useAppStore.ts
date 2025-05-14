@@ -818,64 +818,56 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
   
   // Upgrade to PRO - modified to work without requiring Supabase RLS changes
-  upgradeToPro: async () => {
-    const { user } = get();
+  upgradeToPro: async (): Promise<void> => {
+    // For demo purposes, just set isPro to true in the userProfile
+    set(state => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: true
+      }
+    }));
     
-    try {
-      // Instead of creating a database entry, we'll just update local state
-      // This avoids RLS errors for demonstration purposes
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          isPro: true,
-          energyPoints: (state.userProfile?.energyPoints || 0) + 100
+    // Persist to Supabase if connected
+    if (state().user) {
+      try {
+        const { error } = await supabase
+          .from('subscriptions')
+          .update({ is_pro: true })
+          .eq('user_id', state().user!.id);
+        
+        if (error) {
+          console.error('Error upgrading to PRO:', error);
         }
-      }));
-      
-      toast({
-        title: "Подписка активирована!",
-        description: "Режим разработчика: PRO-подписка активирована и вы получили 100 бонусных очков!"
-      });
-      
-      return true;
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось оформить подписку",
-        variant: "destructive"
-      });
-      return false;
+      } catch (e) {
+        console.error('Exception upgrading to PRO:', e);
+      }
     }
   },
   
   // Cancel PRO subscription
-  cancelProSubscription: async () => {
-    const { user } = get();
+  cancelProSubscription: async (): Promise<void> => {
+    // For demo purposes, just set isPro to false in the userProfile
+    set(state => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro: false
+      }
+    }));
     
-    try {
-      // Update local state only
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          isPro: false
+    // Persist to Supabase if connected
+    if (state().user) {
+      try {
+        const { error } = await supabase
+          .from('subscriptions')
+          .update({ is_pro: false })
+          .eq('user_id', state().user!.id);
+        
+        if (error) {
+          console.error('Error cancelling PRO subscription:', error);
         }
-      }));
-      
-      toast({
-        title: "Подписка отменена",
-        description: "Режим разработчика: PRO-подписка деактивирована"
-      });
-      
-      return true;
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось отменить подписку",
-        variant: "destructive"
-      });
-      return false;
+      } catch (e) {
+        console.error('Exception cancelling PRO subscription:', e);
+      }
     }
   },
   
