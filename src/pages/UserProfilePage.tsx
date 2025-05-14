@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
-import UserProfileForm from '@/components/UserProfileForm';
+import { UserProfileForm } from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
 import { AvatarUpload } from '@/components/AvatarUpload';
 

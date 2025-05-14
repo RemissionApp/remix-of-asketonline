@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { LockIcon, SparklesIcon } from 'lucide-react';
 import { CosmicButton } from './CosmicButton';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '@/store/useAppStore';
+import { useUserSubscription } from '@/hooks/useUserSubscription';
 
 interface ProFeatureOverlayProps {
   title?: string;
@@ -19,7 +18,7 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
   className = ''
 }) => {
   const navigate = useNavigate();
-  const { upgradeToPro } = useAppStore();
+  const { upgradeToPro } = useUserSubscription();
   
   const handleUpgrade = () => {
     // For demo purposes, we'll just set the user to PRO immediately

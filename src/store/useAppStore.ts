@@ -1,7 +1,16 @@
-
 import { create } from 'zustand';
 import { Achievement, AppSettings, DailyQuote, DailyReflection, MeditationSession, Pact, PactItem, SpiritualRank, UniverseQuestion, UserProfile, Mission } from '@/types';
-import { persist } from 'zustand/middleware';
+import { persist, PersistStorage, StorageValue } from 'zustand/middleware';
+
+// Define AppNotification type that was missing
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'achievement' | 'reminder' | 'system';
+  read: boolean;
+  createdAt: string;
+}
 
 // Default user profile
 const defaultUserProfile: UserProfile = {
@@ -106,17 +115,22 @@ interface AppStore {
   setPacts: (pacts: Pact[]) => void;
   setActiveQuestions: (questions: UniverseQuestion[]) => void;
   setUniverseQuestions: (questions: UniverseQuestion[]) => void;
-  
-  // Utility functions required by various components
-  // These are implemented in the separate hooks
-  signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<boolean>;
-  addPact: (pact: { title: string, duration: number, reward: string, status: string }) => void;
-  markDayComplete: (pactId: string) => void;
-  syncPactsWithCurrentDate: () => void;
-  askUniverse: (question: string) => Promise<UniverseQuestion>;
-  completeMission: () => boolean;
 }
+
+// Create a custom storage object that properly conforms to PersistStorage type
+const customStorage: PersistStorage<AppStore> = {
+  getItem: (name): StorageValue<AppStore> | null => {
+    const str = localStorage.getItem(name);
+    if (!str) return null;
+    return JSON.parse(str);
+  },
+  setItem: (name, value): void => {
+    localStorage.setItem(name, JSON.stringify(value));
+  },
+  removeItem: (name): void => {
+    localStorage.removeItem(name);
+  },
+};
 
 // Create the store
 export const useAppStore = create<AppStore>()(
@@ -149,39 +163,10 @@ export const useAppStore = create<AppStore>()(
       setPacts: (pacts) => set({ pacts }),
       setActiveQuestions: (questions) => set({ activeQuestions: questions }),
       setUniverseQuestions: (questions) => set({ universeQuestions: questions }),
-      
-      // These are implemented in separate hooks but need to be accessible via the store
-      // We'll use the hooks implementations when these methods are called
-      signIn: async () => false, // Implemented in useAuth.ts
-      signUp: async () => false, // Implemented in useAuth.ts
-      addPact: () => {}, // Implemented in usePacts.ts
-      markDayComplete: () => {}, // Implemented in usePacts.ts
-      syncPactsWithCurrentDate: () => {}, // Implemented in usePacts.ts
-      askUniverse: async () => ({ 
-        id: '', 
-        question: '', 
-        answer: '', 
-        createdAt: '', 
-        date: '' 
-      }), // Implemented in useUniverseQuestions.ts
-      completeMission: () => false, // Implemented in useMissions.ts
     }),
     {
       name: 'app-storage',
-      // Fix the storage to properly conform to PersistStorage type
-      storage: {
-        getItem: (name) => {
-          const str = localStorage.getItem(name);
-          if (!str) return null;
-          return JSON.parse(str);
-        },
-        setItem: (name, value) => {
-          localStorage.setItem(name, JSON.stringify(value));
-        },
-        removeItem: (name) => {
-          localStorage.removeItem(name);
-        },
-      },
+      storage: customStorage,
     }
   )
 );

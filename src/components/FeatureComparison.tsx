@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import { useUserSubscription } from '@/hooks/useUserSubscription';
 import { useNavigate } from 'react-router-dom';
 import { 
   Table, 
@@ -16,7 +18,8 @@ import {
 
 const FeatureComparison: React.FC = () => {
   const { t } = useTranslations();
-  const { upgradeToPro, userProfile } = useAppStore();
+  const { upgradeToPro } = useUserSubscription();
+  const { userProfile } = useAppStore();
   const navigate = useNavigate();
   const isPro = userProfile.isPro;
   

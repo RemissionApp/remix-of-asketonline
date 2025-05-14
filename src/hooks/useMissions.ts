@@ -1,33 +1,28 @@
 
 import { useAppStore } from '@/store/useAppStore';
-import { useState } from 'react';
 
 export const useMissions = () => {
-  const { userProfile, setUserProfile } = useAppStore();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const userProfile = useAppStore(state => state.userProfile);
+  const setUserProfile = useAppStore(state => state.setUserProfile);
+  
+  // Complete the active mission
   const completeMission = () => {
-    if (!userProfile.activeMission) return;
+    if (!userProfile.activeMission) return false;
     
-    // Add energy points from the mission reward
-    const energyPoints = userProfile.energyPoints || 0;
-    const missionPoints = userProfile.activeMission.reward.energyPoints || 0;
+    // Update the active mission to completed
+    const updatedMission = { ...userProfile.activeMission, completed: true };
     
-    // Clear the active mission and award the points
+    // Update user profile with the completed mission and add any rewards
     setUserProfile({
       ...userProfile,
-      energyPoints: energyPoints + missionPoints,
-      activeMission: null
+      energyPoints: userProfile.energyPoints + updatedMission.reward.energyPoints,
+      activeMission: null,
     });
     
     return true;
   };
-
+  
   return {
-    userProfile,
-    completeMission,
-    loading,
-    error
+    completeMission
   };
 };

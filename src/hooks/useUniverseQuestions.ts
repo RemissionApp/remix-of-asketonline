@@ -1,57 +1,39 @@
 
 import { useAppStore } from '@/store/useAppStore';
 import { UniverseQuestion } from '@/types';
-import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { getUniverseResponse } from '@/utils/universeMessages';
 
 export const useUniverseQuestions = () => {
-  const { activeQuestions, setActiveQuestions, universeQuestions, setUniverseQuestions } = useAppStore();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const setActiveQuestions = useAppStore(state => state.setActiveQuestions);
+  const activeQuestions = useAppStore(state => state.activeQuestions);
+  const universeQuestions = useAppStore(state => state.universeQuestions);
+  const setUniverseQuestions = useAppStore(state => state.setUniverseQuestions);
+  
+  // Ask a question to the universe
   const askUniverse = async (question: string): Promise<UniverseQuestion> => {
-    setLoading(true);
-    setError(null);
+    // Generate a response to the question
+    const answer = await getUniverseResponse(question);
     
-    try {
-      // Simulate asking the universe
-      const responses = [
-        "The universe hears your question. Be patient for your answer.",
-        "Look within yourself for the answer you seek.",
-        "The stars align in your favor. Your question will be answered soon.",
-        "The path is unclear, but time will bring clarity.",
-        "The answer you seek is already within you.",
-      ];
-      
-      // Generate a random response
-      const randomIndex = Math.floor(Math.random() * responses.length);
-      const answer = responses[randomIndex];
-      
-      // Store the question and answer
-      const newQuestion: UniverseQuestion = {
-        id: Math.random().toString(),
-        question,
-        answer,
-        createdAt: new Date().toISOString(),
-        date: new Date().toLocaleDateString()
-      };
-      
-      setActiveQuestions([newQuestion, ...activeQuestions]);
-      setUniverseQuestions([newQuestion, ...universeQuestions]);
-      
-      return newQuestion;
-    } catch (err: any) {
-      console.error("Error asking universe:", err);
-      setError(err.message || "Failed to ask universe");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+    // Create a new question object
+    const newQuestion: UniverseQuestion = {
+      id: uuidv4(),
+      question,
+      answer,
+      createdAt: new Date().toISOString(),
+      date: new Date().toISOString()
+    };
+    
+    // Add to existing questions
+    setUniverseQuestions([...universeQuestions, newQuestion]);
+    setActiveQuestions([...activeQuestions, newQuestion]);
+    
+    return newQuestion;
   };
-
+  
   return {
-    askUniverse,
     activeQuestions,
-    loading,
-    error
+    universeQuestions,
+    askUniverse
   };
 };

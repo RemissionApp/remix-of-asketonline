@@ -6,6 +6,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { Loader2, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import {
   Tooltip,
   TooltipContent,
@@ -22,7 +23,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
   onUploadComplete,
   size = 'lg'
 }) => {
-  const { userProfile, user, updateUserProfile } = useAppStore();
+  const { userProfile, user } = useAppStore();
+  const { updateUserProfile } = useUserProfile();
   const [isUploading, setIsUploading] = useState(false);
   const { t } = useTranslations();
   

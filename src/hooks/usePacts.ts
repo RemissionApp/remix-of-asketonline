@@ -1,104 +1,90 @@
 
 import { useAppStore } from '@/store/useAppStore';
 import { Pact } from '@/types';
-import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 export const usePacts = () => {
-  const { pacts, setPacts, userProfile, setUserProfile } = useAppStore();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const addPact = (pactData: { title: string, duration: number, reward: string, status: string }) => {
+  const pacts = useAppStore(state => state.pacts);
+  const setPacts = useAppStore(state => state.setPacts);
+  
+  // Add new pact
+  const addPact = (pact: { title: string, duration: number, reward: string, status: string }) => {
+    // Create a new pact with days array
+    const now = new Date();
+    const days = [];
+    
+    // Generate days for the pact duration
+    for (let i = 0; i < pact.duration; i++) {
+      const date = new Date(now);
+      date.setDate(date.getDate() + i);
+      days.push({
+        date: date.toISOString().split('T')[0],
+        completed: false
+      });
+    }
+    
     const newPact: Pact = {
-      id: Math.random().toString(),
-      title: pactData.title,
-      duration: pactData.duration,
-      reward: pactData.reward,
-      status: pactData.status as 'active' | 'completed' | 'broken',
+      id: uuidv4(),
+      title: pact.title,
+      duration: pact.duration,
+      reward: pact.reward,
+      status: pact.status as 'active' | 'completed' | 'broken',
       createdAt: new Date().toISOString(),
-      days: Array.from({ length: pactData.duration }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() + i);
-        return {
-          date: date.toISOString().split('T')[0],
-          completed: false
-        };
-      })
+      days
     };
     
     setPacts([...pacts, newPact]);
-    
-    // Increase user's energyPoints for creating a pact
-    setUserProfile({
-      ...userProfile,
-      energyPoints: (userProfile.energyPoints || 0) + 5
-    });
-    
-    return newPact;
   };
   
+  // Mark a day complete for a specific pact
   const markDayComplete = (pactId: string) => {
-    // Find the pact
-    const pactIndex = pacts.findIndex(p => p.id === pactId);
-    if (pactIndex === -1) return;
-    
-    const pact = pacts[pactIndex];
-    
-    // Find today's date
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Find the day index that matches today
-    const dayIndex = pact.days.findIndex(d => d.date === today);
-    if (dayIndex === -1) return;
-    
-    // If day is already completed, do nothing
-    if (pact.days[dayIndex].completed) return;
-    
-    // Clone the pact and update the day
-    const updatedPact = { ...pact };
-    updatedPact.days = [...pact.days];
-    updatedPact.days[dayIndex] = { ...updatedPact.days[dayIndex], completed: true };
-    
-    // Update the pacts array
-    const updatedPacts = [...pacts];
-    updatedPacts[pactIndex] = updatedPact;
+    const updatedPacts = pacts.map(pact => {
+      if (pact.id === pactId) {
+        // Find today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        // Update the days array
+        const updatedDays = pact.days.map(day => {
+          if (day.date === today) {
+            return { ...day, completed: true };
+          }
+          return day;
+        });
+        
+        return { ...pact, days: updatedDays };
+      }
+      return pact;
+    });
     
     setPacts(updatedPacts);
-    
-    // Increase user's energy points
-    setUserProfile({
-      ...userProfile,
-      energyPoints: (userProfile.energyPoints || 0) + 10,
-      totalDays: (userProfile.totalDays || 0) + 1
-    });
   };
   
+  // Sync pacts with current date
   const syncPactsWithCurrentDate = () => {
-    // Get today's date
+    // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
     
-    // Update all active pacts
+    // Update pacts status based on current date
     const updatedPacts = pacts.map(pact => {
-      if (pact.status !== 'active') return pact;
+      // Check if pact is still active
+      const lastDay = pact.days[pact.days.length - 1].date;
       
-      // Check if today already exists in days
-      const todayExists = pact.days.some(day => day.date === today);
-      if (todayExists) return pact;
+      // If last day is before today and status is still active, mark as completed
+      if (lastDay < today && pact.status === 'active') {
+        // Check if all days are completed
+        const allCompleted = pact.days.every(day => day.completed);
+        return { ...pact, status: allCompleted ? 'completed' : 'broken' };
+      }
       
-      // Add today to the days array
-      const updatedDays = [...pact.days, { date: today, completed: false }];
-      return { ...pact, days: updatedDays };
+      return pact;
     });
     
     setPacts(updatedPacts);
   };
-
+  
   return {
     pacts,
     addPact,
     markDayComplete,
-    syncPactsWithCurrentDate,
-    loading,
-    error
+    syncPactsWithCurrentDate
   };
 };

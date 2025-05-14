@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { StarField } from '@/components/StarField';
-import UserProfileForm from '@/components/UserProfileForm';
+import { UserProfileForm } from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
@@ -9,6 +9,8 @@ import { ProBadge } from '@/components/ProBadge';
 import { CosmicButton } from '@/components/CosmicButton';
 import { Globe, LogOut, SparklesIcon } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserSubscription } from '@/hooks/useUserSubscription';
 import { 
   Select,
   SelectContent,
@@ -25,7 +27,9 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 const ProfilePage: React.FC = () => {
-  const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage, fetchUserProfile, user } = useAppStore();
+  const { userProfile, setActiveScreen, language, setLanguage, user } = useAppStore();
+  const { upgradeToPro, cancelProSubscription } = useUserSubscription();
+  const { fetchUserProfile } = useUserProfile();
   const navigate = useNavigate();
   const { t } = useTranslations();
 

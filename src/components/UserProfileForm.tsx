@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,12 +12,21 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
-export const UserProfileForm: React.FC<{ onSubmit?: () => void; onBack?: () => void }> = ({
+interface UserProfileFormProps {
+  onSubmit?: () => void; 
+  onBack?: () => void;
+}
+
+export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   onSubmit,
   onBack
 }) => {
-  const { userProfile, updateUserProfile, onboardingComplete, setOnboardingComplete } = useAppStore();
+  const { userProfile } = useAppStore();
+  const { updateUserProfile } = useUserProfile();
+  const onboardingComplete = useAppStore(state => state.onboardingComplete);
+  const setOnboardingComplete = useAppStore(state => state.setOnboardingComplete);
   const { t } = useTranslations();
   
   const [name, setName] = useState<string>(userProfile.name || '');
@@ -105,7 +115,7 @@ export const UserProfileForm: React.FC<{ onSubmit?: () => void; onBack?: () => v
       
       <div className="flex justify-between">
         {onBack && (
-          <CosmicButton variant="secondary" onClick={onBack}>
+          <CosmicButton variant="subtle" onClick={onBack}>
             {t.profile.back}
           </CosmicButton>
         )}
@@ -114,3 +124,5 @@ export const UserProfileForm: React.FC<{ onSubmit?: () => void; onBack?: () => v
     </form>
   );
 };
+
+export default UserProfileForm;

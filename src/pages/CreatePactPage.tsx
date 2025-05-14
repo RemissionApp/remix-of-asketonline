@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -6,8 +7,15 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { PactOath } from '@/components/PactOath';
-import { MultiSelectWithCustomInput } from '@/components/MultiSelectWithCustomInput';
+import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { usePacts } from '@/hooks/usePacts';
+
+// Update the PactOath interface to match the expected props
+interface PactOathProps {
+  rejections?: string[];
+  duration: number;
+  onCreatePact: () => void;
+}
 
 const CreatePactPage: React.FC = () => {
   const navigate = useNavigate();
