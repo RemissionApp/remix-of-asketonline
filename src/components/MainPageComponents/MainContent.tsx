@@ -6,6 +6,7 @@ import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
+import { UniverseMessageBlock } from '@/components/UniverseMessageBlock';
 import { Pact } from '@/types';
 import { Loader } from 'lucide-react';
 
@@ -70,6 +71,9 @@ export const MainContent: React.FC<MainContentProps> = ({
           
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />
+          
+          {/* Universe message block */}
+          <UniverseMessageBlock />
           
           {/* Action buttons */}
           <ActionButtonsSection />
