@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -95,10 +96,10 @@ const LoginPage: React.FC = () => {
       <div className="relative z-10 max-w-md w-full mx-auto px-4">
         <h1 className="text-4xl font-serif text-white text-center mb-8">Asket</h1>
         
-        <Card className="backdrop-blur-md bg-cosmic-dark/20 border-cosmic-accent/30 shadow-lg">
+        <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/40">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
                 <TabsTrigger value="login">Вход</TabsTrigger>
                 <TabsTrigger value="signup">Регистрация</TabsTrigger>
               </TabsList>
@@ -108,14 +109,14 @@ const LoginPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-white">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
                         id="email"
                         type="email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
-                        className="pl-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
+                        className="pl-10 bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
                         required
                       />
                     </div>
@@ -124,20 +125,20 @@ const LoginPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-white">Пароль</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
+                        className="pl-10 pr-10 bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
                         required
                       />
                       <button 
                         type="button" 
                         onClick={togglePasswordVisibility}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent z-10"
                       >
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
@@ -157,7 +158,7 @@ const LoginPage: React.FC = () => {
                   <div className="pt-4">
                     <CosmicButton 
                       type="submit" 
-                      className="w-full" 
+                      className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
                       {loading ? "Загрузка..." : "Войти"}
@@ -182,7 +183,7 @@ const LoginPage: React.FC = () => {
                       <div className="w-full border-t border-cosmic-accent/20"></div>
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="bg-cosmic-dark/30 px-2 text-xs text-cosmic-accent">или</span>
+                      <span className="bg-cosmic-dark/10 backdrop-blur-sm px-2 text-xs text-cosmic-accent">или</span>
                     </div>
                   </div>
 
@@ -190,7 +191,7 @@ const LoginPage: React.FC = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/20"
+                      className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
                       onClick={handleGuestLogin}
                     >
                       Войти как гость
@@ -204,14 +205,14 @@ const LoginPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signup-email" className="text-white">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
                         id="signup-email"
                         type="email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
-                        className="pl-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
+                        className="pl-10 bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
                         required
                       />
                     </div>
@@ -220,20 +221,20 @@ const LoginPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signup-password" className="text-white">Пароль</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
                         id="signup-password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cosmic-dark/30 border-cosmic-accent/30 text-white"
+                        className="pl-10 pr-10 bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
                         required
                       />
                       <button 
                         type="button" 
                         onClick={togglePasswordVisibility}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent z-10"
                       >
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
@@ -243,7 +244,7 @@ const LoginPage: React.FC = () => {
                   <div className="pt-4">
                     <CosmicButton 
                       type="submit" 
-                      className="w-full" 
+                      className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
                       {loading ? "Загрузка..." : "Создать аккаунт"}
