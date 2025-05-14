@@ -88,7 +88,7 @@ const defaultAchievements: Achievement[] = [
   {
     id: 'first-question',
     title: 'Первый разговор',
-    description: 'Задайте перв��й вопрос Вселенной',
+    description: 'Задайте первый вопрос Вселенной',
     icon: 'message-square',
     unlocked: false
   }
@@ -227,7 +227,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     if (!user) {
       toast({
         title: "Ошибка",
-        description: "��ы должны войти в систему для создания аскезы",
+        description: "Вы должны войти в систему для создания аскезы",
         variant: "destructive"
       });
       return;
@@ -1000,7 +1000,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
   
   // Authentication Methods
-  signIn: async (email: string, password: string) => {
+  signIn: async (email, password) => {
     set({ loading: true });
     
     try {
@@ -1035,7 +1035,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   
-  signUp: async (email: string, password: string) => {
+  signUp: async (email, password) => {
     set({ loading: true });
     
     try {

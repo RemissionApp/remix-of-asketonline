@@ -1,18 +1,25 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
+import { Card, CardContent } from '@/components/ui/card';
+import { Globe } from 'lucide-react';
+import { SupportedLanguage } from '@/i18n/translations';
 
 const LanguagePage: React.FC = () => {
   const navigate = useNavigate();
   const { setLanguage } = useAppStore();
   
-  const handleLanguageSelect = (language: 'ru' | 'en' | 'es') => {
-    setLanguage(language);
-    navigate('/login'); // Теперь перенаправляем на страницу входа
+  const languages = [
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+  ];
+  
+  const handleSelectLanguage = (langCode: SupportedLanguage) => {
+    setLanguage(langCode);
+    navigate('/profile-setup');
   };
   
   return (
@@ -28,28 +35,26 @@ const LanguagePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
       </div>
       
-      <div className="relative z-10 max-w-md w-full mx-auto px-4">
-        <h1 className="text-4xl font-serif text-white text-center mb-8">Выберите язык</h1>
+      <div className="relative z-10 max-w-md w-full mx-auto">
         <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40">
-          <CardContent className="pt-6 space-y-4">
-            <Button
-              onClick={() => handleLanguageSelect('ru')}
-              className="w-full py-6 text-lg bg-cosmic-dark/70 hover:bg-cosmic-accent/60 text-white font-medium border border-cosmic-accent/30"
-            >
-              Русский
-            </Button>
-            <Button
-              onClick={() => handleLanguageSelect('en')}
-              className="w-full py-6 text-lg bg-cosmic-dark/70 hover:bg-cosmic-accent/60 text-white font-medium border border-cosmic-accent/30"
-            >
-              English
-            </Button>
-            <Button
-              onClick={() => handleLanguageSelect('es')}
-              className="w-full py-6 text-lg bg-cosmic-dark/70 hover:bg-cosmic-accent/60 text-white font-medium border border-cosmic-accent/30"
-            >
-              Español
-            </Button>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center mb-6">
+              <Globe className="w-6 h-6 text-cosmic-accent mr-2" />
+              <h2 className="text-2xl font-serif text-white">Выберите язык / Select language / Seleccione idioma</h2>
+            </div>
+            
+            <div className="flex flex-col space-y-3">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  className="flex items-center p-4 rounded-lg border border-cosmic-accent/30 bg-cosmic-dark/50 text-white hover:bg-cosmic-accent/20 transition-colors"
+                  onClick={() => handleSelectLanguage(lang.code as SupportedLanguage)}
+                >
+                  <span className="text-2xl mr-3">{lang.flag}</span>
+                  <span className="text-lg">{lang.name}</span>
+                </button>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
