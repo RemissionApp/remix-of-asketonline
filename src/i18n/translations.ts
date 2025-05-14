@@ -15,6 +15,7 @@ type TranslationKeys = {
       next: string;
       enter: string;
       startJourney: string;
+      skip: string;
     };
   };
   main: {
@@ -255,7 +256,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       buttons: {
         next: "Далее",
         enter: "Войти",
-        startJourney: "Начать путь"
+        startJourney: "Начать путь",
+        skip: "Пропустить"
       }
     },
     main: {
@@ -591,7 +593,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       buttons: {
         next: "Next",
         enter: "Enter",
-        startJourney: "Start the path"
+        startJourney: "Start the path",
+        skip: "Skip"
       }
     },
     main: {
@@ -927,7 +930,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       buttons: {
         next: "Siguiente",
         enter: "Entrar",
-        startJourney: "Iniciar el camino"
+        startJourney: "Iniciar el camino",
+        skip: "Saltar"
       }
     },
     main: {
