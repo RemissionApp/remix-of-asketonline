@@ -1,3 +1,4 @@
+
 import { Quote } from "@/components/QuoteDisplay";
 
 export type SupportedLanguage = 'ru' | 'en' | 'es';
@@ -86,6 +87,33 @@ export const translations = {
       restoreButton: "Restore Purchase",
       successMessage: "Upgrade successful!",
       errorMessage: "Failed to upgrade. Please try again."
+    },
+    subscription: {
+      bannerTitle: "Unlock Full Potential",
+      bannerDesc: "Upgrade to PRO for unlimited features",
+      upgradeNow: "Upgrade Now"
+    },
+    pactOath: {
+      title: "Ascesis Oath",
+      subtitle: "Make your covenant with the Universe",
+      days: "days",
+      readAloud: "Read Aloud",
+      confirmReading: "I have read aloud and confirm",
+      signContract: "Sign Contract",
+      instructions: "Read your ascesis vow aloud. By speaking these words, you are making a sacred covenant with the Universe."
+    },
+    userProfile: {
+      title: "About You",
+      age: "Age",
+      nameLabel: "Your Name",
+      namePlaceholder: "Enter your name",
+      nameRequired: "Name is required",
+      birthDateLabel: "Birth Date",
+      birthDatePlaceholder: "Select your birth date",
+      birthDateRequired: "Birth date is required",
+      languageLabel: "App Language",
+      continueButton: "Continue",
+      currentDate: "Current date"
     },
     meditation: {
       title: "Meditation",
@@ -225,6 +253,33 @@ export const translations = {
       successMessage: "Обновление прошло успешно!",
       errorMessage: "Не удалось обновить. Пожалуйста, попробуйте еще раз."
     },
+    subscription: {
+      bannerTitle: "Раскройте Полный Потенциал",
+      bannerDesc: "Перейдите на PRO для неограниченных возможностей",
+      upgradeNow: "Обновить Сейчас"
+    },
+    pactOath: {
+      title: "Клятва Аскезы",
+      subtitle: "Заключите договор со Вселенной",
+      days: "дней",
+      readAloud: "Прочитать вслух",
+      confirmReading: "Я прочитал(а) вслух и подтверждаю",
+      signContract: "Подписать договор",
+      instructions: "Прочтите свой обет аскезы вслух. Произнося эти слова, вы заключаете священный договор с Вселенной."
+    },
+    userProfile: {
+      title: "О тебе",
+      age: "Возраст",
+      nameLabel: "Как тебя зовут",
+      namePlaceholder: "Введите ваше имя",
+      nameRequired: "Имя обязательно",
+      birthDateLabel: "Дата рождения",
+      birthDatePlaceholder: "Выберите дату рождения",
+      birthDateRequired: "Укажите дату рождения",
+      languageLabel: "Язык приложения",
+      continueButton: "Продолжить",
+      currentDate: "Текущая дата"
+    },
     meditation: {
       title: "Медитация",
       pageTitle: "Медитации",
@@ -362,6 +417,33 @@ export const translations = {
       restoreButton: "Restaurar Compra",
       successMessage: "¡Actualización exitosa!",
       errorMessage: "No se pudo actualizar. Por favor, inténtalo de nuevo."
+    },
+    subscription: {
+      bannerTitle: "Desbloquea Todo el Potencial",
+      bannerDesc: "Actualiza a PRO para funciones ilimitadas",
+      upgradeNow: "Actualizar Ahora"
+    },
+    pactOath: {
+      title: "Juramento de Ascesis",
+      subtitle: "Haz tu pacto con el Universo",
+      days: "días",
+      readAloud: "Leer en voz alta",
+      confirmReading: "He leído en voz alta y confirmo",
+      signContract: "Firmar contrato",
+      instructions: "Lee tu voto de ascesis en voz alta. Al pronunciar estas palabras, estás haciendo un pacto sagrado con el Universo."
+    },
+    userProfile: {
+      title: "Sobre ti",
+      age: "Edad",
+      nameLabel: "Tu Nombre",
+      namePlaceholder: "Ingresa tu nombre",
+      nameRequired: "El nombre es requerido",
+      birthDateLabel: "Fecha de Nacimiento",
+      birthDatePlaceholder: "Selecciona tu fecha de nacimiento",
+      birthDateRequired: "La fecha de nacimiento es requerida",
+      languageLabel: "Idioma de la aplicación",
+      continueButton: "Continuar",
+      currentDate: "Fecha actual"
     },
     meditation: {
       title: "Meditación",
