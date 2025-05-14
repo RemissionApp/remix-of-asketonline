@@ -59,4 +59,3 @@ export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
     </div>
   );
 };
-

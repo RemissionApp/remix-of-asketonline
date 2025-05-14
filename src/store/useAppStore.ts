@@ -69,6 +69,8 @@ const defaultAchievements: Achievement[] = [
     title: 'Первый договор',
     description: 'Заключите свой первый договор с Вселенной',
     icon: 'scroll',
+    achievementType: 'pact',
+    unlockedAt: null,
     unlocked: false
   },
   {
@@ -76,6 +78,8 @@ const defaultAchievements: Achievement[] = [
     title: '7 дней подряд',
     description: 'Соблюдайте аскезу 7 дней подряд',
     icon: 'calendar',
+    achievementType: 'streak',
+    unlockedAt: null,
     unlocked: false
   },
   {
@@ -83,13 +87,17 @@ const defaultAchievements: Achievement[] = [
     title: '30 дней подряд',
     description: 'Соблюдайте аскезу 30 дней подряд',
     icon: 'award',
+    achievementType: 'streak',
+    unlockedAt: null,
     unlocked: false
   },
   {
     id: 'first-question',
-    title: 'Первый р��зговор',
-    description: 'Задайте перв��й вопрос Вселенной',
+    title: 'Первый разговор',
+    description: 'Задайте первый вопрос Вселенной',
     icon: 'message-square',
+    achievementType: 'universe',
+    unlockedAt: null,
     unlocked: false
   }
 ];
@@ -497,7 +505,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
         id: data.id,
         question: data.question,
         answer: data.answer,
-        date: data.created_at
+        createdAt: data.created_at,
+        date: data.created_at // For backward compatibility
       };
       
       return newQuestion;
@@ -1272,7 +1281,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
         id: q.id,
         question: q.question,
         answer: q.answer,
-        date: q.created_at
+        createdAt: q.created_at,
+        date: q.created_at // For backward compatibility
       }));
       
       // Update local state

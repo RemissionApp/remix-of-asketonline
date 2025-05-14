@@ -33,8 +33,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     // Validate file type
     if (!file.type.startsWith('image/')) {
       toast({
-        title: t.userProfile?.errorTitle || "Ошибка",
-        description: t.userProfile?.invalidFileType || "Пожалуйста, выберите изображение",
+        title: "Ошибка",
+        description: "Пожалуйста, выберите изображение",
         variant: "destructive"
       });
       return;
@@ -43,8 +43,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: t.userProfile?.errorTitle || "Ошибка",
-        description: t.userProfile?.fileTooLarge || "Файл слишком большой (максимум 5MB)",
+        title: "Ошибка",
+        description: "Файл слишком большой (максимум 5MB)",
         variant: "destructive"
       });
       return;
@@ -81,13 +81,13 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       }
       
       toast({
-        title: t.userProfile?.successTitle || "Успех",
-        description: t.userProfile?.uploadSuccess || "Аватар успешно обновлен",
+        title: "Успех",
+        description: "Аватар успешно обновлен",
       });
     } catch (error: any) {
       toast({
-        title: t.userProfile?.errorTitle || "Ошибка",
-        description: error.message || t.userProfile?.uploadError || "Не удалось загрузить аватар",
+        title: "Ошибка",
+        description: error.message || "Не удалось загрузить аватар",
         variant: "destructive"
       });
     } finally {
@@ -114,7 +114,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
             </label>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{t.userProfile?.changeAvatar || "Изменить аватар"}</p>
+            <p>Изменить аватар</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

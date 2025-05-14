@@ -1,3 +1,4 @@
+
 // Update or extend the existing types file with any needed fixes
 // Only add what's necessary to fix the current errors
 
@@ -20,6 +21,8 @@ export type UniverseQuestion = {
   question: string;
   answer: string;
   createdAt: string;
+  // Compatibility field for existing components
+  date?: string;
 };
 
 export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
@@ -36,6 +39,13 @@ export interface UserProfile {
   birthDate: Date | null;
   createdAt: string;
   updatedAt: string;
+  
+  // Additional properties needed by existing components
+  totalDays?: number;
+  energyPoints?: number;
+  goal?: string;
+  achievements?: Achievement[];
+  activeMission?: Mission;
 }
 
 export interface PactItem {
@@ -83,4 +93,27 @@ export interface AppSettings {
   notifications: boolean;
   language: string;
   soundEnabled: boolean;
+}
+
+// Add missing Pact and Mission types
+export interface Pact {
+  id: string;
+  title: string;
+  duration: number;
+  reward: string;
+  status: 'active' | 'completed' | 'broken';
+  createdAt: string;
+  days: { date: string; completed: boolean }[];
+}
+
+export interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  reward: {
+    energyPoints: number;
+    achievement?: string;
+  };
+  completed: boolean;
 }
