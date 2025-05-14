@@ -1,4 +1,3 @@
-
 // Define the types for all translations
 interface Translations {
   [key: string]: {
@@ -57,6 +56,8 @@ interface Translations {
       days: string;
       todayCompleted: string;
       askUniverse: string;
+      path: string;
+      ascesis: string;
     };
     pactOath: {
       title: string;
@@ -66,6 +67,7 @@ interface Translations {
       oath2: string;
       oath3: string;
       createButton: string;
+      days: string;
     };
     createPact: {
       title: string;
@@ -86,6 +88,8 @@ interface Translations {
       stepThreeTitle: string;
       placeholders: {
         title: string;
+        rejection: string;
+        reward: string;
       };
       ascesisWarning: string;
       customDays: string;
@@ -154,6 +158,11 @@ interface Translations {
         sleep: string;
         focus: string;
         advanced: string;
+        morning: string;
+        evening: string;
+        stress: string;
+        mantra: string;
+        visual: string;
       };
       morning: {
         title: string;
@@ -185,6 +194,9 @@ interface Translations {
       cancelButton: string;
       successMessage: string;
       errorMessage: string;
+      bannerTitle: string;
+      bannerDesc: string;
+      upgradeNow: string;
     };
     nav: {
       home: string;
@@ -195,8 +207,26 @@ interface Translations {
     calendar: {
       today: string;
       month: string;
+      year: string;
     };
     minimumPeriod: string;
+    userProfile: {
+      personal: string;
+      name: string;
+      birthDate: string;
+      emailAddressLabel: string;
+      updateProfile: string;
+      passwordLabel: string;
+      changePassword: string;
+      profileUpdated: string;
+      updateFailed: string;
+      bioLabel: string;
+      updateButton: string;
+      savingButton: string;
+      nameRequired: string;
+      emailRequired: string;
+      dobRequired: string;
+    };
   };
 }
 
@@ -257,7 +287,9 @@ export const translations: Translations = {
       daysLeft: "Осталось дней",
       days: "Дней",
       todayCompleted: "Сегодня выполнено",
-      askUniverse: "Задать вопрос Вселенной"
+      askUniverse: "Задать вопрос Вселенной",
+      path: "Путь",
+      ascesis: "Аскеза"
     },
     pactOath: {
       title: "Договор с Вселенной",
@@ -266,7 +298,8 @@ export const translations: Translations = {
       oath1: "Я принимаю полную ответственность за свой выбор и обязуюсь следовать ему до конца срока аскезы.",
       oath2: "Я понимаю, что нарушение договора ослабит мою связь с высшими силами и помешает моему духовному росту.",
       oath3: "Я буду честен перед собой и Вселенной в соблюдении условий этого договора.",
-      createButton: "Создать договор"
+      createButton: "Создать договор",
+      days: "дней"
     },
     createPact: {
       title: "Создание аскезы",
@@ -286,7 +319,9 @@ export const translations: Translations = {
       stepTwoTitle: "Выберите длительность",
       stepThreeTitle: "Создайте договор",
       placeholders: {
-        title: "Например: Отказ от сахара"
+        title: "Например: Отказ от сахара",
+        rejection: "Выберите или введите от чего вы отказываетесь",
+        reward: "Что вы получите взамен..."
       },
       ascesisWarning: "Аскеза — это не просто воздержание, а инструмент духовного роста и самосовершенствования.",
       customDays: "Уставновить количество дней",
@@ -346,7 +381,7 @@ export const translations: Translations = {
       title: "Медитация",
       description: "Выберите медитацию",
       startButton: "Начать",
-      play: "Включить",
+      play: "Включ��ть",
       unlock: "Разблокировать",
       pageTitle: "Медитации",
       categories: {
@@ -354,7 +389,12 @@ export const translations: Translations = {
         basic: "Базовые",
         sleep: "Сон",
         focus: "Фокус",
-        advanced: "Продвинутые"
+        advanced: "Продвинутые",
+        morning: "Утренние",
+        evening: "Вечерние",
+        stress: "Антистресс",
+        mantra: "Мантры",
+        visual: "Визуализация"
       },
       morning: {
         title: "Утренняя медитация",
@@ -385,7 +425,10 @@ export const translations: Translations = {
       proTitle: "PRO",
       cancelButton: "Отменить подписку",
       successMessage: "Подписка успешно активирована",
-      errorMessage: "Ошибка активации подписки"
+      errorMessage: "Ошибка активации подписки",
+      bannerTitle: "Повысьте свой духовный опыт",
+      bannerDesc: "Откройте по��ный доступ ко всем медитациям и функциям",
+      upgradeNow: "Повысить сейчас"
     },
     nav: {
       home: "Главная",
@@ -395,9 +438,27 @@ export const translations: Translations = {
     },
     calendar: {
       today: "Сегодня",
-      month: "Месяц"
+      month: "Месяц",
+      year: "Год"
     },
-    minimumPeriod: "Минимальный период аскезы - 7 дней"
+    minimumPeriod: "Минимальный период аскезы - 30 дней",
+    userProfile: {
+      personal: "Личная информация",
+      name: "Имя",
+      birthDate: "Дата рождения",
+      emailAddressLabel: "Email адрес",
+      updateProfile: "Обновить профиль",
+      passwordLabel: "Пароль",
+      changePassword: "Изменить пароль",
+      profileUpdated: "Профиль успешно обновлен",
+      updateFailed: "Ошибка обновления профиля",
+      bioLabel: "О себе",
+      updateButton: "Обновить",
+      savingButton: "Сохранение...",
+      nameRequired: "Имя обязательно",
+      emailRequired: "Email обязателен",
+      dobRequired: "Дата рождения обязательна"
+    }
   },
   en: {
     welcome: {
@@ -454,7 +515,9 @@ export const translations: Translations = {
       daysLeft: "Days Left",
       days: "Days",
       todayCompleted: "Completed today",
-      askUniverse: "Ask the Universe"
+      askUniverse: "Ask the Universe",
+      path: "Path",
+      ascesis: "Ascesis"
     },
     pactOath: {
       title: "Contract with the Universe",
@@ -463,7 +526,8 @@ export const translations: Translations = {
       oath1: "I take full responsibility for my choice and commit to following it until the end of the ascesis period.",
       oath2: "I understand that breaking the contract will weaken my connection with higher powers and hinder my spiritual growth.",
       oath3: "I will be honest with myself and the Universe in following the terms of this contract.",
-      createButton: "Create Contract"
+      createButton: "Create Contract",
+      days: "days"
     },
     createPact: {
       title: "Create Ascesis",
@@ -483,7 +547,9 @@ export const translations: Translations = {
       stepTwoTitle: "Choose duration",
       stepThreeTitle: "Create contract",
       placeholders: {
-        title: "Example: Rejecting sugar"
+        title: "Example: Rejecting sugar",
+        rejection: "Select or enter what you're giving up",
+        reward: "What you will get in return..."
       },
       ascesisWarning: "Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement.",
       customDays: "Set custom days",
@@ -551,7 +617,12 @@ export const translations: Translations = {
         basic: "Basic",
         sleep: "Sleep",
         focus: "Focus",
-        advanced: "Advanced"
+        advanced: "Advanced",
+        morning: "Morning",
+        evening: "Evening",
+        stress: "Stress",
+        mantra: "Mantra",
+        visual: "Visual"
       },
       morning: {
         title: "Morning Meditation",
@@ -582,7 +653,10 @@ export const translations: Translations = {
       proTitle: "PRO",
       cancelButton: "Cancel Subscription",
       successMessage: "Subscription successfully activated",
-      errorMessage: "Error activating subscription"
+      errorMessage: "Error activating subscription",
+      bannerTitle: "Elevate Your Spiritual Experience",
+      bannerDesc: "Unlock full access to all meditations and features",
+      upgradeNow: "Upgrade Now"
     },
     nav: {
       home: "Home",
@@ -592,9 +666,27 @@ export const translations: Translations = {
     },
     calendar: {
       today: "Today",
-      month: "Month"
+      month: "Month",
+      year: "Year"
     },
-    minimumPeriod: "Minimum ascesis period is 7 days"
+    minimumPeriod: "Minimum ascesis period is 30 days",
+    userProfile: {
+      personal: "Personal Information",
+      name: "Name",
+      birthDate: "Date of Birth",
+      emailAddressLabel: "Email Address",
+      updateProfile: "Update Profile",
+      passwordLabel: "Password",
+      changePassword: "Change Password",
+      profileUpdated: "Profile successfully updated",
+      updateFailed: "Failed to update profile",
+      bioLabel: "Bio",
+      updateButton: "Update",
+      savingButton: "Saving...",
+      nameRequired: "Name is required",
+      emailRequired: "Email is required",
+      dobRequired: "Date of birth is required"
+    }
   },
   es: {
     welcome: {
@@ -651,7 +743,9 @@ export const translations: Translations = {
       daysLeft: "Días Restantes",
       days: "Días",
       todayCompleted: "Completado hoy",
-      askUniverse: "Preguntar al Universo"
+      askUniverse: "Preguntar al Universo",
+      path: "Camino",
+      ascesis: "Ascesis"
     },
     pactOath: {
       title: "Contrato con el Universo",
@@ -660,7 +754,8 @@ export const translations: Translations = {
       oath1: "Asumo plena responsabilidad por mi elección y me comprometo a seguirla hasta el final del período de ascesis.",
       oath2: "Entiendo que romper el contrato debilitará mi conexión con los poderes superiores y obstaculizará mi crecimiento espiritual.",
       oath3: "Seré honesto conmigo mismo y con el Universo al seguir los términos de este contrato.",
-      createButton: "Crear Contrato"
+      createButton: "Crear Contrato",
+      days: "días"
     },
     createPact: {
       title: "Crear Ascesis",
@@ -680,7 +775,9 @@ export const translations: Translations = {
       stepTwoTitle: "Elegir duración",
       stepThreeTitle: "Crear contrato",
       placeholders: {
-        title: "Ejemplo: Rechazar azúcar"
+        title: "Ejemplo: Rechazar azúcar",
+        rejection: "Selecciona o ingresa a qué renuncias",
+        reward: "Lo que obtendrás a cambio..."
       },
       ascesisWarning: "La ascesis no es solo abstinencia, sino una herramienta para el crecimiento espiritual y la superación personal.",
       customDays: "Establecer días personalizados",
@@ -748,7 +845,12 @@ export const translations: Translations = {
         basic: "Básicas",
         sleep: "Sueño",
         focus: "Enfoque",
-        advanced: "Avanzadas"
+        advanced: "Avanzadas",
+        morning: "Mañana",
+        evening: "Noche",
+        stress: "Estrés",
+        mantra: "Mantra",
+        visual: "Visual"
       },
       morning: {
         title: "Meditación Matutina",
@@ -779,7 +881,10 @@ export const translations: Translations = {
       proTitle: "PRO",
       cancelButton: "Cancelar Suscripción",
       successMessage: "Suscripción activada con éxito",
-      errorMessage: "Error al activar la suscripción"
+      errorMessage: "Error al activar la suscripción",
+      bannerTitle: "Eleva Tu Experiencia Espiritual",
+      bannerDesc: "Desbloquea acceso completo a todas las meditaciones y funciones",
+      upgradeNow: "Mejorar Ahora"
     },
     nav: {
       home: "Inicio",
@@ -789,8 +894,26 @@ export const translations: Translations = {
     },
     calendar: {
       today: "Hoy",
-      month: "Mes"
+      month: "Mes",
+      year: "Año"
     },
-    minimumPeriod: "El período mínimo de ascesis es de 7 días"
+    minimumPeriod: "El período mínimo de ascesis es de 30 días",
+    userProfile: {
+      personal: "Información Personal",
+      name: "Nombre",
+      birthDate: "Fecha de Nacimiento",
+      emailAddressLabel: "Correo Electrónico",
+      updateProfile: "Actualizar Perfil",
+      passwordLabel: "Contraseña",
+      changePassword: "Cambiar Contraseña",
+      profileUpdated: "Perfil actualizado con éxito",
+      updateFailed: "Error al actualizar el perfil",
+      bioLabel: "Biografía",
+      updateButton: "Actualizar",
+      savingButton: "Guardando...",
+      nameRequired: "El nombre es obligatorio",
+      emailRequired: "El correo electrónico es obligatorio",
+      dobRequired: "La fecha de nacimiento es obligatoria"
+    }
   }
 };
