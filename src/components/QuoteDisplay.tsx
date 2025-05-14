@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
+import { useToast } from '@/hooks/use-toast';
 
 interface QuoteDisplayProps {
   quote: string;
@@ -26,6 +27,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<string>("");
   const { userProfile, language } = useAppStore();
+  const { toast } = useToast();
   
   // Format current date based on user language
   useEffect(() => {
@@ -117,14 +119,21 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
       } catch (error) {
         console.error('Error fetching horoscope:', error);
         setError(error.message);
-        // Fallback to default quote
+        // Show error toast
+        toast({
+          title: language === 'ru' ? 'Ошибка' : language === 'es' ? 'Error' : 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
     };
     
-    fetchHoroscopeData();
-  }, [language, userProfile?.birthDate]);
+    if (userProfile?.birthDate) {
+      fetchHoroscopeData();
+    }
+  }, [language, userProfile?.birthDate, toast]);
   
   const userName = userProfile?.name || 'Искатель';
   const greeting = language === 'ru' ? 'Приветствую тебя' : 
@@ -145,11 +154,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
       return <p className="italic text-cosmic-accent/70">Loading your cosmic message...</p>;
     }
     
-    if (error) {
-      return <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>;
-    }
-    
-    if (!horoscope) {
+    if (error || !horoscope) {
       return <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>;
     }
     
@@ -157,7 +162,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
       <div className="space-y-3">
         {zodiacInfo && (
           <p className="text-lg font-medium">
-            {zodiacInfo.symbol} {zodiacInfo.name[language] || zodiacInfo.name.en} — {horoscope.current_date}
+            {zodiacInfo.symbol} {zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en} — {horoscope.current_date}
           </p>
         )}
         
