@@ -10,6 +10,7 @@ const corsHeaders = {
 interface RequestBody {
   question: string;
   language: string;
+  systemPrompt?: string;
 }
 
 serve(async (req) => {
@@ -24,10 +25,12 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language } = await req.json() as RequestBody;
+    const { question, language, systemPrompt } = await req.json() as RequestBody;
 
-    // Get deep, spiritual prompt in the correct language
-    const prompt = getUniversePrompt(question, language);
+    // Get deep, spiritual prompt in the correct language or use custom one
+    const prompt = systemPrompt ? 
+      { system: systemPrompt, user: `Вопрос искателя: ${question}` } :
+      getUniversePrompt(question, language);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

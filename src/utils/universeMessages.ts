@@ -56,14 +56,45 @@ const spanishAnswers = [
   "Eres más sabio de lo que piensas. Eres más fuerte de lo que pareces."
 ];
 
+// Helper function to get current day of the pact
+function getCurrentDay(days = []) {
+  if (!days || days.length === 0) return 1;
+  const completedDays = days.filter(day => day.completed).length;
+  return completedDays + 1;
+}
+
 export async function generateUniverseAnswer(question: string): Promise<string> {
   const store = useAppStore.getState();
-  const { language } = store;
+  const { language, pacts } = store;
+  
+  // Get current active pact if available
+  const currentVow = pacts?.find(p => p.status === 'active') || {
+    title: '',
+    duration: 21,
+    days: [],
+    purpose: 'духовный рост',
+    restrictions: [{ title: 'вредные привычки' }]
+  };
   
   try {
+    // Construct the custom prompt with information about the user's vow
+    const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути. 
+      Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
+      Его цель: ${currentVow.reward || 'духовный рост'}.
+      Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.
+      
+      Предоставь вдумчивый, мудрый ответ, который поможет ему обрести ясность и понимание. 
+      Будь глубоким, но лаконичным (100-150 слов). Используй мягкий, мудрый тон.
+      Иногда используй звезды, космос или природные элементы как метафоры.
+      Не используй религиозную лексику, если пользователь специально не упоминает религию.`;
+    
     // Try to get an answer from OpenAI via Edge Function
     const { data, error } = await supabase.functions.invoke('universe-answer', {
-      body: { question, language },
+      body: { 
+        question, 
+        language,
+        systemPrompt 
+      },
     });
 
     if (error) {
