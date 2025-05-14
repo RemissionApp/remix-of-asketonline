@@ -1,9 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { CosmicButton } from '@/components/CosmicButton';
+import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
 import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot, Headphones } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -17,11 +17,10 @@ import {
 import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
-import { Link } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
   const { 
-    pacts = [], // Provide a default empty array if pacts is undefined
+    pacts, 
     dailyQuote, 
     markDayComplete, 
     setActiveScreen,
@@ -35,16 +34,14 @@ const MainPage: React.FC = () => {
   
   // Sync pacts with current date when component mounts
   useEffect(() => {
-    if (typeof syncPactsWithCurrentDate === 'function') {
-      syncPactsWithCurrentDate();
-    }
+    syncPactsWithCurrentDate();
   }, [syncPactsWithCurrentDate]);
   
-  // Filter active pacts, ensure pacts is defined before filtering
-  const activePacts = pacts && pacts.filter ? pacts.filter(p => p.status === 'active') : [];
+  // Filter active pacts
+  const activePacts = pacts.filter(p => p.status === 'active');
   
-  // Get current pact, ensuring activePacts has elements
-  const currentPact = activePacts.length > 0 ? activePacts[currentPactIndex] : null;
+  // Get current pact
+  const currentPact = activePacts[currentPactIndex] || null;
   
   const activeDaysCompleted = currentPact
     ? currentPact.days.filter(day => day.completed).length
@@ -56,8 +53,6 @@ const MainPage: React.FC = () => {
   
   // Function to format the rejection text based on language
   const formatRejection = (rejectionText: string) => {
-    if (!rejectionText) return '';
-    
     // Predefined options with translations
     const predefinedOptions: Record<string, Record<string, string>> = {
       ru: {
@@ -89,8 +84,10 @@ const MainPage: React.FC = () => {
       }
     };
     
+    if (!rejectionText) return '';
+    
     // Get translations for current language
-    const translations = predefinedOptions[language] || {};
+    const translations = predefinedOptions[language];
     
     // Check if it's a multiple rejection (comma-separated)
     if (rejectionText.includes(',')) {
@@ -132,7 +129,7 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Complete day handler with visual effect
+  // Обработчик завершения дня с визуальным эффектом
   const handleCompleteDayWithEffect = () => {
     if (currentPact) {
       markDayComplete(currentPact.id);
@@ -151,7 +148,7 @@ const MainPage: React.FC = () => {
       {/* Energy points display */}
       <div className="absolute top-4 right-4 z-20 flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">
         <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
-        <span className="text-cosmic-gold font-medium">{userProfile?.energyPoints || 0}</span>
+        <span className="text-cosmic-gold font-medium">{userProfile.energyPoints}</span>
       </div>
       
       {/* Rank badge */}
@@ -214,9 +211,9 @@ const MainPage: React.FC = () => {
             <EnergyCircle progress={progress} size="lg">
               <div className="text-center p-4">
                 <p className="text-4xl font-bold font-serif text-white">
-                  {activeDaysCompleted}/{currentPact?.duration || 0}
+                  {activeDaysCompleted}/{currentPact?.duration}
                 </p>
-                <p className="text-lg text-cosmic-accent mt-2">{t?.main?.days || "days"}</p>
+                <p className="text-lg text-cosmic-accent mt-2">{t.main.days}</p>
               </div>
             </EnergyCircle>
             
@@ -224,10 +221,10 @@ const MainPage: React.FC = () => {
               className="mt-8" 
               onClick={handleCompleteDayWithEffect}
             >
-              {t?.main?.todayCompleted || "Today Completed"}
+              {t.main.todayCompleted}
             </CosmicButton>
             
-            <QuoteDisplay quote={dailyQuote || ""} className="mt-12" />
+            <QuoteDisplay quote={dailyQuote} className="mt-12" />
             
             {/* Add Meditation Button */}
             <div className="flex flex-wrap justify-center gap-4 mt-6">
@@ -235,7 +232,7 @@ const MainPage: React.FC = () => {
                 variant="outline" 
                 onClick={() => setActiveScreen('universe')}
               >
-                {t?.main?.askUniverse || "Ask the Universe"}
+                {t.main.askUniverse}
               </CosmicButton>
               
               <CosmicButton 
@@ -243,21 +240,21 @@ const MainPage: React.FC = () => {
                 onClick={() => setActiveScreen('meditation')}
               >
                 <Headphones className="mr-2" size={18} />
-                {t?.meditation?.pageTitle || "Meditations"}
+                {t.meditation.pageTitle}
               </CosmicButton>
             </div>
           </>
         ) : (
           <div className="text-center">
             <h1 className="text-2xl font-serif text-white mb-4">
-              {t?.main?.noPacts || "No active ascesis"}
+              {t.main.noPacts}
             </h1>
             
             <CosmicButton 
               onClick={() => setActiveScreen('create-pact')}
               className="mt-4"
             >
-              {t?.main?.createPact || "Create Ascesis"}
+              {t.main.createPact}
             </CosmicButton>
           </div>
         )}
@@ -271,7 +268,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('main')}
           >
             <Home size={24} />
-            <span className="text-xs mt-1">{t?.main?.nav?.path || "Path"}</span>
+            <span className="text-xs mt-1">{t.main.nav.path}</span>
           </button>
           
           <button 
@@ -279,7 +276,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('create-pact')}
           >
             <Sparkles size={24} />
-            <span className="text-xs mt-1">{t?.main?.nav?.ascesis || "Ascesis"}</span>
+            <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
           </button>
           
           <button 
@@ -287,7 +284,7 @@ const MainPage: React.FC = () => {
             onClick={() => setActiveScreen('universe')}
           >
             <MessageSquare size={24} />
-            <span className="text-xs mt-1">{t?.main?.nav?.universe || "Universe"}</span>
+            <span className="text-xs mt-1">{t.main.nav.universe}</span>
           </button>
           
           <button 
@@ -297,7 +294,7 @@ const MainPage: React.FC = () => {
             <div className="relative">
               <UserAvatar size="sm" showRankBorder={false} />
             </div>
-            <span className="text-xs mt-1">{t?.main?.nav?.profile || "Profile"}</span>
+            <span className="text-xs mt-1">{t.main.nav.profile}</span>
           </button>
         </div>
       </div>
