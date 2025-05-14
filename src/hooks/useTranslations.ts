@@ -1,4 +1,3 @@
-
 import { useAppStore } from '@/store/useAppStore';
 import translations from '@/i18n/translations';
 
@@ -38,6 +37,26 @@ export const useTranslations = () => {
     }
   };
   
+  // Make sure we explicitly type the userProfile object to include savingButton
+  interface UserProfileTranslations {
+    title: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    nameRequired: string;
+    birthDateLabel: string;
+    birthDatePlaceholder: string;
+    birthDateRequired: string;
+    continueButton: string;
+    savingButton: string;
+    age: string;
+    yearSingular: string;
+    yearPlural: string;
+    currentDate: string;
+    languageLabel: string;
+    back: string;
+  }
+  
+  // Define our translations with proper typing
   const defaultTranslations = {
     calendar: {
       year: language === 'ru' ? 'Год' : language === 'es' ? 'Año' : 'Year',
@@ -140,7 +159,7 @@ export const useTranslations = () => {
       currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
       languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
       back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
-    },
+    } as UserProfileTranslations,
     onboarding: {
       steps: [
         // This will be filled from i18n/translations.ts, but we need to define the type
