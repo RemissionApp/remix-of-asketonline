@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
@@ -118,7 +119,7 @@ export const HoroscopeDisplay: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full max-w-lg mx-auto">
+      <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
         <p className="text-cosmic-accent italic">{loadingText}</p>
         <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
         <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
@@ -127,7 +128,7 @@ export const HoroscopeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full max-w-lg mx-auto">
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
       <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
         {horoscope?.description || getDefaultMessage(language)}
       </p>
@@ -147,8 +148,8 @@ export const HoroscopeDisplay: React.FC = () => {
 // Helper function for default message
 function getDefaultMessage(language: string): string {
   return {
-    ru: 'Звезды хранят молчание сегодня. Укажите дату рождения в профиле для получения персонального гороскопа.',
-    en: 'The stars are silent today. Please set your birth date in your profile to receive a personalized horoscope.',
-    es: 'Las estrellas están en silencio hoy. Por favor, establezca su fecha de nacimiento en su perfil para recibir un horóscopo personalizado.',
-  }[language] || 'The stars are silent today. Please set your birth date in your profile to receive a personalized horoscope.';
+    ru: 'Вселенная ждёт твоего часа рождения, чтобы открыть небесные свитки. Укажи дату рождения — и я прошепчу тебе истину дня.',
+    en: 'The universe awaits your birth hour to unlock celestial scrolls. Enter your birth date — and I will whisper the truth of the day.',
+    es: 'El universo espera la hora de tu nacimiento para abrir rollos celestiales. Establece tu fecha de nacimiento — y te susurraré la verdad del día.',
+  }[language] || 'The universe awaits your birth hour to unlock celestial scrolls. Enter your birth date — and I will whisper the truth of the day.';
 }
