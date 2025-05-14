@@ -10,7 +10,8 @@ import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen, isUserPro } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, userProfile } = useAppStore();
+  const isUserPro = userProfile?.isPro || false;
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);

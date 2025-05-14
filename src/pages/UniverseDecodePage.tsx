@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -33,11 +32,9 @@ interface Message {
 }
 
 const UniverseDecodePage: React.FC = () => {
-  const { t, language } = useAppStore((state) => ({
-    t: state.translations,
-    language: state.language
-  }));
-  const { isUserPro, setActiveScreen } = useAppStore();
+  const { userProfile, setActiveScreen } = useAppStore();
+  const isUserPro = userProfile?.isPro || false;
+  const { t } = useTranslations();
   const navigate = useNavigate();
   
   const [chatStep, setChatStep] = useState<ChatStep>('intro');
