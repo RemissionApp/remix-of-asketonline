@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -11,6 +12,8 @@ import { NoPactsView } from '@/components/NoPactsView';
 import { PactNavigation } from '@/components/PactNavigation';
 import { ActionButtons } from '@/components/ActionButtons';
 import { useNavigate } from 'react-router-dom';
+import { CountdownTimer } from '@/components/CountdownTimer';
+import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 
 const MainPage: React.FC = () => {
   const { 
@@ -136,10 +139,14 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       <TopBar />
+      
+      {/* Countdown Timer - positioned at the top */}
+      <CountdownTimer />
+      
       <EnergyEffect show={showEnergyEffect} />
       
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-8">
         {activePacts.length > 0 ? (
           <>
             <PactNavigation 
@@ -155,6 +162,9 @@ const MainPage: React.FC = () => {
               getAscesisPrefix={getAscesisPrefix}
               formatRejection={formatRejection}
             />
+            
+            {/* Add ZodiacBadgeDisplay here */}
+            <ZodiacBadgeDisplay />
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
             

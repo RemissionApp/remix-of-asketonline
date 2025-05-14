@@ -5,16 +5,32 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 
 interface TimeLeft {
+  days: number;
   hours: number;
   minutes: number;
   seconds: number;
+  milliseconds: number;
 }
 
 export const CountdownTimer: React.FC = () => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ 
+    days: 0,
+    hours: 0, 
+    minutes: 0, 
+    seconds: 0,
+    milliseconds: 0
+  });
   const { language } = useAppStore();
 
   // Get translations for time units
+  const getDaysLabel = () => {
+    switch (language) {
+      case 'ru': return 'д';
+      case 'es': return 'd';
+      default: return 'd';
+    }
+  };
+  
   const getHoursLabel = () => {
     switch (language) {
       case 'ru': return 'ч';
@@ -38,8 +54,16 @@ export const CountdownTimer: React.FC = () => {
       default: return 's';
     }
   };
+  
+  const getMillisecondsLabel = () => {
+    switch (language) {
+      case 'ru': return 'мс';
+      case 'es': return 'ms';
+      default: return 'ms';
+    }
+  };
 
-  // Get end of day time
+  // Calculate time until end of day
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
@@ -49,18 +73,20 @@ export const CountdownTimer: React.FC = () => {
       const difference = endOfDay.getTime() - now.getTime();
       
       if (difference > 0) {
-        const hours = Math.floor((difference / (1000 * 60 * 60)));
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((difference / 1000 / 60) % 60);
         const seconds = Math.floor((difference / 1000) % 60);
+        const milliseconds = Math.floor((difference % 1000) / 10); // Get only tens of milliseconds (2 digits)
         
-        setTimeLeft({ hours, minutes, seconds });
+        setTimeLeft({ days, hours, minutes, seconds, milliseconds });
       } else {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
       }
     };
     
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    const timer = setInterval(calculateTimeLeft, 10); // Update more frequently for milliseconds
     
     return () => clearInterval(timer);
   }, []);
@@ -75,25 +101,31 @@ export const CountdownTimer: React.FC = () => {
   };
 
   return (
-    <div className="mt-6 mb-6 flex flex-col items-center">
-      <div className="text-sm text-cosmic-secondary mb-1 flex items-center">
-        <Clock size={16} className="mr-2 text-cosmic-accent" />
-        {getCountdownText()}
-      </div>
-      <div className="flex items-center space-x-2 bg-cosmic-dark/80 backdrop-blur-md rounded-lg px-4 py-2 border border-cosmic-accent/20">
+    <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20 border-b border-cosmic-accent/20">
+      <div className="flex items-center justify-center space-x-2 text-xs">
         <div className="flex flex-col items-center">
-          <span className="text-xl font-bold text-cosmic-accent">{timeLeft.hours.toString().padStart(2, '0')}</span>
-          <span className="text-xs text-cosmic-secondary">{getHoursLabel()}</span>
+          <span className="text-cosmic-accent font-medium">{timeLeft.days.toString().padStart(2, '0')}</span>
+          <span className="text-cosmic-secondary text-[10px]">{getDaysLabel()}</span>
         </div>
-        <span className="text-xl font-bold text-cosmic-accent">:</span>
+        <span className="text-cosmic-accent">:</span>
         <div className="flex flex-col items-center">
-          <span className="text-xl font-bold text-cosmic-accent">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-          <span className="text-xs text-cosmic-secondary">{getMinutesLabel()}</span>
+          <span className="text-cosmic-accent font-medium">{timeLeft.hours.toString().padStart(2, '0')}</span>
+          <span className="text-cosmic-secondary text-[10px]">{getHoursLabel()}</span>
         </div>
-        <span className="text-xl font-bold text-cosmic-accent">:</span>
+        <span className="text-cosmic-accent">:</span>
         <div className="flex flex-col items-center">
-          <span className="text-xl font-bold text-cosmic-accent">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-          <span className="text-xs text-cosmic-secondary">{getSecondsLabel()}</span>
+          <span className="text-cosmic-accent font-medium">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+          <span className="text-cosmic-secondary text-[10px]">{getMinutesLabel()}</span>
+        </div>
+        <span className="text-cosmic-accent">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-cosmic-accent font-medium">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+          <span className="text-cosmic-secondary text-[10px]">{getSecondsLabel()}</span>
+        </div>
+        <span className="text-cosmic-accent">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-cosmic-accent font-medium">{timeLeft.milliseconds.toString().padStart(2, '0')}</span>
+          <span className="text-cosmic-secondary text-[10px]">{getMillisecondsLabel()}</span>
         </div>
       </div>
     </div>
