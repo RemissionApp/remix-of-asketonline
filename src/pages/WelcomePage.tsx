@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,7 +8,6 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { SupportedLanguage } from '@/i18n/translations';
 
 const WelcomePage: React.FC = () => {
-  const { setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const [isAnimated, setIsAnimated] = useState(false);
   const [cycleIndex, setCycleIndex] = useState(0);
@@ -47,10 +47,6 @@ const WelcomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
   
-  const handleContinue = () => {
-    setActiveScreen('language');
-  };
-  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
@@ -83,8 +79,8 @@ const WelcomePage: React.FC = () => {
           {subtitles[currentLang]}
         </p>
         
-        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
-          {buttonTexts[currentLang]}
+        <CosmicButton asChild size="lg" className="transition-all duration-300 ease-in-out">
+          <Link to="/language">{buttonTexts[currentLang]}</Link>
         </CosmicButton>
       </div>
     </div>
