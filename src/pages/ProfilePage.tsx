@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import UserProfileForm from '@/components/UserProfileForm';
@@ -22,7 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
-import { ZodiacBadge } from '@/components/ZodiacBadge';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage, signOut } = useAppStore();
@@ -60,9 +59,7 @@ const ProfilePage: React.FC = () => {
               <ProBadge size="md" />
             )}
             
-            {userProfile?.birthDate && (
-              <ZodiacBadge size="md" />
-            )}
+            <UserAvatar size="md" />
           </div>
           
           <h1 className="text-2xl text-white font-serif mb-4">
@@ -203,7 +200,7 @@ const ProfilePage: React.FC = () => {
               <p>Последнее обновление: 14 мая, 2025</p>
               
               <h3 className="text-white text-base font-medium">1. Введение</h3>
-              <p>Приложение ASKET ("мы", "наше" или "нас") уважает вашу конфиденциальность и стремится защитить ваши персональные данные. Эта политика конфиденциальности объясняет, как мы собираем, используем, раскрываем, обрабатываем и защищаем информацию, которую вы предоставляете при использовании нашего приложения.</p>
+              <p>Приложение ASKET ("мы", "наши" или "нас") уважает вашу конфиденциальность и стремится защитить ваши персональные данные. Эта политика конфиденциальности объясняет, как мы собираем, используем, раскрываем, обрабатываем и защищаем информацию, которую вы предоставляете при использовании нашего приложения.</p>
               
               <h3 className="text-white text-base font-medium">2. Собираемая информация</h3>
               <p>Мы собираем следующие типы информации:</p>

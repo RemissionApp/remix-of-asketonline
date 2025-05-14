@@ -4,17 +4,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 import { SpiritualRank } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
+import { ZodiacBadge } from './ZodiacBadge';
+import { getZodiacSign } from '@/utils/zodiac';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showRankBorder?: boolean;
+  showZodiacBadge?: boolean;
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ 
   size = 'md', 
   className,
-  showRankBorder = true
+  showRankBorder = true,
+  showZodiacBadge = true
 }) => {
   const { userProfile } = useAppStore();
   
@@ -55,21 +59,31 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   const borderClass = showRankBorder 
     ? `border-2 ${rankBorderColor[userProfile.rank]}` 
     : '';
-  
+
+  const hasZodiac = !!userProfile?.birthDate;
+    
   return (
-    <Avatar className={cn(
-      sizeClasses[size], 
-      borderClass,
-      'animate-pulse-slow',
-      className
-    )}>
-      <AvatarImage 
-        src={getAvatarImagePath(userProfile.rank)} 
-        alt={`${userProfile.rank} avatar`} 
-      />
-      <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
-        {userProfile.name.substring(0, 2).toUpperCase()}
-      </AvatarFallback>
-    </Avatar>
+    <div className="relative">
+      <Avatar className={cn(
+        sizeClasses[size], 
+        borderClass,
+        'animate-pulse-slow',
+        className
+      )}>
+        <AvatarImage 
+          src={getAvatarImagePath(userProfile.rank)} 
+          alt={`${userProfile.rank} avatar`} 
+        />
+        <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
+          {userProfile.name.substring(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      
+      {showZodiacBadge && hasZodiac && (
+        <div className="absolute -bottom-1 -right-1">
+          <ZodiacBadge size="sm" showTooltip={true} />
+        </div>
+      )}
+    </div>
   );
 };

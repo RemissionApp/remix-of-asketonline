@@ -28,17 +28,17 @@ export const ZodiacInfo: React.FC = () => {
       
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div>
-          <span className="text-cosmic-secondary">Element:</span>
+          <span className="text-cosmic-secondary">{t.zodiac?.element || "Element"}:</span>
           <span className="text-white ml-2">{zodiacInfo.element}</span>
         </div>
         <div>
-          <span className="text-cosmic-secondary">Ruler:</span>
+          <span className="text-cosmic-secondary">{t.zodiac?.ruler || "Ruler"}:</span>
           <span className="text-white ml-2">{zodiacInfo.ruler}</span>
         </div>
       </div>
       
       <div className="mt-3">
-        <div className="text-cosmic-secondary mb-1">Traits:</div>
+        <div className="text-cosmic-secondary mb-1">{t.zodiac?.traits || "Traits"}:</div>
         <div className="flex flex-wrap gap-2">
           {zodiacInfo.traits.map(trait => (
             <span 

@@ -25,10 +25,42 @@ export type { SupportedLanguage };
 
 export const useTranslations = () => {
   const { language } = useAppStore();
-  const [t, setT] = useState(translations[language]);
+  const [t, setT] = useState({
+    ...translations[language],
+    zodiac: {
+      yourZodiacSign: language === 'ru' ? 'Ваш знак зодиака' : 
+                      language === 'es' ? 'Tu signo zodiacal' : 
+                      'Your zodiac sign',
+      element: language === 'ru' ? 'Стихия' :
+              language === 'es' ? 'Elemento' : 
+              'Element',
+      ruler: language === 'ru' ? 'Управитель' :
+            language === 'es' ? 'Regente' : 
+            'Ruler',
+      traits: language === 'ru' ? 'Характеристики' :
+             language === 'es' ? 'Rasgos' : 
+             'Traits'
+    }
+  });
 
   useEffect(() => {
-    setT(translations[language]);
+    setT({
+      ...translations[language],
+      zodiac: {
+        yourZodiacSign: language === 'ru' ? 'Ваш знак зодиака' : 
+                        language === 'es' ? 'Tu signo zodiacal' : 
+                        'Your zodiac sign',
+        element: language === 'ru' ? 'Стихия' :
+                language === 'es' ? 'Elemento' : 
+                'Element',
+        ruler: language === 'ru' ? 'Управитель' :
+              language === 'es' ? 'Regente' : 
+              'Ruler',
+        traits: language === 'ru' ? 'Характеристики' :
+               language === 'es' ? 'Rasgos' : 
+               'Traits'
+      }
+    });
   }, [language]);
 
   return { 
