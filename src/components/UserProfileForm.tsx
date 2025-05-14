@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -20,7 +19,6 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ZodiacInfo } from './ZodiacInfo';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();

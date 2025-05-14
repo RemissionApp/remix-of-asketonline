@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import UserProfileForm from '@/components/UserProfileForm';
@@ -55,14 +54,13 @@ const ProfilePage: React.FC = () => {
       
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <div className="mb-6 w-full">
-          {/* Removed duplicated avatar and kept only the title */}
           <h1 className="text-2xl text-white font-serif mb-4">
             {t.main?.profile || "Профиль"}
           </h1>
           
           <UserProfileForm />
           
-          {/* Zodiac Information */}
+          {/* Zodiac Information - Keep only one instance */}
           <ZodiacBadgeDisplay />
           
           <div className="mt-8">
@@ -204,7 +202,7 @@ const ProfilePage: React.FC = () => {
                 <li>Техническая информация: IP-адрес, тип устройства, версия ОС</li>
               </ul>
               
-              <h3 className="text-white text-base font-medium">3. Использование информации</h3>
+              <h3 className="text-white text-base font-medium">3. Использо��ание информации</h3>
               <p>Ваша информация используется для:</p>
               <ul className="list-disc pl-5">
                 <li>Предоставления и улучшения функций приложения</li>
