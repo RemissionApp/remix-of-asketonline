@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -6,16 +5,16 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
+import { useUniverseQuestions } from '@/hooks/useUniverseQuestions';
+import { UniverseQuestion } from '@/types';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const { setActiveScreen } = useAppStore();
+  const { askUniverse, activeQuestions } = useUniverseQuestions();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
-  const [currentAnswer, setCurrentAnswer] = useState<null | {
-    question: string;
-    answer: string;
-  }>(null);
+  const [currentAnswer, setCurrentAnswer] = useState<null | UniverseQuestion>(null);
   const navigate = useNavigate();
   
   const handleGoBack = () => {
@@ -30,10 +29,7 @@ const UniversePage: React.FC = () => {
     setTimeout(async () => {
       try {
         const response = await askUniverse(question);
-        setCurrentAnswer({
-          question: response.question,
-          answer: response.answer
-        });
+        setCurrentAnswer(response);
       } catch (error) {
         console.error("Error asking universe:", error);
       } finally {

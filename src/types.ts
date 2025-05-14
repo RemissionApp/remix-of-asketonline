@@ -45,7 +45,7 @@ export interface UserProfile {
   energyPoints?: number;
   goal?: string;
   achievements?: Achievement[];
-  activeMission?: Mission;
+  activeMission?: Mission | null;
 }
 
 export interface PactItem {
@@ -117,3 +117,14 @@ export interface Mission {
   };
   completed: boolean;
 }
+
+export interface DailyQuote {
+  text: string;
+  author: string;
+}
+
+export interface AuthFunctions {
+  signIn: (email: string, password: string) => Promise<boolean>;
+  signUp: (email: string, password: string) => Promise<boolean>;
+}
+

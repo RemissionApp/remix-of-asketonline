@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -12,10 +13,12 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading, user, userProfile } = useAppStore();
+  const { loading, user, userProfile } = useAppStore();
+  const { signIn, signUp } = useAuth();
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');

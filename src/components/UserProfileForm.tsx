@@ -1,179 +1,116 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '@/store/useAppStore';
-import { CosmicButton } from '@/components/CosmicButton';
-import { useTranslations } from '@/hooks/useTranslations';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { format, differenceInYears } from 'date-fns';
-import { ru, es, enUS } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
+import { CosmicButton } from '@/components/CosmicButton';
+import { useAppStore } from '@/store/useAppStore';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { ru } from 'date-fns/locale';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { AvatarUpload } from '@/components/AvatarUpload';
+import { useTranslations } from '@/hooks/useTranslations';
 
-const UserProfileForm: React.FC = () => {
-  const navigate = useNavigate();
-  const { updateUserProfile, userProfile, language } = useAppStore();
-  const { t, getYearWord } = useTranslations();
-  const [age, setAge] = useState<number | null>(null);
+export const UserProfileForm: React.FC<{ onSubmit?: () => void; onBack?: () => void }> = ({
+  onSubmit,
+  onBack
+}) => {
+  const { userProfile, updateUserProfile, onboardingComplete, setOnboardingComplete } = useAppStore();
+  const { t } = useTranslations();
   
-  // Get locale based on selected language
-  const getLocale = () => {
-    switch (language) {
-      case 'ru':
-        return ru;
-      case 'es':
-        return es;
-      default:
-        return enUS;
-    }
-  };
+  const [name, setName] = useState<string>(userProfile.name || '');
+  const [birthDate, setBirthDate] = useState<Date | null>(userProfile.birthDate || null);
+  const [nameError, setNameError] = useState<string>('');
+  const [dateError, setDateError] = useState<string>('');
   
-  // Create form schema based on language
-  const formSchema = z.object({
-    name: z.string().min(2, { 
-      message: t.userProfile?.nameRequired || "Имя обязательно" 
-    }),
-    birthDate: z.date({
-      required_error: t.userProfile?.birthDateRequired || "Укажите дату рождения"
-    }),
-  });
-
-  // Initialize form with existing data or defaults
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: userProfile.name !== 'Искатель' ? userProfile.name : "",
-      birthDate: userProfile.birthDate || new Date(),
-    },
-  });
-  
-  // Calculate age whenever birthDate changes
-  useEffect(() => {
-    const birthDate = form.getValues('birthDate');
-    if (birthDate) {
-      const calculatedAge = differenceInYears(new Date(), birthDate);
-      setAge(calculatedAge);
-    }
-  }, [form.watch('birthDate')]);
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Update the profile in Supabase
-    await updateUserProfile({
-      name: values.name,
-      birthDate: values.birthDate
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Navigate to main page or onboarding
-    navigate('/main');
+    // Validate form
+    let isValid = true;
+    
+    if (!name.trim()) {
+      setNameError(t.profile.nameRequired);
+      isValid = false;
+    } else {
+      setNameError('');
+    }
+    
+    if (!birthDate) {
+      setDateError(t.profile.birthDateRequired);
+      isValid = false;
+    } else {
+      setDateError('');
+    }
+    
+    if (isValid) {
+      updateUserProfile({ 
+        name, 
+        birthDate 
+      });
+      setOnboardingComplete(true);
+      if (onSubmit) onSubmit();
+    }
   };
-
+  
   return (
-    <div className="w-full max-w-md mx-auto text-center">
-      <div className="flex justify-center mb-6">
-        <AvatarUpload size="lg" />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="name">{t.profile.name}</Label>
+        <Input
+          id="name"
+          placeholder={t.profile.namePlaceholder}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
+        />
+        {nameError && <p className="text-red-500 text-sm">{nameError}</p>}
       </div>
       
-      <h2 className="text-3xl font-serif text-white mb-6">
-        {t.userProfile?.title || "О тебе"}
-      </h2>
-      
-      {age !== null && (
-        <div className="mb-6 text-cosmic-secondary font-medium">
-          {t.userProfile?.age || "Возраст"}: {age} {getYearWord(age)}
-        </div>
-      )}
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="text-left">
-                <FormLabel className="text-cosmic-secondary text-sm">
-                  {t.userProfile?.nameLabel || "Как тебя зовут"}
-                </FormLabel>
-                <FormControl>
-                  <Input 
-                    className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white"
-                    placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage className="text-red-400" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-              <FormItem className="text-left">
-                <FormLabel className="text-cosmic-secondary text-sm">
-                  {t.userProfile?.birthDateLabel || "Дата рождения"}
-                </FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-normal text-white",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP", { locale: getLocale() })
-                        ) : (
-                          <span>{t.userProfile?.birthDatePlaceholder || "Выберите дату рождения"}</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage className="text-red-400" />
-              </FormItem>
-            )}
-          />
-          
-          <div className="pt-4">
-            <CosmicButton 
-              className="w-full bg-transparent backdrop-blur-[5px] border border-cosmic-accent hover:bg-cosmic-accent/20"
-              type="submit"
+      <div className="space-y-2">
+        <Label htmlFor="birthDate">{t.profile.birthDate}</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !birthDate && "text-muted-foreground"
+              )}
             >
-              {t.userProfile?.continueButton || "Продолжить"}
-            </CosmicButton>
-          </div>
-        </form>
-      </Form>
-      
-      <div className="mt-6 text-cosmic-secondary text-sm">
-        {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP", { locale: getLocale() })}
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {birthDate ? (
+                format(birthDate, "PPP", {locale: ru})
+              ) : (
+                <span>{t.profile.pickDate}</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              locale={ru}
+              selected={birthDate}
+              onSelect={setBirthDate}
+              disabled={(date) =>
+                date > new Date() || date < new Date('1900-01-01')
+              }
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        {dateError && <p className="text-red-500 text-sm">{dateError}</p>}
       </div>
-    </div>
+      
+      <div className="flex justify-between">
+        {onBack && (
+          <CosmicButton variant="secondary" onClick={onBack}>
+            {t.profile.back}
+          </CosmicButton>
+        )}
+        <CosmicButton type="submit">{ onboardingComplete ? t.profile.update : t.profile.continue }</CosmicButton>
+      </div>
+    </form>
   );
 };
-
-export default UserProfileForm;
