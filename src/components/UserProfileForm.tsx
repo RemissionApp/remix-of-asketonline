@@ -20,7 +20,7 @@ import { AvatarUpload } from '@/components/AvatarUpload';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete } = useAppStore();
+  const { updateUserProfile, userProfile, language } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
@@ -71,14 +71,8 @@ const UserProfileForm: React.FC = () => {
       birthDate: values.birthDate
     });
     
-    // After profile update, determine the next page based on onboarding status
-    if (onboardingComplete) {
-      // If onboarding was already completed, go directly to main
-      navigate('/main');
-    } else {
-      // If onboarding not completed, go to onboarding page
-      navigate('/onboarding');
-    }
+    // Navigate to main page or onboarding
+    navigate('/main');
   };
 
   return (

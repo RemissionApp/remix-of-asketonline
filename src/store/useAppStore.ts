@@ -1,7 +1,8 @@
+
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import { Achievement, AppNotification, AppSettings, DailyReflection, MeditationSession, Pact, PactItem, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
-import { persist } from 'zustand/middleware';
+import { Achievement, AppNotification, AppSettings, DailyReflection, MeditationSession, Pact, PactItem, SpiritualRank, UniverseQuestion, UserProfile, Mission } from '@/types';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 // Default user profile
 const defaultUserProfile: UserProfile = {
@@ -21,6 +22,12 @@ const defaultUserProfile: UserProfile = {
   goal: '',
   achievements: [],
   activeMission: undefined
+};
+
+// Sample daily quote
+const defaultDailyQuote = {
+  text: "Чем больше вы отказываетесь от мирских удовольствий, тем ближе вы к истинной гармонии.",
+  author: "Древняя мудрость"
 };
 
 // Default achievements
@@ -129,6 +136,7 @@ interface AppStore {
   userProfile: UserProfile;
   achievements: Achievement[];
   universeQuestions: UniverseQuestion[];
+  activeQuestions: UniverseQuestion[];
   pacts: Pact[];
   pactItems: PactItem[];
   meditationSessions: MeditationSession[];
@@ -139,10 +147,13 @@ interface AppStore {
   language: string;
   loading: boolean;
   error: any;
+  dailyQuote: { text: string, author: string };
+  onboardingComplete: boolean;
 
   setUser: (user: any) => void;
   setLanguage: (language: string) => void;
   setActiveScreen: (screen: string) => void;
+  setOnboardingComplete: (complete: boolean) => void;
   
   // User Profile Actions
   fetchUserProfile: (userId: string) => Promise<void>;
@@ -155,12 +166,16 @@ interface AppStore {
   // Universe Question Actions
   fetchUniverseQuestions: (userId: string) => Promise<void>;
   addUniverseQuestion: (question: string, answer: string) => Promise<void>;
+  askUniverse: (question: string) => Promise<string>;
   
   // Pact Actions
   fetchUserPacts: (userId: string) => Promise<void>;
   createPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
   updatePact: (pactId: string, updates: Partial<Pact>) => Promise<void>;
   deletePact: (pactId: string) => Promise<void>;
+  addPact: (pact: { title: string, duration: number, reward: string, status: string }) => void;
+  markDayComplete: (pactId: string) => void;
+  syncPactsWithCurrentDate: () => void;
   
   // Pact Item Actions
   addPactItem: (item: Omit<PactItem, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
@@ -186,6 +201,9 @@ interface AppStore {
   // Pro Subscription Actions
   upgradeToPro: () => void;
   cancelProSubscription: () => void;
+  
+  // Mission actions
+  completeMission: () => void;
 }
 
 // Create the store
@@ -196,6 +214,7 @@ export const useAppStore = create<AppStore>()(
       userProfile: defaultUserProfile,
       achievements: defaultAchievements,
       universeQuestions: [],
+      activeQuestions: [],
       pacts: [],
       pactItems: defaultPactItems,
       meditationSessions: [],
@@ -206,10 +225,13 @@ export const useAppStore = create<AppStore>()(
       language: defaultAppSettings.language,
       loading: false,
       error: null,
+      dailyQuote: defaultDailyQuote,
+      onboardingComplete: false,
 
       setUser: (user) => set({ user }),
       setLanguage: (language) => set({ language }),
       setActiveScreen: (screen) => set({ activeScreen: screen }),
+      setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
 
       // --- User Profile Actions ---
       fetchUserProfile: async (userId: string) => {
@@ -271,7 +293,14 @@ export const useAppStore = create<AppStore>()(
           
           const { error } = await supabase
             .from('profiles')
-            .update(updates)
+            .update({
+              name: updates.name,
+              birth_date: updates.birthDate,
+              goal: updates.goal,
+              total_days: updates.totalDays,
+              energy_points: updates.energyPoints,
+              avatar_url: updates.avatar_url,
+            })
             .eq('id', get().userProfile.id);
             
           if (error) throw error;
@@ -382,6 +411,44 @@ export const useAppStore = create<AppStore>()(
           set({ loading: false });
         }
       },
+      askUniverse: async (question: string) => {
+        // Simulate asking the universe
+        set({ loading: true });
+        
+        try {
+          // In a real app, might send this to a backend API
+          // For now, just returning a simulated response
+          const responses = [
+            "The universe hears your question. Be patient for your answer.",
+            "Look within yourself for the answer you seek.",
+            "The stars align in your favor. Your question will be answered soon.",
+            "The path is unclear, but time will bring clarity.",
+            "The answer you seek is already within you.",
+          ];
+          
+          // Generate a random response
+          const randomIndex = Math.floor(Math.random() * responses.length);
+          const answer = responses[randomIndex];
+          
+          // Store the question and answer
+          const newQuestion: UniverseQuestion = {
+            id: Math.random().toString(),
+            question,
+            answer,
+            createdAt: new Date().toISOString(),
+            date: new Date().toLocaleDateString()
+          };
+          
+          set(state => ({
+            activeQuestions: [newQuestion, ...state.activeQuestions],
+            universeQuestions: [newQuestion, ...state.universeQuestions]
+          }));
+          
+          return answer;
+        } finally {
+          set({ loading: false });
+        }
+      },
 
       // --- Pact Actions ---
       fetchUserPacts: async (userId: string) => {
@@ -472,6 +539,99 @@ export const useAppStore = create<AppStore>()(
         } finally {
           set({ loading: false });
         }
+      },
+
+      // Additional pact actions
+      addPact: (pact) => {
+        const newPact: Pact = {
+          id: Math.random().toString(),
+          title: pact.title,
+          duration: pact.duration,
+          reward: pact.reward,
+          status: pact.status as 'active' | 'completed' | 'broken',
+          createdAt: new Date().toISOString(),
+          days: Array.from({ length: pact.duration }, (_, i) => {
+            const date = new Date();
+            date.setDate(date.getDate() + i);
+            return {
+              date: date.toISOString().split('T')[0],
+              completed: false
+            };
+          })
+        };
+        
+        set(state => ({
+          pacts: [...state.pacts, newPact]
+        }));
+        
+        // Increase user's energyPoints for creating a pact
+        set(state => ({
+          userProfile: {
+            ...state.userProfile,
+            energyPoints: (state.userProfile.energyPoints || 0) + 5
+          }
+        }));
+      },
+      
+      markDayComplete: (pactId) => {
+        set(state => {
+          // Find the pact
+          const pactIndex = state.pacts.findIndex(p => p.id === pactId);
+          if (pactIndex === -1) return state;
+          
+          const pact = state.pacts[pactIndex];
+          
+          // Find today's date
+          const today = new Date().toISOString().split('T')[0];
+          
+          // Find the day index that matches today
+          const dayIndex = pact.days.findIndex(d => d.date === today);
+          if (dayIndex === -1) return state;
+          
+          // If day is already completed, do nothing
+          if (pact.days[dayIndex].completed) return state;
+          
+          // Clone the pact and update the day
+          const updatedPact = { ...pact };
+          updatedPact.days = [...pact.days];
+          updatedPact.days[dayIndex] = { ...updatedPact.days[dayIndex], completed: true };
+          
+          // Update the pacts array
+          const updatedPacts = [...state.pacts];
+          updatedPacts[pactIndex] = updatedPact;
+          
+          // Increase user's energy points
+          return {
+            pacts: updatedPacts,
+            userProfile: {
+              ...state.userProfile,
+              energyPoints: (state.userProfile.energyPoints || 0) + 10,
+              totalDays: (state.userProfile.totalDays || 0) + 1
+            }
+          };
+        });
+      },
+      
+      syncPactsWithCurrentDate: () => {
+        set(state => {
+          // Get today's date
+          const today = new Date().toISOString().split('T')[0];
+          
+          // Update all active pacts
+          const updatedPacts = state.pacts.map(pact => {
+            if (pact.status !== 'active') return pact;
+            
+            // Check if today already exists in days
+            const todayExists = pact.days.some(day => day.date === today);
+            if (todayExists) return pact;
+            
+            // Add today to the days array
+            const updatedDays = [...pact.days, { date: today, completed: false }];
+            return { ...pact, days: updatedDays };
+          });
+          
+          return { pacts: updatedPacts };
+        });
       },
 
       // --- Pact Item Actions ---
@@ -671,10 +831,30 @@ export const useAppStore = create<AppStore>()(
           }
         }));
       },
+      
+      // --- Mission Actions ---
+      completeMission: () => {
+        set(state => {
+          if (!state.userProfile.activeMission) return state;
+          
+          // Add energy points from the mission reward
+          const energyPoints = state.userProfile.energyPoints || 0;
+          const missionPoints = state.userProfile.activeMission.reward.energyPoints || 0;
+          
+          // Clear the active mission and award the points
+          return {
+            userProfile: {
+              ...state.userProfile,
+              energyPoints: energyPoints + missionPoints,
+              activeMission: undefined
+            }
+          };
+        });
+      },
     }),
     {
       name: 'app-storage',
-      storage: localStorage,
+      storage: createJSONStorage(() => localStorage)
     }
   )
 );
