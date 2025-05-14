@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { format, differenceInYears } from 'date-fns';
-import { CalendarIcon, Languages } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ import { SupportedLanguage } from '@/i18n/translations';
 
 const UserProfileForm: React.FC = () => {
   const { updateUserProfile, setActiveScreen, userProfile, language, setLanguage } = useAppStore();
-  const { t } = useTranslations();
+  const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
   // Create form schema based on language
@@ -87,10 +87,7 @@ const UserProfileForm: React.FC = () => {
       
       {age !== null && (
         <div className="mb-6 text-cosmic-secondary font-medium">
-          {/* Using fallback text for missing translation keys */}
-          {t.userProfile?.age || "Возраст"}: {age} {age === 1 ? 
-            (t.userProfile?.yearSingular || "год") : 
-            (t.userProfile?.yearPlural || "лет")}
+          {t.userProfile?.age || "Возраст"}: {age} {getYearWord(age)}
         </div>
       )}
       
@@ -198,7 +195,6 @@ const UserProfileForm: React.FC = () => {
       </Form>
       
       <div className="mt-6 text-cosmic-secondary text-sm">
-        {/* Using fallback text for missing translation key */}
         {t.userProfile?.currentDate || "Текущая дата"}: {format(new Date(), "PPP")}
       </div>
     </div>

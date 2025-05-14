@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { ProBadge } from '@/components/ProBadge';
 import { CosmicButton } from '@/components/CosmicButton';
-import { SparklesIcon, ChevronLeft } from 'lucide-react';
+import { SparklesIcon } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 
 const ProfilePage: React.FC = () => {
@@ -31,14 +31,6 @@ const ProfilePage: React.FC = () => {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <div className="mb-6 w-full">
           <div className="flex items-center justify-between mb-4">
-            <button 
-              onClick={() => setActiveScreen('main')} 
-              className="flex items-center text-white hover:text-cosmic-accent transition-colors"
-              aria-label="Return to main screen"
-            >
-              <ChevronLeft size={20} />
-              <span className="ml-1">{t.userProfile?.back || "Назад"}</span>
-            </button>
             {userProfile.isPro && (
               <ProBadge size="md" />
             )}
