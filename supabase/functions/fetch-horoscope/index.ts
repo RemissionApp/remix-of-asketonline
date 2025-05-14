@@ -17,12 +17,6 @@ interface HoroscopeData {
   lucky_time: string;
 }
 
-// CORS headers for browser requests
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 // Initialize Supabase client with Deno runtime
 const supabaseClient = createClient(
   Deno.env.get('SUPABASE_URL') || '',
@@ -30,49 +24,23 @@ const supabaseClient = createClient(
 );
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    // Parse request body
-    let payload;
-    try {
-      payload = await req.json();
-    } catch (e) {
-      console.error("Error parsing request JSON:", e);
-      throw new Error("Invalid JSON in request body");
-    }
-    
-    const { sign, day = 'today', language = 'en' } = payload;
-    
-    console.log(`Fetching horoscope for ${sign}, day: ${day}, language: ${language}`);
+    const { sign, day = 'today', language = 'en' } = await req.json();
     
     if (!sign) {
       return new Response(
-        JSON.stringify({ success: false, error: "Sign parameter is required" }),
-        { 
-          status: 400, 
-          headers: { 
-            ...corsHeaders,
-            "Content-Type": "application/json" 
-          } 
-        }
+        JSON.stringify({ error: "Sign parameter is required" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
+    
+    console.log(`Fetching horoscope for ${sign}, day: ${day}, language: ${language}`);
     
     // For now, we only support "today" for the day parameter
     if (day !== 'today') {
       return new Response(
-        JSON.stringify({ success: false, error: "Only 'today' is supported for day parameter" }),
-        { 
-          status: 400, 
-          headers: { 
-            ...corsHeaders,
-            "Content-Type": "application/json" 
-          } 
-        }
+        JSON.stringify({ error: "Only 'today' is supported for day parameter" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
     
@@ -84,10 +52,9 @@ serve(async (req) => {
       .select('horoscope_data')
       .eq('sign', sign)
       .eq('forecast_date', today)
-      .maybeSingle();
+      .single();
     
-    if (fetchError) {
-      console.error('Error fetching from database:', fetchError);
+    if (fetchError && fetchError.code !== 'PGRST116') { // Not found error
       throw new Error(`Error fetching horoscope from database: ${fetchError.message}`);
     }
     
@@ -98,7 +65,7 @@ serve(async (req) => {
       console.log(`Found stored horoscope for ${sign}`);
       horoscopeData = storedHoroscope.horoscope_data;
     } else {
-      // If not found in database, fetch from Aztro API
+      // If not found in database, fetch from Aztro API as fallback
       console.log(`No stored horoscope found for ${sign}, fetching from API`);
       const response = await fetch(`https://aztro.sameerkumar.website/?sign=${sign}&day=${day}`, {
         method: 'POST'
@@ -108,25 +75,7 @@ serve(async (req) => {
         throw new Error(`Error fetching horoscope from API: ${response.statusText}`);
       }
       
-      try {
-        horoscopeData = await response.json();
-        
-        // Store in database for future use
-        const { error: insertError } = await supabaseClient
-          .from('daily_horoscopes')
-          .insert({
-            sign,
-            forecast_date: today,
-            horoscope_data: horoscopeData
-          });
-          
-        if (insertError) {
-          console.error('Error storing horoscope:', insertError);
-        }
-      } catch (e) {
-        console.error('Error parsing API response:', e);
-        throw new Error('Invalid response from horoscope API');
-      }
+      horoscopeData = await response.json();
     }
     
     // Return the horoscope data
@@ -135,27 +84,13 @@ serve(async (req) => {
         success: true,
         data: horoscopeData
       }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          "Content-Type": "application/json" 
-        } 
-      }
+      { headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error("Error in fetch-horoscope:", error.message);
     return new Response(
-      JSON.stringify({ 
-        success: false,
-        error: error.message 
-      }),
-      { 
-        status: 500, 
-        headers: { 
-          ...corsHeaders,
-          "Content-Type": "application/json" 
-        } 
-      }
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 });
