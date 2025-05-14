@@ -26,7 +26,10 @@ const LoginPage: React.FC = () => {
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(email, password);
+    const success = await signIn(email, password);
+    if (success) {
+      navigate('/profile'); // Changed from '/main' to '/profile'
+    }
   };
   
   const handleSignUp = async (e: React.FormEvent) => {
