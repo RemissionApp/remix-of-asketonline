@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { Briefcase, Heart, Thermometer, Star } from "lucide-react";
+import { useToast } from '@/components/ui/use-toast';
 
 interface QuoteDisplayProps {
   quote: string;
@@ -27,6 +28,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<string>("");
   const { userProfile, language } = useAppStore();
+  const { toast } = useToast();
   
   // Format current date based on user language
   useEffect(() => {
@@ -94,6 +96,60 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
           throw new Error('Could not determine zodiac sign');
         }
         
+        // Try to fetch from edge function
+        try {
+          const response = await fetch('/api/generate-horoscope', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              sign: sign,
+              language: language,
+              detailed: false
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            const horoscopeData = {
+              date_range: zodiacData[sign]?.dates || "",
+              current_date: new Date().toLocaleDateString(),
+              description: data.data.description,
+              compatibility: "",
+              mood: language === 'ru' ? 'задумчивый' : language === 'es' ? 'pensativo' : 'reflective',
+              color: language === 'ru' ? 'фиолетовый' : language === 'es' ? 'púrpura' : 'purple',
+              lucky_number: Math.floor(Math.random() * 100).toString(),
+              lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
+            };
+            
+            setHoroscope(horoscopeData);
+            
+            // Save to localStorage
+            localStorage.setItem('dailyHoroscope', JSON.stringify(horoscopeData));
+            localStorage.setItem('horoscopeDate', today);
+            
+            setLoading(false);
+            return;
+          }
+          
+          throw new Error('Invalid response from API');
+        } catch (error) {
+          console.error('Error fetching horoscope from API:', error);
+          // Continue to fallback method
+          toast({
+            title: "Не удалось загрузить гороскоп онлайн",
+            description: "Используем локально сгенерированный вариант",
+            variant: "destructive",
+            duration: 3000
+          });
+        }
+        
         // Generate fallback data as the API seems to be failing
         const fallbackData = {
           date_range: zodiacData[sign]?.dates || "",
@@ -120,7 +176,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
     };
     
     fetchHoroscopeData();
-  }, [quote, language, userProfile?.birthDate]);
+  }, [quote, language, userProfile?.birthDate, toast]);
   
   const userName = userProfile?.name || 'Искатель';
   const greeting = language === 'ru' ? 'Приветствую тебя' : 
