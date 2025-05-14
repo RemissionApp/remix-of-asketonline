@@ -76,7 +76,7 @@ export const usePacts = () => {
       }
       
       return pact;
-    });
+    }) as Pact[]; // Add type assertion here
     
     setPacts(updatedPacts);
   };

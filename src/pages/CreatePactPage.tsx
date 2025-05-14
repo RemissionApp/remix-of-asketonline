@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -8,13 +9,6 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { PactOath } from '@/components/PactOath';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { usePacts } from '@/hooks/usePacts';
-
-// Update the PactOathProps interface to match the expected props
-interface PactOathProps {
-  duration: number;
-  rejections?: string[];
-  onCreatePact: () => void;
-}
 
 const CreatePactPage: React.FC = () => {
   const navigate = useNavigate();
@@ -153,9 +147,11 @@ const CreatePactPage: React.FC = () => {
           </div>
         ) : (
           <PactOath 
-            rejections={selectedRejections}
+            title={selectedRejections.join(', ')}
             duration={selectedDuration}
-            onCreatePact={handleCreatePact}
+            reward=""
+            onConfirm={handleCreatePact}
+            onBack={() => setShowOath(false)}
           />
         )}
       </div>
