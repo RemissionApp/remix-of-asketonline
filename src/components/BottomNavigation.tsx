@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { Home, Sparkles, MessageSquare } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, UserRound } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { UserAvatar } from './UserAvatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define a mapping between route paths and ActiveScreen values
@@ -63,9 +62,7 @@ export const BottomNavigation: React.FC = () => {
           className={`flex flex-col items-center p-2 ${isActive('/profile') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
           onClick={() => handleNavigation('profile', '/profile')}
         >
-          <div className="relative">
-            <UserAvatar size="sm" showRankBorder={false} />
-          </div>
+          <UserRound size={24} />
           <span className="text-xs mt-1">{t.main.nav.profile}</span>
         </button>
       </div>
