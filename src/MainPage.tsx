@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -162,14 +163,13 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Display QuoteDisplay (universe message) right below the ActivePactDisplay button */}
+            {/* Display QuoteDisplay (universe message) above ZodiacBadgeDisplay */}
             <QuoteDisplay quote={dailyQuote} className="mt-6 mb-4" />
             
-            {/* ZodiacBadgeDisplay placed directly under the greeting */}
+            {/* Then display the ZodiacBadgeDisplay */}
             <ZodiacBadgeDisplay />
             
-            {/* ActionButtons moved to the bottom */}
-            <ActionButtons className="mt-6" />
+            <ActionButtons />
           </>
         ) : (
           <NoPactsView />

@@ -124,7 +124,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
     };
     
     fetchHoroscopeData();
-  }, [language, userProfile?.birthDate]);
+  }, [quote, language, userProfile?.birthDate]);
   
   const userName = userProfile?.name || 'Искатель';
   const greeting = language === 'ru' ? 'Приветствую тебя' : 
