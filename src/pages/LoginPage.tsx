@@ -8,6 +8,8 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, signUp, loading } = useAppStore();
@@ -15,6 +17,7 @@ const LoginPage: React.FC = () => {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +27,10 @@ const LoginPage: React.FC = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     await signUp(email, password);
+  };
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
   };
   
   return (
@@ -67,15 +74,30 @@ const LoginPage: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="password">Пароль</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-cosmic-accent/70 hover:text-cosmic-accent"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <Link to="/forgot-password" className="text-cosmic-accent/80 hover:text-cosmic-accent text-sm">
+                      Забыли пароль?
+                    </Link>
                   </div>
                   
                   <div className="pt-4">
@@ -86,6 +108,19 @@ const LoginPage: React.FC = () => {
                     >
                       {loading ? "Загрузка..." : "Войти"}
                     </CosmicButton>
+                  </div>
+                  
+                  <div className="text-center pt-4">
+                    <p className="text-white/60">
+                      Еще нет аккаунта?{" "}
+                      <button
+                        type="button"
+                        onClick={() => document.querySelector('[value="signup"]')?.dispatchEvent(new MouseEvent('click'))}
+                        className="text-cosmic-accent hover:text-cosmic-accent/80"
+                      >
+                        Зарегистрироваться
+                      </button>
+                    </p>
                   </div>
                 </form>
               </TabsContent>
@@ -107,15 +142,24 @@ const LoginPage: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Пароль</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-cosmic-accent/70 hover:text-cosmic-accent"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="pt-4">
@@ -126,6 +170,19 @@ const LoginPage: React.FC = () => {
                     >
                       {loading ? "Загрузка..." : "Создать аккаунт"}
                     </CosmicButton>
+                  </div>
+                  
+                  <div className="text-center pt-4">
+                    <p className="text-white/60">
+                      Уже есть аккаунт?{" "}
+                      <button
+                        type="button"
+                        onClick={() => document.querySelector('[value="login"]')?.dispatchEvent(new MouseEvent('click'))}
+                        className="text-cosmic-accent hover:text-cosmic-accent/80"
+                      >
+                        Войти
+                      </button>
+                    </p>
                   </div>
                 </form>
               </TabsContent>
