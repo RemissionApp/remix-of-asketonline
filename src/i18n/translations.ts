@@ -219,6 +219,7 @@ type TranslationKeys = {
     signUpButton: string;
     haveAccount: string;
     passwordLength: string;
+    guestSignIn: string;
   };
   subscription: {
     bannerTitle: string;
@@ -290,7 +291,7 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       trialPeriod: "Срок испытания",
       customDays: "Или укажите своё количество дней:",
       days: "дней",
-      whatWant: "Что ты хочешь получить?",
+      whatWant: "Что ты хо��ешь получить?",
       notAsking: "Ты не просишь. Ты настраиваешь реальность.",
       nextButton: "Далее",
       startPathButton: "Начать путь",
@@ -557,7 +558,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       signInButton: "Войти",
       signUpButton: "Зарегистрироваться",
       haveAccount: "Уже есть аккаунт?",
-      passwordLength: "Пароль должен содержать минимум 6 симво��ов"
+      passwordLength: "Пароль должен содержать минимум 6 симво��ов",
+      guestSignIn: "Войти как гость"
     },
     subscription: {
       bannerTitle: "Раскройте свой потенциал с ASKET PRO",
@@ -894,7 +896,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       signInButton: "Sign In",
       signUpButton: "Sign Up",
       haveAccount: "Already have an account?",
-      passwordLength: "Password must be at least 6 characters"
+      passwordLength: "Password must be at least 6 characters",
+      guestSignIn: "Sign in as guest"
     },
     subscription: {
       bannerTitle: "Unlock your potential with ASKET PRO",
@@ -1231,7 +1234,8 @@ const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
       signInButton: "Iniciar sesión",
       signUpButton: "Registrarse",
       haveAccount: "¿Ya tienes una cuenta?",
-      passwordLength: "La contraseña debe tener al menos 6 caracteres"
+      passwordLength: "La contraseña debe tener al menos 6 caracteres",
+      guestSignIn: "Entrar como invitado"
     },
     subscription: {
       bannerTitle: "Desbloquea tu potencial con ASKET PRO",
