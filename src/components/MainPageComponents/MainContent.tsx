@@ -51,13 +51,13 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Countdown timer for current pact */}
           {currentPact && <CountdownTimer />}
           
-          {/* Horoscope display */}
-          <div className="w-full max-w-lg mt-8">
-            <HoroscopeDisplay />
-          </div>
-          
           {/* Quote display */}
           <QuoteDisplay quote={dailyQuote} className="mt-8" />
+          
+          {/* Horoscope display after greeting */}
+          <div className="w-full max-w-lg mt-6">
+            <HoroscopeDisplay />
+          </div>
           
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />

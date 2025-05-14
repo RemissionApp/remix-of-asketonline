@@ -114,7 +114,7 @@ export const HoroscopeDisplay: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="text-center p-4 space-y-3">
+      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
         <p className="text-cosmic-accent italic">{loadingText}</p>
         <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
         <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
@@ -123,7 +123,7 @@ export const HoroscopeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="text-center p-4 space-y-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/50 backdrop-blur">
+    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
       <p className="text-cosmic-gold text-sm font-serif">{getHoroscopeTitle(language)}</p>
       <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
         {horoscope?.description || getDefaultMessage(language)}
