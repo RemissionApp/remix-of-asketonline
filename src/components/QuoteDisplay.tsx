@@ -135,11 +135,6 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   const datePrefix = language === 'ru' ? 'Сегодня' : 
                     language === 'es' ? 'Hoy es' : 
                     'Today is';
-  
-  // Signature based on language
-  const signature = language === 'ru' ? '— Послание Вселенной' : 
-                   language === 'es' ? '— Mensaje del Universo' : 
-                   '— Message from the Universe';
                    
   // Get zodiac sign symbol and name if available
   const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
@@ -191,7 +186,6 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
         </p>
       </div>
       {renderHoroscope()}
-      <p className="mt-4 text-sm text-cosmic-accent/80">{signature}</p>
     </div>
   );
 };

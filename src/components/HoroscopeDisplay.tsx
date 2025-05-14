@@ -41,6 +41,11 @@ export const HoroscopeDisplay: React.FC = () => {
     es: 'Conectando con el cosmos...',
   }[language] || 'Connecting with the cosmos...';
   
+  // Signature based on language
+  const signature = language === 'ru' ? '— Послание Вселенной' : 
+                   language === 'es' ? '— Mensaje del Universo' : 
+                   '— Message from the Universe';
+  
   useEffect(() => {
     const fetchHoroscope = async () => {
       try {
@@ -114,7 +119,7 @@ export const HoroscopeDisplay: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
+      <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full">
         <p className="text-cosmic-accent italic">{loadingText}</p>
         <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
         <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
@@ -123,11 +128,11 @@ export const HoroscopeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
-      <p className="text-cosmic-gold text-sm font-serif">{getHoroscopeTitle(language)}</p>
+    <div className="text-center p-4 space-y-3 bg-cosmic-dark/20 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 w-full">
       <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
         {horoscope?.description || getDefaultMessage(language)}
       </p>
+      <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
       <Button 
         onClick={handleSeeMore}
         variant="outline" 
@@ -140,15 +145,7 @@ export const HoroscopeDisplay: React.FC = () => {
   );
 };
 
-// Helper functions for translations
-function getHoroscopeTitle(language: string): string {
-  return {
-    ru: 'Космическое предсказание',
-    en: 'Cosmic Prediction',
-    es: 'Predicción Cósmica',
-  }[language] || 'Cosmic Prediction';
-}
-
+// Helper function for default message
 function getDefaultMessage(language: string): string {
   return {
     ru: 'Звезды хранят молчание сегодня. Укажите дату рождения в профиле для получения персонального гороскопа.',
