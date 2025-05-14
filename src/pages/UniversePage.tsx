@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, loadUniverseQuestions } = useAppStore();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
@@ -20,13 +20,21 @@ const UniversePage: React.FC = () => {
   }>(null);
   const navigate = useNavigate();
   
+  // Load previous questions when page mounts
+  useEffect(() => {
+    loadUniverseQuestions();
+  }, [loadUniverseQuestions]);
+  
   const handleGoBack = () => {
     setActiveScreen('main');
     navigate('/main');
   };
   
   const handleAskUniverse = () => {
-    if (question.trim().length < 3) return;
+    if (question.trim().length < 3) {
+      toast.error(t.universe.questionTooShort || "Вопрос слишком короткий");
+      return;
+    }
     
     setIsAsking(true);
     
@@ -40,7 +48,7 @@ const UniversePage: React.FC = () => {
         });
       } catch (error) {
         console.error("Error asking universe:", error);
-        toast.error(typeof error === 'string' ? error : "Вселенная молчит. Попробуйте позже.");
+        toast.error(typeof error === 'string' ? error : t.universe.errorMessage || "Вселенная молчит. Попробуйте позже.");
       } finally {
         setQuestion('');
         setIsAsking(false);

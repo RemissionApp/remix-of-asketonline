@@ -5,6 +5,7 @@ import { Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
+import { toast } from 'sonner';
 
 export const UniverseMessageBlock: React.FC = () => {
   const [message, setMessage] = useState<string>("");
@@ -39,6 +40,12 @@ export const UniverseMessageBlock: React.FC = () => {
         setMessage(universeMessage);
       } catch (error) {
         console.error('Error fetching universe message:', error);
+        
+        // Show error toast
+        toast.error(language === 'ru' ? 'Не удалось получить послание Вселенной' : 
+                   language === 'es' ? 'No se pudo obtener el mensaje del Universo' : 
+                   'Failed to fetch message from the Universe');
+        
         // Fallback message if there's an error
         setMessage(language === 'ru' ? 'Звезды молчат сегодня. Загляни позже.' : 
                   language === 'es' ? 'Las estrellas están en silencio hoy. Vuelve más tarde.' : 

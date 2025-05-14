@@ -2,6 +2,7 @@
 import { useAppStore } from "@/store/useAppStore";
 import { supabase } from "@/lib/supabase";
 import { Pact } from "@/types";
+import { toast } from "sonner";
 
 const russianAnswers = [
   "Твой путь уже начался. Следуй за знаками.",
@@ -77,7 +78,7 @@ function isCustomPact(pact: any): pact is {
 
 export async function generateUniverseAnswer(question: string): Promise<string> {
   const store = useAppStore.getState();
-  const { language, pacts } = store;
+  const { language, pacts, user } = store;
   
   // Get current active pact if available
   const currentVow = pacts?.find(p => p.status === 'active') || {
@@ -90,7 +91,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
   
   try {
     // Construct the custom prompt with information about the user's vow
-    const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути. 
+    const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути.
       Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
       Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as Pact).reward || 'духовный рост'}.
       Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.
@@ -99,6 +100,8 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
       Будь глубоким, но лаконичным (100-150 слов). Используй мягкий, мудрый тон.
       Иногда используй звезды, космос или природные элементы как метафоры.
       Не используй религиозную лексику, если пользователь специально не упоминает религию.`;
+    
+    console.log("Sending universe question with prompt:", systemPrompt);
     
     // Try to get an answer from OpenAI via Edge Function
     const { data, error } = await supabase.functions.invoke('universe-answer', {
@@ -122,6 +125,10 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     throw new Error('No answer received from AI');
   } catch (error) {
     console.error('Error getting AI answer:', error);
+    
+    if (error.message?.includes('exceeded your current quota')) {
+      toast.error("API лимит превышен. Используем заранее подготовленные ответы.");
+    }
     
     // Fallback: use predefined answers
     let answers;

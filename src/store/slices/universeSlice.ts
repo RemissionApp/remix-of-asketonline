@@ -4,6 +4,7 @@ import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
 import { UniverseQuestion } from '@/types';
 import { generateUniverseAnswer } from '@/utils/universeMessages';
+import { toast } from 'sonner';
 
 export interface UniverseSlice {
   activeQuestions: UniverseQuestion[];
@@ -20,11 +21,18 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
       throw new Error('Question too short');
     }
 
+    const { user } = get();
+    
+    if (!user) {
+      toast.error("Вы должны быть авторизованы для сохранения вопросов");
+      // Still allow asking without auth, but won't save to DB
+    }
+
     try {
-      // Получаем ответ от нашей функции universe message
+      // Get response from universe message function
       const answer = await generateUniverseAnswer(question);
       
-      // Создаем запись вопроса
+      // Create question record
       const id = Date.now().toString();
       const newQuestion = {
         id,
@@ -33,10 +41,28 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
         date: new Date().toISOString()
       };
 
-      // Добавляем вопрос в хранилище
+      // Add question to local store
       set((state) => ({
-        activeQuestions: [newQuestion, ...state.activeQuestions].slice(0, 20) // Ограничение до 20 вопросов
+        activeQuestions: [newQuestion, ...state.activeQuestions].slice(0, 20) // Limit to 20 questions
       }));
+
+      // Save to Supabase if user is authenticated
+      if (user) {
+        try {
+          const { error } = await supabase
+            .from('universe_questions')
+            .insert({
+              question: newQuestion.question,
+              answer: newQuestion.answer,
+              user_id: user.id
+            });
+          
+          if (error) console.error('Error saving question to Supabase:', error);
+        } catch (dbError) {
+          console.error('Failed to save question to database:', dbError);
+          // Don't throw here, we still want to return the answer even if DB save fails
+        }
+      }
 
       return newQuestion;
     } catch (error) {
@@ -77,6 +103,7 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
       set({ activeQuestions: questions });
     } catch (error) {
       console.error("Error loading universe questions:", error);
+      toast.error("Не удалось загрузить историю вопросов");
     }
   }
 });
