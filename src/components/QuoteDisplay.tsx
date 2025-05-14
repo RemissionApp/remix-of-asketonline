@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
+import { Briefcase, Heart, Thermometer, Star } from "lucide-react";
 
 interface QuoteDisplayProps {
   quote: string;
