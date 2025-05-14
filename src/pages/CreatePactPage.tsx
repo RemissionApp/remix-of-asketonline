@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -10,10 +9,10 @@ import { PactOath } from '@/components/PactOath';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { usePacts } from '@/hooks/usePacts';
 
-// Update the PactOath interface to match the expected props
+// Update the PactOathProps interface to match the expected props
 interface PactOathProps {
-  rejections?: string[];
   duration: number;
+  rejections?: string[];
   onCreatePact: () => void;
 }
 

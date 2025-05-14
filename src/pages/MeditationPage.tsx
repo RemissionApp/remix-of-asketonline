@@ -1,19 +1,20 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { MeditationCard } from '@/components/MeditationCard';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft, SparklesIcon } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { ProBadge } from '@/components/ProBadge';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
+import { useUserSubscription } from '@/hooks/useUserSubscription';
 
 const MeditationPage: React.FC = () => {
-  const { setActiveScreen, userProfile, upgradeToPro } = useAppStore();
+  const { setActiveScreen, userProfile } = useAppStore();
+  const { upgradeToPro } = useUserSubscription();
   const { t } = useTranslations();
   const [selectedCategory, setSelectedCategory] = useState("morning");
   const navigate = useNavigate();
@@ -77,7 +78,6 @@ const MeditationPage: React.FC = () => {
   const filteredMeditations = meditations.filter(meditation => meditation.category === selectedCategory);
 
   const handleUpgrade = () => {
-    // For demo purposes, upgrade the user immediately
     upgradeToPro();
   };
 
