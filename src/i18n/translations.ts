@@ -1,3 +1,4 @@
+
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -53,12 +54,14 @@ type TranslationKeys = {
   universe: {
     title: string;
     question: string;
+    placeholder: string;
     askButton: string;
     thinking: string;
     yourQuestion: string;
     universeAnswer: string;
     newQuestion: string;
     previousQuestions: string;
+    emptyState: string;
   };
   profile: {
     title: string;
@@ -144,6 +147,77 @@ type TranslationKeys = {
       proDescription?: string;
     }[];
   };
+  meditation: {
+    pageTitle: string;
+    subtitle: string;
+    proFeatures: string;
+    basic: string;
+    pro: string;
+    duration: string;
+    play: string;
+    unlock: string;
+    comingSoon: string;
+    categories: {
+      morning: string;
+      evening: string;
+      stress: string;
+      mantra: string;
+      visual: string;
+    };
+    morning: {
+      title1: string;
+      desc1: string;
+      title2: string;
+      desc2: string;
+    };
+    evening: {
+      title1: string;
+      desc1: string;
+    };
+    stress: {
+      title1: string;
+      desc1: string;
+    };
+    mantra: {
+      title1: string;
+      desc1: string;
+    };
+    visualization: {
+      title1: string;
+      desc1: string;
+    };
+  };
+  auth: {
+    signIn: string;
+    signUp: string;
+    signOut: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    forgotPassword: string;
+    backToSignIn: string;
+    createAccount: string;
+    alreadyHaveAccount: string;
+    resetPassword: string;
+    resetPasswordButton: string;
+    resetPasswordSuccess: string;
+    resetPasswordError: string;
+    signInError: string;
+    signUpError: string;
+    passwordMismatch: string;
+    welcomeBack: string;
+    noAccount: string;
+    orContinueWith: string;
+    signInButton: string;
+    signUpButton: string;
+    haveAccount: string;
+    passwordLength: string;
+  };
+  subscription: {
+    bannerTitle: string;
+    bannerDesc: string;
+    upgradeNow: string;
+  };
 };
 
 const translations: Record<SupportedLanguage, TranslationKeys> = {
@@ -220,12 +294,14 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     universe: {
       title: "Врата Вселенной",
       question: "Что ты хочешь спросить у Вселенной?",
+      placeholder: "Напиши свой вопрос здесь...",
       askButton: "Отправить вопрос",
       thinking: "Вселенная обдумывает ответ...",
       yourQuestion: "Твой вопрос",
       universeAnswer: "Ответ Вселенной",
       newQuestion: "Задать новый вопрос",
-      previousQuestions: "Предыдущие вопросы"
+      previousQuestions: "Предыдущие вопросы",
+      emptyState: "У тебя еще нет вопросов к Вселенной"
     },
     profile: {
       title: "Профиль",
@@ -401,6 +477,77 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
           proDescription: "Создание групп, энергия поддержки"
         }
       ]
+    },
+    meditation: {
+      pageTitle: "Медитации силы",
+      subtitle: "Откройте доступ к медитациям с ASKET PRO",
+      proFeatures: "Особенности PRO медитаций",
+      basic: "Базовая версия",
+      pro: "PRO версия",
+      duration: "Длительность",
+      play: "Слушать",
+      unlock: "Открыть PRO",
+      comingSoon: "Скоро будет доступно",
+      categories: {
+        morning: "Утренние",
+        evening: "Вечерние",
+        stress: "Антистресс",
+        mantra: "Мантры",
+        visual: "Визуализации"
+      },
+      morning: {
+        title1: "Настрой на день",
+        desc1: "Зарядись энергией на весь день",
+        title2: "Благодарность",
+        desc2: "Практика благодарности Вселенной"
+      },
+      evening: {
+        title1: "Прощение",
+        desc1: "Отпусти прошлое с легкостью"
+      },
+      stress: {
+        title1: "Заземление",
+        desc1: "Восстановление внутреннего равновесия"
+      },
+      mantra: {
+        title1: "Голос наставника",
+        desc1: "Интеграция высшей энергии"
+      },
+      visualization: {
+        title1: "Космический полёт",
+        desc1: "Путешествие сквозь звёзды"
+      }
+    },
+    auth: {
+      signIn: "Вход",
+      signUp: "Регистрация",
+      signOut: "Выход",
+      email: "Email",
+      password: "Пароль",
+      confirmPassword: "Подтвердите пароль",
+      forgotPassword: "Забыли пароль?",
+      backToSignIn: "Вернуться к входу",
+      createAccount: "Создать аккаунт",
+      alreadyHaveAccount: "Уже есть аккаунт?",
+      resetPassword: "Сбросить пароль",
+      resetPasswordButton: "Отправить ссылку для сброса",
+      resetPasswordSuccess: "Проверьте вашу почту для сброса пароля",
+      resetPasswordError: "Ошибка сброса пароля",
+      signInError: "Ошибка при входе",
+      signUpError: "Ошибка при регистрации",
+      passwordMismatch: "Пароли не совпадают",
+      welcomeBack: "С возвращением",
+      noAccount: "Нет аккаунта?",
+      orContinueWith: "Или продолжить с",
+      signInButton: "Войти",
+      signUpButton: "Зарегистрироваться",
+      haveAccount: "Уже есть аккаунт?",
+      passwordLength: "Пароль должен содержать минимум 6 символов"
+    },
+    subscription: {
+      bannerTitle: "Раскройте свой потенциал с ASKET PRO",
+      bannerDesc: "Доступ к медитациям, расширенным практикам и многому другому",
+      upgradeNow: "Улучшить сейчас"
     }
   },
   en: {
@@ -476,12 +623,14 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     universe: {
       title: "Gates of the Universe",
       question: "What do you want to ask the Universe?",
+      placeholder: "Write your question here...",
       askButton: "Send question",
       thinking: "The Universe is contemplating the answer...",
       yourQuestion: "Your question",
       universeAnswer: "Universe's answer",
       newQuestion: "Ask a new question",
-      previousQuestions: "Previous questions"
+      previousQuestions: "Previous questions",
+      emptyState: "You haven't asked any questions yet"
     },
     profile: {
       title: "Profile",
@@ -657,6 +806,77 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
           proDescription: "Create groups, support energy"
         }
       ]
+    },
+    meditation: {
+      pageTitle: "Power Meditations",
+      subtitle: "Get access to meditations with ASKET PRO",
+      proFeatures: "PRO meditation features",
+      basic: "Basic version",
+      pro: "PRO version",
+      duration: "Duration",
+      play: "Listen",
+      unlock: "Unlock PRO",
+      comingSoon: "Coming soon",
+      categories: {
+        morning: "Morning",
+        evening: "Evening",
+        stress: "Anti-stress",
+        mantra: "Mantras",
+        visual: "Visualization"
+      },
+      morning: {
+        title1: "Day Setup",
+        desc1: "Charge with energy for the whole day",
+        title2: "Gratitude",
+        desc2: "Practice of gratitude to the Universe"
+      },
+      evening: {
+        title1: "Forgiveness",
+        desc1: "Let go of the past with ease"
+      },
+      stress: {
+        title1: "Grounding",
+        desc1: "Restoring inner balance"
+      },
+      mantra: {
+        title1: "Guide's Voice",
+        desc1: "Integration of higher energy"
+      },
+      visualization: {
+        title1: "Cosmic Flight",
+        desc1: "Journey through the stars"
+      }
+    },
+    auth: {
+      signIn: "Sign In",
+      signUp: "Sign Up",
+      signOut: "Sign Out",
+      email: "Email",
+      password: "Password",
+      confirmPassword: "Confirm Password",
+      forgotPassword: "Forgot password?",
+      backToSignIn: "Back to Sign In",
+      createAccount: "Create Account",
+      alreadyHaveAccount: "Already have an account?",
+      resetPassword: "Reset Password",
+      resetPasswordButton: "Send Reset Link",
+      resetPasswordSuccess: "Check your email to reset your password",
+      resetPasswordError: "Error resetting password",
+      signInError: "Error signing in",
+      signUpError: "Error signing up",
+      passwordMismatch: "Passwords do not match",
+      welcomeBack: "Welcome back",
+      noAccount: "Don't have an account?",
+      orContinueWith: "Or continue with",
+      signInButton: "Sign In",
+      signUpButton: "Sign Up",
+      haveAccount: "Already have an account?",
+      passwordLength: "Password must be at least 6 characters"
+    },
+    subscription: {
+      bannerTitle: "Unlock your potential with ASKET PRO",
+      bannerDesc: "Access to meditations, advanced practices and much more",
+      upgradeNow: "Upgrade Now"
     }
   },
   es: {
@@ -732,12 +952,14 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     universe: {
       title: "Puertas del Universo",
       question: "¿Qué quieres preguntar al Universo?",
+      placeholder: "Escribe tu pregunta aquí...",
       askButton: "Enviar pregunta",
       thinking: "El Universo está contemplando la respuesta...",
       yourQuestion: "Tu pregunta",
       universeAnswer: "Respuesta del Universo",
       newQuestion: "Hacer una nueva pregunta",
-      previousQuestions: "Preguntas anteriores"
+      previousQuestions: "Preguntas anteriores",
+      emptyState: "Aún no has hecho preguntas al Universo"
     },
     profile: {
       title: "Perfil",
@@ -913,6 +1135,77 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
           proDescription: "Crear grupos, energía de apoyo"
         }
       ]
+    },
+    meditation: {
+      pageTitle: "Meditaciones de poder",
+      subtitle: "Obtén acceso a meditaciones con ASKET PRO",
+      proFeatures: "Características de meditaciones PRO",
+      basic: "Versión básica",
+      pro: "Versión PRO",
+      duration: "Duración",
+      play: "Escuchar",
+      unlock: "Desbloquear PRO",
+      comingSoon: "Próximamente",
+      categories: {
+        morning: "Mañana",
+        evening: "Noche",
+        stress: "Antiestrés",
+        mantra: "Mantras",
+        visual: "Visualización"
+      },
+      morning: {
+        title1: "Preparación para el día",
+        desc1: "Cárgate de energía para todo el día",
+        title2: "Gratitud",
+        desc2: "Práctica de gratitud al Universo"
+      },
+      evening: {
+        title1: "Perdón",
+        desc1: "Deja ir el pasado con facilidad"
+      },
+      stress: {
+        title1: "Conexión a tierra",
+        desc1: "Restauración del equilibrio interior"
+      },
+      mantra: {
+        title1: "Voz del guía",
+        desc1: "Integración de energía superior"
+      },
+      visualization: {
+        title1: "Vuelo cósmico",
+        desc1: "Viaje a través de las estrellas"
+      }
+    },
+    auth: {
+      signIn: "Iniciar sesión",
+      signUp: "Registrarse",
+      signOut: "Cerrar sesión",
+      email: "Correo electrónico",
+      password: "Contraseña",
+      confirmPassword: "Confirmar contraseña",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      backToSignIn: "Volver a iniciar sesión",
+      createAccount: "Crear cuenta",
+      alreadyHaveAccount: "¿Ya tienes una cuenta?",
+      resetPassword: "Restablecer contraseña",
+      resetPasswordButton: "Enviar enlace de restablecimiento",
+      resetPasswordSuccess: "Revisa tu correo para restablecer tu contraseña",
+      resetPasswordError: "Error al restablecer la contraseña",
+      signInError: "Error al iniciar sesión",
+      signUpError: "Error al registrarse",
+      passwordMismatch: "Las contraseñas no coinciden",
+      welcomeBack: "Bienvenido de nuevo",
+      noAccount: "¿No tienes una cuenta?",
+      orContinueWith: "O continuar con",
+      signInButton: "Iniciar sesión",
+      signUpButton: "Registrarse",
+      haveAccount: "¿Ya tienes una cuenta?",
+      passwordLength: "La contraseña debe tener al menos 6 caracteres"
+    },
+    subscription: {
+      bannerTitle: "Desbloquea tu potencial con ASKET PRO",
+      bannerDesc: "Acceso a meditaciones, prácticas avanzadas y mucho más",
+      upgradeNow: "Mejorar ahora"
     }
   }
 };
