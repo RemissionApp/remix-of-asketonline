@@ -9,7 +9,7 @@ import { generateUniverseAnswer } from '@/utils/universeMessages';
 export const UniverseMessageBlock: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const { language } = useAppStore();
+  const { language, userProfile } = useAppStore();
   const navigate = useNavigate();
 
   // Translations for button text and loading states
@@ -52,8 +52,14 @@ export const UniverseMessageBlock: React.FC = () => {
   }, [language]);
 
   const handleMoreDetails = () => {
-    // Navigate to the universe page for more details
-    navigate('/universe');
+    // Check if user is PRO
+    if (userProfile?.isPro) {
+      // Navigate to the detailed horoscope page
+      navigate('/detailed-horoscope');
+    } else {
+      // Navigate to the subscription comparison page
+      navigate('/comparison');
+    }
   };
 
   return (
