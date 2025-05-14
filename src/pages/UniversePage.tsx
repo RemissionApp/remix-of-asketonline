@@ -6,6 +6,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { QuoteDisplay } from '@/components/QuoteDisplay';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
@@ -27,6 +29,8 @@ const UniversePage: React.FC = () => {
     if (question.trim().length < 3) return;
     
     setIsAsking(true);
+    
+    // Эффект "размышления Вселенной"
     setTimeout(async () => {
       try {
         const response = await askUniverse(question);
@@ -36,11 +40,12 @@ const UniversePage: React.FC = () => {
         });
       } catch (error) {
         console.error("Error asking universe:", error);
+        toast.error(typeof error === 'string' ? error : "Вселенная молчит. Попробуйте позже.");
       } finally {
         setQuestion('');
         setIsAsking(false);
       }
-    }, 2000); // Add a delay for effect
+    }, 2000); // Задержка для эффекта
   };
   
   return (
@@ -75,11 +80,13 @@ const UniversePage: React.FC = () => {
               <h2 className="text-lg font-serif text-cosmic-gold mb-4">
                 {t.universe.universeAnswer}
               </h2>
-              <p className="text-xl font-serif text-white italic leading-relaxed">
-                "{currentAnswer.answer}"
-              </p>
               
-              <div className="mt-8">
+              <QuoteDisplay 
+                quote={currentAnswer.answer} 
+                className="mb-8"
+              />
+              
+              <div className="mt-8 flex justify-center">
                 <CosmicButton 
                   onClick={() => setCurrentAnswer(null)} 
                   variant="outline"
@@ -115,7 +122,7 @@ const UniversePage: React.FC = () => {
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder={t.universe.question}
+              placeholder={t.universe.questionPlaceholder}
               className="cosmic-input w-full h-40 resize-none mb-8"
             />
             
@@ -141,7 +148,7 @@ const UniversePage: React.FC = () => {
                         {new Date(q.date).toLocaleDateString()}
                       </p>
                       <p className="text-white mb-2">{q.question}</p>
-                      <p className="text-cosmic-accent italic">"{q.answer}"</p>
+                      <QuoteDisplay quote={q.answer} className="!text-sm !p-0" />
                     </div>
                   ))}
                 </div>

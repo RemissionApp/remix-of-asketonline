@@ -1,5 +1,5 @@
-
 import { useAppStore } from "@/store/useAppStore";
+import { supabase } from "@/lib/supabase";
 
 const russianAnswers = [
   "Твой путь уже начался. Следуй за знаками.",
@@ -55,25 +55,40 @@ const spanishAnswers = [
   "Eres más sabio de lo que piensas. Eres más fuerte de lo que pareces."
 ];
 
-export function generateUniverseAnswer(): string {
+export async function generateUniverseAnswer(question: string): Promise<string> {
   const store = useAppStore.getState();
   const { language } = store;
   
-  let answers;
-  
-  switch (language) {
-    case 'en':
-      answers = englishAnswers;
-      break;
-    case 'es':
-      answers = spanishAnswers;
-      break;
-    case 'ru':
-    default:
-      answers = russianAnswers;
+  try {
+    // Пытаемся получить ответ от OpenAI через Edge Function
+    const { data, error } = await supabase.functions.invoke('universe-answer', {
+      body: { question, language },
+    });
+
+    if (error) throw error;
+    if (data && data.answer) return data.answer;
+    
+    throw new Error('No answer received');
+  } catch (error) {
+    console.error('Error getting AI answer:', error);
+    
+    // Запасной вариант: используем предопределенные ответы
+    let answers;
+    
+    switch (language) {
+      case 'en':
+        answers = englishAnswers;
+        break;
+      case 'es':
+        answers = spanishAnswers;
+        break;
+      case 'ru':
+      default:
+        answers = russianAnswers;
+    }
+    
+    // Получаем случайный индекс из массива ответов
+    const randomIndex = Math.floor(Math.random() * answers.length);
+    return answers[randomIndex];
   }
-  
-  // Get a random index from the answers array
-  const randomIndex = Math.floor(Math.random() * answers.length);
-  return answers[randomIndex];
 }

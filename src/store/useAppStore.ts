@@ -438,75 +438,33 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
   
   // Ask a question to the universe
-  askUniverse: async (question) => {
-    const { user, loadUniverseQuestions } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для отправки вопроса",
-        variant: "destructive"
-      });
-      return {} as UniverseQuestion;
+  askUniverse: async (question: string) => {
+    if (!question || question.trim().length < 3) {
+      throw new Error('Question too short');
     }
-    
-    set({ loading: true });
-    
+
     try {
-      const answer = generateUniverseAnswer();
+      // Получаем ответ от нашей функции universe message
+      const answer = await generateUniverseAnswer(question);
       
-      // Save question and answer to database
-      const { data, error } = await supabase
-        .from('universe_questions')
-        .insert({
-          user_id: user.id,
-          question,
-          answer
-        })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      
-      // Check if this is the first question for achievement
-      const { data: questionCount, error: countError } = await supabase
-        .from('universe_questions')
-        .select('id', { count: 'exact' })
-        .eq('user_id', user.id);
-      
-      if (countError) throw countError;
-      
-      if (questionCount && questionCount.length === 1) {
-        // This is the first question, unlock achievement
-        await get().unlockAchievement('first-question');
-        // Add bonus energy points
-        await get().addEnergyPoints(15);
-      } else {
-        // Regular energy points for additional questions
-        await get().addEnergyPoints(5);
-      }
-      
-      // Reload questions
-      await loadUniverseQuestions();
-      
-      // Transform to our app's format
-      const newQuestion: UniverseQuestion = {
-        id: data.id,
-        question: data.question,
-        answer: data.answer,
-        date: data.created_at
+      // Создаем запись вопроса
+      const id = Date.now().toString();
+      const newQuestion = {
+        id,
+        question,
+        answer,
+        date: new Date().toISOString()
       };
-      
+
+      // Добавляем вопрос в хранилище
+      set((state) => ({
+        activeQuestions: [newQuestion, ...state.activeQuestions].slice(0, 20) // Ограничение до 20 вопросов
+      }));
+
       return newQuestion;
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось задать вопрос",
-        variant: "destructive"
-      });
-      return {} as UniverseQuestion;
-    } finally {
-      set({ loading: false });
+    } catch (error) {
+      console.error('Error in askUniverse:', error);
+      throw error;
     }
   },
   
