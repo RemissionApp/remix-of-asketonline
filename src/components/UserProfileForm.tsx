@@ -16,12 +16,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete } = useAppStore();
+  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete, user } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Get locale based on selected language
   const getLocale = () => {
@@ -64,19 +67,64 @@ const UserProfileForm: React.FC = () => {
   }, [form.watch('birthDate')]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Update the profile in Supabase
-    await updateUserProfile({
-      name: values.name,
-      birthDate: values.birthDate
-    });
+    if (!user) {
+      toast({
+        title: "Ошибка",
+        description: "Вы должны войти в систему для обновления профиля",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    // Check if onboarding is complete or not
-    if (onboardingComplete) {
-      // If onboarding was already completed, go to main
-      navigate('/main');
-    } else {
-      // Otherwise go to onboarding
-      navigate('/onboarding');
+    setIsSaving(true);
+    
+    try {
+      console.log("Saving profile data to Supabase:", values);
+      
+      // Format birthDate to YYYY-MM-DD for Supabase
+      const formattedBirthDate = format(values.birthDate, 'yyyy-MM-dd');
+      
+      // Update directly in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: values.name,
+          birth_date: formattedBirthDate
+        })
+        .eq('id', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Also update the local store
+      await updateUserProfile({
+        name: values.name,
+        birthDate: values.birthDate
+      });
+      
+      toast({
+        title: "Профиль обновлен",
+        description: "Ваши данные успешно сохранены"
+      });
+    
+      // Check if onboarding is complete or not
+      if (onboardingComplete) {
+        // If onboarding was already completed, go to main
+        navigate('/main');
+      } else {
+        // Otherwise go to onboarding
+        navigate('/onboarding');
+      }
+    } catch (error: any) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Ошибка",
+        description: error.message || "Не удалось сохранить профиль",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -167,8 +215,11 @@ const UserProfileForm: React.FC = () => {
             <CosmicButton 
               className="w-full bg-transparent backdrop-blur-[5px] border border-cosmic-accent hover:bg-cosmic-accent/20"
               type="submit"
+              disabled={isSaving}
             >
-              {t.userProfile?.continueButton || "Продолжить"}
+              {isSaving ? 
+                (t.userProfile?.savingButton || "Сохранение...") : 
+                (t.userProfile?.continueButton || "Продолжить")}
             </CosmicButton>
           </div>
         </form>
