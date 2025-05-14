@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import UserProfileForm from '@/components/UserProfileForm';
@@ -77,7 +78,7 @@ const ProfilePage: React.FC = () => {
                 <SelectTrigger className="bg-cosmic-dark/60 border-cosmic-accent/30 text-white">
                   <SelectValue>
                     {language === 'en' ? 'English 🇬🇧' : 
-                     language === 'es' ? 'Español 🇪��' : 
+                     language === 'es' ? 'Español 🇪🇸' : 
                      'Русский 🇷🇺'}
                   </SelectValue>
                 </SelectTrigger>
