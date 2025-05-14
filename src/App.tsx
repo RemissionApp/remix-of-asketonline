@@ -12,6 +12,7 @@ import LanguagePage from "./pages/LanguagePage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import PactOathPage from "./pages/PactOathPage";
 import MainPage from "./pages/MainPage";
 import CreatePactPage from "./pages/CreatePactPage";
 import UniversePage from "./pages/UniversePage";
@@ -25,7 +26,7 @@ const queryClient = new QueryClient();
 
 // Component to sync router with app state
 const RouterSync = () => {
-  const { activeScreen, setActiveScreen } = useAppStore();
+  const { activeScreen, setActiveScreen, onboardingComplete } = useAppStore();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -37,6 +38,7 @@ const RouterSync = () => {
       'signin': '/signin',
       'signup': '/signup',
       'onboarding': '/onboarding',
+      'pact-oath': '/pact-oath',
       'main': '/main',
       'create-pact': '/create-pact',
       'universe': '/universe',
@@ -58,6 +60,7 @@ const RouterSync = () => {
       '/signin': 'signin',
       '/signup': 'signup',
       '/onboarding': 'onboarding',
+      '/pact-oath': 'pact-oath',
       '/main': 'main',
       '/create-pact': 'create-pact',
       '/universe': 'universe',
@@ -71,7 +74,7 @@ const RouterSync = () => {
       setActiveScreen(newScreen);
     }
   }, [location.pathname, activeScreen, setActiveScreen]);
-  
+
   return null;
 };
 
@@ -87,6 +90,7 @@ const App = () => {
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/pact-oath" element={<PactOathPage />} />
             <Route path="/main" element={<MainPage />} />
             <Route path="/create-pact" element={<CreatePactPage />} />
             <Route path="/universe" element={<UniversePage />} />

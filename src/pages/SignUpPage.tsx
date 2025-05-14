@@ -1,193 +1,183 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { CosmicButton } from '@/components/CosmicButton';
+import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 
-// Define the form schema
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  path: ["confirmPassword"],
-  message: "Passwords do not match",
-});
-
-type FormValues = z.infer<typeof formSchema>;
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const SignUpPage = () => {
-  const { setActiveScreen, updateUserProfile } = useAppStore();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  const { setActiveScreen } = useAppStore();
   const { t } = useTranslations();
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    }
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
-
-  const onSubmit = async (data: FormValues) => {
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+    
     setIsSubmitting(true);
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // In a real app, you'd handle user registration here
-      console.log('Sign up data:', data);
-
-      // Update user profile with the name
-      updateUserProfile({ name: data.name });
-
-      // Show success toast
-      toast({
-        title: t.auth?.signUpSuccess,
-        description: t.auth?.accountCreated,
-      });
-
-      // Navigate to onboarding
-      setActiveScreen('onboarding');
+      // Simulate sign-up
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Success: proceed to pact oath page
+      setActiveScreen('pact-oath');
+      
     } catch (error) {
-      console.error('Sign up error:', error);
-      toast({
-        variant: "destructive",
-        title: t.auth?.signUpError,
-        description: t.auth?.tryAgain,
-      });
+      setError(t.auth.signUpError);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
-      <div className="w-full max-w-md space-y-8 bg-card p-6 rounded-lg shadow-lg">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">{t.auth?.signUp}</h1>
-          <p className="mt-2 text-muted-foreground">
-            {t.auth?.createAccountPrompt}
-          </p>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.auth?.name}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t.auth?.namePlaceholder}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.auth?.email}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="you@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.auth?.password}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.auth?.confirmPassword}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <CosmicButton
-              onClick={() => {}} // Add onClick prop to satisfy type requirements
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {t.auth?.processing}
-                </span>
-              ) : (
-                t.auth?.signUpButton
-              )}
-            </CosmicButton>
-          </form>
-        </Form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            {t.auth?.alreadyHaveAccount}{' '}
-            <Button variant="link" className="p-0" onClick={() => setActiveScreen('signin')}>
-              {t.auth?.signInNow}
-            </Button>
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center relative p-4">
+      <StarField starCount={150} />
+      
+      {/* Cosmic background image */}
+      <div className="fixed inset-0 z-0">
+        <div 
+          className="w-full h-full bg-cover bg-center opacity-90"
+          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
+      </div>
+      
+      <div className="relative z-10 w-full max-w-md">
+        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40">
+          <CardContent className="pt-6">
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-serif text-white">
+                {t.auth.signUp}
+              </h1>
+              <p className="text-cosmic-secondary mt-2">
+                {t.auth.createAccountPrompt}
+              </p>
+            </div>
+            
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 text-red-200 p-3 rounded-md mb-4">
+                {error}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-cosmic-secondary">
+                  {t.auth.name}
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder={t.auth.namePlaceholder}
+                  className="cosmic-input"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-cosmic-secondary">
+                  {t.auth.email}
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  className="cosmic-input"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-cosmic-secondary">
+                  {t.auth.password}
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="cosmic-input"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-cosmic-secondary">
+                  {t.auth.confirmPassword}
+                </Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  className="cosmic-input"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <CosmicButton
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? t.auth.processing : t.auth.signUpButton}
+              </CosmicButton>
+            </form>
+            
+            <div className="mt-6 text-center text-cosmic-secondary">
+              <p>
+                {t.auth.alreadyHaveAccount}{' '}
+                <Link 
+                  to="/signin" 
+                  className="text-cosmic-accent hover:underline"
+                  onClick={() => setActiveScreen('signin')}
+                >
+                  {t.auth.signInNow}
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -24,12 +24,12 @@ const MainPage: React.FC = () => {
     pacts, 
     dailyQuote, 
     markDayComplete, 
+    setActiveScreen,
     syncPactsWithCurrentDate,
     language,
     userProfile
   } = useAppStore();
   const { t } = useTranslations();
-  const navigate = useNavigate();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   
@@ -130,7 +130,7 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Обработчик завершения дня с визуальным эффектом
+  // Handler for completing the day with visual effect
   const handleCompleteDayWithEffect = () => {
     if (currentPact) {
       markDayComplete(currentPact.id);
@@ -227,23 +227,21 @@ const MainPage: React.FC = () => {
             
             <QuoteDisplay quote={dailyQuote} className="mt-12" />
             
-            {/* Add Meditation Button */}
+            {/* Add Meditation and Universe buttons */}
             <div className="flex flex-wrap justify-center gap-4 mt-6">
               <CosmicButton 
-                variant="outline"
-                asChild
+                variant="outline" 
+                onClick={() => setActiveScreen('universe')}
               >
-                <Link to="/universe">{t.main.askUniverse}</Link>
+                {t.main.askUniverse}
               </CosmicButton>
               
               <CosmicButton 
                 variant="outline"
-                asChild
+                onClick={() => setActiveScreen('meditation')}
               >
-                <Link to="/meditation">
-                  <Headphones className="mr-2" size={18} />
-                  {t.meditation.pageTitle}
-                </Link>
+                <Headphones className="mr-2" size={18} />
+                {t.meditation.pageTitle}
               </CosmicButton>
             </div>
           </>
@@ -253,8 +251,11 @@ const MainPage: React.FC = () => {
               {t.main.noPacts}
             </h1>
             
-            <CosmicButton asChild>
-              <Link to="/create-pact">{t.main.createPact}</Link>
+            <CosmicButton 
+              onClick={() => setActiveScreen('create-pact')}
+              className="mt-4"
+            >
+              {t.main.createPact}
             </CosmicButton>
           </div>
         )}
@@ -263,39 +264,39 @@ const MainPage: React.FC = () => {
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-cosmic-dark/80 backdrop-blur-md border-t border-cosmic-accent/20 z-20">
         <div className="flex justify-around items-center p-3 max-w-lg mx-auto">
-          <Link 
-            to="/main"
+          <button 
             className="flex flex-col items-center p-2 text-cosmic-accent"
+            onClick={() => setActiveScreen('main')}
           >
             <Home size={24} />
             <span className="text-xs mt-1">{t.main.nav.path}</span>
-          </Link>
+          </button>
           
-          <Link 
-            to="/create-pact"
+          <button 
             className="flex flex-col items-center p-2 text-cosmic-secondary"
+            onClick={() => setActiveScreen('create-pact')}
           >
             <Sparkles size={24} />
             <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
-          </Link>
+          </button>
           
-          <Link 
-            to="/universe"
+          <button 
             className="flex flex-col items-center p-2 text-cosmic-secondary"
+            onClick={() => setActiveScreen('universe')}
           >
             <MessageSquare size={24} />
             <span className="text-xs mt-1">{t.main.nav.universe}</span>
-          </Link>
+          </button>
           
-          <Link 
-            to="/profile"
+          <button 
             className="flex flex-col items-center p-2 text-cosmic-secondary"
+            onClick={() => setActiveScreen('profile')}
           >
             <div className="relative">
               <UserAvatar size="sm" showRankBorder={false} />
             </div>
             <span className="text-xs mt-1">{t.main.nav.profile}</span>
-          </Link>
+          </button>
         </div>
       </div>
     </div>

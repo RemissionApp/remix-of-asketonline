@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { SupportedLanguage } from '@/i18n/translations';
@@ -14,12 +13,12 @@ export interface UserProfile {
   level: number;
   experience: number;
   isPro: boolean;
-  energyPoints: number; // Added missing property
+  energyPoints: number;
 }
 
 interface AppState {
   // Navigation
-  activeScreen: 'welcome' | 'language' | 'signin' | 'signup' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation';
+  activeScreen: 'welcome' | 'language' | 'signin' | 'signup' | 'onboarding' | 'pact-oath' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation';
   setActiveScreen: (screen: AppState['activeScreen']) => void;
   
   // Onboarding
