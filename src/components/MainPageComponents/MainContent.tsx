@@ -7,6 +7,7 @@ import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
+import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -50,8 +51,13 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Countdown timer for current pact */}
           {currentPact && <CountdownTimer />}
           
+          {/* Horoscope display */}
+          <div className="w-full max-w-lg mt-8">
+            <HoroscopeDisplay />
+          </div>
+          
           {/* Quote display */}
-          <QuoteDisplay quote={dailyQuote} className="mt-12" />
+          <QuoteDisplay quote={dailyQuote} className="mt-8" />
           
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />

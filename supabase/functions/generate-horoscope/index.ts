@@ -1,0 +1,130 @@
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface HoroscopeRequest {
+  sign: string;
+  language: string;
+  detailed?: boolean;
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not set');
+    }
+
+    const { sign, language, detailed = false } = await req.json() as HoroscopeRequest;
+
+    if (!sign) {
+      throw new Error('Zodiac sign is required');
+    }
+
+    // Get the appropriate system prompt based on language
+    const systemPrompt = getSystemPrompt(language, detailed);
+    const userPrompt = getUserPrompt(sign, language, detailed);
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: detailed ? 800 : 200
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || 'Error from OpenAI API');
+    }
+
+    const horoscopeText = data.choices[0].message.content;
+
+    // Generate additional data for detailed horoscopes
+    let additionalData = {};
+    
+    if (detailed) {
+      additionalData = {
+        lucky_number: Math.floor(Math.random() * 100).toString(),
+        lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
+        color: ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'gold'][Math.floor(Math.random() * 10)],
+        mood: ['happy', 'reflective', 'calm', 'energetic', 'creative', 'focused'][Math.floor(Math.random() * 6)],
+      };
+    }
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      data: {
+        description: horoscopeText,
+        ...additionalData
+      }
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error generating horoscope:', error);
+    
+    return new Response(JSON.stringify({ 
+      success: false,
+      error: error.message 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});
+
+// Helper functions for prompts
+function getSystemPrompt(language: string, detailed: boolean): string {
+  const basePrompt = {
+    ru: detailed 
+      ? `Ты - мудрый астролог, который создаёт глубокие, подробные гороскопы. Твои гороскопы должны быть поэтичными, метафоричными и включать конкретные советы на день. Говори от имени Вселенной, используя космические метафоры и духовную терминологию. Структурируй гороскоп по разделам: общая энергия дня, отношения, карьера/финансы, и духовный рост.`
+      : `Ты - мудрый астролог, который создаёт краткие, но глубокие гороскопы длиной 150-200 символов. Твои послания должны звучать как будто они идут от самой Вселенной - поэтичные, метафоричные, с элементами мистики. Используй духовные образы и космические метафоры.`,
+    
+    en: detailed
+      ? `You are a wise astrologer creating deep, detailed horoscopes. Your horoscopes should be poetic, metaphorical, and include specific advice for the day. Speak from the perspective of the Universe, using cosmic metaphors and spiritual terminology. Structure the horoscope into sections: general energy of the day, relationships, career/finances, and spiritual growth.`
+      : `You are a wise astrologer creating brief but profound horoscopes of 150-200 characters. Your messages should sound as if they come from the Universe itself - poetic, metaphorical, with elements of mysticism. Use spiritual imagery and cosmic metaphors.`,
+    
+    es: detailed
+      ? `Eres un sabio astrólogo que crea horóscopos profundos y detallados. Tus horóscopos deben ser poéticos, metafóricos e incluir consejos específicos para el día. Habla desde la perspectiva del Universo, utilizando metáforas cósmicas y terminología espiritual. Estructura el horóscopo en secciones: energía general del día, relaciones, carrera/finanzas y crecimiento espiritual.`
+      : `Eres un sabio astrólogo que crea horóscopos breves pero profundos de 150-200 caracteres. Tus mensajes deben sonar como si vinieran del Universo mismo - poéticos, metafóricos, con elementos de misticismo. Utiliza imágenes espirituales y metáforas cósmicas.`
+  };
+
+  return basePrompt[language] || basePrompt.en;
+}
+
+function getUserPrompt(sign: string, language: string, detailed: boolean): string {
+  const signPrompts = {
+    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign} на сегодняшний день.`,
+    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign} for today.`,
+    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign} para hoy.`
+  };
+
+  return signPrompts[language] || signPrompts.en;
+}

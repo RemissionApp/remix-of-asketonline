@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
 import MeditationPage from "./pages/MeditationPage";
+import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/comparison" element={<ComparisonPage />} />
             <Route path="/meditation" element={<MeditationPage />} />
+            <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
