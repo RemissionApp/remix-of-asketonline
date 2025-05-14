@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -30,13 +29,8 @@ const LoginPage: React.FC = () => {
     if (user) {
       console.log("Login page: user is logged in", { user, userProfile });
       
-      // If profile is already setup, go directly to main
-      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-        navigate('/main');
-      } else {
-        // Otherwise, go to profile setup
-        navigate('/profile-setup');
-      }
+      // Navigate directly to main page if the user exists
+      navigate('/main');
     }
   }, [user, userProfile, navigate]);
   
@@ -48,8 +42,9 @@ const LoginPage: React.FC = () => {
     
     const success = await signIn(email, password);
     if (success) {
-      console.log("Sign in successful, checking profile status");
-      // The redirection will be handled by the useEffect above
+      console.log("Sign in successful, redirecting to main page");
+      // Navigate directly to the main page
+      navigate('/main');
     }
   };
   
