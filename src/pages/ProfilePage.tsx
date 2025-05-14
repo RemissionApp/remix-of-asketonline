@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
@@ -25,9 +25,16 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 const ProfilePage: React.FC = () => {
-  const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage } = useAppStore();
+  const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage, fetchUserProfile, user } = useAppStore();
   const navigate = useNavigate();
   const { t } = useTranslations();
+
+  // Fetch user profile data when component mounts
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile(user.id);
+    }
+  }, [user]);
 
   const handleManageSubscription = () => {
     if (userProfile.isPro) {
@@ -55,15 +62,15 @@ const ProfilePage: React.FC = () => {
       }
       
       toast({
-        title: "Успех",
-        description: "Вы успешно вышли из системы"
+        title: t.auth?.successTitle || "Успех",
+        description: t.auth?.signOutSuccess || "Вы успешно вышли из системы"
       });
       
       // Navigate to home page
       navigate('/');
     } catch (error: any) {
       toast({
-        title: "Ошибка",
+        title: t.auth?.errorTitle || "Ошибка",
         description: error.message || "Не удалось выйти из системы",
         variant: "destructive"
       });

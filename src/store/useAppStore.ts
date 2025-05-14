@@ -1,1294 +1,680 @@
 import { create } from 'zustand';
-import { Pact, UniverseQuestion, UserProfile, SpiritualRank, Achievement, Mission } from '@/types';
-import { generateUniverseAnswer } from '@/utils/universeMessages';
-import { supabase, cleanupAuthState, isProfileComplete } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { Achievement, AppNotification, AppSettings, DailyReflection, MeditationSession, Pact, PactItem, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
+import { persist } from 'zustand/middleware';
 
-type AppLanguage = 'ru' | 'en' | 'es';
-
-// Update the type definition to include 'comparison' and 'meditation'
-type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup';
-
-interface AppState {
-  pacts: Pact[];
-  activeQuestions: UniverseQuestion[];
-  dailyQuote: string;
-  userProfile: UserProfile;
-  user: any | null;
-  loading: boolean;
-  
-  addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
-  markDayComplete: (pactId: string) => Promise<void>;
-  askUniverse: (question: string) => Promise<UniverseQuestion>;
-  setActiveScreen: (screen: ActiveScreen) => void;
-  activeScreen: ActiveScreen;
-  onboardingComplete: boolean;
-  setOnboardingComplete: (completed: boolean) => void;
-  language: AppLanguage;
-  setLanguage: (language: AppLanguage) => void;
-  updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
-  syncPactsWithCurrentDate: () => Promise<void>;
-  
-  // Auth methods - Update signIn return type to Promise<boolean>
-  signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  
-  // Data loading methods
-  loadUserProfile: () => Promise<void>;
-  loadPacts: () => Promise<void>;
-  loadUniverseQuestions: () => Promise<void>;
-  
-  // Existing functions for gamification
-  addEnergyPoints: (points: number) => Promise<void>;
-  checkRankProgress: () => SpiritualRank;
-  unlockAchievement: (achievementId: string) => Promise<void>;
-  assignMission: () => Promise<void>;
-  completeMission: () => Promise<void>;
-  
-  // New functions for PRO features
-  upgradeToPro: () => Promise<void>;
-  cancelProSubscription: () => Promise<void>;
-}
-
-// Example quotes
-const quotes = [
-  "Ты отказываешься от малого, чтобы вместить великое.",
-  "В искушении ты проверяешь намерение. Иди до конца.",
-  "Каждый день твоей аскезы — нить, соединяющая тебя с высшим.",
-  "Истинная сила не в овладении, а в осознанном отказе.",
-  "Отбрось то, что тянет тебя вниз, и воспари над обыденностью.",
-  "Твоя воля — это мост между намерением и реальностью.",
-  "Ограничивая себя внешне, ты расширяешься внутренне."
-];
+// Default user profile
+const defaultUserProfile: UserProfile = {
+  id: '', 
+  name: 'Искатель',
+  email: '',
+  avatar_url: null,
+  rank: 'seeker',
+  level: 1,
+  experience: 0,
+  isPro: false, 
+  birthDate: null,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  totalDays: 0,
+  energyPoints: 0,
+  goal: '',
+  achievements: [],
+  activeMission: undefined
+};
 
 // Default achievements
 const defaultAchievements: Achievement[] = [
   {
-    id: 'first-pact',
-    title: 'Первый договор',
-    description: 'Заключите свой первый договор с Вселенной',
-    icon: 'scroll',
+    id: '1',
+    title: 'Первый медитация',
+    description: 'Завершите свою первую медитацию',
+    icon: '🧘‍♂️',
+    achievementType: 'meditation',
+    unlockedAt: null,
+    unlocked: false
+  },
+  {
+    id: '2',
+    title: 'Первый пакт',
+    description: 'Создайте свой первый пакт',
+    icon: '🤝',
     achievementType: 'pact',
     unlockedAt: null,
     unlocked: false
   },
   {
-    id: '7-days-streak',
-    title: '7 дней подряд',
-    description: 'Соблюдайте аскезу 7 дней подряд',
-    icon: 'calendar',
-    achievementType: 'streak',
+    id: '3',
+    title: 'Первый вопрос вселенной',
+    description: 'Задайте свой первый вопрос вселенной',
+    icon: '❓',
+    achievementType: 'universeQuestion',
     unlockedAt: null,
     unlocked: false
   },
   {
-    id: '30-days-streak',
-    title: '30 дней подряд',
-    description: 'Соблюдайте аскезу 30 дней подряд',
-    icon: 'award',
-    achievementType: 'streak',
-    unlockedAt: null,
-    unlocked: false
-  },
-  {
-    id: 'first-question',
-    title: 'Первый разговор',
-    description: 'Задайте первый вопрос Вселенной',
-    icon: 'message-square',
-    achievementType: 'universe',
+    id: '4',
+    title: 'Первый дневник',
+    description: 'Заполните свой первый дневник',
+    icon: '✍️',
+    achievementType: 'dailyReflection',
     unlockedAt: null,
     unlocked: false
   }
 ];
 
-// Available missions
-const availableMissions: Mission[] = [
+// Default pact items
+const defaultPactItems: PactItem[] = [
   {
-    id: 'mission-1',
-    title: 'Первые шаги аскета',
-    description: 'Соблюдайте свою первую аскезу три дня подряд и получите энергетические очки',
-    requirements: ['Соблюдать аскезу 3 дня подряд'],
-    reward: {
-      energyPoints: 30
-    },
-    completed: false
+    id: '1',
+    title: 'Медитация 10 минут',
+    description: 'Медитируйте 10 минут каждый день',
+    completed: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
-    id: 'mission-2',
-    title: 'Разговор с Вселенной',
-    description: 'Задайте три вопроса Вселенной и получите дополнительную мудрость',
-    requirements: ['Задать 3 вопроса Вселенной'],
-    reward: {
-      energyPoints: 50,
-      achievement: 'universe-seeker'
-    },
-    completed: false
+    id: '2',
+    title: 'Задайте вопрос вселенной',
+    description: 'Задайте вопрос вселенной каждый день',
+    completed: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: '3',
+    title: 'Заполните дневник',
+    description: 'Заполните дневник каждый день',
+    completed: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
 ];
 
-// Rank requirements
-const rankRequirements = {
-  seeker: 0,
-  pilgrim: 10,
-  warrior: 30,
-  master: 90,
-  enlightened: 365
-};
-
-// Helper function to get date string in YYYY-MM-DD format
-const getDateString = (date: Date): string => {
-  return date.toISOString().split('T')[0];
-};
-
-// Helper function to compare two dates (ignoring time)
-const isSameDay = (date1: string, date2: string): boolean => {
-  return date1.split('T')[0] === date2.split('T')[0];
-};
-
-// Helper function to check if date1 is before or equal to date2
-const isDateBeforeOrEqual = (date1: string, date2: string): boolean => {
-  return date1.split('T')[0] <= date2.split('T')[0];
-};
-
-export const useAppStore = create<AppState>()((set, get) => ({
-  pacts: [],
-  activeQuestions: [],
-  dailyQuote: quotes[Math.floor(Math.random() * quotes.length)],
-  userProfile: {
-    name: 'Искатель',
-    totalDays: 0,
-    energyPoints: 0,
-    goal: 'Познать свою истинную силу',
-    isPro: false,
-    rank: 'seeker',
-    achievements: [...defaultAchievements]
-  },
-  activeScreen: 'welcome',
-  onboardingComplete: false,
+// Default app settings
+const defaultAppSettings: AppSettings = {
+  darkMode: false,
+  notifications: true,
   language: 'ru',
-  user: null,
-  loading: false,
+  soundEnabled: true
+};
+
+// Function to map database achievement to Achievement type
+const mapDbAchievementToAchievement = (dbAchievement: any): Achievement => {
+  return {
+    id: dbAchievement.id,
+    title: dbAchievement.title,
+    description: dbAchievement.description,
+    icon: dbAchievement.icon,
+    achievementType: dbAchievement.achievement_type,
+    unlockedAt: dbAchievement.unlocked_at,
+    unlocked: !!dbAchievement.unlocked_at
+  };
+};
+
+// Function to map database question to UniverseQuestion type
+const mapDbQuestionToQuestion = (dbQuestion: any): UniverseQuestion => {
+  return {
+    id: dbQuestion.id,
+    question: dbQuestion.question,
+    answer: dbQuestion.answer,
+    createdAt: dbQuestion.created_at,
+    date: new Date(dbQuestion.created_at).toLocaleDateString()
+  };
+};
+
+// Define the AppStore interface
+interface AppStore {
+  user: any;
+  userProfile: UserProfile;
+  achievements: Achievement[];
+  universeQuestions: UniverseQuestion[];
+  pacts: Pact[];
+  pactItems: PactItem[];
+  meditationSessions: MeditationSession[];
+  dailyReflections: DailyReflection[];
+  notifications: AppNotification[];
+  settings: AppSettings;
+  activeScreen: string;
+  language: string;
+  loading: boolean;
+  error: any;
+
+  setUser: (user: any) => void;
+  setLanguage: (language: string) => void;
+  setActiveScreen: (screen: string) => void;
   
-  // Set language
-  setLanguage: (language) => set({ language }),
+  // User Profile Actions
+  fetchUserProfile: (userId: string) => Promise<void>;
+  updateUserProfile: (updates: Partial<UserProfile>) => Promise<void>;
   
-  // Set onboarding status
-  setOnboardingComplete: (completed) => set({ onboardingComplete: completed }),
+  // Achievement Actions
+  fetchUserAchievements: (userId: string) => Promise<void>;
+  unlockAchievement: (achievementId: string) => Promise<void>;
   
-  // Set active screen
-  setActiveScreen: (screen) => set({ activeScreen: screen }),
+  // Universe Question Actions
+  fetchUniverseQuestions: (userId: string) => Promise<void>;
+  addUniverseQuestion: (question: string, answer: string) => Promise<void>;
   
-  // Update user profile - modified to return void instead of boolean
-  updateUserProfile: async (profileData) => {
-    const { user } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для обновления профиля",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: profileData.name,
-          birth_date: profileData.birthDate,
-          goal: profileData.goal,
-          total_days: profileData.totalDays,
-          energy_points: profileData.energyPoints,
-          rank: profileData.rank
-        })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      // Update local state immediately to prevent flashing
-      set((state) => ({
-        userProfile: { ...state.userProfile, ...profileData }
-      }));
-      
-      toast({
-        title: "Профиль обновлен",
-        description: "Ваш профиль был успешно обновлен"
-      });
-      
-      // Do not return boolean value to match the Promise<void> return type
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось обновить профиль",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
+  // Pact Actions
+  fetchUserPacts: (userId: string) => Promise<void>;
+  createPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
+  updatePact: (pactId: string, updates: Partial<Pact>) => Promise<void>;
+  deletePact: (pactId: string) => Promise<void>;
   
-  // Add a new pact
-  addPact: async (pact) => {
-    const { user, loadPacts } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "��ы должны войти в систему для создания аскезы",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      // Insert the new pact
-      const { data: newPact, error: pactError } = await supabase
-        .from('pacts')
-        .insert({
-          user_id: user.id,
-          title: pact.title,
-          duration: pact.duration,
-          reward: pact.reward,
-          status: 'active'
-        })
-        .select()
-        .single();
-      
-      if (pactError) throw pactError;
-      
-      // Create pact days
-      const pactDays = Array.from({ length: pact.duration }, (_, i) => ({
-        pact_id: newPact.id,
-        date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        completed: false
-      }));
-      
-      const { error: daysError } = await supabase
-        .from('pact_days')
-        .insert(pactDays);
-      
-      if (daysError) throw daysError;
-      
-      // Check if this is the first pact for achievement
-      const { data: pactCount } = await supabase
-        .from('pacts')
-        .select('id', { count: 'exact' })
-        .eq('user_id', user.id);
-      
-      if (pactCount && pactCount.length === 1) {
-        // This is the first pact, unlock achievement
-        await get().unlockAchievement('first-pact');
-        // Add bonus energy points
-        await get().addEnergyPoints(20);
-      }
-      
-      // Reload pacts
-      await loadPacts();
-      
-      toast({
-        title: "Аскеза создана",
-        description: "Ваша аскеза была успешно создана"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось создать аскезу",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
+  // Pact Item Actions
+  addPactItem: (item: Omit<PactItem, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updatePactItem: (itemId: string, updates: Partial<PactItem>) => Promise<void>;
+  deletePactItem: (itemId: string) => Promise<void>;
   
-  // Mark a day as complete
-  markDayComplete: async (pactId) => {
-    const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для отметки дня",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      // Find the first incomplete day for this pact
-      const { data: days, error: daysError } = await supabase
-        .from('pact_days')
-        .select('*')
-        .eq('pact_id', pactId)
-        .eq('completed', false)
-        .order('date', { ascending: true })
-        .limit(1);
-      
-      if (daysError) throw daysError;
-      
-      if (days && days.length > 0) {
-        const day = days[0];
-        
-        // Mark the day as completed
-        const { error: updateError } = await supabase
-          .from('pact_days')
-          .update({ completed: true })
-          .eq('id', day.id);
-        
-        if (updateError) throw updateError;
-        
-        // Add energy points
-        await addEnergyPoints(10);
-        
-        // Check if all days are completed for this pact
-        const { data: remainingDays, error: remainingError } = await supabase
-          .from('pact_days')
-          .select('id')
-          .eq('pact_id', pactId)
-          .eq('completed', false);
-        
-        if (remainingError) throw remainingError;
-        
-        if (remainingDays && remainingDays.length === 0) {
-          // All days are completed, mark the pact as completed
-          const { error: pactError } = await supabase
-            .from('pacts')
-            .update({ status: 'completed' })
-            .eq('id', pactId);
-          
-          if (pactError) throw pactError;
-        }
-        
-        // Check for streak achievements
-        const { data: completedDays, error: streakError } = await supabase
-          .from('pact_days')
-          .select('id')
-          .eq('pact_id', pactId)
-          .eq('completed', true);
-        
-        if (streakError) throw streakError;
-        
-        const consecutiveDays = completedDays?.length || 0;
-        
-        // Check for 7-day streak achievement
-        if (consecutiveDays >= 7) {
-          await get().unlockAchievement('7-days-streak');
-        }
-        
-        // Check for 30-day streak achievement
-        if (consecutiveDays >= 30) {
-          await get().unlockAchievement('30-days-streak');
-        }
-        
-        // Update total days in profile
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('total_days')
-          .eq('id', user.id)
-          .single();
-        
-        if (profileError) throw profileError;
-        
-        const newTotalDays = (profile.total_days || 0) + 1;
-        
-        const { error: updateProfileError } = await supabase
-          .from('profiles')
-          .update({ 
-            total_days: newTotalDays,
-          })
-          .eq('id', user.id);
-        
-        if (updateProfileError) throw updateProfileError;
-        
-        // Check if rank needs to be updated
-        const currentRank = userProfile.rank;
-        const newRank = checkRankProgress();
-        
-        if (newRank !== currentRank) {
-          // Rank has changed, update profile
-          const { error: rankError } = await supabase
+  // Meditation Session Actions
+  addMeditationSession: (session: Omit<MeditationSession, 'id' | 'completedAt' >) => Promise<void>;
+  fetchMeditationSessions: (userId: string) => Promise<void>;
+  
+  // Daily Reflection Actions
+  addDailyReflection: (reflection: Omit<DailyReflection, 'id' | 'date'>) => Promise<void>;
+  fetchDailyReflections: (userId: string) => Promise<void>;
+  
+  // Notification Actions
+  addNotification: (notification: Omit<AppNotification, 'id' | 'createdAt' | 'read'>) => Promise<void>;
+  markNotificationAsRead: (notificationId: string) => Promise<void>;
+  fetchNotifications: (userId: string) => Promise<void>;
+  
+  // Settings Actions
+  updateSettings: (updates: Partial<AppSettings>) => void;
+  
+  // Pro Subscription Actions
+  upgradeToPro: () => void;
+  cancelProSubscription: () => void;
+}
+
+// Create the store
+export const useAppStore = create<AppStore>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      userProfile: defaultUserProfile,
+      achievements: defaultAchievements,
+      universeQuestions: [],
+      pacts: [],
+      pactItems: defaultPactItems,
+      meditationSessions: [],
+      dailyReflections: [],
+      notifications: [],
+      settings: defaultAppSettings,
+      activeScreen: 'main',
+      language: defaultAppSettings.language,
+      loading: false,
+      error: null,
+
+      setUser: (user) => set({ user }),
+      setLanguage: (language) => set({ language }),
+      setActiveScreen: (screen) => set({ activeScreen: screen }),
+
+      // --- User Profile Actions ---
+      fetchUserProfile: async (userId: string) => {
+        try {
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
-            .update({ rank: newRank })
-            .eq('id', user.id);
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+          if (profileError) throw profileError;
           
-          if (rankError) throw rankError;
-          
-          // Add bonus for rank upgrade
-          await addEnergyPoints(50);
-          
-          toast({
-            title: "Новый ранг!",
-            description: `Поздравляем! Вы достигли ранга ${newRank}`
-          });
-        }
-        
-        // Reload pacts to reflect changes
-        await loadPacts();
-        
-        toast({
-          title: "День отмечен",
-          description: "День аскезы успешно отмечен как выполненный"
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось отметить день",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Ask a question to the universe
-  askUniverse: async (question) => {
-    const { user, loadUniverseQuestions } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для отправки вопроса",
-        variant: "destructive"
-      });
-      return {} as UniverseQuestion;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      const answer = generateUniverseAnswer();
-      
-      // Save question and answer to database
-      const { data, error } = await supabase
-        .from('universe_questions')
-        .insert({
-          user_id: user.id,
-          question,
-          answer
-        })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      
-      // Check if this is the first question for achievement
-      const { data: questionCount, error: countError } = await supabase
-        .from('universe_questions')
-        .select('id', { count: 'exact' })
-        .eq('user_id', user.id);
-      
-      if (countError) throw countError;
-      
-      if (questionCount && questionCount.length === 1) {
-        // This is the first question, unlock achievement
-        await get().unlockAchievement('first-question');
-        // Add bonus energy points
-        await get().addEnergyPoints(15);
-      } else {
-        // Regular energy points for additional questions
-        await get().addEnergyPoints(5);
-      }
-      
-      // Reload questions
-      await loadUniverseQuestions();
-      
-      // Transform to our app's format
-      const newQuestion: UniverseQuestion = {
-        id: data.id,
-        question: data.question,
-        answer: data.answer,
-        createdAt: data.created_at,
-        date: data.created_at // For backward compatibility
-      };
-      
-      return newQuestion;
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось задать вопрос",
-        variant: "destructive"
-      });
-      return {} as UniverseQuestion;
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Sync pacts with current date
-  syncPactsWithCurrentDate: async () => {
-    const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } = get();
-    
-    if (!user) return;
-    
-    set({ loading: true });
-    
-    try {
-      const today = new Date();
-      const todayString = getDateString(today);
-      
-      // Get all active pacts
-      const { data: pacts, error: pactsError } = await supabase
-        .from('pacts')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'active');
-      
-      if (pactsError) throw pactsError;
-      
-      if (!pacts || pacts.length === 0) {
-        set({ loading: false });
-        return;
-      }
-      
-      let totalNewCompletedDays = 0;
-      
-      // For each pact, check for days that should be automatically marked as completed
-      for (const pact of pacts) {
-        const { data: days, error: daysError } = await supabase
-          .from('pact_days')
-          .select('id, date')
-          .eq('pact_id', pact.id)
-          .eq('completed', false)
-          .lte('date', todayString);
-        
-        if (daysError) throw daysError;
-        
-        if (days && days.length > 0) {
-          // Mark days as completed
-          const dayIds = days.map(d => d.id);
-          
-          const { error: updateError } = await supabase
-            .from('pact_days')
-            .update({ completed: true })
-            .in('id', dayIds);
-          
-          if (updateError) throw updateError;
-          
-          totalNewCompletedDays += days.length;
-          
-          // Check if all days are now completed
-          const { data: remainingDays, error: remainingError } = await supabase
-            .from('pact_days')
-            .select('id')
-            .eq('pact_id', pact.id)
-            .eq('completed', false);
-          
-          if (remainingError) throw remainingError;
-          
-          if (remainingDays && remainingDays.length === 0) {
-            // All days are completed, mark the pact as completed
-            const { error: pactError } = await supabase
-              .from('pacts')
-              .update({ status: 'completed' })
-              .eq('id', pact.id);
+          if (profileData) {
+            // Map the database fields to UserProfile structure
+            const updatedProfile: UserProfile = {
+              id: profileData.id,
+              name: profileData.name,
+              email: get().user?.email || '', // Will be filled from auth user
+              avatar_url: profileData.avatar_url,
+              rank: profileData.rank as SpiritualRank,
+              level: 1, // Default
+              experience: 0, // Default
+              isPro: false, // Will check subscription table
+              birthDate: profileData.birth_date ? new Date(profileData.birth_date) : null,
+              createdAt: profileData.created_at,
+              updatedAt: profileData.updated_at,
+              totalDays: profileData.total_days,
+              energyPoints: profileData.energy_points,
+              goal: profileData.goal || '',
+              achievements: [],
+              activeMission: undefined
+            };
             
-            if (pactError) throw pactError;
+            set({ userProfile: updatedProfile });
+            
+            // Also check subscription status
+            const { data: subscriptionData } = await supabase
+              .from('subscriptions')
+              .select('is_pro')
+              .eq('user_id', userId)
+              .single();
+              
+            if (subscriptionData) {
+              set(state => ({
+                userProfile: {
+                  ...state.userProfile,
+                  isPro: subscriptionData.is_pro
+                }
+              }));
+            }
           }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
         }
-      }
-      
-      // If days were updated, update the user profile
-      if (totalNewCompletedDays > 0) {
-        // Update total days and add energy points
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('total_days, energy_points')
-          .eq('id', user.id)
-          .single();
-        
-        if (profileError) throw profileError;
-        
-        const newTotalDays = (profile.total_days || 0) + totalNewCompletedDays;
-        const newEnergyPoints = (profile.energy_points || 0) + (totalNewCompletedDays * 10);
-        
-        const { error: updateProfileError } = await supabase
-          .from('profiles')
-          .update({ 
-            total_days: newTotalDays,
-            energy_points: newEnergyPoints
-          })
-          .eq('id', user.id);
-        
-        if (updateProfileError) throw updateProfileError;
-        
-        // Check if rank needs to be updated
-        const currentRank = userProfile.rank;
-        const newRank = checkRankProgress();
-        
-        if (newRank !== currentRank) {
-          // Rank has changed, update profile
-          const { error: rankError } = await supabase
+      },
+      updateUserProfile: async (updates: Partial<UserProfile>) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { error } = await supabase
             .from('profiles')
-            .update({ rank: newRank })
-            .eq('id', user.id);
+            .update(updates)
+            .eq('id', get().userProfile.id);
+            
+          if (error) throw error;
           
-          if (rankError) throw rankError;
-          
-          // Add bonus for rank upgrade
-          await addEnergyPoints(50);
-          
-          toast({
-            title: "Новый ранг!",
-            description: `Поздравляем! Вы достигли ранга ${newRank}`
-          });
+          set(state => ({
+            userProfile: {
+              ...state.userProfile,
+              ...updates
+            }
+          }));
+        } catch (error: any) {
+          console.error("Error updating user profile:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
         }
-      }
-      
-      // Reload pacts to reflect changes
-      await loadPacts();
-    } catch (error: any) {
-      console.error("Error syncing pacts:", error);
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Add energy points
-  addEnergyPoints: async (points) => {
-    const { user, userProfile } = get();
-    
-    if (!user) return;
-    
-    try {
-      const newTotal = (userProfile.energyPoints || 0) + points;
-      
-      // Update in database
-      const { error } = await supabase
-        .from('profiles')
-        .update({ energy_points: newTotal })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          energyPoints: newTotal
+      },
+
+      // --- Achievement Actions ---
+      fetchUserAchievements: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { data, error } = await supabase
+            .from('achievements')
+            .select('*')
+            .eq('user_id', userId);
+            
+          if (error) throw error;
+          
+          const achievements = data ? data.map(mapDbAchievementToAchievement) : [];
+          set({ achievements });
+        } catch (error: any) {
+          console.error("Error fetching user achievements:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
         }
-      }));
-    } catch (error) {
-      console.error("Error adding energy points:", error);
-    }
-  },
-  
-  // Check rank progress
-  checkRankProgress: () => {
-    const { userProfile } = get();
-    const { totalDays } = userProfile;
-    
-    if (totalDays >= rankRequirements.enlightened) return 'enlightened';
-    if (totalDays >= rankRequirements.master) return 'master';
-    if (totalDays >= rankRequirements.warrior) return 'warrior';
-    if (totalDays >= rankRequirements.pilgrim) return 'pilgrim';
-    return 'seeker';
-  },
-  
-  // Unlock achievement
-  unlockAchievement: async (achievementId) => {
-    const { user, userProfile } = get();
-    
-    if (!user) return;
-    
-    try {
-      // Check if achievement is already unlocked
-      const achievementExists = userProfile.achievements.find(a => a.id === achievementId && a.unlocked);
-      
-      if (achievementExists) return; // Already unlocked
-      
-      // Find the achievement in the default list
-      const achievement = defaultAchievements.find(a => a.id === achievementId);
-      
-      if (!achievement) return; // Achievement not found
-      
-      // Check if this achievement is already in the database
-      const { data: existingAchievements, error: checkError } = await supabase
-        .from('achievements')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('achievement_type', achievementId);
-      
-      if (checkError) throw checkError;
-      
-      if (!existingAchievements || existingAchievements.length === 0) {
-        // Insert the achievement
-        const { error } = await supabase
-          .from('achievements')
-          .insert({
-            user_id: user.id,
-            achievement_type: achievementId,
-            title: achievement.title,
-            description: achievement.description,
-            icon: achievement.icon,
-            unlocked_at: new Date().toISOString()
-          });
-        
-        if (error) throw error;
-      } else {
-        // Update the existing achievement
-        const { error } = await supabase
-          .from('achievements')
-          .update({ unlocked_at: new Date().toISOString() })
-          .eq('user_id', user.id)
-          .eq('achievement_type', achievementId);
-        
-        if (error) throw error;
-      }
-      
-      // Add energy points for achievement
-      await get().addEnergyPoints(20);
-      
-      // Update local state
-      set((state) => {
-        const updatedAchievements = state.userProfile.achievements.map(a => 
-          a.id === achievementId 
-            ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } 
-            : a
-        );
-        
-        return {
+      },
+      unlockAchievement: async (achievementId: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { error } = await supabase
+            .from('achievements')
+            .update({ unlocked_at: new Date().toISOString() })
+            .eq('id', achievementId)
+            .eq('user_id', get().userProfile.id);
+            
+          if (error) throw error;
+          
+          set(state => ({
+            achievements: state.achievements.map(achievement =>
+              achievement.id === achievementId
+                ? { ...achievement, unlocked: true, unlockedAt: new Date().toISOString() }
+                : achievement
+            )
+          }));
+        } catch (error: any) {
+          console.error("Error unlocking achievement:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Universe Question Actions ---
+      fetchUniverseQuestions: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { data, error } = await supabase
+            .from('universe_questions')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+            
+          if (error) throw error;
+          
+          const universeQuestions = data ? data.map(mapDbQuestionToQuestion) : [];
+          set({ universeQuestions });
+        } catch (error: any) {
+          console.error("Error fetching universe questions:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      addUniverseQuestion: async (question: string, answer: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { error } = await supabase
+            .from('universe_questions')
+            .insert([{
+              user_id: get().userProfile.id,
+              question,
+              answer
+            }]);
+            
+          if (error) throw error;
+          
+          await get().fetchUniverseQuestions(get().userProfile.id);
+        } catch (error: any) {
+          console.error("Error adding universe question:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Pact Actions ---
+      fetchUserPacts: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { data, error } = await supabase
+            .from('pacts')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+            
+          if (error) throw error;
+          
+          set({ pacts: data || [] });
+        } catch (error: any) {
+          console.error("Error fetching user pacts:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      createPact: async (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { data, error } = await supabase
+            .from('pacts')
+            .insert([{
+              user_id: get().userProfile.id,
+              ...pact
+            }])
+            .select()
+            .single();
+            
+          if (error) throw error;
+          
+          set(state => ({
+            pacts: [...state.pacts, data]
+          }));
+        } catch (error: any) {
+          console.error("Error creating pact:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      updatePact: async (pactId: string, updates: Partial<Pact>) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { error } = await supabase
+            .from('pacts')
+            .update(updates)
+            .eq('id', pactId);
+            
+          if (error) throw error;
+          
+          set(state => ({
+            pacts: state.pacts.map(pact =>
+              pact.id === pactId ? { ...pact, ...updates } : pact
+            )
+          }));
+        } catch (error: any) {
+          console.error("Error updating pact:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      deletePact: async (pactId: string) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const { error } = await supabase
+            .from('pacts')
+            .delete()
+            .eq('id', pactId);
+            
+          if (error) throw error;
+          
+          set(state => ({
+            pacts: state.pacts.filter(pact => pact.id !== pactId)
+          }));
+        } catch (error: any) {
+          console.error("Error deleting pact:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Pact Item Actions ---
+      addPactItem: async (item: Omit<PactItem, 'id' | 'createdAt' | 'updatedAt'>) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate adding a pact item
+          const newItem: PactItem = {
+            id: Math.random().toString(), // Temporary ID
+            ...item,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          set(state => ({
+            pactItems: [...state.pactItems, newItem]
+          }));
+        } catch (error: any) {
+          console.error("Error adding pact item:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      updatePactItem: async (itemId: string, updates: Partial<PactItem>) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate updating a pact item
+          set(state => ({
+            pactItems: state.pactItems.map(item =>
+              item.id === itemId ? { ...item, ...updates, updatedAt: new Date().toISOString() } : item
+            )
+          }));
+        } catch (error: any) {
+          console.error("Error updating pact item:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      deletePactItem: async (itemId: string) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate deleting a pact item
+          set(state => ({
+            pactItems: state.pactItems.filter(item => item.id !== itemId)
+          }));
+        } catch (error: any) {
+          console.error("Error deleting pact item:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Meditation Session Actions ---
+      addMeditationSession: async (session: Omit<MeditationSession, 'id' | 'completedAt'>) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate adding a meditation session
+          const newSession: MeditationSession = {
+            id: Math.random().toString(), // Temporary ID
+            ...session,
+            completedAt: new Date().toISOString()
+          };
+          set(state => ({
+            meditationSessions: [...state.meditationSessions, newSession]
+          }));
+        } catch (error: any) {
+          console.error("Error adding meditation session:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      fetchMeditationSessions: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate fetching meditation sessions
+          set({ meditationSessions: [] }); // Replace with actual data fetching
+        } catch (error: any) {
+          console.error("Error fetching meditation sessions:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Daily Reflection Actions ---
+      addDailyReflection: async (reflection: Omit<DailyReflection, 'id' | 'date'>) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate adding a daily reflection
+          const newReflection: DailyReflection = {
+            id: Math.random().toString(), // Temporary ID
+            ...reflection,
+            date: new Date().toISOString().split('T')[0]
+          };
+          set(state => ({
+            dailyReflections: [...state.dailyReflections, newReflection]
+          }));
+        } catch (error: any) {
+          console.error("Error adding daily reflection:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      fetchDailyReflections: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate fetching daily reflections
+          set({ dailyReflections: [] }); // Replace with actual data fetching
+        } catch (error: any) {
+          console.error("Error fetching daily reflections:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Notification Actions ---
+      addNotification: async (notification: Omit<AppNotification, 'id' | 'createdAt' | 'read'>) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate adding a notification
+          const newNotification: AppNotification = {
+            id: Math.random().toString(), // Temporary ID
+            ...notification,
+            createdAt: new Date().toISOString(),
+            read: false
+          };
+          set(state => ({
+            notifications: [...state.notifications, newNotification]
+          }));
+        } catch (error: any) {
+          console.error("Error adding notification:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      markNotificationAsRead: async (notificationId: string) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate marking a notification as read
+          set(state => ({
+            notifications: state.notifications.map(notification =>
+              notification.id === notificationId ? { ...notification, read: true } : notification
+            )
+          }));
+        } catch (error: any) {
+          console.error("Error marking notification as read:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+      fetchNotifications: async (userId: string) => {
+        try {
+          set({ loading: true, error: null });
+          // Simulate fetching notifications
+          set({ notifications: [] }); // Replace with actual data fetching
+        } catch (error: any) {
+          console.error("Error fetching notifications:", error);
+          set({ error: error.message });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      // --- Settings Actions ---
+      updateSettings: (updates: Partial<AppSettings>) => {
+        set(state => ({
+          settings: {
+            ...state.settings,
+            ...updates
+          }
+        }));
+      },
+
+      // --- Pro Subscription Actions ---
+      upgradeToPro: () => {
+        // Simulate upgrading to pro
+        set(state => ({
           userProfile: {
             ...state.userProfile,
-            achievements: updatedAchievements
+            isPro: true
           }
-        };
-      });
-      
-      toast({
-        title: "Достижение разблокировано!",
-        description: achievement.title
-      });
-    } catch (error) {
-      console.error("Error unlocking achievement:", error);
+        }));
+      },
+      cancelProSubscription: () => {
+        // Simulate canceling pro subscription
+        set(state => ({
+          userProfile: {
+            ...state.userProfile,
+            isPro: false
+          }
+        }));
+      },
+    }),
+    {
+      name: 'app-storage',
+      storage: localStorage,
     }
-  },
-  
-  // Assign mission
-  assignMission: async () => {
-    const { user, userProfile } = get();
-    
-    if (!user) return;
-    
-    try {
-      // Check if user already has an active mission
-      if (userProfile.activeMission) return;
-      
-      // Get all completed missions
-      const { data: completedMissions, error: missionsError } = await supabase
-        .from('missions')
-        .select('title')
-        .eq('user_id', user.id)
-        .eq('completed', true);
-      
-      if (missionsError) throw missionsError;
-      
-      // Filter available missions that haven't been completed
-      const completedTitles = completedMissions?.map(m => m.title) || [];
-      const availableMissionsCopy = availableMissions.filter(
-        m => !completedTitles.includes(m.title)
-      );
-      
-      if (availableMissionsCopy.length === 0) return; // No available missions
-      
-      // Select a random mission
-      const randomIndex = Math.floor(Math.random() * availableMissionsCopy.length);
-      const selectedMission = { ...availableMissionsCopy[randomIndex] };
-      
-      // Save to database
-      const { error } = await supabase
-        .from('missions')
-        .insert({
-          user_id: user.id,
-          title: selectedMission.title,
-          description: selectedMission.description,
-          requirements: selectedMission.requirements,
-          reward: selectedMission.reward,
-          completed: false
-        });
-      
-      if (error) throw error;
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          activeMission: selectedMission
-        }
-      }));
-    } catch (error) {
-      console.error("Error assigning mission:", error);
-    }
-  },
-  
-  // Complete mission
-  completeMission: async () => {
-    const { user, userProfile } = get();
-    
-    if (!user || !userProfile.activeMission) return;
-    
-    try {
-      const { reward } = userProfile.activeMission;
-      
-      // Mark mission as completed in database
-      const { error } = await supabase
-        .from('missions')
-        .update({ completed: true })
-        .eq('user_id', user.id)
-        .eq('title', userProfile.activeMission.title);
-      
-      if (error) throw error;
-      
-      // Add energy points
-      await get().addEnergyPoints(reward.energyPoints);
-      
-      // If mission gives an achievement, unlock it
-      if (reward.achievement) {
-        await get().unlockAchievement(reward.achievement);
-      }
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          activeMission: undefined
-        }
-      }));
-      
-      toast({
-        title: "Миссия выполнена!",
-        description: `Вы получили ${reward.energyPoints} энергетических очков`
-      });
-    } catch (error) {
-      console.error("Error completing mission:", error);
-    }
-  },
-  
-  // Upgrade to PRO
-  upgradeToPro: async () => {
-    const { user, userProfile } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для оформления подписки",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      // Check if subscription already exists
-      const { data: existingSub, error: checkError } = await supabase
-        .from('subscriptions')
-        .select('id')
-        .eq('user_id', user.id);
-      
-      if (checkError) throw checkError;
-      
-      const now = new Date();
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1); // Set end date to 1 month from now
-      
-      if (!existingSub || existingSub.length === 0) {
-        // Create new subscription
-        const { error } = await supabase
-          .from('subscriptions')
-          .insert({
-            user_id: user.id,
-            is_pro: true,
-            subscription_start: now.toISOString(),
-            subscription_end: endDate.toISOString()
-          });
-        
-        if (error) throw error;
-      } else {
-        // Update existing subscription
-        const { error } = await supabase
-          .from('subscriptions')
-          .update({
-            is_pro: true,
-            subscription_start: now.toISOString(),
-            subscription_end: endDate.toISOString(),
-            updated_at: now.toISOString()
-          })
-          .eq('user_id', user.id);
-        
-        if (error) throw error;
-      }
-      
-      // Update user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          energy_points: userProfile.energyPoints + 100 // Bonus points for upgrading
-        })
-        .eq('id', user.id);
-      
-      if (profileError) throw profileError;
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          isPro: true,
-          energyPoints: state.userProfile.energyPoints + 100
-        }
-      }));
-      
-      toast({
-        title: "Подписка активирована!",
-        description: "Вы успешно активировали PRO-подписку и получили 100 бонусных очков!"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось оформить подписку",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Cancel PRO subscription
-  cancelProSubscription: async () => {
-    const { user } = get();
-    
-    if (!user) {
-      toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для отмены подписки",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    set({ loading: true });
-    
-    try {
-      // Update subscription in database
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({
-          is_pro: false,
-          subscription_end: new Date().toISOString(), // End subscription immediately
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-      
-      // Update local state
-      set((state) => ({
-        userProfile: {
-          ...state.userProfile,
-          isPro: false
-        }
-      }));
-      
-      toast({
-        title: "Подписка отменена",
-        description: "Ваша PRO-подписка была успешно отменена"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка",
-        description: error.message || "Не удалось отменить подписку",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Authentication Methods - Update signIn method
-  signIn: async (email, password) => {
-    set({ loading: true });
-    
-    try {
-      // Clean up auth state before signing in
-      cleanupAuthState();
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      set({ user: data.user });
-      
-      // Load user data
-      await get().loadUserProfile();
-      await get().loadPacts();
-      await get().loadUniverseQuestions();
-      
-      toast({
-        title: "Вход выполнен",
-        description: "Вы успешно вошли в систему"
-      });
-      
-      return true; // Return true on success
-    } catch (error: any) {
-      toast({
-        title: "Ошибка входа",
-        description: error.message || "Не удалось войти в систему",
-        variant: "destructive"
-      });
-      return false; // Return false on error
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  signUp: async (email, password) => {
-    set({ loading: true });
-    
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      set({ user: data.user });
-      
-      toast({
-        title: "Регистрация выполнена",
-        description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
-      });
-      
-      set({ activeScreen: 'onboarding' });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка регистрации",
-        description: error.message || "Не удалось создать аккаунт",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  signOut: async () => {
-    set({ loading: true });
-    
-    try {
-      await supabase.auth.signOut();
-      
-      set({ 
-        user: null,
-        pacts: [],
-        activeQuestions: [],
-        activeScreen: 'welcome'
-      });
-      
-      toast({
-        title: "Выход выполнен",
-        description: "Вы успешно вышли из системы"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Ошибка выхода",
-        description: error.message || "Не удалось выйти из системы",
-        variant: "destructive"
-      });
-    } finally {
-      set({ loading: false });
-    }
-  },
-  
-  // Data loading methods
-  loadUserProfile: async () => {
-    const { user } = get();
-    
-    if (!user) return;
-    
-    try {
-      console.log("Loading user profile for:", user.id);
-      
-      // Get profile data
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error("Error loading profile:", error);
-        throw error;
-      }
-      
-      console.log("Profile data loaded:", data);
-      
-      // Check subscription status
-      const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('is_pro, subscription_end')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      const isPro = subscription?.is_pro && 
-        new Date(subscription.subscription_end) > new Date();
-      
-      // Get achievements
-      const { data: achievements, error: achievementsError } = await supabase
-        .from('achievements')
-        .select('*')
-        .eq('user_id', user.id);
-      
-      if (achievementsError) throw achievementsError;
-      
-      // Map achievements to our app's format
-      const mappedAchievements = defaultAchievements.map(defaultAch => {
-        const foundAch = achievements?.find(a => a.achievement_type === defaultAch.id);
-        return foundAch ? {
-          id: defaultAch.id,
-          title: defaultAch.title,
-          description: defaultAch.description,
-          icon: defaultAch.icon,
-          unlocked: !!foundAch.unlocked_at,
-          unlockedAt: foundAch.unlocked_at
-        } : defaultAch;
-      });
-      
-      // Get active mission
-      const { data: missions, error: missionsError } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('completed', false)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      
-      if (missionsError) throw missionsError;
-      
-      const activeMission = missions && missions.length > 0 ? {
-        id: missions[0].id,
-        title: missions[0].title,
-        description: missions[0].description,
-        requirements: missions[0].requirements as any,
-        reward: missions[0].reward as any,
-        completed: false
-      } : undefined;
-      
-      // Update local state with all user data
-      set({
-        userProfile: {
-          name: data.name,
-          birthDate: data.birth_date ? new Date(data.birth_date) : undefined,
-          totalDays: data.total_days,
-          energyPoints: data.energy_points,
-          goal: data.goal || 'Познать свою истинную силу',
-          isPro: isPro,
-          rank: data.rank,
-          achievements: mappedAchievements,
-          activeMission
-        }
-      });
-      
-      console.log("User profile fully loaded and set to state");
-    } catch (error) {
-      console.error("Error loading user profile:", error);
-    }
-  },
-  
-  loadPacts: async () => {
-    const { user } = get();
-    
-    if (!user) return;
-    
-    try {
-      // Get all pacts
-      const { data: pacts, error: pactsError } = await supabase
-        .from('pacts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (pactsError) throw pactsError;
-      
-      if (!pacts || pacts.length === 0) {
-        set({ pacts: [] });
-        return;
-      }
-      
-      // For each pact, get its days
-      const pactsWithDays = await Promise.all(pacts.map(async (pact) => {
-        const { data: days, error: daysError } = await supabase
-          .from('pact_days')
-          .select('*')
-          .eq('pact_id', pact.id)
-          .order('date', { ascending: true });
-        
-        if (daysError) throw daysError;
-        
-        // Transform to our app's format
-        return {
-          id: pact.id,
-          title: pact.title,
-          duration: pact.duration,
-          reward: pact.reward || '',
-          status: pact.status as 'active' | 'completed' | 'broken',
-          createdAt: pact.created_at,
-          days: days?.map(d => ({
-            date: d.date,
-            completed: d.completed
-          })) || []
-        };
-      }));
-      
-      // Update local state
-      set({ pacts: pactsWithDays });
-    } catch (error) {
-      console.error("Error loading pacts:", error);
-    }
-  },
-  
-  loadUniverseQuestions: async () => {
-    const { user } = get();
-    
-    if (!user) return;
-    
-    try {
-      // Get all universe questions
-      const { data, error } = await supabase
-        .from('universe_questions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      if (!data || data.length === 0) {
-        set({ activeQuestions: [] });
-        return;
-      }
-      
-      // Transform to our app's format
-      const questions: UniverseQuestion[] = data.map(q => ({
-        id: q.id,
-        question: q.question,
-        answer: q.answer,
-        createdAt: q.created_at,
-        date: q.created_at // For backward compatibility
-      }));
-      
-      // Update local state
-      set({ activeQuestions: questions });
-    } catch (error) {
-      console.error("Error loading universe questions:", error);
-    }
-  }
-}));
+  )
+);
