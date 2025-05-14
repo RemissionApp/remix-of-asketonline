@@ -1,8 +1,9 @@
+
 import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
 
 export type AppLanguage = 'en' | 'ru' | 'es';
 
-export type ActiveScreen = 'welcome' | 'language' | 'login' | 'profile-setup' | 'onboarding' | 'main' | 'pact' | 'universe' | 'profile' | 'meditation' | 'detailedHoroscope';
+export type ActiveScreen = 'welcome' | 'language' | 'login' | 'profile-setup' | 'onboarding' | 'main' | 'pact' | 'universe' | 'profile' | 'meditation' | 'detailedHoroscope' | 'signup' | 'create-pact' | 'comparison';
 
 export interface AppState {
   pacts: Pact[];

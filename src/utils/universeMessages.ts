@@ -90,9 +90,14 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
   };
   
   try {
+    // First try to get a response from the edge function
+    console.log("Attempting to get answer from OpenAI via edge function");
+    
     // Construct the custom prompt with information about the user's vow
     const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути.
-      Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
+      Он воздерживается от: ${isCustomPact(currentVow) && currentVow.restrictions?.length > 0 
+        ? currentVow.restrictions.map(r => r.title).join(', ') 
+        : (currentVow as Pact).title || 'вредных привычек'}.
       Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as Pact).reward || 'духовный рост'}.
       Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.
       
@@ -114,7 +119,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
 
     if (error) {
       console.error('Edge function error:', error);
-      throw error;
+      throw new Error(error.message || 'Error invoking universe-answer function');
     }
     
     if (data && data.answer) {
@@ -126,8 +131,21 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
   } catch (error) {
     console.error('Error getting AI answer:', error);
     
-    if (error.message?.includes('exceeded your current quota')) {
-      toast.error("API лимит превышен. Используем заранее подготовленные ответы.");
+    // More detailed error handling for quota exceeded
+    if (error.message?.includes('quota') || error.message?.includes('exceeded')) {
+      console.log("API quota exceeded, using predefined answers");
+      toast.error(language === 'ru' 
+        ? "API лимит превышен. Используем заранее подготовленные ответы." 
+        : language === 'es' 
+          ? "Límite de API excedido. Usando respuestas predefinidas." 
+          : "API limit exceeded. Using predefined answers.");
+    } else {
+      // Show general error message for other errors
+      toast.error(language === 'ru' 
+        ? "Не удалось получить ответ. Используем альтернативные источники мудрости." 
+        : language === 'es' 
+          ? "No se pudo obtener una respuesta. Usando fuentes alternativas de sabiduría." 
+          : "Failed to get an answer. Using alternative wisdom sources.");
     }
     
     // Fallback: use predefined answers

@@ -42,7 +42,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini", // Using a more accessible model
+          model: "gpt-4o-mini", // Using an accessible model
           messages: [
             {
               role: "system",
@@ -54,9 +54,18 @@ serve(async (req) => {
             }
           ],
           temperature: 0.9,
-          max_tokens: 500  // Increased from 250 to allow for longer responses
+          max_tokens: 500
         }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`OpenAI API error (${response.status}):`, errorText);
+        return new Response(JSON.stringify({ error: errorText }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       const data = await response.json();
       
