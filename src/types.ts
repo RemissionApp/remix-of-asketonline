@@ -1,3 +1,4 @@
+
 export type PactStatus = 'active' | 'completed' | 'broken';
 
 export interface PactDay {
@@ -50,10 +51,9 @@ export interface UserProfile {
   birthDate?: Date;
   totalDays: number;
   energyPoints: number;
-  goal?: string;
+  goal: string;
   isPro: boolean;
   rank: SpiritualRank;
   achievements: Achievement[];
   activeMission?: Mission;
-  onboardingComplete?: boolean;
 }

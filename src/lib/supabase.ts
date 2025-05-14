@@ -10,33 +10,9 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    storage: typeof window !== 'undefined' ? localStorage : undefined
+    storage: localStorage
   }
 });
-
-// Check and set up auth state on each page load
-export const setupAuthListener = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (session) {
-    // If logged in, make sure user state is set
-    const { data: userProfile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .single();
-      
-    if (!userProfile) {
-      // Handle case where profile doesn't exist yet (should be created by trigger)
-      console.warn('User logged in but no profile found');
-    }
-  }
-  
-  // Set up auth state change listener
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event, session ? 'User logged in' : 'User logged out');
-  });
-};
 
 // Helper function to clean up auth state
 export const cleanupAuthState = () => {

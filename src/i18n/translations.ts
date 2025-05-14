@@ -1,3 +1,4 @@
+
 // Define the types for all translations
 interface Translations {
   [key: string]: {
@@ -103,19 +104,31 @@ interface Translations {
       nextButton: string;
     };
     onboarding: {
-      title?: string;
-      description?: string;
-      stepOneTitle?: string;
-      stepOneDescription?: string;
-      stepTwoTitle?: string;
-      stepTwoDescription?: string;
-      backButton?: string;
-      nextButton?: string;
-      finishButton?: string;
-      placeholders?: {
-        name?: string;
-        birthDate?: string;
-        goal?: string;
+      title: string;
+      description: string;
+      goal1: string;
+      goal2: string;
+      goal3: string;
+      goal4: string;
+      goal5: string;
+      goal6: string;
+      selectGoal: string;
+      continueButton: string;
+      steps: {
+        welcome: string;
+        goal: string;
+        complete: string;
+        title?: string;
+        content?: string;
+        length?: number;
+        map?: any[];
+      };
+      buttons: {
+        next: string;
+        start: string;
+        skip: string;
+        enter?: string;
+        startJourney?: string;
       };
     };
     universe: {
@@ -287,7 +300,7 @@ export const translations: Translations = {
       signInButton: "Войти",
       signUpButton: "Зарегистрироваться",
       noAccount: "Еще нет аккаунта?",
-      haveAccount: "Уже есть аккау��т?",
+      haveAccount: "Уже есть аккаунт?",
       emailRequired: "Email обязателен",
       passwordRequired: "Пароль обязателен",
       orContinueWith: "или продолжить с",
@@ -351,26 +364,36 @@ export const translations: Translations = {
         rejection: "Выберите или введите от чего вы отказываетесь",
         reward: "Что вы получите взамен..."
       },
-      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть ��иск выпасть из потока...",
+      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока...",
       customDays: "Уставновить количество дней",
       notAsking: "Я не прошу ничего взамен",
       nextButton: "Далее"
     },
     onboarding: {
-      title?: string;
-      description?: string;
-      stepOneTitle?: string;
-      stepOneDescription?: string;
-      stepTwoTitle?: string;
-      stepTwoDescription?: string;
-      backButton?: string;
-      nextButton?: string;
-      finishButton?: string;
-      placeholders?: {
-        name?: string;
-        birthDate?: string;
-        goal?: string;
-      };
+      title: "Добро пожаловать в Аскет",
+      description: "Выберите свою духовную цель",
+      goal1: "Достичь внутренней гармонии",
+      goal2: "Раскрыть духовный потенциал",
+      goal3: "Очистить разум от негативных мыслей",
+      goal4: "Укрепить духовную силу",
+      goal5: "Найти свой путь",
+      goal6: "Познать истинное 'Я'",
+      selectGoal: "Выберите цель",
+      continueButton: "Продолжить",
+      steps: {
+        welcome: "Добро пожаловать",
+        goal: "Выбор цели",
+        complete: "Готово",
+        length: 3,
+        map: []
+      },
+      buttons: {
+        next: "Далее",
+        start: "Начать",
+        skip: "Пропустить",
+        enter: "Войти",
+        startJourney: "Начать путь"
+      }
     },
     universe: {
       title: "Вселенная",
@@ -607,20 +630,30 @@ export const translations: Translations = {
       nextButton: "Next"
     },
     onboarding: {
-      title?: string;
-      description?: string;
-      stepOneTitle?: string;
-      stepOneDescription?: string;
-      stepTwoTitle?: string;
-      stepTwoDescription?: string;
-      backButton?: string;
-      nextButton?: string;
-      finishButton?: string;
-      placeholders?: {
-        name?: string;
-        birthDate?: string;
-        goal?: string;
-      };
+      title: "Welcome to Asket",
+      description: "Choose your spiritual goal",
+      goal1: "Achieve inner harmony",
+      goal2: "Unlock spiritual potential",
+      goal3: "Clear mind of negative thoughts",
+      goal4: "Strengthen spiritual power",
+      goal5: "Find your path",
+      goal6: "Know the true 'Self'",
+      selectGoal: "Select goal",
+      continueButton: "Continue",
+      steps: {
+        welcome: "Welcome",
+        goal: "Choose goal",
+        complete: "Complete",
+        length: 3,
+        map: []
+      },
+      buttons: {
+        next: "Next",
+        start: "Start",
+        skip: "Skip",
+        enter: "Enter",
+        startJourney: "Start Journey"
+      }
     },
     universe: {
       title: "Universe",
@@ -673,8 +706,8 @@ export const translations: Translations = {
         description: "Start your day with calmness and clarity",
         title1: "Morning Meditation",
         desc1: "Start your day with calmness and clarity",
-        title2: "Despertar Matutino",
-        desc2: "Cárgate de energía para el día"
+        title2: "Morning Awakening",
+        desc2: "Energize yourself for the day ahead"
       },
       evening: {
         title: "Evening Meditation",
@@ -857,20 +890,30 @@ export const translations: Translations = {
       nextButton: "Siguiente"
     },
     onboarding: {
-      title?: string;
-      description?: string;
-      stepOneTitle?: string;
-      stepOneDescription?: string;
-      stepTwoTitle?: string;
-      stepTwoDescription?: string;
-      backButton?: string;
-      nextButton?: string;
-      finishButton?: string;
-      placeholders?: {
-        name?: string;
-        birthDate?: string;
-        goal?: string;
-      };
+      title: "Bienvenido a Asket",
+      description: "Elige tu meta espiritual",
+      goal1: "Lograr armonía interior",
+      goal2: "Desbloquear el potencial espiritual",
+      goal3: "Limpiar la mente de pensamientos negativos",
+      goal4: "Fortalecer el poder espiritual",
+      goal5: "Encontrar tu camino",
+      goal6: "Conocer el verdadero 'Yo'",
+      selectGoal: "Seleccionar meta",
+      continueButton: "Continuar",
+      steps: {
+        welcome: "Bienvenida",
+        goal: "Elegir meta",
+        complete: "Completado",
+        length: 3,
+        map: []
+      },
+      buttons: {
+        next: "Siguiente",
+        start: "Comenzar",
+        skip: "Omitir",
+        enter: "Entrar",
+        startJourney: "Iniciar Camino"
+      }
     },
     universe: {
       title: "Universo",
@@ -1007,22 +1050,4 @@ export const translations: Translations = {
 };
 
 // Add SupportedLanguage type export
-export type SupportedLanguage = 'en' | 'ru' | 'es';
-
-// Add onboarding translations interface to proper type
-interface OnboardingTranslations {
-  title?: string;
-  description?: string;
-  stepOneTitle?: string;
-  stepOneDescription?: string;
-  stepTwoTitle?: string;
-  stepTwoDescription?: string;
-  backButton?: string;
-  nextButton?: string;
-  finishButton?: string;
-  placeholders?: {
-    name?: string;
-    birthDate?: string;
-    goal?: string;
-  };
-}
+export type SupportedLanguage = 'ru' | 'en' | 'es';

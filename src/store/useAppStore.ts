@@ -16,7 +16,6 @@ interface AppState {
   userProfile: UserProfile;
   user: any | null;
   loading: boolean;
-  setUser: (user: any | null) => void;
   
   addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
@@ -88,7 +87,7 @@ const defaultAchievements: Achievement[] = [
   },
   {
     id: 'first-question',
-    title: 'Первый ������зговор',
+    title: 'Первый р����зговор',
     description: 'Задайте перв��й вопрос Вселенной',
     icon: 'message-square',
     unlocked: false
@@ -155,17 +154,13 @@ export const useAppStore = create<AppState>()((set, get) => ({
     goal: 'Познать свою истинную силу',
     isPro: false,
     rank: 'seeker',
-    achievements: [...defaultAchievements],
-    onboardingComplete: false // Initialize with false
+    achievements: [...defaultAchievements]
   },
   activeScreen: 'welcome',
   onboardingComplete: false,
   language: 'ru',
   user: null,
   loading: false,
-  
-  // Set user function that was missing
-  setUser: (user) => set({ user }),
   
   // Set language
   setLanguage: (language) => set({ language }),
@@ -196,13 +191,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
         .from('profiles')
         .update({
           name: profileData.name,
-          birth_date: profileData.birthDate ? new Date(profileData.birthDate).toISOString().split('T')[0] : null,
+          birth_date: profileData.birthDate,
           goal: profileData.goal,
           total_days: profileData.totalDays,
           energy_points: profileData.energyPoints,
-          rank: profileData.rank,
-          // Safely add onboardingComplete if it's included in profileData
-          ...(profileData.onboardingComplete !== undefined ? { onboardingComplete: profileData.onboardingComplete } : {})
+          rank: profileData.rank
         })
         .eq('id', user.id);
       
@@ -234,7 +227,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     if (!user) {
       toast({
         title: "Ошибка",
-        description: "Вы должны войти в систему для создания аскезы",
+        description: "��ы должны войти в систему для создания аскезы",
         variant: "destructive"
       });
       return;
@@ -243,14 +236,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ loading: true });
     
     try {
-      // First check if user is actually authenticated
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
-        throw new Error("Вы не авторизованы. Пожалуйста, войдите в систему.");
-      }
-      
-      console.log("Creating pact with user_id:", user.id);
-      
       // Insert the new pact
       const { data: newPact, error: pactError } = await supabase
         .from('pacts')
@@ -264,16 +249,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
         .select()
         .single();
       
-      if (pactError) {
-        console.error("Error creating pact:", pactError);
-        throw pactError;
-      }
-      
-      if (!newPact) {
-        throw new Error("Не удалось создать аскезу");
-      }
-      
-      console.log("Pact created successfully:", newPact);
+      if (pactError) throw pactError;
       
       // Create pact days
       const pactDays = Array.from({ length: pact.duration }, (_, i) => ({
@@ -286,10 +262,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
         .from('pact_days')
         .insert(pactDays);
       
-      if (daysError) {
-        console.error("Error creating pact days:", daysError);
-        throw daysError;
-      }
+      if (daysError) throw daysError;
       
       // Check if this is the first pact for achievement
       const { data: pactCount } = await supabase
@@ -312,7 +285,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
         description: "Ваша аскеза была успешно создана"
       });
     } catch (error: any) {
-      console.error("Failed to create pact:", error);
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось создать аскезу",
@@ -906,7 +878,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ loading: true });
     
     try {
-      console.log("Signing in with:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -914,7 +885,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
       
       if (error) throw error;
       
-      console.log("Sign in successful:", data.user);
       set({ user: data.user });
       
       // Load user data
@@ -922,14 +892,18 @@ export const useAppStore = create<AppState>()((set, get) => ({
       await get().loadPacts();
       await get().loadUniverseQuestions();
       
+      const { userProfile } = get();
+      
       toast({
         title: "Вход выполнен",
         description: "Вы успешно вошли в систему"
       });
       
+      // Don't set activeScreen here - we'll handle navigation in the component
+      // based on the profile data that's loaded
+      
       return true; // Return true on success
     } catch (error: any) {
-      console.error("Sign in error:", error);
       toast({
         title: "Ошибка входа",
         description: error.message || "Не удалось войти в систему",
@@ -1077,9 +1051,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
           isPro: isPro,
           rank: data.rank,
           achievements: mappedAchievements,
-          activeMission,
-          // Set onboardingComplete to true or false based on the profile data (defaults to false if not present)
-          onboardingComplete: !!data.onboardingComplete
+          activeMission
         }
       });
     } catch (error) {
