@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon } from 'lucide-react';
+import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -13,6 +13,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import { CosmicButton } from '@/components/CosmicButton';
 
 const FeatureComparison: React.FC = () => {
   const { t } = useTranslations();
@@ -99,8 +100,25 @@ const FeatureComparison: React.FC = () => {
     navigate('/profile');
   };
   
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Back Button */}
+      <div className="mb-4">
+        <CosmicButton 
+          onClick={handleGoBack}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <ArrowLeftIcon size={16} />
+          Назад
+        </CosmicButton>
+      </div>
+      
       <div className="text-center mb-8">
         <SparklesIcon size={40} className="text-cosmic-gold mx-auto mb-3" />
         <h2 className="text-2xl font-bold text-white mb-2">
