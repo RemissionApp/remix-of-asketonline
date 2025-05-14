@@ -5,6 +5,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useNavigate } from 'react-router-dom';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
@@ -15,6 +16,12 @@ const UniversePage: React.FC = () => {
     question: string;
     answer: string;
   }>(null);
+  const navigate = useNavigate();
+  
+  const handleGoBack = () => {
+    setActiveScreen('main');
+    navigate('/main');
+  };
   
   const handleAskUniverse = () => {
     if (question.trim().length < 3) return;
@@ -44,7 +51,7 @@ const UniversePage: React.FC = () => {
       <div className="relative z-10 px-4 py-4 flex items-center">
         <button
           className="p-2 text-cosmic-accent"
-          onClick={() => setActiveScreen('main')}
+          onClick={handleGoBack}
         >
           <ArrowLeft size={24} />
         </button>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -7,10 +6,12 @@ import { ArrowLeft } from 'lucide-react';
 import { PactOath } from '@/components/PactOath';
 import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
+import { useNavigate } from 'react-router-dom';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -89,6 +90,7 @@ const CreatePactPage: React.FC = () => {
         status: 'active'
       });
       setActiveScreen('main');
+      navigate('/main');
     }
   };
   
@@ -97,6 +99,7 @@ const CreatePactPage: React.FC = () => {
       setStep(step - 1);
     } else {
       setActiveScreen('main');
+      navigate('/main');
     }
   };
   
