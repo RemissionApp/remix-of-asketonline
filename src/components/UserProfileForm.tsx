@@ -87,7 +87,7 @@ const UserProfileForm: React.FC = () => {
                 </FormLabel>
                 <FormControl>
                   <Input 
-                    className="bg-transparent backdrop-blur-sm border-cosmic-accent/30 text-white"
+                    className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white"
                     placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
                     {...field} 
                   />
@@ -111,7 +111,7 @@ const UserProfileForm: React.FC = () => {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-full bg-transparent backdrop-blur-sm border-cosmic-accent/30 text-left font-normal text-white",
+                          "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-normal text-white",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -124,7 +124,7 @@ const UserProfileForm: React.FC = () => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto bg-cosmic-dark border-cosmic-accent/30 p-0" align="start">
+                  <PopoverContent className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={field.value}
@@ -144,7 +144,7 @@ const UserProfileForm: React.FC = () => {
           
           <div className="pt-4">
             <CosmicButton 
-              className="w-full bg-transparent backdrop-blur-sm border border-cosmic-accent hover:bg-cosmic-accent/30"
+              className="w-full bg-transparent backdrop-blur-[5px] border border-cosmic-accent hover:bg-cosmic-accent/20"
               type="submit"
             >
               {t.userProfile?.continueButton || "Продолжить"}

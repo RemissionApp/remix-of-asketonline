@@ -19,7 +19,7 @@ const UserProfilePage: React.FC = () => {
       </div>
       
       <div className="relative z-10 max-w-md w-full mx-auto">
-        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40">
+        <Card className="cosmic-card backdrop-blur-[5px] bg-cosmic-dark/10 border-cosmic-accent/20">
           <CardContent className="pt-6">
             <UserProfileForm />
           </CardContent>
