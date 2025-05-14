@@ -7,7 +7,6 @@ import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
-import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
 
 interface MainContentProps {
@@ -15,7 +14,6 @@ interface MainContentProps {
   currentPactIndex: number;
   currentPact: Pact | null;
   dailyQuote: string;
-  showEnergyEffect: boolean;
   isLoading: boolean;
   handlePrevPact: () => void;
   handleNextPact: () => void;
@@ -68,12 +66,6 @@ export const MainContent: React.FC<MainContentProps> = ({
           
           {/* Quote display */}
           <QuoteDisplay quote={dailyQuote} className="mt-8" />
-          
-          {/* Horoscope display after greeting */}
-          <HoroscopeDisplay />
-          
-          {/* Zodiac badge display */}
-          <ZodiacBadgeDisplay />
           
           {/* Action buttons */}
           <ActionButtonsSection />
