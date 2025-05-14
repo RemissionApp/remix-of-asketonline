@@ -1,28 +1,17 @@
 
 import React from 'react';
 import { Briefcase, Heart, Thermometer, Star } from "lucide-react";
-import { useAppStore } from '@/store/useAppStore';
 
 interface HoroscopeSectionProps {
   content: string;
 }
 
 export const WorkSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
-  const { language } = useAppStore();
-  
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return '💼 Работа и финансы';
-      case 'es': return '💼 Trabajo y Finanzas';
-      default: return '💼 Work and Finances';
-    }
-  };
-
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-2">
         <Briefcase className="text-cosmic-gold w-5 h-5" />
-        <h3 className="text-white font-medium">{getTitle()}</h3>
+        <h3 className="text-white font-medium">💼 Работа и финансы</h3>
       </div>
       <p className="text-cosmic-secondary">{content}</p>
     </div>
@@ -30,21 +19,11 @@ export const WorkSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
 };
 
 export const LoveSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
-  const { language } = useAppStore();
-  
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return '💖 Любовь и отношения';
-      case 'es': return '💖 Amor y Relaciones';
-      default: return '💖 Love and Relationships';
-    }
-  };
-
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-2">
         <Heart className="text-cosmic-gold w-5 h-5" />
-        <h3 className="text-white font-medium">{getTitle()}</h3>
+        <h3 className="text-white font-medium">💖 Любовь и отношения</h3>
       </div>
       <p className="text-cosmic-secondary">{content}</p>
     </div>
@@ -52,21 +31,11 @@ export const LoveSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
 };
 
 export const HealthSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
-  const { language } = useAppStore();
-  
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return '🧘‍♂️ Здоровье и самочувствие';
-      case 'es': return '🧘‍♂️ Salud y Bienestar';
-      default: return '🧘‍♂️ Health and Well-being';
-    }
-  };
-
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-2">
         <Thermometer className="text-cosmic-gold w-5 h-5" />
-        <h3 className="text-white font-medium">{getTitle()}</h3>
+        <h3 className="text-white font-medium">🧘‍♂️ Здоровье и самочувствие</h3>
       </div>
       <p className="text-cosmic-secondary">{content}</p>
     </div>
@@ -74,21 +43,11 @@ export const HealthSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
 };
 
 export const AdviceSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
-  const { language } = useAppStore();
-  
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return '🌟 Совет дня';
-      case 'es': return '🌟 Consejo del Día';
-      default: return '🌟 Advice of the Day';
-    }
-  };
-
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-2">
         <Star className="text-cosmic-gold w-5 h-5" />
-        <h3 className="text-white font-medium">{getTitle()}</h3>
+        <h3 className="text-white font-medium">🌟 Совет дня</h3>
       </div>
       <p className="text-cosmic-secondary">{content}</p>
     </div>

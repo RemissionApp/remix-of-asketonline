@@ -1,29 +1,93 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { EnergyEffect } from '@/components/EnergyEffect';
+import { useNavigate } from 'react-router-dom';
 import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
-import { usePactManager } from '@/hooks/usePactManager';
-import { useProfileLoader } from '@/hooks/useProfileLoader';
+import { useToast } from '@/hooks/use-toast';
 
 const MainPage: React.FC = () => {
-  const { dailyQuote } = useAppStore();
-  const { formatRejection, getAscesisPrefix } = useMainPageUtils();
-  const { isLoading } = useProfileLoader();
   const { 
-    activePacts,
-    currentPactIndex,
-    currentPact,
-    showEnergyEffect,
-    handlePrevPact,
-    handleNextPact,
-    handleCompleteDayWithEffect
-  } = usePactManager();
+    pacts = [], 
+    dailyQuote, 
+    markDayComplete, 
+    syncPactsWithCurrentDate,
+    language,
+    user,
+    loadUserProfile,
+    userProfile,
+    setActiveScreen
+  } = useAppStore();
+  const [currentPactIndex, setCurrentPactIndex] = useState(0);
+  const [showEnergyEffect, setShowEnergyEffect] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { formatRejection, getAscesisPrefix } = useMainPageUtils();
+  
+  // Check if user is logged in and load user profile if needed
+  useEffect(() => {
+    const initializeUserData = async () => {
+      setIsLoading(true);
+      
+      // If user is logged in but we don't have profile data yet, load it
+      if (user && !userProfile) {
+        await loadUserProfile();
+      }
+      
+      // Then sync pacts with current date
+      syncPactsWithCurrentDate();
+      setIsLoading(false);
+    };
+    
+    initializeUserData();
+  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate]);
+  
+  // Filter active pacts
+  const activePacts = pacts?.filter(p => p.status === 'active') || [];
+  
+  // Get current pact
+  const currentPact = activePacts[currentPactIndex] || null;
+  
+  // Change handlers for the carousel
+  const handlePrevPact = () => {
+    if (currentPactIndex > 0) {
+      setCurrentPactIndex(currentPactIndex - 1);
+    } else {
+      setCurrentPactIndex(activePacts.length - 1);
+    }
+  };
+  
+  const handleNextPact = () => {
+    if (currentPactIndex < activePacts.length - 1) {
+      setCurrentPactIndex(currentPactIndex + 1);
+    } else {
+      setCurrentPactIndex(0);
+    }
+  };
+  
+  // Handler for completing a day with visual effect
+  const handleCompleteDayWithEffect = () => {
+    if (currentPact) {
+      markDayComplete(currentPact.id);
+      setShowEnergyEffect(true);
+      
+      // Show success toast
+      toast({
+        title: language === 'ru' ? 'День отмечен!' : language === 'es' ? '¡Día completado!' : 'Day completed!',
+        description: language === 'ru' ? '+10 энергии' : language === 'es' ? '+10 de energía' : '+10 energy',
+      });
+      
+      setTimeout(() => {
+        setShowEnergyEffect(false);
+      }, 2000);
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -47,6 +111,7 @@ const MainPage: React.FC = () => {
         currentPact={currentPact}
         dailyQuote={dailyQuote}
         isLoading={isLoading}
+        showEnergyEffect={showEnergyEffect}
         handlePrevPact={handlePrevPact}
         handleNextPact={handleNextPact}
         handleCompleteDayWithEffect={handleCompleteDayWithEffect}
