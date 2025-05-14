@@ -1,3 +1,4 @@
+
 import { useAppStore } from "@/store/useAppStore";
 import { supabase } from "@/lib/supabase";
 
@@ -60,19 +61,26 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
   const { language } = store;
   
   try {
-    // Пытаемся получить ответ от OpenAI через Edge Function
+    // Try to get an answer from OpenAI via Edge Function
     const { data, error } = await supabase.functions.invoke('universe-answer', {
       body: { question, language },
     });
 
-    if (error) throw error;
-    if (data && data.answer) return data.answer;
+    if (error) {
+      console.error('Edge function error:', error);
+      throw error;
+    }
     
-    throw new Error('No answer received');
+    if (data && data.answer) {
+      console.log('Received AI answer:', data.answer);
+      return data.answer;
+    }
+    
+    throw new Error('No answer received from AI');
   } catch (error) {
     console.error('Error getting AI answer:', error);
     
-    // Запасной вариант: используем предопределенные ответы
+    // Fallback: use predefined answers
     let answers;
     
     switch (language) {
@@ -87,7 +95,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
         answers = russianAnswers;
     }
     
-    // Получаем случайный индекс из массива ответов
+    // Get a random index from the answers array
     const randomIndex = Math.floor(Math.random() * answers.length);
     return answers[randomIndex];
   }

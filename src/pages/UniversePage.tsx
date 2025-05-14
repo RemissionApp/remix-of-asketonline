@@ -30,7 +30,7 @@ const UniversePage: React.FC = () => {
     
     setIsAsking(true);
     
-    // Эффект "размышления Вселенной"
+    // Effect of "Universe thinking"
     setTimeout(async () => {
       try {
         const response = await askUniverse(question);
@@ -45,7 +45,7 @@ const UniversePage: React.FC = () => {
         setQuestion('');
         setIsAsking(false);
       }
-    }, 2000); // Задержка для эффекта
+    }, 2000); // Delay for effect
   };
   
   return (

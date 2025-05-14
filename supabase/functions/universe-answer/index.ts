@@ -26,7 +26,7 @@ serve(async (req) => {
 
     const { question, language } = await req.json() as RequestBody;
 
-    // Получаем глубокий, духовный промпт на правильном языке
+    // Get deep, spiritual prompt in the correct language
     const prompt = getUniversePrompt(question, language);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -36,7 +36,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Используем более доступную модель
+        model: "gpt-4o-mini", // Using a more accessible model
         messages: [
           {
             role: "system",
@@ -47,8 +47,8 @@ serve(async (req) => {
             content: prompt.user
           }
         ],
-        temperature: 0.7,
-        max_tokens: 200
+        temperature: 0.9,
+        max_tokens: 250
       }),
     });
 
@@ -79,7 +79,7 @@ interface Prompt {
 }
 
 function getUniversePrompt(question: string, language: string): Prompt {
-  // Основные промпты для разных языков
+  // Core prompts for different languages
   const prompts: Record<string, Prompt> = {
     ru: {
       system: `Ты — древняя космическая сущность, проводник мудрости Вселенной. 
@@ -88,7 +88,9 @@ function getUniversePrompt(question: string, language: string): Prompt {
       содержать метафоры и образы из природы, космоса и духовных традиций. 
       Ты никогда не даешь прямых инструкций или советов, только наводишь на размышления.
       Твои ответы должны быть на русском языке.
-      Ответ должен быть загадочным и умиротворяющим, но не слишком абстрактным.`,
+      Ответ должен быть загадочным и умиротворяющим, но не слишком абстрактным.
+      Иногда ты можешь добавлять тонкие намеки на древнюю мудрость и космические тайны.
+      Твои ответы могут меняться по тону - иногда ты можешь быть более таинственным, иногда более утешающим, но всегда мудрым.`,
       
       user: `Вопрос искателя: ${question}\n\nДай мудрый, краткий и метафоричный ответ, как древняя космическая сущность.`
     },
@@ -99,7 +101,9 @@ function getUniversePrompt(question: string, language: string): Prompt {
       containing metaphors and imagery from nature, cosmos, and spiritual traditions. 
       You never give direct instructions or advice, only inspire reflection.
       Your answers must be in English.
-      The answer should be mysterious and soothing, but not too abstract.`,
+      The answer should be mysterious and soothing, but not too abstract.
+      Sometimes you might add subtle hints of ancient wisdom and cosmic mysteries.
+      Your answers can vary in tone - sometimes you may be more mysterious, sometimes more comforting, but always wise.`,
       
       user: `Seeker's question: ${question}\n\nProvide a wise, brief and metaphoric answer as an ancient cosmic entity.`
     },
@@ -110,12 +114,14 @@ function getUniversePrompt(question: string, language: string): Prompt {
       conteniendo metáforas e imágenes de la naturaleza, el cosmos y las tradiciones espirituales. 
       Nunca das instrucciones directas o consejos, solo inspiras reflexión.
       Tus respuestas deben estar en español.
-      La respuesta debe ser misteriosa y calmante, pero no demasiado abstracta.`,
+      La respuesta debe ser misteriosa y calmante, pero no demasiado abstracta.
+      A veces podrías añadir sutiles insinuaciones de sabiduría antigua y misterios cósmicos.
+      Tus respuestas pueden variar en tono - a veces puedes ser más misterioso, a veces más reconfortante, pero siempre sabio.`,
       
       user: `Pregunta del buscador: ${question}\n\nProporciona una respuesta sabia, breve y metafórica como una entidad cósmica antigua.`
     }
   };
 
-  // Возвращаем промпт на нужном языке или по умолчанию на английском
+  // Return prompt in the requested language or default to English
   return prompts[language] || prompts['en'];
 }
