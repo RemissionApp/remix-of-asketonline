@@ -817,7 +817,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   
-  // Upgrade to PRO - modified to work without requiring Supabase RLS changes
+  // Upgrade to PRO - modified to fix state reference
   upgradeToPro: async (): Promise<void> => {
     // For demo purposes, just set isPro to true in the userProfile
     set(state => ({
@@ -828,12 +828,13 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }));
     
     // Persist to Supabase if connected
-    if (state().user) {
+    const { user } = get();
+    if (user) {
       try {
         const { error } = await supabase
           .from('subscriptions')
           .update({ is_pro: true })
-          .eq('user_id', state().user!.id);
+          .eq('user_id', user.id);
         
         if (error) {
           console.error('Error upgrading to PRO:', error);
@@ -844,7 +845,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   
-  // Cancel PRO subscription
+  // Cancel PRO subscription - fixed state reference
   cancelProSubscription: async (): Promise<void> => {
     // For demo purposes, just set isPro to false in the userProfile
     set(state => ({
@@ -855,12 +856,13 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }));
     
     // Persist to Supabase if connected
-    if (state().user) {
+    const { user } = get();
+    if (user) {
       try {
         const { error } = await supabase
           .from('subscriptions')
           .update({ is_pro: false })
-          .eq('user_id', state().user!.id);
+          .eq('user_id', user.id);
         
         if (error) {
           console.error('Error cancelling PRO subscription:', error);
