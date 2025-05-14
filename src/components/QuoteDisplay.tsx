@@ -2,14 +2,28 @@
 import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
+import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 
 interface QuoteDisplayProps {
   quote: string;
   className?: string;
 }
 
+interface HoroscopeData {
+  date_range: string;
+  current_date: string;
+  description: string;
+  compatibility: string;
+  mood: string;
+  color: string;
+  lucky_number: string;
+  lucky_time: string;
+}
+
 export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) => {
-  const [horoscope, setHoroscope] = useState<string>("");
+  const [horoscope, setHoroscope] = useState<HoroscopeData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<string>("");
   const { userProfile, language } = useAppStore();
   
@@ -51,52 +65,40 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   
   // Generate or fetch horoscope
   useEffect(() => {
-    const generateHoroscope = async () => {
+    const fetchHoroscopeData = async () => {
       try {
-        // Use stored horoscope if we have it for today
+        setLoading(true);
+        setError(null);
+        
+        // Check for cached horoscope in localStorage
         const storedHoroscope = localStorage.getItem('dailyHoroscope');
         const storedDate = localStorage.getItem('horoscopeDate');
         const today = new Date().toDateString();
         
         if (storedHoroscope && storedDate === today) {
-          setHoroscope(storedHoroscope);
+          setHoroscope(JSON.parse(storedHoroscope));
+          setLoading(false);
           return;
         }
         
         // Get user zodiac sign if available
-        let prompt = '';
-        if (userProfile?.birthDate) {
-          // Determine zodiac sign based on birth date
-          const birthDate = new Date(userProfile.birthDate);
-          const month = birthDate.getMonth() + 1;
-          const day = birthDate.getDate();
-          
-          // Simple zodiac sign determination
-          let sign = '';
-          if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) sign = 'Овен';
-          else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) sign = 'Телец';
-          else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) sign = 'Близнецы';
-          else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) sign = 'Рак';
-          else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) sign = 'Лев';
-          else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) sign = 'Дева';
-          else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) sign = 'Весы';
-          else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) sign = 'Скорпион';
-          else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) sign = 'Стрелец';
-          else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) sign = 'Козерог';
-          else if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) sign = 'Водолей';
-          else sign = 'Рыбы';
-          
-          prompt = `Короткий личный гороскоп для знака ${sign} на сегодня. Используй загадочный, мистический стиль. Не более 3-4 предложений.`;
-        } else {
-          // Generic horoscope if no birth date
-          prompt = 'Короткий загадочный совет от вселенной на сегодня. Используй мистический стиль. Не более 3-4 предложений.';
+        if (!userProfile?.birthDate) {
+          throw new Error('Birth date not available');
         }
         
-        // Call universe-answer edge function to generate horoscope
-        const { data, error } = await supabase.functions.invoke('universe-answer', {
+        // Determine zodiac sign based on birth date
+        const sign = getZodiacSign(userProfile.birthDate);
+        
+        if (!sign) {
+          throw new Error('Could not determine zodiac sign');
+        }
+        
+        // Fetch horoscope from our edge function
+        const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
           body: { 
-            question: prompt,
-            language: language || 'ru'
+            sign,
+            day: 'today',
+            language: language || 'en'
           }
         });
         
@@ -104,20 +106,24 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
           throw new Error(error.message);
         }
         
-        if (data && data.answer) {
-          setHoroscope(data.answer);
+        if (data && data.success && data.data) {
+          setHoroscope(data.data);
           // Save to localStorage
-          localStorage.setItem('dailyHoroscope', data.answer);
+          localStorage.setItem('dailyHoroscope', JSON.stringify(data.data));
           localStorage.setItem('horoscopeDate', today);
+        } else {
+          throw new Error('Invalid response from API');
         }
       } catch (error) {
-        console.error('Error generating horoscope:', error);
+        console.error('Error fetching horoscope:', error);
+        setError(error.message);
         // Fallback to default quote
-        setHoroscope(quote);
+      } finally {
+        setLoading(false);
       }
     };
     
-    generateHoroscope();
+    fetchHoroscopeData();
   }, [quote, language, userProfile?.birthDate]);
   
   const userName = userProfile?.name || 'Искатель';
@@ -129,16 +135,53 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   const signature = language === 'ru' ? '— Послание Вселенной' : 
                    language === 'es' ? '— Mensaje del Universo' : 
                    '— Message from the Universe';
+                   
+  // Get zodiac sign symbol and name if available
+  const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
+  const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
+  
+  const renderHoroscope = () => {
+    if (loading) {
+      return <p className="italic text-cosmic-accent/70">Loading your cosmic message...</p>;
+    }
+    
+    if (error) {
+      return <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>;
+    }
+    
+    if (!horoscope) {
+      return <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>;
+    }
+    
+    return (
+      <div className="space-y-3">
+        {zodiacInfo && (
+          <p className="text-lg font-medium">
+            {zodiacInfo.symbol} {zodiacInfo.name[language] || zodiacInfo.name.en} — {horoscope.current_date}
+          </p>
+        )}
+        
+        <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">
+          ✨ {horoscope.description}
+        </p>
+        
+        <div className="grid grid-cols-2 gap-2 text-sm mt-3 text-cosmic-accent">
+          <p>💫 {language === 'ru' ? 'Настроение' : language === 'es' ? 'Estado de ánimo' : 'Mood'}: {horoscope.mood}</p>
+          <p>🎨 {language === 'ru' ? 'Цвет дня' : language === 'es' ? 'Color del día' : 'Color'}: {horoscope.color}</p>
+          <p>🎲 {language === 'ru' ? 'Счастливое число' : language === 'es' ? 'Número de la suerte' : 'Lucky number'}: {horoscope.lucky_number}</p>
+          <p>🕒 {language === 'ru' ? 'Время удачи' : language === 'es' ? 'Hora de la suerte' : 'Lucky time'}: {horoscope.lucky_time}</p>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <div className={`text-center p-6 max-w-lg mx-auto ${className}`}>
       <p className="text-cosmic-gold text-lg font-serif mb-2">
         {greeting}, {userName}! {currentDate}
       </p>
-      <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">
-        {horoscope || quote}
-      </p>
-      <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
+      {renderHoroscope()}
+      <p className="mt-4 text-sm text-cosmic-accent/80">{signature}</p>
     </div>
   );
 };
