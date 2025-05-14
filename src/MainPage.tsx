@@ -161,7 +161,7 @@ const MainPage: React.FC = () => {
             <ActionButtons />
           </>
         ) : (
-          <NoPactsView onCreatePactClick={handleCreatePact} />
+          <NoPactsView />
         )}
       </div>
       

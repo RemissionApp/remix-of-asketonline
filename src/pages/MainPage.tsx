@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -20,6 +19,8 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useToast } from '@/hooks/use-toast';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { NoPactsView } from '@/components/NoPactsView';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
   const { 
@@ -35,6 +36,7 @@ const MainPage: React.FC = () => {
   const { toast } = useToast();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
+  const navigate = useNavigate();
   
   // Sync pacts with current date when component mounts
   useEffect(() => {
@@ -154,6 +156,7 @@ const MainPage: React.FC = () => {
   // Navigate to create pact page
   const handleCreatePact = () => {
     setActiveScreen('create-pact');
+    navigate('/create-pact');
   };
   
   return (
@@ -245,14 +248,20 @@ const MainPage: React.FC = () => {
             <div className="flex flex-wrap justify-center gap-4 mt-6">
               <CosmicButton 
                 variant="outline" 
-                onClick={() => setActiveScreen('universe')}
+                onClick={() => {
+                  setActiveScreen('universe');
+                  navigate('/universe');
+                }}
               >
                 {t.main.askUniverse}
               </CosmicButton>
               
               <CosmicButton 
                 variant="outline"
-                onClick={() => setActiveScreen('meditation')}
+                onClick={() => {
+                  setActiveScreen('meditation');
+                  navigate('/meditation');
+                }}
               >
                 <Headphones className="mr-2" size={18} />
                 {language === 'ru' ? 'Медитации' : 
@@ -261,19 +270,7 @@ const MainPage: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="text-center">
-            <h1 className="text-2xl font-serif text-white mb-4">
-              {t.main.noPacts}
-            </h1>
-            
-            <CosmicButton 
-              onClick={handleCreatePact}
-              className="mt-4"
-            >
-              {language === 'ru' ? 'Заключить договор' : 
-               language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
-            </CosmicButton>
-          </div>
+          <NoPactsView />
         )}
       </div>
       
