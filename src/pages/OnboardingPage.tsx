@@ -13,7 +13,7 @@ const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
   
   const handleNext = () => {
-    if (step < t.onboarding.steps.length - 1) {
+    if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
       setStep(step + 1);
     } else {
       // Complete onboarding
@@ -61,29 +61,31 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <h1 className="text-4xl font-serif text-white mb-6">
-              {t.onboarding.steps[0].title}
+              {t.onboarding.title}
             </h1>
             
             <div className="mb-8">
-              {renderContent(t.onboarding.steps[0].content)}
+              <p className="text-xl text-cosmic-secondary mb-4">{t.onboarding.description}</p>
             </div>
             
             <CosmicButton onClick={handleNext}>
-              {t.onboarding.buttons.enter}
+              {t.onboarding.buttons.enter || "Войти"}
             </CosmicButton>
           </div>
         ) : (
           <div className="animate-fade-in text-center">
             <h1 className="text-3xl font-serif text-white mb-6">
-              {t.onboarding.steps[step].title}
+              {step === 1 ? t.onboarding.steps.goal : t.onboarding.steps.complete}
             </h1>
             
             <div className="mb-8">
-              {renderContent(t.onboarding.steps[step].content)}
+              <p className="text-xl text-cosmic-secondary mb-4">
+                {step === 1 ? t.onboarding.description : t.onboarding.description}
+              </p>
             </div>
             
             <div className="flex justify-center mb-8">
-              {t.onboarding.steps.map((_, i) => (
+              {[0, 1, 2].map((i) => (
                 <div 
                   key={i}
                   className={`w-3 h-3 mx-1 rounded-full ${i === step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'}`}
@@ -92,7 +94,7 @@ const OnboardingPage: React.FC = () => {
             </div>
             
             <CosmicButton onClick={handleNext}>
-              {step < t.onboarding.steps.length - 1 ? t.onboarding.buttons.next : t.onboarding.buttons.startJourney}
+              {step < 2 ? t.onboarding.buttons.next : (t.onboarding.buttons.startJourney || "Начать путь")}
             </CosmicButton>
           </div>
         )}

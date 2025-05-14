@@ -5,12 +5,11 @@ import { MeditationCard } from '@/components/MeditationCard';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft, SparklesIcon } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, User, Headphones, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { ProBadge } from '@/components/ProBadge';
 import { useNavigate } from 'react-router-dom';
-import { CosmicButton } from '@/components/CosmicButton';
 
 const MeditationPage: React.FC = () => {
   const { setActiveScreen, userProfile, upgradeToPro } = useAppStore();
@@ -25,48 +24,48 @@ const MeditationPage: React.FC = () => {
   const meditations = [
     {
       id: 'morning-1',
-      title: t.meditation.morning.title1,
-      description: t.meditation.morning.desc1,
+      title: t.meditation.morning.title,
+      description: t.meditation.morning.description,
       duration: '10 min',
       category: 'morning',
       image: '/meditation/morning1.jpg'
     },
     {
       id: 'morning-2',
-      title: t.meditation.morning.title2,
-      description: t.meditation.morning.desc2,
+      title: t.meditation.morning.title,
+      description: t.meditation.morning.description,
       duration: '15 min',
       category: 'morning',
       image: '/meditation/morning2.jpg'
     },
     {
       id: 'evening-1',
-      title: t.meditation.evening.title1,
-      description: t.meditation.evening.desc1,
+      title: t.meditation.evening.title,
+      description: t.meditation.evening.description,
       duration: '12 min',
       category: 'evening',
       image: '/meditation/evening1.jpg'
     },
     {
       id: 'stress-1',
-      title: t.meditation.stress.title1,
-      description: t.meditation.stress.desc1,
+      title: t.meditation.stress.title,
+      description: t.meditation.stress.description,
       duration: '8 min',
       category: 'stress',
       image: '/meditation/stress1.jpg'
     },
     {
       id: 'mantra-1',
-      title: t.meditation.mantra.title1,
-      description: t.meditation.mantra.desc1,
+      title: t.meditation.mantra.title,
+      description: t.meditation.mantra.description,
       duration: '20 min',
       category: 'mantra',
       image: '/meditation/mantra1.jpg'
     },
     {
       id: 'visualization-1',
-      title: t.meditation.visualization.title1,
-      description: t.meditation.visualization.desc1,
+      title: t.meditation.visualization.title,
+      description: t.meditation.visualization.description,
       duration: '15 min',
       category: 'visualization',
       image: '/meditation/visualization1.jpg'
@@ -146,14 +145,14 @@ const MeditationPage: React.FC = () => {
             >
               <div className="space-y-4 w-full">
                 <MeditationCard 
-                  title={t.meditation.morning.title1}
-                  description={t.meditation.morning.desc1}
+                  title={t.meditation.morning.title}
+                  description={t.meditation.morning.description}
                   duration="10 min"
                   image="/meditation/morning1.jpg"
                 />
                 <MeditationCard 
-                  title={t.meditation.evening.title1}
-                  description={t.meditation.evening.desc1}
+                  title={t.meditation.evening.title}
+                  description={t.meditation.evening.description}
                   duration="12 min"
                   image="/meditation/evening1.jpg"
                 />
@@ -182,7 +181,7 @@ const MeditationPage: React.FC = () => {
             onClick={() => setActiveScreen('main')}
           >
             <Home size={24} />
-            <span className="text-xs mt-1">{t.main.nav.path}</span>
+            <span className="text-xs mt-1">{t.main.path}</span>
           </button>
           
           <button 
@@ -190,7 +189,7 @@ const MeditationPage: React.FC = () => {
             onClick={() => setActiveScreen('create-pact')}
           >
             <Sparkles size={24} />
-            <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
+            <span className="text-xs mt-1">{t.main.ascesis}</span>
           </button>
           
           <button 
@@ -198,7 +197,7 @@ const MeditationPage: React.FC = () => {
             onClick={() => setActiveScreen('universe')}
           >
             <MessageSquare size={24} />
-            <span className="text-xs mt-1">{t.main.nav.universe}</span>
+            <span className="text-xs mt-1">{t.main.universe}</span>
           </button>
           
           <button 
@@ -206,7 +205,7 @@ const MeditationPage: React.FC = () => {
             onClick={() => setActiveScreen('profile')}
           >
             <User size={24} />
-            <span className="text-xs mt-1">{t.main.nav.profile}</span>
+            <span className="text-xs mt-1">{t.main.profile}</span>
           </button>
         </div>
       </div>

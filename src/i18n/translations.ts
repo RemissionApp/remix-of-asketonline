@@ -1,3 +1,4 @@
+
 // Define the types for all translations
 interface Translations {
   [key: string]: {
@@ -58,6 +59,12 @@ interface Translations {
       askUniverse: string;
       path: string;
       ascesis: string;
+      nav: {
+        path: string;
+        ascesis: string;
+        universe: string;
+        profile: string;
+      };
     };
     pactOath: {
       title: string;
@@ -111,11 +118,17 @@ interface Translations {
         welcome: string;
         goal: string;
         complete: string;
+        title?: string;
+        content?: string;
+        length?: number;
+        map?: any[];
       };
       buttons: {
         next: string;
         start: string;
         skip: string;
+        enter?: string;
+        startJourney?: string;
       };
     };
     universe: {
@@ -167,22 +180,34 @@ interface Translations {
       morning: {
         title: string;
         description: string;
+        title1: string;
+        desc1: string;
+        title2: string;
+        desc2: string;
       };
       evening: {
         title: string;
         description: string;
+        title1: string;
+        desc1: string;
       };
       stress: {
         title: string;
         description: string;
+        title1: string;
+        desc1: string;
       };
       mantra: {
         title: string;
         description: string;
+        title1: string;
+        desc1: string;
       };
       visualization: {
         title: string;
         description: string;
+        title1: string;
+        desc1: string;
       };
     };
     subscription: {
@@ -235,6 +260,7 @@ interface Translations {
       continueButton: string;
       currentDate: string;
       languageLabel: string;
+      birthDateRequired: string;
     };
   };
 }
@@ -298,7 +324,13 @@ export const translations: Translations = {
       todayCompleted: "Сегодня выполнено",
       askUniverse: "Задать вопрос Вселенной",
       path: "Путь",
-      ascesis: "Аскеза"
+      ascesis: "Аскеза",
+      nav: {
+        path: "Путь",
+        ascesis: "Аскеза",
+        universe: "Вселенная",
+        profile: "Профиль"
+      }
     },
     pactOath: {
       title: "Договор с Вселенной",
@@ -351,12 +383,16 @@ export const translations: Translations = {
       steps: {
         welcome: "Добро пожаловать",
         goal: "Выбор цели",
-        complete: "Готово"
+        complete: "Готово",
+        length: 3,
+        map: []
       },
       buttons: {
         next: "Далее",
         start: "Начать",
-        skip: "Пропустить"
+        skip: "Пропустить",
+        enter: "Войти",
+        startJourney: "Начать путь"
       }
     },
     universe: {
@@ -407,23 +443,35 @@ export const translations: Translations = {
       },
       morning: {
         title: "Утренняя медитация",
-        description: "Начните день со спокойствия и ясности"
+        description: "Начните день со спокойствия и ясности",
+        title1: "Утренняя медитация",
+        desc1: "Начните день со спокойствия и ясности",
+        title2: "Утреннее пробуждение",
+        desc2: "Зарядитесь энергией на весь день"
       },
       evening: {
         title: "Вечерняя медитация",
-        description: "Расслабьтесь и восстановите энергию после дня"
+        description: "Расслабьтесь и восстановите энергию после дня",
+        title1: "Вечерняя медитация",
+        desc1: "Расслабьтесь и восстановите энергию после дня"
       },
       stress: {
         title: "Антистресс",
-        description: "Освободитесь от напряжения и беспокойства"
+        description: "Освободитесь от напряжения и беспокойства",
+        title1: "Антистресс",
+        desc1: "Освободитесь от напряжения и беспокойства"
       },
       mantra: {
         title: "Мантра-медитация",
-        description: "Используйте силу звука для глубокого погружения"
+        description: "Используйте силу звука для глубокого погружения",
+        title1: "Мантра-медитация",
+        desc1: "Используйте силу звука для глубокого погружения"
       },
       visualization: {
         title: "Визуализация",
-        description: "Создайте мысленные образы для достижения целей"
+        description: "Создайте мысленные образы для достижения целей",
+        title1: "Визуализация",
+        desc1: "Создайте мысленные образы для достижения целей"
       }
     },
     subscription: {
@@ -466,7 +514,17 @@ export const translations: Translations = {
       savingButton: "Сохранение...",
       nameRequired: "Имя обязательно",
       emailRequired: "Email обязателен",
-      dobRequired: "Дата рождения обязательна"
+      dobRequired: "Дата рождения обязательна",
+      nameLabel: "Как тебя зовут",
+      birthDateLabel: "Дата рождения",
+      namePlaceholder: "Введите ваше имя",
+      birthDatePlaceholder: "Выберите дату рождения",
+      title: "О тебе",
+      age: "Возраст",
+      continueButton: "Продолжить",
+      currentDate: "Текущая дата",
+      languageLabel: "Язык",
+      birthDateRequired: "Дата рождения обязательна"
     }
   },
   en: {
@@ -526,7 +584,13 @@ export const translations: Translations = {
       todayCompleted: "Completed today",
       askUniverse: "Ask the Universe",
       path: "Path",
-      ascesis: "Ascesis"
+      ascesis: "Ascesis",
+      nav: {
+        path: "Path",
+        ascesis: "Ascesis",
+        universe: "Universe",
+        profile: "Profile"
+      }
     },
     pactOath: {
       title: "Contract with the Universe",
@@ -579,12 +643,16 @@ export const translations: Translations = {
       steps: {
         welcome: "Welcome",
         goal: "Choose goal",
-        complete: "Complete"
+        complete: "Complete",
+        length: 3,
+        map: []
       },
       buttons: {
         next: "Next",
         start: "Start",
-        skip: "Skip"
+        skip: "Skip",
+        enter: "Enter",
+        startJourney: "Start Journey"
       }
     },
     universe: {
@@ -635,23 +703,35 @@ export const translations: Translations = {
       },
       morning: {
         title: "Morning Meditation",
-        description: "Start your day with calmness and clarity"
+        description: "Start your day with calmness and clarity",
+        title1: "Morning Meditation",
+        desc1: "Start your day with calmness and clarity",
+        title2: "Morning Awakening",
+        desc2: "Energize yourself for the day ahead"
       },
       evening: {
         title: "Evening Meditation",
-        description: "Relax and restore energy after the day"
+        description: "Relax and restore energy after the day",
+        title1: "Evening Meditation",
+        desc1: "Relax and restore energy after the day"
       },
       stress: {
         title: "Anti-stress",
-        description: "Release tension and anxiety"
+        description: "Release tension and anxiety",
+        title1: "Anti-stress",
+        desc1: "Release tension and anxiety"
       },
       mantra: {
         title: "Mantra Meditation",
-        description: "Use the power of sound for deep immersion"
+        description: "Use the power of sound for deep immersion",
+        title1: "Mantra Meditation",
+        desc1: "Use the power of sound for deep immersion"
       },
       visualization: {
         title: "Visualization",
-        description: "Create mental images to achieve goals"
+        description: "Create mental images to achieve goals",
+        title1: "Visualization",
+        desc1: "Create mental images to achieve goals"
       }
     },
     subscription: {
@@ -694,7 +774,17 @@ export const translations: Translations = {
       savingButton: "Saving...",
       nameRequired: "Name is required",
       emailRequired: "Email is required",
-      dobRequired: "Date of birth is required"
+      dobRequired: "Date of birth is required",
+      nameLabel: "Your Name",
+      birthDateLabel: "Date of Birth",
+      namePlaceholder: "Enter your name",
+      birthDatePlaceholder: "Choose your date of birth",
+      title: "About You",
+      age: "Age",
+      continueButton: "Continue",
+      currentDate: "Current date",
+      languageLabel: "Language",
+      birthDateRequired: "Date of birth is required"
     }
   },
   es: {
@@ -754,7 +844,13 @@ export const translations: Translations = {
       todayCompleted: "Completado hoy",
       askUniverse: "Preguntar al Universo",
       path: "Camino",
-      ascesis: "Ascesis"
+      ascesis: "Ascesis",
+      nav: {
+        path: "Camino",
+        ascesis: "Ascesis",
+        universe: "Universo",
+        profile: "Perfil"
+      }
     },
     pactOath: {
       title: "Contrato con el Universo",
@@ -807,12 +903,16 @@ export const translations: Translations = {
       steps: {
         welcome: "Bienvenida",
         goal: "Elegir meta",
-        complete: "Completado"
+        complete: "Completado",
+        length: 3,
+        map: []
       },
       buttons: {
         next: "Siguiente",
         start: "Comenzar",
-        skip: "Omitir"
+        skip: "Omitir",
+        enter: "Entrar",
+        startJourney: "Iniciar Camino"
       }
     },
     universe: {
@@ -863,23 +963,35 @@ export const translations: Translations = {
       },
       morning: {
         title: "Meditación Matutina",
-        description: "Comienza tu día con calma y claridad"
+        description: "Comienza tu día con calma y claridad",
+        title1: "Meditación Matutina",
+        desc1: "Comienza tu día con calma y claridad",
+        title2: "Despertar Matutino",
+        desc2: "Cárgate de energía para el día"
       },
       evening: {
         title: "Meditación Nocturna",
-        description: "Relájate y restaura energía después del día"
+        description: "Relájate y restaura energía después del día",
+        title1: "Meditación Nocturna",
+        desc1: "Relájate y restaura energía después del día"
       },
       stress: {
         title: "Anti-estrés",
-        description: "Libera tensión y ansiedad"
+        description: "Libera tensión y ansiedad",
+        title1: "Anti-estrés",
+        desc1: "Libera tensión y ansiedad"
       },
       mantra: {
         title: "Meditación con Mantras",
-        description: "Usa el poder del sonido para una inmersión profunda"
+        description: "Usa el poder del sonido para una inmersión profunda",
+        title1: "Meditación con Mantras",
+        desc1: "Usa el poder del sonido para una inmersión profunda"
       },
       visualization: {
         title: "Visualización",
-        description: "Crea imágenes mentales para lograr objetivos"
+        description: "Crea imágenes mentales para lograr objetivos",
+        title1: "Visualización",
+        desc1: "Crea imágenes mentales para lograr objetivos"
       }
     },
     subscription: {
@@ -931,7 +1043,8 @@ export const translations: Translations = {
       age: "Edad",
       continueButton: "Continuar",
       currentDate: "Fecha actual",
-      languageLabel: "Idioma"
+      languageLabel: "Idioma",
+      birthDateRequired: "La fecha de nacimiento es obligatoria"
     }
   }
 };
