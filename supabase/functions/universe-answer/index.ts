@@ -22,6 +22,7 @@ serve(async (req) => {
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY is not set');
       throw new Error('OPENAI_API_KEY is not set');
     }
 
@@ -33,6 +34,7 @@ serve(async (req) => {
       getUniversePrompt(question, language);
 
     console.log("Using prompt:", JSON.stringify(prompt));
+    console.log("OPENAI_API_KEY exists:", !!OPENAI_API_KEY);
 
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -61,6 +63,15 @@ serve(async (req) => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`OpenAI API error (${response.status}):`, errorText);
+        
+        // Check for quota exceeded errors specifically
+        if (response.status === 429 || errorText.includes('quota') || errorText.includes('rate limit')) {
+          return new Response(JSON.stringify({ error: "API quota exceeded", errorType: "quota_exceeded" }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        
         return new Response(JSON.stringify({ error: errorText }), {
           status: response.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -87,8 +98,17 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    const isQuotaError = error.message && (
+      error.message.includes('quota') || 
+      error.message.includes('rate limit') || 
+      error.message.includes('exceeded')
+    );
+    
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      errorType: isQuotaError ? "quota_exceeded" : "general_error"
+    }), {
+      status: isQuotaError ? 429 : 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

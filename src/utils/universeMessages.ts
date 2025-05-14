@@ -119,7 +119,19 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
 
     if (error) {
       console.error('Edge function error:', error);
+      
+      // Handle quota errors explicitly
+      if (error.message?.includes('quota') || error.message?.includes('exceeded') || error.message?.includes('rate limit')) {
+        console.log("API quota exceeded, using predefined answers");
+        throw new Error('quota_exceeded');
+      }
+      
       throw new Error(error.message || 'Error invoking universe-answer function');
+    }
+    
+    if (data && data.error && data.errorType === 'quota_exceeded') {
+      console.log("API quota exceeded error from edge function");
+      throw new Error('quota_exceeded');
     }
     
     if (data && data.answer) {
@@ -132,7 +144,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     console.error('Error getting AI answer:', error);
     
     // More detailed error handling for quota exceeded
-    if (error.message?.includes('quota') || error.message?.includes('exceeded')) {
+    if (error.message?.includes('quota') || error.message?.includes('exceeded') || error.message === 'quota_exceeded') {
       console.log("API quota exceeded, using predefined answers");
       toast.error(language === 'ru' 
         ? "API лимит превышен. Используем заранее подготовленные ответы." 
