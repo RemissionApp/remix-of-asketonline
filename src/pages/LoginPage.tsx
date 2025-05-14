@@ -22,6 +22,7 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("login");
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +99,7 @@ const LoginPage: React.FC = () => {
         
         <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
           <CardContent className="pt-6">
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
                 <TabsTrigger value="login">Вход</TabsTrigger>
                 <TabsTrigger value="signup">Регистрация</TabsTrigger>
@@ -170,7 +171,7 @@ const LoginPage: React.FC = () => {
                       Нет аккаунта?{" "}
                       <button
                         type="button"
-                        onClick={() => document.querySelector('[value="signup"]')?.dispatchEvent(new Event('click'))}
+                        onClick={() => setActiveTab("signup")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
                         Зарегистрироваться
@@ -256,7 +257,7 @@ const LoginPage: React.FC = () => {
                       Уже есть аккаунт?{" "}
                       <button
                         type="button"
-                        onClick={() => document.querySelector('[value="login"]')?.dispatchEvent(new Event('click'))}
+                        onClick={() => setActiveTab("login")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
                         Войти
