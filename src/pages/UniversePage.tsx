@@ -20,14 +20,19 @@ const UniversePage: React.FC = () => {
     if (question.trim().length < 3) return;
     
     setIsAsking(true);
-    setTimeout(() => {
-      const response = askUniverse(question);
-      setCurrentAnswer({
-        question: response.question,
-        answer: response.answer
-      });
-      setQuestion('');
-      setIsAsking(false);
+    setTimeout(async () => {
+      try {
+        const response = await askUniverse(question);
+        setCurrentAnswer({
+          question: response.question,
+          answer: response.answer
+        });
+      } catch (error) {
+        console.error("Error asking universe:", error);
+      } finally {
+        setQuestion('');
+        setIsAsking(false);
+      }
     }, 2000); // Add a delay for effect
   };
   

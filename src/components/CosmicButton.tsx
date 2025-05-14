@@ -9,6 +9,7 @@ interface CosmicButtonProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export const CosmicButton: React.FC<CosmicButtonProps> = ({
@@ -18,6 +19,7 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
   size = 'md',
   className,
   disabled = false,
+  type = 'button',
 }) => {
   const variantClasses = {
     default: 'cosmic-button',
@@ -35,6 +37,7 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
+      type={type}
       className={cn(
         'rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
