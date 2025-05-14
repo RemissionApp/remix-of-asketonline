@@ -13,7 +13,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="mt-6">
+    <div>
       <ZodiacInfo />
     </div>
   );
