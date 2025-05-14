@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useAppStore } from "./store/useAppStore";
 import WelcomePage from "./pages/WelcomePage";
 import LanguagePage from "./pages/LanguagePage";
+import UserProfilePage from "./pages/UserProfilePage";
 import OnboardingPage from "./pages/OnboardingPage";
 import MainPage from "./pages/MainPage";
 import CreatePactPage from "./pages/CreatePactPage";
@@ -21,39 +22,6 @@ import MeditationPage from "./pages/MeditationPage";
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient();
 
-const AppContent = () => {
-  const { activeScreen, onboardingComplete } = useAppStore();
-  
-  if (activeScreen === 'welcome') {
-    return <WelcomePage />;
-  }
-  
-  if (activeScreen === 'language') {
-    return <LanguagePage />;
-  }
-  
-  if (!onboardingComplete && activeScreen === 'onboarding') {
-    return <OnboardingPage />;
-  }
-  
-  switch (activeScreen) {
-    case 'main':
-      return <MainPage />;
-    case 'create-pact':
-      return <CreatePactPage />;
-    case 'universe':
-      return <UniversePage />;
-    case 'profile':
-      return <ProfilePage />;
-    case 'comparison':
-      return <ComparisonPage />;
-    case 'meditation':
-      return <MeditationPage />;
-    default:
-      return <MainPage />;
-  }
-};
-
 const App = () => {
   return (
     <React.StrictMode>
@@ -61,7 +29,14 @@ const App = () => {
         <TooltipProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<AppContent />} />
+              <Route path="/" element={<WelcomePage />} />
+              <Route path="/language" element={<LanguagePage />} />
+              <Route path="/profile-setup" element={<UserProfilePage />} />
+              <Route path="/onboarding" element={<OnboardingPage />} />
+              <Route path="/main" element={<MainPage />} />
+              <Route path="/create-pact" element={<CreatePactPage />} />
+              <Route path="/universe" element={<UniversePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/comparison" element={<ComparisonPage />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route path="*" element={<NotFound />} />

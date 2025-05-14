@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,7 +8,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { SupportedLanguage } from '@/i18n/translations';
 
 const WelcomePage: React.FC = () => {
-  const { setActiveScreen } = useAppStore();
+  const navigate = useNavigate();
   const { t } = useTranslations();
   const [isAnimated, setIsAnimated] = useState(false);
   const [cycleIndex, setCycleIndex] = useState(0);
@@ -48,7 +49,7 @@ const WelcomePage: React.FC = () => {
   }, []);
   
   const handleContinue = () => {
-    setActiveScreen('language');
+    navigate('/language');
   };
   
   return (
@@ -59,7 +60,7 @@ const WelcomePage: React.FC = () => {
       <div className="fixed inset-0 z-0">
         <div 
           className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/путь_к_вашему_изображению.jpg')" }}
+          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
       </div>

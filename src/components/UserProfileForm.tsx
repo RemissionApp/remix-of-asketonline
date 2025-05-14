@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -25,7 +26,8 @@ import {
 import { SupportedLanguage } from '@/i18n/translations';
 
 const UserProfileForm: React.FC = () => {
-  const { updateUserProfile, setActiveScreen, userProfile, language, setLanguage } = useAppStore();
+  const navigate = useNavigate();
+  const { updateUserProfile, userProfile, language, setLanguage } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
@@ -62,7 +64,7 @@ const UserProfileForm: React.FC = () => {
       name: values.name,
       birthDate: values.birthDate
     });
-    setActiveScreen('onboarding');
+    navigate('/onboarding');
   };
 
   const languages = [
