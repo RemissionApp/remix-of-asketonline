@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 type TranslationKeys = {
@@ -24,6 +23,7 @@ type TranslationKeys = {
     askUniverse: string;
     noPacts: string;
     createPact: string;
+    profile: string;
     nav: {
       path: string;
       ascesis: string;
@@ -116,6 +116,12 @@ type TranslationKeys = {
     birthDatePlaceholder: string;
     birthDateRequired: string;
     continueButton: string;
+    age: string;
+    yearSingular: string;
+    yearPlural: string;
+    currentDate: string;
+    languageLabel: string;
+    back: string;
   };
   gamification: {
     energyPoints: string;
@@ -220,7 +226,7 @@ type TranslationKeys = {
   };
 };
 
-const translations: Record<SupportedLanguage, TranslationKeys> = {
+const translations: Record<SupportedLanguage, Partial<TranslationKeys>> = {
   ru: {
     welcome: {
       title: "ASKET",
@@ -258,6 +264,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       askUniverse: "Спросить Вселенну",
       noPacts: "У тебя пока нет активных аскез",
       createPact: "Заключить договор",
+      profile: "Профиль",
       nav: {
         path: "Путь",
         ascesis: "Аскезы",
@@ -361,7 +368,13 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       birthDateLabel: "Дата рождения",
       birthDatePlaceholder: "Выберите дату рождения",
       birthDateRequired: "Укажите дату рождения",
-      continueButton: "Продолжить"
+      continueButton: "Продолжить",
+      age: "Возраст",
+      yearSingular: "год",
+      yearPlural: "лет",
+      currentDate: "Текущая дата",
+      languageLabel: "Язык приложения",
+      back: "Назад"
     },
     gamification: {
       energyPoints: "Очки энергии",
@@ -542,7 +555,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       signInButton: "Войти",
       signUpButton: "Зарегистрироваться",
       haveAccount: "Уже есть аккаунт?",
-      passwordLength: "Пароль должен содержать минимум 6 символов"
+      passwordLength: "Пароль должен содержать минимум 6 симво��ов"
     },
     subscription: {
       bannerTitle: "Раскройте свой потенциал с ASKET PRO",
@@ -587,6 +600,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       askUniverse: "Ask the Universe",
       noPacts: "You don't have any active ascesis yet",
       createPact: "Create covenant",
+      profile: "Profile",
       nav: {
         path: "Path",
         ascesis: "Ascesis",
@@ -690,7 +704,13 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       birthDateLabel: "Date of birth",
       birthDatePlaceholder: "Select your date of birth",
       birthDateRequired: "Date of birth is required",
-      continueButton: "Continue"
+      continueButton: "Continue",
+      age: "Age",
+      yearSingular: "year",
+      yearPlural: "years",
+      currentDate: "Current date",
+      languageLabel: "App language",
+      back: "Back"
     },
     gamification: {
       energyPoints: "Energy Points",
@@ -916,6 +936,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       askUniverse: "Preguntar al Universo",
       noPacts: "Aún no tienes ascesis activas",
       createPact: "Crear pacto",
+      profile: "Perfil",
       nav: {
         path: "Camino",
         ascesis: "Ascesis",
@@ -1013,13 +1034,19 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
     },
     userProfile: {
       title: "Acerca de ti",
-      nameLabel: "¿Cómo te llamas",
+      nameLabel: "¿Cómo te llamas?",
       namePlaceholder: "Introduce tu nombre",
       nameRequired: "El nombre es obligatorio",
       birthDateLabel: "Fecha de nacimiento",
       birthDatePlaceholder: "Selecciona tu fecha de nacimiento",
       birthDateRequired: "La fecha de nacimiento es obligatoria",
-      continueButton: "Continuar"
+      continueButton: "Continuar",
+      age: "Edad",
+      yearSingular: "año",
+      yearPlural: "años",
+      currentDate: "Fecha actual",
+      languageLabel: "Idioma de la aplicación",
+      back: "Atrás"
     },
     gamification: {
       energyPoints: "Puntos de Energía",
