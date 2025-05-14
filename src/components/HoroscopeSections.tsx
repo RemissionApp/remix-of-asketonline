@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -77,12 +78,93 @@ export const AdviceSection: React.FC<HoroscopeSectionProps> = ({ content }) => {
   );
 };
 
-// Function to parse horoscope sections remains the same
+// Function to parse horoscope sections
 export const parseHoroscopeSections = (text: string): { 
   work: string; 
   love: string; 
   health: string; 
   advice: string;
 } => {
-  // ... keep existing code (parsing function logic)
+  const defaultSections = {
+    work: '',
+    love: '',
+    health: '',
+    advice: ''
+  };
+  
+  if (!text) {
+    return defaultSections;
+  }
+  
+  // Split the text by double newlines to separate sections
+  const sections = text.split(/\n\s*\n/);
+  
+  let workSection = '';
+  let loveSection = '';
+  let healthSection = '';
+  let adviceSection = '';
+  
+  // Find each section based on emojis or keywords
+  sections.forEach(section => {
+    const lowerSection = section.toLowerCase();
+    
+    if (
+      lowerSection.includes('work') || 
+      lowerSection.includes('finance') || 
+      lowerSection.includes('работа') || 
+      lowerSection.includes('финанс') ||
+      lowerSection.includes('trabajo') ||
+      lowerSection.includes('finanzas') ||
+      section.includes('📒') ||
+      section.includes('💼')
+    ) {
+      workSection = section;
+    } 
+    else if (
+      lowerSection.includes('love') || 
+      lowerSection.includes('relationship') || 
+      lowerSection.includes('любовь') || 
+      lowerSection.includes('отношения') ||
+      lowerSection.includes('amor') ||
+      lowerSection.includes('relaciones') ||
+      section.includes('❤️')
+    ) {
+      loveSection = section;
+    }
+    else if (
+      lowerSection.includes('health') || 
+      lowerSection.includes('well') || 
+      lowerSection.includes('здоровье') || 
+      lowerSection.includes('самочувств') ||
+      lowerSection.includes('salud') ||
+      lowerSection.includes('bienestar') ||
+      section.includes('🧘')
+    ) {
+      healthSection = section;
+    }
+    else if (
+      lowerSection.includes('advice') || 
+      lowerSection.includes('tip') || 
+      lowerSection.includes('совет') ||
+      lowerSection.includes('consejo') ||
+      section.includes('✨')
+    ) {
+      adviceSection = section;
+    }
+  });
+  
+  // Remove headers from content
+  const cleanContent = (content: string) => {
+    return content
+      .replace(/^.*?[—\-:]/, '')  // Remove header up to first colon or dash
+      .replace(/^[📒💼❤️🧘✨].*?[\n]/, '')  // Remove emoji header line
+      .trim();
+  };
+  
+  return {
+    work: workSection ? cleanContent(workSection) : defaultSections.work,
+    love: loveSection ? cleanContent(loveSection) : defaultSections.love,
+    health: healthSection ? cleanContent(healthSection) : defaultSections.health,
+    advice: adviceSection ? cleanContent(adviceSection) : defaultSections.advice
+  };
 };

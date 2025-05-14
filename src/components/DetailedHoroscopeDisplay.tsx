@@ -63,7 +63,10 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         if (storedHoroscope && storedDate === today) {
           const parsedData = JSON.parse(storedHoroscope);
           setHoroscope(parsedData.description || '');
-          setHoroscopeSections(parseHoroscopeSections(parsedData.description || ''));
+          
+          // Make sure we parse the horoscope sections from the description
+          const sections = parseHoroscopeSections(parsedData.description || '');
+          setHoroscopeSections(sections);
           
           if (parsedData.lucky_number) {
             setAdditionalInfo({
@@ -83,7 +86,7 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
           throw new Error('Zodiac sign not available');
         }
         
-        // Try to fetch from edge function
+        // Try to fetch from supabase function first
         try {
           const response = await fetch('/api/generate-horoscope', {
             method: 'POST',
@@ -105,7 +108,10 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
           
           if (data.success && data.data) {
             setHoroscope(data.data.description || '');
-            setHoroscopeSections(parseHoroscopeSections(data.data.description || ''));
+            
+            // Parse the horoscope sections
+            const sections = parseHoroscopeSections(data.data.description || '');
+            setHoroscopeSections(sections);
             
             // Set additional info
             setAdditionalInfo({
@@ -132,7 +138,10 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         // Generate fallback horoscope
         const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language);
         setHoroscope(fallbackHoroscope.description);
-        setHoroscopeSections(parseHoroscopeSections(fallbackHoroscope.description));
+        
+        // Make sure to parse sections from the fallback horoscope
+        const fallbackSections = parseHoroscopeSections(fallbackHoroscope.description);
+        setHoroscopeSections(fallbackSections);
         
         setAdditionalInfo({
           lucky_number: fallbackHoroscope.lucky_number,
@@ -251,10 +260,15 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
       
       {/* Horoscope sections */}
       <div className="space-y-6">
-        <WorkSection content={horoscopeSections.work} />
-        <LoveSection content={horoscopeSections.love} />
-        <HealthSection content={horoscopeSections.health} />
-        <AdviceSection content={horoscopeSections.advice} />
+        {/* Make sure horoscopeSections and its properties exist before rendering */}
+        {horoscopeSections && (
+          <>
+            <WorkSection content={horoscopeSections.work || ''} />
+            <LoveSection content={horoscopeSections.love || ''} />
+            <HealthSection content={horoscopeSections.health || ''} />
+            <AdviceSection content={horoscopeSections.advice || ''} />
+          </>
+        )}
       </div>
       
       {/* Day wish message */}

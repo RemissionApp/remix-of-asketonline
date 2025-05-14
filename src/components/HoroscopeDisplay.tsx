@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
@@ -122,8 +123,6 @@ export const HoroscopeDisplay: React.FC = () => {
   }, [userProfile?.birthDate, language, toast, user, userProfile]);
 
   const handleSeeMore = () => {
-    // Set active screen to detailed horoscope
-    setActiveScreen('detailedHoroscope');
     // Navigate to detailed horoscope page
     navigate('/detailed-horoscope');
   };
@@ -132,8 +131,8 @@ export const HoroscopeDisplay: React.FC = () => {
     return (
       <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
         <p className="text-cosmic-accent italic">{loadingText}</p>
-        <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
-        <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
+        <Skeleton className="h-20 w-full bg-cosmic-accent/20 rounded-md" />
+        <Skeleton className="h-8 w-32 bg-cosmic-accent/20 rounded-md mx-auto" />
       </div>
     );
   }
