@@ -6,7 +6,7 @@ import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { CosmicButton } from '@/components/CosmicButton';
 import { PactCard } from '@/components/PactCard';
 import { useAppStore } from '@/store/useAppStore';
-import { Home, Sparkles, MessageSquare, User, ChevronLeft, ChevronRight, CircleDot, Headphones } from 'lucide-react';
+import { CircleDot, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { 
   Carousel,
@@ -19,6 +19,7 @@ import { RankBadge } from '@/components/RankBadge';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useToast } from '@/hooks/use-toast';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const MainPage: React.FC = () => {
   const { 
@@ -276,44 +277,8 @@ const MainPage: React.FC = () => {
         )}
       </div>
       
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-cosmic-dark/80 backdrop-blur-md border-t border-cosmic-accent/20 z-20">
-        <div className="flex justify-around items-center p-3 max-w-lg mx-auto">
-          <button 
-            className="flex flex-col items-center p-2 text-cosmic-accent"
-            onClick={() => setActiveScreen('main')}
-          >
-            <Home size={24} />
-            <span className="text-xs mt-1">{t.main.nav.path}</span>
-          </button>
-          
-          <button 
-            className="flex flex-col items-center p-2 text-cosmic-secondary"
-            onClick={() => setActiveScreen('create-pact')}
-          >
-            <Sparkles size={24} />
-            <span className="text-xs mt-1">{t.main.nav.ascesis}</span>
-          </button>
-          
-          <button 
-            className="flex flex-col items-center p-2 text-cosmic-secondary"
-            onClick={() => setActiveScreen('universe')}
-          >
-            <MessageSquare size={24} />
-            <span className="text-xs mt-1">{t.main.nav.universe}</span>
-          </button>
-          
-          <button 
-            className="flex flex-col items-center p-2 text-cosmic-secondary"
-            onClick={() => setActiveScreen('profile')}
-          >
-            <div className="relative">
-              <UserAvatar size="sm" showRankBorder={false} />
-            </div>
-            <span className="text-xs mt-1">{t.main.nav.profile}</span>
-          </button>
-        </div>
-      </div>
+      {/* Use the BottomNavigation component instead of inline navigation */}
+      <BottomNavigation />
     </div>
   );
 };
