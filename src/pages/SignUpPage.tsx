@@ -34,7 +34,7 @@ const SignUpPage = () => {
   const { setActiveScreen, updateUserProfile } = useAppStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslations();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,8 +60,8 @@ const SignUpPage = () => {
 
       // Show success toast
       toast({
-        title: t.auth.signUpSuccess,
-        description: t.auth.accountCreated,
+        title: t.auth?.signUpSuccess,
+        description: t.auth?.accountCreated,
       });
 
       // Navigate to onboarding
@@ -70,8 +70,8 @@ const SignUpPage = () => {
       console.error('Sign up error:', error);
       toast({
         variant: "destructive",
-        title: t.auth.signUpError,
-        description: t.auth.tryAgain,
+        title: t.auth?.signUpError,
+        description: t.auth?.tryAgain,
       });
     } finally {
       setIsSubmitting(false);
@@ -82,9 +82,9 @@ const SignUpPage = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
       <div className="w-full max-w-md space-y-8 bg-card p-6 rounded-lg shadow-lg">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">{t.auth.signUp}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t.auth?.signUp}</h1>
           <p className="mt-2 text-muted-foreground">
-            {t.auth.createAccountPrompt}
+            {t.auth?.createAccountPrompt}
           </p>
         </div>
 
@@ -95,10 +95,10 @@ const SignUpPage = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.auth.name}</FormLabel>
+                  <FormLabel>{t.auth?.name}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t.auth.namePlaceholder}
+                      placeholder={t.auth?.namePlaceholder}
                       {...field}
                     />
                   </FormControl>
@@ -112,7 +112,7 @@ const SignUpPage = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.auth.email}</FormLabel>
+                  <FormLabel>{t.auth?.email}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="you@example.com"
@@ -129,7 +129,7 @@ const SignUpPage = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.auth.password}</FormLabel>
+                  <FormLabel>{t.auth?.password}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -147,7 +147,7 @@ const SignUpPage = () => {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t.auth.confirmPassword}</FormLabel>
+                  <FormLabel>{t.auth?.confirmPassword}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -171,10 +171,10 @@ const SignUpPage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {t.auth.processing}
+                  {t.auth?.processing}
                 </span>
               ) : (
-                t.auth.signUpButton
+                t.auth?.signUpButton
               )}
             </CosmicButton>
           </form>
@@ -182,9 +182,9 @@ const SignUpPage = () => {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            {t.auth.alreadyHaveAccount}{' '}
+            {t.auth?.alreadyHaveAccount}{' '}
             <Button variant="link" className="p-0" onClick={() => setActiveScreen('signin')}>
-              {t.auth.signInNow}
+              {t.auth?.signInNow}
             </Button>
           </p>
         </div>

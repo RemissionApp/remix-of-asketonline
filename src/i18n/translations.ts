@@ -1,4 +1,3 @@
-
 import { Quote } from "@/components/QuoteDisplay";
 
 export type SupportedLanguage = 'ru' | 'en' | 'es';
@@ -13,6 +12,7 @@ export const translations = {
       todayCompleted: "Today's Ascesis Completed",
       days: "Days",
       askUniverse: "Ask the Universe",
+      profile: "Profile",
       nav: {
         path: "Path",
         ascesis: "Ascesis",
@@ -22,7 +22,20 @@ export const translations = {
     },
     calendar: {
       year: "Year",
-      month: "Month"
+      month: "Month",
+      today: "Today",
+      selectDate: "Select date",
+      previousMonth: "Previous month",
+      nextMonth: "Next month",
+      days: {
+        monday: "Mon",
+        tuesday: "Tue",
+        wednesday: "Wed",
+        thursday: "Thu",
+        friday: "Fri",
+        saturday: "Sat",
+        sunday: "Sun"
+      }
     },
     welcome: {
       title: "Welcome to Cosmic Ascesis",
@@ -203,6 +216,31 @@ export const translations = {
         desc1: "Travel through the cosmos in your mind"
       }
     },
+    auth: {
+      signIn: "Sign In",
+      signInButton: "Sign In",
+      signUp: "Sign Up", 
+      signUpButton: "Sign Up",
+      signInSuccess: "Sign in successful!",
+      welcomeBack: "Welcome back to Cosmic Ascesis",
+      signInError: "Sign in error",
+      signUpSuccess: "Sign up successful!",
+      accountCreated: "Your account has been created",
+      signUpError: "Sign up error",
+      tryAgain: "Please try again",
+      enterCredentials: "Enter your credentials to continue",
+      email: "Email",
+      password: "Password",
+      name: "Name",
+      namePlaceholder: "Enter your name",
+      confirmPassword: "Confirm Password",
+      processing: "Processing...",
+      noAccount: "Don't have an account?",
+      signUpNow: "Sign up now",
+      alreadyHaveAccount: "Already have an account?",
+      signInNow: "Sign in now",
+      createAccountPrompt: "Create your account to begin your journey"
+    }
   },
   ru: {
     main: {
@@ -213,6 +251,7 @@ export const translations = {
       todayCompleted: "Аскеза на сегодня выполнена",
       days: "Дней",
       askUniverse: "Спросить у Вселенной",
+      profile: "Профиль",
       nav: {
         path: "Путь",
         ascesis: "Аскеза",
@@ -222,7 +261,20 @@ export const translations = {
     },
     calendar: {
       year: "Год",
-      month: "Месяц"
+      month: "Месяц",
+      today: "Сегодня",
+      selectDate: "Выберите дату",
+      previousMonth: "Предыдущий месяц",
+      nextMonth: "Следующий месяц",
+      days: {
+        monday: "Пн",
+        tuesday: "Вт",
+        wednesday: "Ср",
+        thursday: "Чт",
+        friday: "Пт",
+        saturday: "Сб",
+        sunday: "Вс"
+      }
     },
     welcome: {
       title: "Добро пожаловать в Cosmic Ascesis",
@@ -315,7 +367,7 @@ export const translations = {
       title: "Cosmic Ascesis PRO",
       subtitle: "Откройте премиум-функции и улучшите свое путешествие.",
       feature1: "Неограниченное Создание Аскез",
-      feature2: "Расширенная Аналитика",
+      feature2: "Расширенн��я Аналитика",
       feature3: "Персонализированное Руководство",
       feature4: "Без Рекламы",
       upgradeButton: "Перейти на PRO",
@@ -403,6 +455,31 @@ export const translations = {
         desc1: "Путешествие через космос в твоём сознании"
       }
     },
+    auth: {
+      signIn: "Войти",
+      signInButton: "Войти",
+      signUp: "Регистрация",
+      signUpButton: "Зарегистрироваться",
+      signInSuccess: "Вход выполнен успешно!",
+      welcomeBack: "Добро пожаловать обратно в Космический Аскетизм",
+      signInError: "Ошибка входа",
+      signUpSuccess: "Регистрация прошла успешно!",
+      accountCreated: "Ваш аккаунт создан",
+      signUpError: "Ошибка регистрации",
+      tryAgain: "Пожалуйста, попробуйте снова",
+      enterCredentials: "Введите свои данные для продолжения",
+      email: "Электронная почта",
+      password: "Пароль",
+      name: "Имя",
+      namePlaceholder: "Ваше имя",
+      confirmPassword: "Подтвердите пароль",
+      processing: "Обработка...",
+      noAccount: "Нет аккаунта?",
+      signUpNow: "Зарегистрируйтесь сейчас",
+      alreadyHaveAccount: "Уже есть аккаунт?",
+      signInNow: "Войти сейчас",
+      createAccountPrompt: "Создайте аккаунт, чтобы начать свое путешествие"
+    }
   },
   es: {
     main: {
@@ -413,6 +490,7 @@ export const translations = {
       todayCompleted: "Ascesis de Hoy Completada",
       days: "Días",
       askUniverse: "Preguntar al Universo",
+      profile: "Perfil",
       nav: {
         path: "Camino",
         ascesis: "Ascesis",
@@ -422,7 +500,20 @@ export const translations = {
     },
     calendar: {
       year: "Año",
-      month: "Mes"
+      month: "Mes",
+      today: "Hoy",
+      selectDate: "Seleccionar fecha",
+      previousMonth: "Mes anterior",
+      nextMonth: "Mes siguiente",
+      days: {
+        monday: "Lun",
+        tuesday: "Mar",
+        wednesday: "Mié",
+        thursday: "Jue",
+        friday: "Vie",
+        saturday: "Sáb",
+        sunday: "Dom"
+      }
     },
     welcome: {
       title: "Bienvenido a Ascesis Cósmica",
@@ -603,5 +694,30 @@ export const translations = {
         desc1: "Viaja a través del cosmos en tu mente"
       }
     },
+    auth: {
+      signIn: "Iniciar Sesión",
+      signInButton: "Iniciar Sesión",
+      signUp: "Registrarse",
+      signUpButton: "Registrarse",
+      signInSuccess: "¡Inicio de sesión exitoso!",
+      welcomeBack: "Bienvenido de nuevo a Ascesis Cósmica",
+      signInError: "Error al iniciar sesión",
+      signUpSuccess: "¡Registro exitoso!",
+      accountCreated: "Tu cuenta ha sido creada",
+      signUpError: "Error al registrarse",
+      tryAgain: "Por favor, inténtalo de nuevo",
+      enterCredentials: "Ingresa tus credenciales para continuar",
+      email: "Correo electrónico",
+      password: "Contraseña",
+      name: "Nombre",
+      namePlaceholder: "Tu nombre",
+      confirmPassword: "Confirmar contraseña",
+      processing: "Procesando...",
+      noAccount: "¿No tienes cuenta?",
+      signUpNow: "Regístrate ahora",
+      alreadyHaveAccount: "¿Ya tienes cuenta?",
+      signInNow: "Inicia sesión ahora",
+      createAccountPrompt: "Crea tu cuenta para comenzar tu viaje"
+    }
   },
 };

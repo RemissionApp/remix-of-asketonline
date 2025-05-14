@@ -1,3 +1,4 @@
+
 import { useAppStore } from '@/store/useAppStore';
 import { translations, SupportedLanguage } from '@/i18n/translations';
 
@@ -38,9 +39,7 @@ export const useTranslations = () => {
   };
   
   return {
-    t: {
-      ...translations[language]
-    },
+    t: translations[language],
     getYearWord
   };
 };
