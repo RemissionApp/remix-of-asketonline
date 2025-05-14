@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { ProBadge } from '@/components/ProBadge';
 import { CosmicButton } from '@/components/CosmicButton';
-import { Globe, LogOut, SparklesIcon, User } from 'lucide-react';
+import { Globe, LogOut, SparklesIcon } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { 
   Select,
@@ -55,16 +55,16 @@ const ProfilePage: React.FC = () => {
       }
       
       toast({
-        title: t.auth?.logoutSuccess || "Успех",
-        description: t.auth?.logoutMessage || "Вы успешно вышли из системы"
+        title: "Успех",
+        description: "Вы успешно вышли из системы"
       });
       
       // Navigate to home page
       navigate('/');
     } catch (error: any) {
       toast({
-        title: t.auth?.error || "Ошибка",
-        description: error.message || t.auth?.logoutError || "Не удалось выйти из системы",
+        title: "Ошибка",
+        description: error.message || "Не удалось выйти из системы",
         variant: "destructive"
       });
     }
@@ -188,12 +188,12 @@ const ProfilePage: React.FC = () => {
             {/* Logout Button */}
             <div className="mt-8">
               <CosmicButton 
-                variant="destructive" 
-                className="w-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30"
+                variant="subtle"
+                className="w-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 text-white"
                 onClick={handleLogout}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                {t.auth?.logout || "Выйти из системы"}
+                {t.auth?.signOut || "Выйти из системы"}
               </CosmicButton>
             </div>
           </div>

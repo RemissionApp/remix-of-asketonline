@@ -6,6 +6,12 @@ import { useAppStore } from '@/store/useAppStore';
 import { Loader2, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useTranslations } from '@/hooks/useTranslations';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AvatarUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -27,8 +33,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     // Validate file type
     if (!file.type.startsWith('image/')) {
       toast({
-        title: t.avatar?.errorTitle || "Ошибка",
-        description: t.avatar?.invalidFileType || "Пожалуйста, выберите изображение",
+        title: t.userProfile?.errorTitle || "Ошибка",
+        description: t.userProfile?.invalidFileType || "Пожалуйста, выберите изображение",
         variant: "destructive"
       });
       return;
@@ -37,8 +43,8 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: t.avatar?.errorTitle || "Ошибка",
-        description: t.avatar?.fileTooLarge || "Файл слишком большой (максимум 5MB)",
+        title: t.userProfile?.errorTitle || "Ошибка",
+        description: t.userProfile?.fileTooLarge || "Файл слишком большой (максимум 5MB)",
         variant: "destructive"
       });
       return;
@@ -75,13 +81,13 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       }
       
       toast({
-        title: t.avatar?.successTitle || "Успех",
-        description: t.avatar?.uploadSuccess || "Аватар успешно обновлен",
+        title: t.userProfile?.successTitle || "Успех",
+        description: t.userProfile?.uploadSuccess || "Аватар успешно обновлен",
       });
     } catch (error: any) {
       toast({
-        title: t.avatar?.errorTitle || "Ошибка",
-        description: error.message || t.avatar?.uploadError || "Не удалось загрузить аватар",
+        title: t.userProfile?.errorTitle || "Ошибка",
+        description: error.message || t.userProfile?.uploadError || "Не удалось загрузить аватар",
         variant: "destructive"
       });
     } finally {
@@ -93,16 +99,25 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
     <div className="relative">
       <UserAvatar size={size} customImage={userProfile.avatar_url} />
       
-      <label 
-        htmlFor="avatar-upload" 
-        className="absolute -bottom-2 -right-2 bg-cosmic-accent text-white rounded-full p-1.5 cursor-pointer hover:bg-cosmic-accent/80 transition-colors"
-      >
-        {isUploading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Upload className="h-4 w-4" />
-        )}
-      </label>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <label 
+              htmlFor="avatar-upload" 
+              className="absolute -bottom-2 -right-2 bg-cosmic-accent text-white rounded-full p-1.5 cursor-pointer hover:bg-cosmic-accent/80 transition-colors"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+            </label>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t.userProfile?.changeAvatar || "Изменить аватар"}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       
       <input
         id="avatar-upload"
