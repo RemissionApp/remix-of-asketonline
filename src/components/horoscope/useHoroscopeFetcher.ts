@@ -31,6 +31,7 @@ interface UseHoroscopeFetcherResult {
   refreshing: boolean;
   handleRefresh: () => void;
   zodiacSign: string | null;
+  fetchCustomHoroscope: (customPrompt: string) => Promise<void>;
 }
 
 export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
@@ -66,16 +67,16 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
   const zodiacSign = getZodiacSign(userProfile?.birthDate || null);
   
   // Function to fetch horoscope
-  const fetchHoroscope = async (forceRefresh = false) => {
-    if (forceRefresh) {
+  const fetchHoroscope = async (forceRefresh = false, customPrompt = null) => {
+    if (forceRefresh || customPrompt) {
       setRefreshing(true);
     } else {
       setLoading(true);
     }
     
     try {
-      // Skip cache check if forceRefresh is true
-      if (!forceRefresh) {
+      // Skip cache check if forceRefresh or customPrompt is true
+      if (!forceRefresh && !customPrompt) {
         // Check for cached detailed horoscope in localStorage
         const storedHoroscope = localStorage.getItem('detailedHoroscope');
         const storedDate = localStorage.getItem('detailedHoroscopeDate');
@@ -116,7 +117,8 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
             sign: zodiacSign,
             language: language,
             detailed: true,
-            forceRefresh: forceRefresh // Pass the force refresh flag
+            forceRefresh: forceRefresh, // Pass the force refresh flag
+            customPrompt: customPrompt // Pass the custom prompt if available
           })
         });
         
@@ -138,11 +140,14 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
             mood: data.data.mood || ''
           });
           
-          // Cache the response
-          localStorage.setItem('detailedHoroscope', JSON.stringify(data.data));
-          localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
+          // Only cache if not a custom prompt
+          if (!customPrompt) {
+            // Cache the response
+            localStorage.setItem('detailedHoroscope', JSON.stringify(data.data));
+            localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
+          }
           
-          if (forceRefresh) {
+          if (forceRefresh && !customPrompt) {
             toast({
               title: language === 'ru' ? 'Гороскоп обновлен' : 
                     language === 'es' ? 'Horóscopo actualizado' : 
@@ -163,7 +168,7 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
         console.error('Error fetching horoscope from API:', error);
         // Continue to fallback method
         
-        if (forceRefresh) {
+        if (forceRefresh && !customPrompt) {
           toast({
             title: language === 'ru' ? 'Ошибка обновления' : 
                   language === 'es' ? 'Error de actualización' : 
@@ -175,26 +180,36 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
             duration: 3000
           });
         }
+        
+        throw error; // Rethrow for custom prompts to be handled by caller
       }
       
-      // Generate fallback horoscope
-      const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language);
-      setHoroscope(fallbackHoroscope.description);
-      setHoroscopeSections(parseHoroscopeSections(fallbackHoroscope.description));
-      
-      setAdditionalInfo({
-        lucky_number: fallbackHoroscope.lucky_number,
-        lucky_time: fallbackHoroscope.lucky_time,
-        color: fallbackHoroscope.color,
-        mood: fallbackHoroscope.mood
-      });
-      
-      // Cache the fallback horoscope
-      localStorage.setItem('detailedHoroscope', JSON.stringify(fallbackHoroscope));
-      localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
+      // Generate fallback horoscope (only if not a custom prompt request)
+      if (!customPrompt) {
+        const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language);
+        setHoroscope(fallbackHoroscope.description);
+        setHoroscopeSections(parseHoroscopeSections(fallbackHoroscope.description));
+        
+        setAdditionalInfo({
+          lucky_number: fallbackHoroscope.lucky_number,
+          lucky_time: fallbackHoroscope.lucky_time,
+          color: fallbackHoroscope.color,
+          mood: fallbackHoroscope.mood
+        });
+        
+        // Cache the fallback horoscope
+        localStorage.setItem('detailedHoroscope', JSON.stringify(fallbackHoroscope));
+        localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
+      }
       
     } catch (error) {
       console.error('Error in horoscope generation:', error);
+      
+      // We'll rethrow the error for custom prompts so the calling component can handle it
+      if (customPrompt) {
+        throw error;
+      }
+      
       // Set some default content if everything fails
       const sections = {
         work: 'Сегодня благоприятный день для деловых начинаний. Доверяйте своей интуиции при принятии финансовых решений.',
@@ -207,13 +222,20 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
       setAdditionalInfo({
         lucky_number: String(Math.floor(Math.random() * 100)),
         lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-        color: ['красный', 'синий', 'зеленый', 'желтый', 'фиолетовый'][Math.floor(Math.random() * 5)],
-        mood: ['спокойный', 'энергичный', 'задумчивый', 'творческий'][Math.floor(Math.random() * 4)]
+        color: language === 'ru' ? ['красный', 'синий', 'зеленый', 'желтый', 'фиолетовый'][Math.floor(Math.random() * 5)] : 
+               ['red', 'blue', 'green', 'yellow', 'purple'][Math.floor(Math.random() * 5)],
+        mood: language === 'ru' ? ['спокойный', 'энергичный', 'задумчивый', 'творческий'][Math.floor(Math.random() * 4)] :
+              ['calm', 'energetic', 'reflective', 'creative'][Math.floor(Math.random() * 4)]
       });
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+  
+  // Function to fetch horoscope with custom prompt
+  const fetchCustomHoroscope = async (customPrompt: string) => {
+    return fetchHoroscope(true, customPrompt);
   };
   
   // Initial fetch
@@ -235,7 +257,8 @@ export const useHoroscopeFetcher = (): UseHoroscopeFetcherResult => {
     loading,
     refreshing,
     handleRefresh,
-    zodiacSign
+    zodiacSign,
+    fetchCustomHoroscope
   };
 };
 
