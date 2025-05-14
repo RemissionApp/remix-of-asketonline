@@ -163,7 +163,7 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Первым отображаем QuoteDisplay (приветствие) */}
+            {/* Сначала отображаем QuoteDisplay (приветствие) */}
             <QuoteDisplay quote={dailyQuote} className="mt-6 mb-4" />
             
             {/* Затем отображаем ZodiacBadgeDisplay (прямо под приветствием) */}
