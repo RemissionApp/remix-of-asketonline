@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { WorkSection, LoveSection, HealthSection, AdviceSection, parseHoroscopeSections } from './HoroscopeSections';
+import { DeveloperSwitch } from './DeveloperSwitch';
+import { Button } from './ui/button';
+import { RefreshCw } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface DetailedHoroscopeDisplayProps {
   className?: string;
@@ -12,6 +16,8 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   const { userProfile, language } = useAppStore();
   const [horoscope, setHoroscope] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const { toast } = useToast();
   const [horoscopeSections, setHoroscopeSections] = useState<{
     work: string;
     love: string;
@@ -46,11 +52,17 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   const zodiacSign = getZodiacSign(userProfile?.birthDate || null);
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
-  useEffect(() => {
-    const fetchHoroscope = async () => {
+  // Function to fetch horoscope
+  const fetchHoroscope = async (forceRefresh = false) => {
+    if (forceRefresh) {
+      setRefreshing(true);
+    } else {
       setLoading(true);
-      
-      try {
+    }
+    
+    try {
+      // Skip cache check if forceRefresh is true
+      if (!forceRefresh) {
         // Check for cached detailed horoscope in localStorage
         const storedHoroscope = localStorage.getItem('detailedHoroscope');
         const storedDate = localStorage.getItem('detailedHoroscopeDate');
@@ -73,100 +85,135 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
           setLoading(false);
           return;
         }
+      }
+      
+      // Get user zodiac sign if available
+      if (!zodiacSign) {
+        throw new Error('Zodiac sign not available');
+      }
+      
+      // Try to fetch from edge function
+      try {
+        const response = await fetch('/api/generate-horoscope', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sign: zodiacSign,
+            language: language,
+            detailed: true,
+            forceRefresh: forceRefresh // Pass the force refresh flag
+          })
+        });
         
-        // Get user zodiac sign if available
-        if (!zodiacSign) {
-          throw new Error('Zodiac sign not available');
+        if (!response.ok) {
+          throw new Error('Failed to fetch from API');
         }
         
-        // Try to fetch from edge function
-        try {
-          const response = await fetch('/api/generate-horoscope', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              sign: zodiacSign,
-              language: language,
-              detailed: true
-            })
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          setHoroscope(data.data.description || '');
+          setHoroscopeSections(parseHoroscopeSections(data.data.description || ''));
+          
+          // Set additional info
+          setAdditionalInfo({
+            lucky_number: data.data.lucky_number || '',
+            lucky_time: data.data.lucky_time || '',
+            color: data.data.color || '',
+            mood: data.data.mood || ''
           });
           
-          if (!response.ok) {
-            throw new Error('Failed to fetch from API');
-          }
+          // Cache the response
+          localStorage.setItem('detailedHoroscope', JSON.stringify(data.data));
+          localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
           
-          const data = await response.json();
-          
-          if (data.success && data.data) {
-            setHoroscope(data.data.description || '');
-            setHoroscopeSections(parseHoroscopeSections(data.data.description || ''));
-            
-            // Set additional info
-            setAdditionalInfo({
-              lucky_number: data.data.lucky_number || '',
-              lucky_time: data.data.lucky_time || '',
-              color: data.data.color || '',
-              mood: data.data.mood || ''
+          if (forceRefresh) {
+            toast({
+              title: language === 'ru' ? 'Гороскоп обновлен' : 
+                    language === 'es' ? 'Horóscopo actualizado' : 
+                    'Horoscope updated',
+              description: language === 'ru' ? 'Звезды рассказали что-то новое' : 
+                          language === 'es' ? 'Las estrellas han revelado algo nuevo' : 
+                          'The stars have revealed something new',
+              variant: "default",
+              duration: 3000
             });
-            
-            // Cache the response
-            localStorage.setItem('detailedHoroscope', JSON.stringify(data.data));
-            localStorage.setItem('detailedHoroscopeDate', today);
-            
-            setLoading(false);
-            return;
           }
           
-          throw new Error('Invalid response from API');
-        } catch (error) {
-          console.error('Error fetching horoscope from API:', error);
-          // Continue to fallback method
+          return;
         }
         
-        // Generate fallback horoscope
-        const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language);
-        setHoroscope(fallbackHoroscope.description);
-        setHoroscopeSections(parseHoroscopeSections(fallbackHoroscope.description));
-        
-        setAdditionalInfo({
-          lucky_number: fallbackHoroscope.lucky_number,
-          lucky_time: fallbackHoroscope.lucky_time,
-          color: fallbackHoroscope.color,
-          mood: fallbackHoroscope.mood
-        });
-        
-        // Cache the fallback horoscope
-        localStorage.setItem('detailedHoroscope', JSON.stringify(fallbackHoroscope));
-        localStorage.setItem('detailedHoroscopeDate', today);
-        
+        throw new Error('Invalid response from API');
       } catch (error) {
-        console.error('Error in horoscope generation:', error);
-        // Set some default content if everything fails
-        const sections = {
-          work: 'Сегодня благоприятный день для деловых начинаний. Доверяйте своей интуиции при принятии финансовых решений.',
-          love: 'Проявите внимание к партнеру. Одиноким звезды советуют быть более открытыми для новых знакомств.',
-          health: 'Следите за своим эмоциональным состоянием. Небольшая прогулка на свежем воздухе поможет восстановить силы.',
-          advice: 'Сегодня хороший день для планирования будущего. Запишите свои цели и мечты.'
-        };
+        console.error('Error fetching horoscope from API:', error);
+        // Continue to fallback method
         
-        setHoroscopeSections(sections);
-        setAdditionalInfo({
-          lucky_number: String(Math.floor(Math.random() * 100)),
-          lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-          color: ['красный', 'синий', 'зеленый', 'желтый', 'фиолетовый'][Math.floor(Math.random() * 5)],
-          mood: ['спокойный', 'энергичный', 'задумчивый', 'творческий'][Math.floor(Math.random() * 4)]
-        });
-      } finally {
-        setLoading(false);
+        if (forceRefresh) {
+          toast({
+            title: language === 'ru' ? 'Ошибка обновления' : 
+                  language === 'es' ? 'Error de actualización' : 
+                  'Update error',
+            description: language === 'ru' ? 'Не удалось получить новый гороскоп' : 
+                        language === 'es' ? 'No se pudo obtener un nuevo horóscopo' : 
+                        'Failed to get a new horoscope',
+            variant: "destructive",
+            duration: 3000
+          });
+        }
       }
-    };
-    
+      
+      // Generate fallback horoscope
+      const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language);
+      setHoroscope(fallbackHoroscope.description);
+      setHoroscopeSections(parseHoroscopeSections(fallbackHoroscope.description));
+      
+      setAdditionalInfo({
+        lucky_number: fallbackHoroscope.lucky_number,
+        lucky_time: fallbackHoroscope.lucky_time,
+        color: fallbackHoroscope.color,
+        mood: fallbackHoroscope.mood
+      });
+      
+      // Cache the fallback horoscope
+      localStorage.setItem('detailedHoroscope', JSON.stringify(fallbackHoroscope));
+      localStorage.setItem('detailedHoroscopeDate', new Date().toDateString());
+      
+    } catch (error) {
+      console.error('Error in horoscope generation:', error);
+      // Set some default content if everything fails
+      const sections = {
+        work: 'Сегодня благоприятный день для деловых начинаний. Доверяйте своей интуиции при принятии финансовых решений.',
+        love: 'Проявите внимание к партнеру. Одиноким звезды советуют быть более открытыми для новых знакомств.',
+        health: 'Следите за своим эмоциональным состоянием. Небольшая прогулка на свежем воздухе поможет восстановить силы.',
+        advice: 'Сегодня хороший день для планирования будущего. Запишите свои цели и мечты.'
+      };
+      
+      setHoroscopeSections(sections);
+      setAdditionalInfo({
+        lucky_number: String(Math.floor(Math.random() * 100)),
+        lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
+        color: ['красный', 'синий', 'зеленый', 'желтый', 'фиолетовый'][Math.floor(Math.random() * 5)],
+        mood: ['спокойный', 'энергичный', 'задумчивый', 'творческий'][Math.floor(Math.random() * 4)]
+      });
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+  
+  // Initial fetch
+  useEffect(() => {
     if (userProfile?.birthDate) {
       fetchHoroscope();
     }
   }, [userProfile?.birthDate, language, zodiacSign]);
+  
+  // Handle force refresh
+  const handleRefresh = () => {
+    fetchHoroscope(true);
+  };
   
   if (loading) {
     return (
@@ -183,6 +230,8 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
     );
   }
   
+  const isPro = userProfile?.isPro || false;
+  
   return (
     <div className={`p-4 ${className}`}>
       <div className="text-center mb-6">
@@ -192,6 +241,28 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         <p className="text-cosmic-accent text-sm">
           {currentDate}
         </p>
+        
+        {/* Developer mode refresh button */}
+        {isPro && (
+          <div className="mt-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="text-cosmic-accent border-cosmic-accent/30 hover:bg-cosmic-accent/10"
+            >
+              <RefreshCw size={14} className={`mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 
+                (language === 'ru' ? 'Обновление...' : 
+                 language === 'es' ? 'Actualizando...' : 
+                 'Refreshing...') : 
+                (language === 'ru' ? 'Обновить гороскоп' : 
+                 language === 'es' ? 'Actualizar horóscopo' : 
+                 'Refresh horoscope')}
+            </Button>
+          </div>
+        )}
       </div>
       
       {/* Zodiac sign display */}
