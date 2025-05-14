@@ -63,7 +63,7 @@ function Calendar({
       {/* Year Slider */}
       <div className="px-3 space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{t.calendar?.year || 'Year'}: {month.getFullYear()}</span>
+          <span className="text-muted-foreground">{t?.calendar?.year || 'Year'}: {month.getFullYear()}</span>
         </div>
         <Slider
           defaultValue={[month.getFullYear()]}
@@ -79,7 +79,7 @@ function Calendar({
       {/* Month Slider */}
       <div className="px-3 space-y-1">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{t.calendar?.month || 'Month'}: {month.getMonth() + 1}</span>
+          <span className="text-muted-foreground">{t?.calendar?.month || 'Month'}: {month.getMonth() + 1}</span>
         </div>
         <Slider
           defaultValue={[month.getMonth() + 1]}

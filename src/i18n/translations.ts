@@ -20,6 +20,10 @@ export const translations = {
         profile: "Profile"
       }
     },
+    calendar: {
+      year: "Year",
+      month: "Month"
+    },
     welcome: {
       title: "Welcome to Cosmic Ascesis",
       subtitle: "Embark on a transformative journey of self-improvement and spiritual growth.",
@@ -31,6 +35,25 @@ export const translations = {
     },
     onboarding: {
       title: "Welcome!",
+      steps: [
+        {
+          title: "Set Your Intention",
+          content: "Define what you wish to abstain from. Be specific and honest with yourself."
+        },
+        {
+          title: "Commit to a Duration",
+          content: "Choose how long you'll maintain your ascesis. Start small for greater success."
+        },
+        {
+          title: "Reflect and Grow",
+          content: "Use this journey to understand yourself better. Track your progress and celebrate milestones."
+        }
+      ],
+      buttons: {
+        enter: "Enter",
+        next: "Next",
+        startJourney: "Begin Your Journey"
+      },
       step1: {
         title: "Set Your Intention",
         description: "Define what you wish to abstain from. Be specific and honest with yourself."
@@ -53,8 +76,20 @@ export const translations = {
       rejectionExamples: "e.g., sugar, phone after 22:00, cigarettes",
       durationExamples: "e.g., 7, 14, 30",
       successMessage: "Ascesis created successfully!",
-      errorMessage: "Failed to create ascesis. Please try again."
+      errorMessage: "Failed to create ascesis. Please try again.",
+      stepOneTitle: "What will you abstain from?",
+      stepTwoTitle: "For how long?",
+      stepThreeTitle: "What do you wish to receive in return?",
+      notAsking: "This is not asking for material goods but for spiritual guidance and fulfillment",
+      customDays: "Custom duration",
+      nextButton: "Next",
+      placeholders: {
+        rejection: "I will abstain from...",
+        reward: "I wish to receive..."
+      },
+      ascesisWarning: "Choose what you're willing to give up. This covenant represents your commitment to personal growth through conscious sacrifice."
     },
+    minimumPeriod: "Minimum 30 days required",
     universe: {
       title: "Ask the Cosmic Universe",
       questionPlaceholder: "Ask your question...",
@@ -185,6 +220,10 @@ export const translations = {
         profile: "Профиль"
       }
     },
+    calendar: {
+      year: "Год",
+      month: "Месяц"
+    },
     welcome: {
       title: "Добро пожаловать в Cosmic Ascesis",
       subtitle: "Отправьтесь в преобразующее путешествие самосовершенствования и духовного роста.",
@@ -196,6 +235,25 @@ export const translations = {
     },
     onboarding: {
       title: "Добро пожаловать!",
+      steps: [
+        {
+          title: "Установите Свое Намерение",
+          content: "Определите, от чего вы хотите воздержаться. Будьте конкретны и честны с собой."
+        },
+        {
+          title: "Определите Продолжительность",
+          content: "Выберите, как долго вы будете поддерживать свою аскезу. Начните с малого для большего успеха."
+        },
+        {
+          title: "Размышляйте и Растите",
+          content: "Используйте это путешествие, чтобы лучше понять себя. Отслеживайте свой прогресс и отмечайте вехи."
+        }
+      ],
+      buttons: {
+        enter: "Войти",
+        next: "Далее",
+        startJourney: "Начать Путь"
+      },
       step1: {
         title: "Установите Свое Намерение",
         description: "Определите, от чего вы хотите воздержаться. Будьте конкретны и честны с собой."
@@ -218,8 +276,20 @@ export const translations = {
       rejectionExamples: "например, сахар, телефон после 22:00, сигареты",
       durationExamples: "например, 7, 14, 30",
       successMessage: "Аскеза успешно создана!",
-      errorMessage: "Не удалось создать аскезу. Пожалуйста, попробуйте еще раз."
+      errorMessage: "Не удалось создать аскезу. Пожалуйста, попробуйте еще раз.",
+      stepOneTitle: "От чего вы откажетесь?",
+      stepTwoTitle: "На какой срок?",
+      stepThreeTitle: "Что вы хотите получить взамен?",
+      notAsking: "Мы не просим материальных благ, а духовного руководства и исполнения",
+      customDays: "Своя продолжительность",
+      nextButton: "Далее",
+      placeholders: {
+        rejection: "Я воздержусь от...",
+        reward: "Я хочу получить..."
+      },
+      ascesisWarning: "Выберите то, от чего вы готовы отказаться. Этот договор представляет ваше обязательство к личностному росту через осознанную жертву."
     },
+    minimumPeriod: "Минимум 30 дней",
     universe: {
       title: "Спросите у Космической Вселенной",
       questionPlaceholder: "Задайте свой вопрос...",
@@ -350,6 +420,10 @@ export const translations = {
         profile: "Perfil"
       }
     },
+    calendar: {
+      year: "Año",
+      month: "Mes"
+    },
     welcome: {
       title: "Bienvenido a Ascesis Cósmica",
       subtitle: "Embárcate en un viaje transformador de superación personal y crecimiento espiritual.",
@@ -361,6 +435,25 @@ export const translations = {
     },
     onboarding: {
       title: "¡Bienvenido!",
+      steps: [
+        {
+          title: "Establece Tu Intención",
+          content: "Define de qué deseas abstenerte. Sé específico y honesto contigo mismo."
+        },
+        {
+          title: "Comprométete a una Duración",
+          content: "Elige cuánto tiempo mantendrás tu ascesis. Comienza poco a poco para un mayor éxito."
+        },
+        {
+          title: "Reflexiona y Crece",
+          content: "Utiliza este viaje para comprenderte mejor. Realiza un seguimiento de tu progreso y celebra los hitos."
+        }
+      ],
+      buttons: {
+        enter: "Entrar",
+        next: "Siguiente",
+        startJourney: "Comenzar Viaje"
+      },
       step1: {
         title: "Establece Tu Intención",
         description: "Define de qué deseas abstenerte. Sé específico y honesto contigo mismo."
@@ -383,8 +476,20 @@ export const translations = {
       rejectionExamples: "ej., azúcar, teléfono después de las 22:00, cigarrillos",
       durationExamples: "ej., 7, 14, 30",
       successMessage: "¡Ascesis creada con éxito!",
-      errorMessage: "No se pudo crear la ascesis. Por favor, inténtalo de nuevo."
+      errorMessage: "No se pudo crear la ascesis. Por favor, inténtalo de nuevo.",
+      stepOneTitle: "¿De qué te abstendrás?",
+      stepTwoTitle: "¿Por cuánto tiempo?",
+      stepThreeTitle: "¿Qué deseas recibir a cambio?",
+      notAsking: "Esto no pide bienes materiales sino guía espiritual y plenitud",
+      customDays: "Duración personalizada",
+      nextButton: "Siguiente",
+      placeholders: {
+        rejection: "Me abstendré de...",
+        reward: "Deseo recibir..."
+      },
+      ascesisWarning: "Elige aquello a lo que estás dispuesto a renunciar. Este pacto representa tu compromiso con el crecimiento personal a través del sacrificio consciente."
     },
+    minimumPeriod: "Se requiere un mínimo de 30 días",
     universe: {
       title: "Pregunta al Universo Cósmico",
       questionPlaceholder: "Haz tu pregunta...",
