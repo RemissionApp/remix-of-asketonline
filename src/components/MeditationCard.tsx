@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
-import { useUserSubscription } from '@/hooks/useUserSubscription';
 
 interface MeditationCardProps {
   title: string;
@@ -28,8 +27,7 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   onPlay
 }) => {
   const { t } = useTranslations();
-  const { userProfile } = useAppStore();
-  const { upgradeToPro } = useUserSubscription();
+  const { userProfile, upgradeToPro } = useAppStore();
   const navigate = useNavigate();
   const isPro = userProfile.isPro;
 

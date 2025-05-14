@@ -28,7 +28,7 @@ interface Option {
 
 interface MultiSelectWithCustomInputProps {
   placeholder?: string;
-  options: string[] | Option[];
+  options: Option[];
   value: string[];
   onChange: (value: string[]) => void;
   className?: string;
@@ -46,14 +46,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
   const { language } = useAppStore();
   const { t } = useTranslations();
   const [open, setOpen] = useState(false);
-  
-  // Convert string[] options to Option[] if needed
-  const [options, setOptions] = useState<Option[]>(
-    Array.isArray(initialOptions) && typeof initialOptions[0] === 'string'
-      ? (initialOptions as string[]).map(opt => ({ value: opt, label: opt }))
-      : (initialOptions as Option[])
-  );
-  
+  const [options, setOptions] = useState<Option[]>(initialOptions);
   const [customValue, setCustomValue] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   

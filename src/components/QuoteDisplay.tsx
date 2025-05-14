@@ -1,33 +1,18 @@
 
-import { DailyQuote } from '@/types';
-import { cn } from '@/lib/utils';
-import { QuoteIcon } from 'lucide-react';
+import React from 'react';
 
 interface QuoteDisplayProps {
-  quote: DailyQuote;
+  quote: string;
   className?: string;
 }
 
-export const QuoteDisplay = ({ quote, className }: QuoteDisplayProps) => {
+export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) => {
   return (
-    <div
-      className={cn(
-        "relative max-w-md bg-gradient-to-br from-cosmic-dark/50 to-cosmic-dark/80 backdrop-blur-sm",
-        "border border-cosmic-accent/20 p-6 rounded-md quote-card",
-        className
-      )}
-    >
-      <div className="absolute left-3 top-3 text-cosmic-accent opacity-50">
-        <QuoteIcon size={18} />
-      </div>
-
-      <p className="text-white/90 italic font-serif text-center">
-        "{quote.text}"
+    <div className={`text-center p-6 max-w-lg mx-auto ${className}`}>
+      <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">
+        "{quote}"
       </p>
-
-      <p className="text-cosmic-accent text-xs mt-3 text-right">
-        — {quote.author}
-      </p>
+      <p className="mt-2 text-sm text-cosmic-accent/80">— Послание Вселенной</p>
     </div>
   );
 };

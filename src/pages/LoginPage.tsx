@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,39 +9,19 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase, cleanupAuthState } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { loading, user, userProfile } = useAppStore();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, loading, user, userProfile } = useAppStore();
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
-  const [initialCheckDone, setInitialCheckDone] = useState(false);
-  
-  // Check if user is already logged in - but only once
-  useEffect(() => {
-    // Check once if user is logged in with profile data loaded
-    if (!initialCheckDone && user && userProfile) {
-      setInitialCheckDone(true);
-      
-      // If user has complete profile, go to main
-      if (userProfile.name !== 'Искатель' && userProfile.birthDate) {
-        navigate('/main');
-      }
-      // If user exists but profile is incomplete, go to profile setup
-      else {
-        navigate('/profile-setup');
-      }
-    }
-  }, [user, userProfile, navigate, initialCheckDone]);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,25 +29,16 @@ const LoginPage: React.FC = () => {
     // Clean up auth state before signing in to prevent issues
     cleanupAuthState();
     
-    try {
-      const success = await signIn(email, password);
-      if (success) {
-        // Wait a brief moment for profile to load fully
-        setTimeout(() => {
-          // Check if user profile is complete
-          const { userProfile } = useAppStore.getState();
-          
-          if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-            // Complete profile - go to main
-            navigate('/main');
-          } else {
-            // Incomplete profile - go to setup
-            navigate('/profile-setup');
-          }
-        }, 300);
+    const success = await signIn(email, password);
+    if (success) {
+      // Check if user already has completed profile setup
+      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+        // If profile is already setup, go directly to main
+        navigate('/main');
+      } else {
+        // Otherwise, go to profile setup
+        navigate('/profile-setup');
       }
-    } catch (error) {
-      console.error("Sign in error:", error);
     }
   };
   

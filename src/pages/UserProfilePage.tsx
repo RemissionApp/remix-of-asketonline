@@ -1,48 +1,31 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
-import { UserProfileForm } from '@/components/UserProfileForm';
+import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
-import { AvatarUpload } from '@/components/AvatarUpload';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile, user, loading } = useAppStore();
-  const [checkingAuth, setCheckingAuth] = useState(true);
   
-  // Check if user is logged in and handle profile completion status
+  // Check if user is logged in and already has profile data
   useEffect(() => {
-    // First check - redirect to login if no user
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Wait until we're not in loading state to make decisions
-    if (!loading) {
-      setCheckingAuth(false);
-      
-      // If profile is complete, go to main
-      if (userProfile && 
-          userProfile.name !== 'Искатель' && 
-          userProfile.birthDate) {
-        // User has completed profile setup, go to main
-        navigate('/main');
-      }
-      // Otherwise stay on this page to complete profile setup
+    // If user already has a name other than the default and a birthdate set, 
+    // they've completed profile setup, so redirect to main
+    if (!loading && 
+        userProfile && 
+        userProfile.name !== 'Искатель' && 
+        userProfile.birthDate) {
+      navigate('/main');
     }
   }, [userProfile, user, loading, navigate]);
-
-  // Show loading or the form
-  if (loading || checkingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">

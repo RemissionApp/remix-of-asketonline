@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -20,7 +21,6 @@ export interface Database {
           rank: string
           created_at: string
           updated_at: string
-          avatar_url: string | null
         }
         Insert: {
           id: string
@@ -32,7 +32,6 @@ export interface Database {
           rank?: string
           created_at?: string
           updated_at?: string
-          avatar_url?: string | null
         }
         Update: {
           id?: string
@@ -44,7 +43,6 @@ export interface Database {
           rank?: string
           created_at?: string
           updated_at?: string
-          avatar_url?: string | null
         }
       }
       pacts: {

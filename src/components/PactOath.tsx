@@ -97,7 +97,7 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     }
   };
   
-  // Функция для правильного отображения отказа пользователя с учетом языка
+  // Функция для правильного отображени�� отказа пользователя с учетом языка
   const formatRejection = (rejection: string): string => {
     // Проверяем, является ли строка предустановленным значением из списка
     const predefinedOptions: Record<string, Record<string, string>> = {

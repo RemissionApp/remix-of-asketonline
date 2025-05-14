@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon, MedalIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useUserSubscription } from '@/hooks/useUserSubscription';
+import { useAppStore } from '@/store/useAppStore';
 
 interface SubscriptionBannerProps {
   className?: string;
@@ -19,7 +20,7 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
 }) => {
   const { t } = useTranslations();
   const navigate = useNavigate();
-  const { upgradeToPro } = useUserSubscription();
+  const { upgradeToPro } = useAppStore();
   
   const handleUpgrade = () => {
     if (onUpgrade) {

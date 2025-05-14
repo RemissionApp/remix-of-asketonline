@@ -9,14 +9,12 @@ interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showRankBorder?: boolean;
-  customImage?: string | null;
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({ 
   size = 'md', 
   className,
-  showRankBorder = true,
-  customImage
+  showRankBorder = true
 }) => {
   const { userProfile } = useAppStore();
   
@@ -58,9 +56,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     ? `border-2 ${rankBorderColor[userProfile.rank]}` 
     : '';
   
-  // Use custom image if provided, otherwise use rank-based avatar
-  const avatarSrc = customImage || getAvatarImagePath(userProfile.rank);
-  
   return (
     <Avatar className={cn(
       sizeClasses[size], 
@@ -69,8 +64,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       className
     )}>
       <AvatarImage 
-        src={avatarSrc} 
-        alt={`${userProfile.name}'s avatar`} 
+        src={getAvatarImagePath(userProfile.rank)} 
+        alt={`${userProfile.rank} avatar`} 
       />
       <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
         {userProfile.name.substring(0, 2).toUpperCase()}

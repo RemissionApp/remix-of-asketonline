@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -22,16 +21,17 @@ import { useToast } from '@/hooks/use-toast';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { NoPactsView } from '@/components/NoPactsView';
 import { useNavigate } from 'react-router-dom';
-import { usePacts } from '@/hooks/usePacts';
 
 const MainPage: React.FC = () => {
   const { 
+    pacts, 
     dailyQuote, 
+    markDayComplete, 
     setActiveScreen,
+    syncPactsWithCurrentDate,
     language,
     userProfile
   } = useAppStore();
-  const { pacts, markDayComplete, syncPactsWithCurrentDate } = usePacts();
   const { t } = useTranslations();
   const { toast } = useToast();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);

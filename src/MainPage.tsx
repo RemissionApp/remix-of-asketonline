@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
@@ -12,15 +11,16 @@ import { NoPactsView } from '@/components/NoPactsView';
 import { PactNavigation } from '@/components/PactNavigation';
 import { ActionButtons } from '@/components/ActionButtons';
 import { useNavigate } from 'react-router-dom';
-import { usePacts } from '@/hooks/usePacts';
 
 const MainPage: React.FC = () => {
   const { 
-    dailyQuote,
+    pacts = [], // Set default empty array if pacts is undefined
+    dailyQuote, 
+    markDayComplete, 
+    syncPactsWithCurrentDate,
     language,
     setActiveScreen
   } = useAppStore();
-  const { pacts, markDayComplete, syncPactsWithCurrentDate } = usePacts();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   const navigate = useNavigate();
