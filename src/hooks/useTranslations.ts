@@ -1,5 +1,6 @@
+
 import { useAppStore } from '@/store/useAppStore';
-import { translations, SupportedLanguage } from '@/i18n/translations';
+import translations, { SupportedLanguage } from '@/i18n/translations';
 
 // Helper to get the correct word for the year based on the number in different languages
 const getYearWordByLanguage = (age: number, language: SupportedLanguage) => {
@@ -123,6 +124,15 @@ export const useTranslations = () => {
       noPacts: language === 'ru' ? 'У вас нет активных пактов' : language === 'es' ? 'No tienes pactos activos' : 'You have no active pacts',
       completedToday: language === 'ru' ? 'Выполнено сегодня' : language === 'es' ? 'Completado hoy' : 'Completed today',
       daysLeft: language === 'ru' ? 'Дней осталось' : language === 'es' ? 'Días restantes' : 'Days left',
+      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
+      todayCompleted: language === 'ru' ? 'Сегодня я выдержал' : language === 'es' ? 'Hoy resistí' : 'Today I endured',
+      askUniverse: language === 'ru' ? 'Спросить Вселенну' : language === 'es' ? 'Preguntar al Universo' : 'Ask the Universe',
+      nav: {
+        path: language === 'ru' ? 'Путь' : language === 'es' ? 'Camino' : 'Path',
+        ascesis: language === 'ru' ? 'Аскезы' : language === 'es' ? 'Ascesis' : 'Ascesis',
+        universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
+        profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile'
+      }
     },
     createPact: {
       title: language === 'ru' ? 'Создать новый пакт' : language === 'es' ? 'Crear nuevo pacto' : 'Create new pact',
@@ -137,6 +147,12 @@ export const useTranslations = () => {
       titleRequired: language === 'ru' ? 'Название обязательно' : language === 'es' ? 'El título es obligatorio' : 'Title is required',
       durationRequired: language === 'ru' ? 'Длительность обязательна' : language === 'es' ? 'La duración es obligatoria' : 'Duration is required',
       durationInvalid: language === 'ru' ? 'Длительность должна быть числом' : language === 'es' ? 'La duración debe ser un número' : 'Duration must be a number',
+      stepOneTitle: language === 'ru' ? 'От чего ты отказываешься?' : language === 'es' ? '¿A qué renuncias?' : 'What are you giving up?',
+      placeholders: {
+        rejection: language === 'ru' ? 'Например: Сахар, Соцсети, Алкоголь...' : language === 'es' ? 'Por ejemplo: Azúcar, Redes Sociales, Alcohol...' : 'For example: Sugar, Social Media, Alcohol...',
+        reward: language === 'ru' ? 'Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность...' : language === 'es' ? 'Por ejemplo: Salud fuerte, Claridad mental, Estabilidad financiera...' : 'For example: Strong health, Mental clarity, Financial stability...'
+      },
+      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
     },
     universe: {
       title: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
@@ -157,12 +173,27 @@ export const useTranslations = () => {
       title: language === 'ru' ? 'Медитация' : language === 'es' ? 'Meditación' : 'Meditation',
       description: language === 'ru' ? 'Найдите свой внутренний покой' : language === 'es' ? 'Encuentra tu paz interior' : 'Find your inner peace',
       startButton: language === 'ru' ? 'Начать медитацию' : language === 'es' ? 'Comenzar meditación' : 'Start meditation',
+      play: language === 'ru' ? 'Слушать' : language === 'es' ? 'Escuchar' : 'Listen',
+      unlock: language === 'ru' ? 'Открыть PRO' : language === 'es' ? 'Desbloquear PRO' : 'Unlock PRO',
     },
-  };
-
-  const mergedTranslations = {
-    ...translations[language],
-    ...defaultTranslations,
+    pactOath: {
+      title: language === 'ru' ? 'Моя Аскеза' : language === 'es' ? 'Mi Ascesis' : 'My Ascesis',
+      subtitle: language === 'ru' ? 'Я даю обет' : language === 'es' ? 'Hago un voto' : 'I take a vow',
+      iPromise: language === 'ru' ? 'Я обещаю отказаться от' : language === 'es' ? 'Prometo renunciar a' : 'I promise to give up',
+      duration: language === 'ru' ? 'на срок' : language === 'es' ? 'por un período de' : 'for a period of',
+      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
+      inReturn: language === 'ru' ? 'Взамен я притягиваю в свою жизнь' : language === 'es' ? 'A cambio atraigo a mi vida' : 'In return I attract into my life',
+      confirmButton: language === 'ru' ? 'Подтверждаю Договор' : language === 'es' ? 'Confirmar Pacto' : 'Confirm Covenant',
+    },
+    subscription: {
+      bannerTitle: language === 'ru' ? 'Раскройте свой потенциал с ASKET PRO' : language === 'es' ? 'Desbloquea tu potencial con ASKET PRO' : 'Unlock your potential with ASKET PRO',
+      bannerDesc: language === 'ru' ? 'Доступ к медитациям, расширенным практикам и многому другому' : language === 'es' ? 'Acceso a meditaciones, prácticas avanzadas y mucho más' : 'Access to meditations, advanced practices and much more',
+      upgradeNow: language === 'ru' ? 'Улучшить сейчас' : language === 'es' ? 'Mejorar ahora' : 'Upgrade Now',
+    },
+    calendar: {
+      year: language === 'ru' ? 'Год' : language === 'es' ? 'Año' : 'Year',
+      month: language === 'ru' ? 'Месяц' : language === 'es' ? 'Mes' : 'Month',
+    }
   };
 
   return {
