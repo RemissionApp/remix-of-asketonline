@@ -130,7 +130,7 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Обработчик завершения дня с визуальным эффектом
+  // Handler for completing a day with visual effect
   const handleCompleteDayWithEffect = () => {
     if (currentPact) {
       markDayComplete(currentPact.id);
@@ -140,6 +140,11 @@ const MainPage: React.FC = () => {
         setShowEnergyEffect(false);
       }, 2000);
     }
+  };
+  
+  // Navigate to create pact page
+  const handleCreatePact = () => {
+    setActiveScreen('create-pact');
   };
   
   return (
@@ -253,7 +258,7 @@ const MainPage: React.FC = () => {
             </h1>
             
             <CosmicButton 
-              onClick={() => setActiveScreen('create-pact')}
+              onClick={handleCreatePact}
               className="mt-4"
             >
               {t.main.createPact}
