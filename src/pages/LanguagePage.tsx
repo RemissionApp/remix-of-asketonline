@@ -21,7 +21,8 @@ const LanguagePage: React.FC = () => {
   
   const handleSelectLanguage = (langCode: SupportedLanguage) => {
     setLanguage(langCode);
-    setShowProfileForm(true);
+    // Direct to signin page instead of showing profile form
+    setActiveScreen('signin');
   };
   
   return (

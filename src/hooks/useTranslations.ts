@@ -39,105 +39,200 @@ export const useTranslations = () => {
   
   const defaultTranslations = {
     calendar: {
-      year: language === 'ru' ? 'Год' : language === 'es' ? 'Año' : 'Year',
-      month: language === 'ru' ? 'Месяц' : language === 'es' ? 'Mes' : 'Month'
+      months: [
+        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+      ],
+      weekdays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+      today: 'Сегодня',
+      month: 'Месяц',
+      week: 'Неделя',
+      day: 'День',
+      previousMonth: 'Предыдущий месяц',
+      nextMonth: 'Следующий месяц',
+      previousWeek: 'Предыдущая неделя',
+      nextWeek: 'Следующая неделя',
+      previousDay: 'Предыдущий день',
+      nextDay: 'Следующий день',
+      selectMonth: 'Выбрать месяц',
+      selectYear: 'Выбрать год',
+      selectDate: 'Выбрать дату',
+      selectTime: 'Выбрать время',
+      selectDateTime: 'Выбрать дату и время',
+      cancel: 'Отмена',
+      save: 'Сохранить',
+      clear: 'Очистить',
+      now: 'Сейчас',
+      am: 'AM',
+      pm: 'PM'
     },
-    minimumPeriod: language === 'ru' ? 'Минимальный срок аскезы - 30 дней' : 
-                   language === 'es' ? 'Período mínimo de ascesis - 30 días' : 
-                   'Minimum ascesis period - 30 days',
-    comparison: {
-      title: language === 'ru' ? 'ASKET vs ASKET PRO' : language === 'es' ? 'ASKET vs ASKET PRO' : 'ASKET vs ASKET PRO',
-      freePlan: language === 'ru' ? 'Бесплатно' : language === 'es' ? 'Gratis' : 'Free',
-      proPlan: language === 'ru' ? 'Платная подписка' : language === 'es' ? 'Suscripción de pago' : 'Paid subscription',
-      free: language === 'ru' ? 'Бесплатно' : language === 'es' ? 'Gratis' : 'Free',
-      pricing: language === 'ru' ? '$4.99/мес или $29.99/год' : language === 'es' ? '$4.99/mes o $29.99/año' : '$4.99/month or $29.99/year',
-      upgradeButton: language === 'ru' ? 'Открыть силу PRO ✨' : language === 'es' ? 'Desbloquear el poder PRO ✨' : 'Unlock PRO power ✨',
-      features: [
-        {
-          name: language === 'ru' ? 'Количество активных аскез' : language === 'es' ? 'Número de ascesis activas' : 'Active ascesis count',
-          free: true,
-          pro: true,
-          freeDescription: language === 'ru' ? '1 одновременно' : language === 'es' ? '1 simultáneamente' : '1 simultaneously',
-          proDescription: language === 'ru' ? 'До 5 одновременно' : language === 'es' ? 'Hasta 5 simultáneamente' : 'Up to 5 simultaneously'
-        }
-      ]
+    welcome: {
+      title: 'АСКЕТ',
+      subtitle: 'Путь к внутренней силе',
+      startButton: 'Начать путешествие'
     },
-    meditation: {
-      pageTitle: language === 'ru' ? 'Медитации силы' : language === 'es' ? 'Meditaciones de poder' : 'Power Meditations',
-      play: language === 'ru' ? 'Слушать' : language === 'es' ? 'Escuchar' : 'Listen',
-      unlock: language === 'ru' ? 'Открыть PRO' : language === 'es' ? 'Desbloquear PRO' : 'Unlock PRO',
-      categories: {
-        morning: language === 'ru' ? 'Утренние' : language === 'es' ? 'Mañana' : 'Morning',
-        evening: language === 'ru' ? 'Вечерние' : language === 'es' ? 'Noche' : 'Evening',
-        stress: language === 'ru' ? 'Антистресс' : language === 'es' ? 'Antiestrés' : 'Anti-stress',
-        mantra: language === 'ru' ? 'Мантры' : language === 'es' ? 'Mantras' : 'Mantras',
-        visual: language === 'ru' ? 'Визуализации' : language === 'es' ? 'Visualización' : 'Visualization'
-      },
-      morning: {
-        title1: language === 'ru' ? 'Настрой на день' : language === 'es' ? 'Preparación para el día' : 'Day Setup',
-        desc1: language === 'ru' ? 'Зарядись энергией на весь день' : language === 'es' ? 'Cárgate de energía para todo el día' : 'Charge with energy for the whole day',
-        title2: language === 'ru' ? 'Благодарность' : language === 'es' ? 'Gratitud' : 'Gratitude',
-        desc2: language === 'ru' ? 'Практика благодарности Вселенной' : language === 'es' ? 'Práctica de gratitud al Universo' : 'Practice of gratitude to the Universe'
-      },
-      evening: {
-        title1: language === 'ru' ? 'Прощение' : language === 'es' ? 'Perdón' : 'Forgiveness',
-        desc1: language === 'ru' ? 'Отпусти прошлое с легкостью' : language === 'es' ? 'Deja ir el pasado con facilidad' : 'Let go of the past with ease'
-      },
-      stress: {
-        title1: language === 'ru' ? 'Заземление' : language === 'es' ? 'Conexión a tierra' : 'Grounding',
-        desc1: language === 'ru' ? 'Восстановление внутреннего равновесия' : language === 'es' ? 'Restauración del equilibrio interior' : 'Restoring inner balance'
-      },
-      mantra: {
-        title1: language === 'ru' ? 'Голос наставника' : language === 'es' ? 'Voz del guía' : 'Guide\'s Voice',
-        desc1: language === 'ru' ? 'Интеграция высшей энергии' : language === 'es' ? 'Integración de energía superior' : 'Integration of higher energy'
-      },
-      visualization: {
-        title1: language === 'ru' ? 'Космический полёт' : language === 'es' ? 'Vuelo cósmico' : 'Cosmic Flight',
-        desc1: language === 'ru' ? 'Путешествие сквозь звёзды' : language === 'es' ? 'Viaje a través de las estrellas' : 'Journey through the stars'
-      }
-    },
-    subscription: {
-      bannerTitle: language === 'ru' ? 'Раскройте свой потенциал с ASKET PRO' : 
-                   language === 'es' ? 'Desbloquea tu potencial con ASKET PRO' : 
-                   'Unlock your potential with ASKET PRO',
-      bannerDesc: language === 'ru' ? 'Доступ к медитациям, расширенным практикам и многому другому' : 
-                  language === 'es' ? 'Acceso a meditaciones, prácticas avanzadas y mucho más' : 
-                  'Access to meditations, advanced practices and much more',
-      upgradeNow: language === 'ru' ? 'Улучшить сейчас' : language === 'es' ? 'Mejorar ahora' : 'Upgrade Now'
-    },
-    main: {
-      path: language === 'ru' ? 'Путь' : language === 'es' ? 'Camino' : 'Path',
-      ascesis: language === 'ru' ? 'Аскеза' : language === 'es' ? 'Ascesis' : 'Ascesis',
-      universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
-      profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile',
-      days: language === 'ru' ? 'дней' : language === 'es' ? 'días' : 'days',
-      todayCompleted: language === 'ru' ? 'Сегодня завершено' : language === 'es' ? 'Hoy completado' : 'Today Completed',
-      askUniverse: language === 'ru' ? 'Спросить Вселенную' : language === 'es' ? 'Preguntar al Universo' : 'Ask the Universe',
-      noPacts: language === 'ru' ? 'Нет активных аскез' : language === 'es' ? 'No hay ascesis activas' : 'No active ascesis',
-      createPact: language === 'ru' ? 'Создать аскезу' : language === 'es' ? 'Crear ascesis' : 'Create Ascesis',
-      meditation: language === 'ru' ? 'Медитации' : language === 'es' ? 'Meditaciones' : 'Meditations',
-      nav: {
-        path: language === 'ru' ? 'Путь' : language === 'es' ? 'Camino' : 'Path',
-        ascesis: language === 'ru' ? 'Аскеза' : language === 'es' ? 'Ascesis' : 'Ascesis',
-        universe: language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe',
-        profile: language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile'
-      }
+    auth: {
+      signIn: 'Войти',
+      signUp: 'Зарегистрироваться',
+      signOut: 'Выйти',
+      email: 'Email',
+      emailPlaceholder: 'user@example.com',
+      emailInvalid: 'Неверный формат email',
+      password: 'Пароль',
+      passwordPlaceholder: '••••••••',
+      confirmPassword: 'Подтвердите пароль',
+      forgotPassword: 'Забыли пароль?',
+      backToSignIn: 'Назад к входу',
+      createAccount: 'Создать аккаунт',
+      alreadyHaveAccount: 'Уже есть аккаунт?',
+      continueAsGuest: 'Гость',
+      processing: 'Обработка...',
+      welcomeBack: 'С возвращением',
+      signInSubtitle: 'Войдите, чтобы продолжить',
+      signInButton: 'Войти',
+      createAccountTitle: 'Создать аккаунт',
+      signUpSubtitle: 'Зарегистрируйтесь, чтобы начать',
+      signUpButton: 'Создать аккаунт',
+      noAccount: 'Нет аккаунта?',
+      haveAccount: 'Уже есть аккаунт?',
+      orContinueWith: 'Или продолжить как',
+      passwordMatch: 'Пароли не совпадают',
+      passwordLength: 'Пароль должен быть не менее 6 символов',
     },
     userProfile: {
-      title: language === 'ru' ? 'О тебе' : language === 'es' ? 'Sobre ti' : 'About You',
-      nameLabel: language === 'ru' ? 'Как тебя зовут' : language === 'es' ? '¿Cómo te llamas?' : 'What\'s your name',
-      namePlaceholder: language === 'ru' ? 'Введите ваше имя' : language === 'es' ? 'Ingresa tu nombre' : 'Enter your name',
-      nameRequired: language === 'ru' ? 'Имя обязательно' : language === 'es' ? 'El nombre es obligatorio' : 'Name is required',
-      birthDateLabel: language === 'ru' ? 'Дата рождения' : language === 'es' ? 'Fecha de nacimiento' : 'Date of birth',
-      birthDatePlaceholder: language === 'ru' ? 'Выберите дату рождения' : language === 'es' ? 'Selecciona tu fecha de nacimiento' : 'Select your date of birth',
-      birthDateRequired: language === 'ru' ? 'Укажите дату рождения' : language === 'es' ? 'La fecha de nacimiento es obligatoria' : 'Date of birth is required',
-      continueButton: language === 'ru' ? 'Продолжить' : language === 'es' ? 'Continuar' : 'Continue',
-      age: language === 'ru' ? 'Возраст' : language === 'es' ? 'Edad' : 'Age',
-      yearSingular: language === 'ru' ? 'год' : language === 'es' ? 'año' : 'year',
-      yearPlural: language === 'ru' ? 'лет' : language === 'es' ? 'años' : 'years',
-      currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
-      languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
-      back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
+      title: 'О тебе',
+      nameLabel: 'Как тебя зовут',
+      namePlaceholder: 'Введите ваше имя',
+      nameRequired: 'Имя обязательно',
+      birthDateLabel: 'Дата рождения',
+      birthDatePlaceholder: 'Выберите дату рождения',
+      birthDateRequired: 'Укажите дату рождения',
+      languageLabel: 'Язык приложения',
+      currentDate: 'Текущая дата',
+      continueButton: 'Продолжить',
+      age: 'Возраст'
+    },
+    onboarding: {
+      steps: [
+        {
+          title: 'Добро пожаловать, Искатель',
+          content: 'Ты стоишь на пороге пути к внутренней силе.\n\nАскет — это практика внутренней работы над собой, основанная на древних учениях и современных научных методиках.\n\nНажми "Войти", чтобы начать свое путешествие.'
+        },
+        {
+          title: 'Цели и смысл пути',
+          content: 'Аскет помогает:\n\n• Обрести спокойствие и ясность ума\n• Развить волю и дисциплину\n• Освободиться от зависимостей\n• Найти внутреннюю опору\n• Раскрыть свой потенциал'
+        },
+        {
+          title: 'Твой путь начинается',
+          content: 'Каждый день тебя будут ждать практики и испытания.\n\nТы сам выбираешь свой темп и ритм.\n\nГлавное — регулярность и искренность.\n\nГотов ли ты принять вызов?'
+        }
+      ],
+      buttons: {
+        enter: 'Войти',
+        next: 'Далее',
+        startJourney: 'Начать путь'
+      }
+    },
+    main: {
+      days: 'День',
+      todayCompleted: 'Сегодня выполнено',
+      askUniverse: 'Спросить Вселенную',
+      noPacts: 'У вас пока нет пактов',
+      createPact: 'Создать пакт',
+      nav: {
+        path: 'Путь',
+        ascesis: 'Аскеза',
+        universe: 'Вселенная',
+        profile: 'Профиль'
+      },
+      profile: 'Профиль'
+    },
+    universe: {
+      title: 'Спросить Вселенную',
+      placeholder: 'Введите ваш вопрос...',
+      askButton: 'Спросить',
+      thinking: 'Вселенная размышляет...',
+      emptyState: 'Задай свой вопрос Вселенной',
+      yourQuestion: 'Твой вопрос',
+      universeAnswer: 'Ответ Вселенной',
+      newQuestion: 'Новый вопрос',
+      question: 'Вопрос',
+      previousQuestions: 'Прошлые вопросы'
+    },
+    compareVersions: {
+      title: 'Сравнение версий',
+      subtitle: 'Выберите две версии для сравнения',
+      compare: 'Сравнить',
+      version: 'Версия',
+      noVersions: 'Нет доступных версий',
+      differences: 'Различия',
+      noDifferences: 'Различий не найдено',
+      added: 'Добавлено',
+      removed: 'Удалено',
+      changed: 'Изменено',
+      back: 'Назад'
+    },
+    meditation: {
+      title: 'Медитация',
+      subtitle: 'Выберите тип медитации',
+      start: 'Начать',
+      pause: 'Пауза',
+      resume: 'Продолжить',
+      stop: 'Остановить',
+      duration: 'Длительность',
+      minutes: 'мин',
+      breathe: {
+        in: 'Вдох',
+        hold: 'Задержка',
+        out: 'Выдох',
+        rest: 'Отдых'
+      },
+      types: {
+        breathing: 'Дыхательная',
+        mindfulness: 'Осознанность',
+        loving: 'Любящая доброта',
+        body: 'Сканирование тела'
+      }
+    },
+    createPact: {
+      title: 'Создать пакт',
+      subtitle: 'Определите условия вашего пакта',
+      name: 'Название',
+      namePlaceholder: 'Введите название пакта',
+      description: 'Описание',
+      descriptionPlaceholder: 'Опишите ваш пакт',
+      duration: 'Длительность',
+      durationDays: 'дней',
+      difficulty: 'Сложность',
+      difficultyLevels: {
+        easy: 'Легкая',
+        medium: 'Средняя',
+        hard: 'Сложная'
+      },
+      create: 'Создать',
+      cancel: 'Отмена'
+    },
+    subscription: {
+      title: 'АСКЕТ PRO',
+      subtitle: 'Разблокируйте полный потенциал',
+      features: [
+        'Доступ ко всем практикам',
+        'Персональные рекомендации',
+        'Расширенная аналитика',
+        'Без рекламы'
+      ],
+      monthly: 'Ежемесячно',
+      yearly: 'Ежегодно',
+      lifetime: 'Навсегда',
+      subscribe: 'Подписаться',
+      price: {
+        monthly: '299 ₽/мес',
+        yearly: '2 990 ₽/год',
+        lifetime: '7 990 ₽'
+      },
+      current: 'Текущий план',
+      upgrade: 'Улучшить',
+      manage: 'Управление'
     }
   };
   
@@ -149,3 +244,5 @@ export const useTranslations = () => {
     getYearWord
   };
 };
+
+export type SupportedLanguage = 'ru' | 'en' | 'es';

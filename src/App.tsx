@@ -9,6 +9,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useAppStore } from "./store/useAppStore";
 import WelcomePage from "./pages/WelcomePage";
 import LanguagePage from "./pages/LanguagePage";
+import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import MainPage from "./pages/MainPage";
 import CreatePactPage from "./pages/CreatePactPage";
@@ -30,6 +32,14 @@ const AppContent = () => {
   
   if (activeScreen === 'language') {
     return <LanguagePage />;
+  }
+
+  if (activeScreen === 'signin') {
+    return <SignInPage />;
+  }
+
+  if (activeScreen === 'signup') {
+    return <SignUpPage />;
   }
   
   if (!onboardingComplete && activeScreen === 'onboarding') {
@@ -62,6 +72,8 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<AppContent />} />
+              <Route path="/signin" element={<SignInPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
               <Route path="/comparison" element={<ComparisonPage />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route path="*" element={<NotFound />} />
