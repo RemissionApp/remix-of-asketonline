@@ -9,7 +9,224 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          achievement_type: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          title: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          title: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          title?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string
+          id: string
+          requirements: Json
+          reward: Json
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description: string
+          id?: string
+          requirements: Json
+          reward: Json
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          requirements?: Json
+          reward?: Json
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pact_days: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          id: string
+          pact_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date: string
+          id?: string
+          pact_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          pact_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pact_days_pact_id_fkey"
+            columns: ["pact_id"]
+            isOneToOne: false
+            referencedRelation: "pacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pacts: {
+        Row: {
+          created_at: string
+          duration: number
+          id: string
+          reward: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration: number
+          id?: string
+          reward?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration?: number
+          id?: string
+          reward?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          birth_date: string | null
+          created_at: string
+          energy_points: number
+          goal: string | null
+          id: string
+          name: string
+          rank: string
+          total_days: number
+          updated_at: string
+        }
+        Insert: {
+          birth_date?: string | null
+          created_at?: string
+          energy_points?: number
+          goal?: string | null
+          id: string
+          name: string
+          rank?: string
+          total_days?: number
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string | null
+          created_at?: string
+          energy_points?: number
+          goal?: string | null
+          id?: string
+          name?: string
+          rank?: string
+          total_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          is_pro: boolean
+          subscription_end: string | null
+          subscription_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_pro?: boolean
+          subscription_end?: string | null
+          subscription_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_pro?: boolean
+          subscription_end?: string | null
+          subscription_start?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      universe_questions: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
