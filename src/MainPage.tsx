@@ -68,6 +68,7 @@ const MainPage: React.FC = () => {
   // Navigate to create pact page
   const handleCreatePact = () => {
     setActiveScreen('create-pact');
+    navigate('/create-pact');  // Make sure we're navigating to the correct route
   };
   
   // Function to format the rejection text based on language

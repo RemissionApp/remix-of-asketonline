@@ -1,16 +1,29 @@
-
 import React from 'react';
 import { CosmicButton } from './CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useNavigate } from 'react-router-dom';
 
 interface NoPactsViewProps {
   onCreatePactClick?: () => void;
 }
 
 export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) => {
-  const { language } = useAppStore();
+  const { language, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
+  
+  const handleCreatePact = () => {
+    // Use the provided handler if it exists
+    if (onCreatePactClick) {
+      onCreatePactClick();
+      return;
+    }
+    
+    // Otherwise handle navigation directly from this component
+    setActiveScreen('create-pact');
+    navigate('/create-pact');
+  };
   
   return (
     <div className="text-center">
@@ -19,7 +32,7 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) =
       </h1>
       
       <CosmicButton 
-        onClick={onCreatePactClick}
+        onClick={handleCreatePact}
         className="mt-4"
       >
         {language === 'ru' ? 'Заключить договор' : 
