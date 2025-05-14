@@ -41,7 +41,10 @@ export const useTranslations = () => {
       todayCompleted: language === 'ru' ? 'Завершить день' :
                       language === 'es' ? 'Completar hoy' : 'Complete today',
       askUniverse: language === 'ru' ? 'Спросить Вселенную' :
-                   language === 'es' ? 'Preguntar al Universo' : 'Ask Universe'
+                   language === 'es' ? 'Preguntar al Universo' : 'Ask Universe',
+      noPacts: language === 'ru' ? 'Нет активных пактов. Создайте один, чтобы начать свое путешествие!' :
+               language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
+               'No active pacts. Create one to start your journey!'
     },
     universe: {
       title: language === 'ru' ? 'Вселенная' :
@@ -93,6 +96,38 @@ export const useTranslations = () => {
       cancelBirthDate: language === 'ru' ? 'Отмена' :
                       language === 'es' ? 'Cancelar' :
                       'Cancel'
+    },
+    // Add missing meditation translations
+    meditation: {
+      play: language === 'ru' ? 'Играть' :
+            language === 'es' ? 'Reproducir' : 'Play',
+      unlock: language === 'ru' ? 'Разблокировать' :
+              language === 'es' ? 'Desbloquear' : 'Unlock'
+    },
+    // Add missing PactOath translations
+    pactOath: {
+      title: language === 'ru' ? 'Договор со Вселенной' :
+             language === 'es' ? 'Contrato con el Universo' : 'Contract with the Universe',
+      subtitle: language === 'ru' ? 'Прежде чем начать, примите обет' :
+               language === 'es' ? 'Antes de comenzar, haz un juramento' : 'Before you begin, take an oath'
+    },
+    // Add missing subscription translations
+    subscription: {
+      title: language === 'ru' ? 'PRO Подписка' :
+             language === 'es' ? 'Suscripción PRO' : 'PRO Subscription',
+      description: language === 'ru' ? 'Разблокируйте полный потенциал приложения' :
+                   language === 'es' ? 'Desbloquea todo el potencial de la aplicación' : 'Unlock the full potential of the app',
+      upgradeButton: language === 'ru' ? 'Обновить сейчас' :
+                     language === 'es' ? 'Actualizar ahora' : 'Upgrade Now'
+    },
+    // Add missing userProfile translations
+    userProfile: {
+      name: language === 'ru' ? 'Имя' :
+            language === 'es' ? 'Nombre' : 'Name',
+      birthdate: language === 'ru' ? 'Дата рождения' :
+                language === 'es' ? 'Fecha de nacimiento' : 'Birthdate',
+      editProfile: language === 'ru' ? 'Редактировать профиль' :
+                  language === 'es' ? 'Editar perfil' : 'Edit profile'
     }
   });
 
@@ -113,7 +148,10 @@ export const useTranslations = () => {
         todayCompleted: language === 'ru' ? 'Завершить день' :
                         language === 'es' ? 'Completar hoy' : 'Complete today',
         askUniverse: language === 'ru' ? 'Спросить Вселенную' :
-                     language === 'es' ? 'Preguntar al Universo' : 'Ask Universe'
+                     language === 'es' ? 'Preguntar al Universo' : 'Ask Universe',
+        noPacts: language === 'ru' ? 'Нет активных пактов. Создайте один, чтобы начать свое путешествие!' :
+                 language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
+                 'No active pacts. Create one to start your journey!'
       },
       universe: {
         title: language === 'ru' ? 'Вселенная' :
@@ -165,6 +203,38 @@ export const useTranslations = () => {
         cancelBirthDate: language === 'ru' ? 'Отмена' :
                         language === 'es' ? 'Cancelar' :
                         'Cancel'
+      },
+      // Add missing meditation translations in the useEffect
+      meditation: {
+        play: language === 'ru' ? 'Играть' :
+              language === 'es' ? 'Reproducir' : 'Play',
+        unlock: language === 'ru' ? 'Разблокировать' :
+                language === 'es' ? 'Desbloquear' : 'Unlock'
+      },
+      // Add missing PactOath translations in the useEffect
+      pactOath: {
+        title: language === 'ru' ? 'Договор со Вселенной' :
+               language === 'es' ? 'Contrato con el Universo' : 'Contract with the Universe',
+        subtitle: language === 'ru' ? 'Прежде чем начать, примите обет' :
+                 language === 'es' ? 'Antes de comenzar, haz un juramento' : 'Before you begin, take an oath'
+      },
+      // Add missing subscription translations in the useEffect
+      subscription: {
+        title: language === 'ru' ? 'PRO Подписка' :
+               language === 'es' ? 'Suscripción PRO' : 'PRO Subscription',
+        description: language === 'ru' ? 'Разблокируйте полный потенциал приложения' :
+                     language === 'es' ? 'Desbloquea todo el potencial de la aplicación' : 'Unlock the full potential of the app',
+        upgradeButton: language === 'ru' ? 'Обновить сейчас' :
+                       language === 'es' ? 'Actualizar ahora' : 'Upgrade Now'
+      },
+      // Add missing userProfile translations in the useEffect
+      userProfile: {
+        name: language === 'ru' ? 'Имя' :
+              language === 'es' ? 'Nombre' : 'Name',
+        birthdate: language === 'ru' ? 'Дата рождения' :
+                  language === 'es' ? 'Fecha de nacimiento' : 'Birthdate',
+        editProfile: language === 'ru' ? 'Редактировать профиль' :
+                    language === 'es' ? 'Editar perfil' : 'Edit profile'
       }
     });
   }, [language]);
