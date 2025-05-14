@@ -294,6 +294,135 @@ interface Translations {
 
 export const translations: Translations = {
   ru: {
+    welcome: {
+      title: "Добро пожаловать",
+      description: "Добро пожаловать в наше приложение!",
+      startButton: "Начать",
+      subtitle: "Ваше путешествие начинается здесь"
+    },
+    login: {
+      title: "Вход",
+      emailLabel: "Электронная почта",
+      passwordLabel: "Пароль",
+      emailPlaceholder: "Введите вашу электронную почту",
+      passwordPlaceholder: "Введите ваш пароль",
+      forgotPassword: "Забыли пароль?",
+      signInButton: "Войти",
+      signUpButton: "Зарегистрироваться",
+      noAccount: "Нет аккаунта?",
+      haveAccount: "Уже есть аккаунт?",
+      emailRequired: "Электронная почта обязательна"
+    },
+    auth: {
+      signIn: "Вход",
+      signUp: "Регистрация",
+      email: "Электронная почта",
+      password: "Пароль",
+      forgotPassword: "Забыли пароль?",
+      resetPassword: "Сбросить пароль",
+      resetPasswordSuccess: "Пароль успешно сброшен",
+      resetPasswordError: "Ошибка сброса пароля",
+      resetPasswordButton: "Сбросить пароль",
+      signInButton: "Войти",
+      signUpButton: "Зарегистрироваться",
+      noAccount: "Нет аккаунта?",
+      haveAccount: "Уже есть аккаунт?",
+      emailRequired: "Электронная почта обязательна",
+      passwordRequired: "Пароль обязателен",
+      orContinueWith: "или продолжить с",
+      guestSignIn: "Войти как гость",
+      welcomeBack: "С возвращением"
+    },
+    main: {
+      title: "Главная",
+      createPact: "Создать пакт",
+      universe: "Вселенная",
+      profile: "Профиль",
+      comparison: "Сравнение",
+      meditation: "Медитация",
+      energyPoints: "Энергетические очки",
+      totalDays: "Всего дней",
+      currentPacts: "Текущие пакты",
+      noPacts: "Нет пактов",
+      completedToday: "Завершено сегодня",
+      daysLeft: "Осталось дней",
+      days: "дней",
+      todayCompleted: "Сегодня завершено",
+      askUniverse: "Спросить Вселенную",
+      path: "Путь",
+      ascesis: "Аскеза",
+      nav: {
+        path: "Путь",
+        ascesis: "Аскеза",
+        universe: "Вселенная",
+        profile: "Профиль"
+      }
+    },
+    pactOath: {
+      title: "Клятва пакта",
+      subtitle: "Подтвердите свою клятву",
+      agreeText: "Я согласен с условиями",
+      oath1: "Я обещаю",
+      oath2: "Я обязуюсь",
+      oath3: "Я клянусь",
+      createButton: "Создать пакт",
+      days: "дней"
+    },
+    createPact: {
+      title: "Создать пакт",
+      pactTitle: "Название пакта",
+      pactDuration: "Длительность пакта",
+      pactReward: "Награда пакта",
+      pactStatus: "Статус пакта",
+      createButton: "Создать",
+      titlePlaceholder: "Введите название",
+      durationPlaceholder: "Введите длительность",
+      rewardPlaceholder: "Введите награду",
+      titleRequired: "Название обязательно",
+      durationRequired: "Длительность обязательна",
+      durationInvalid: "Недопустимая длительность",
+      days: "дней",
+      stepOneTitle: "Шаг 1",
+      stepTwoTitle: "Шаг 2",
+      stepThreeTitle: "Шаг 3",
+      placeholders: {
+        title: "Название",
+        rejection: "Отказ",
+        reward: "Награда"
+      },
+      ascesisWarning: "Предупреждение о аскезе",
+      customDays: "Пользовательские дни",
+      notAsking: "Не спрашиваю",
+      nextButton: "Далее"
+    },
+    onboarding: {
+      title: "Онбординг",
+      description: "Описание онбординга",
+      goal1: "Цель 1",
+      goal2: "Цель 2",
+      goal3: "Цель 3",
+      goal4: "Цель 4",
+      goal5: "Цель 5",
+      goal6: "Цель 6",
+      selectGoal: "Выберите цель",
+      continueButton: "Продолжить",
+      steps: {
+        welcome: "Добро пожаловать",
+        goal: "Цель",
+        complete: "Завершить",
+        title: "Заголовок",
+        content: "Содержимое",
+        length: 0,
+        map: []
+      },
+      buttons: {
+        next: "Далее",
+        start: "Начать",
+        skip: "Пропустить",
+        enter: "Ввод",
+        startJourney: "Начать путешествие"
+      }
+    },
     universe: {
       title: "Вселенная",
       question: "Вопрос",
@@ -336,9 +465,255 @@ export const translations: Translations = {
         dateRequired: "Пожалуйста, введите дату рождения"
       }
     },
-    // ... keep existing code (other Russian translations)
+    profile: {
+      title: "Профиль",
+      name: "Имя",
+      birthDate: "Дата рождения",
+      goal: "Цель",
+      stats: "Статистика",
+      achievements: "Достижения",
+      saveButton: "Сохранить",
+      updateSuccess: "Успешно обновлено",
+      updateError: "Ошибка обновления",
+      nameRequired: "Имя обязательно",
+      birthDateRequired: "Дата рождения обязательна",
+      savingButton: "Сохранение..."
+    },
+    meditation: {
+      title: "Медитация",
+      description: "Описание медитации",
+      startButton: "Начать",
+      play: "Играть",
+      unlock: "Разблокировать",
+      pageTitle: "Страница медитации",
+      categories: {
+        all: "Все",
+        basic: "Основные",
+        sleep: "Сон",
+        focus: "Фокус",
+        advanced: "Продвинутые",
+        morning: "Утренние",
+        evening: "Вечерние",
+        stress: "Стресс",
+        mantra: "Мантра",
+        visual: "Визуализация"
+      },
+      morning: {
+        title: "Утренние медитации",
+        description: "Описание утренних медитаций",
+        title1: "Утреннее пробуждение",
+        desc1: "Описание утреннего пробуждения",
+        title2: "Утренний фокус",
+        desc2: "Описание утреннего фокуса"
+      },
+      evening: {
+        title: "Вечерние медитации",
+        description: "Описание вечерних медитаций",
+        title1: "Вечернее расслабление",
+        desc1: "Описание вечернего расслабления"
+      },
+      stress: {
+        title: "Медитации для стресса",
+        description: "Описание медитаций для стресса",
+        title1: "Снятие стресса",
+        desc1: "Описание снятия стресса"
+      },
+      mantra: {
+        title: "Медитации с мантрами",
+        description: "Описание медитаций с мантрами",
+        title1: "Мантра для спокойствия",
+        desc1: "Описание мантры для спокойствия"
+      },
+      visualization: {
+        title: "Визуализация",
+        description: "Описание визуализации",
+        title1: "Визуализация успеха",
+        desc1: "Описание визуализации успеха"
+      }
+    },
+    subscription: {
+      title: "Подписка",
+      description: "Описание подписки",
+      upgradeButton: "Обновить",
+      proFeatures: "PRO функции",
+      proTitle: "PRO версия",
+      cancelButton: "Отменить",
+      successMessage: "Успешно обновлено",
+      errorMessage: "Ошибка обновления",
+      bannerTitle: "Обновите до PRO",
+      bannerDesc: "Получите доступ к дополнительным функциям",
+      upgradeNow: "Обновить сейчас"
+    },
+    nav: {
+      home: "Главная",
+      universe: "Вселенная",
+      profile: "Профиль",
+      comparison: "Сравнение"
+    },
+    calendar: {
+      today: "Сегодня",
+      month: "Месяц",
+      year: "Год"
+    },
+    minimumPeriod: "Минимальный срок",
+    userProfile: {
+      personal: "Личная информация",
+      name: "Имя",
+      birthDate: "Дата рождения",
+      emailAddressLabel: "Электронная почта",
+      updateProfile: "Обновить профиль",
+      passwordLabel: "Пароль",
+      changePassword: "Сменить пароль",
+      profileUpdated: "Профиль обновлен",
+      updateFailed: "Ошибка обновления",
+      bioLabel: "Биография",
+      updateButton: "Обновить",
+      savingButton: "Сохранение...",
+      nameRequired: "Имя обязательно",
+      emailRequired: "Электронная почта обязательна",
+      dobRequired: "Дата рождения обязательна",
+      nameLabel: "Имя",
+      birthDateLabel: "Дата рождения",
+      namePlaceholder: "Введите ваше имя",
+      birthDatePlaceholder: "Введите дату рождения",
+      title: "Профиль пользователя",
+      age: "Возраст",
+      continueButton: "Продолжить",
+      currentDate: "Текущая дата",
+      languageLabel: "Язык",
+      birthDateRequired: "Дата рождения обязательна"
+    }
   },
   en: {
+    welcome: {
+      title: "Welcome",
+      description: "Welcome to our app!",
+      startButton: "Start",
+      subtitle: "Your journey begins here"
+    },
+    login: {
+      title: "Login",
+      emailLabel: "Email",
+      passwordLabel: "Password",
+      emailPlaceholder: "Enter your email",
+      passwordPlaceholder: "Enter your password",
+      forgotPassword: "Forgot password?",
+      signInButton: "Sign In",
+      signUpButton: "Sign Up",
+      noAccount: "Don't have an account?",
+      haveAccount: "Already have an account?",
+      emailRequired: "Email is required"
+    },
+    auth: {
+      signIn: "Sign In",
+      signUp: "Sign Up",
+      email: "Email",
+      password: "Password",
+      forgotPassword: "Forgot password?",
+      resetPassword: "Reset Password",
+      resetPasswordSuccess: "Password reset successfully",
+      resetPasswordError: "Error resetting password",
+      resetPasswordButton: "Reset Password",
+      signInButton: "Sign In",
+      signUpButton: "Sign Up",
+      noAccount: "Don't have an account?",
+      haveAccount: "Already have an account?",
+      emailRequired: "Email is required",
+      passwordRequired: "Password is required",
+      orContinueWith: "or continue with",
+      guestSignIn: "Sign in as guest",
+      welcomeBack: "Welcome back"
+    },
+    main: {
+      title: "Main",
+      createPact: "Create Pact",
+      universe: "Universe",
+      profile: "Profile",
+      comparison: "Comparison",
+      meditation: "Meditation",
+      energyPoints: "Energy Points",
+      totalDays: "Total Days",
+      currentPacts: "Current Pacts",
+      noPacts: "No Pacts",
+      completedToday: "Completed Today",
+      daysLeft: "Days Left",
+      days: "days",
+      todayCompleted: "Today Completed",
+      askUniverse: "Ask the Universe",
+      path: "Path",
+      ascesis: "Ascesis",
+      nav: {
+        path: "Path",
+        ascesis: "Ascesis",
+        universe: "Universe",
+        profile: "Profile"
+      }
+    },
+    pactOath: {
+      title: "Pact Oath",
+      subtitle: "Confirm your oath",
+      agreeText: "I agree to the terms",
+      oath1: "I promise",
+      oath2: "I commit",
+      oath3: "I swear",
+      createButton: "Create Pact",
+      days: "days"
+    },
+    createPact: {
+      title: "Create Pact",
+      pactTitle: "Pact Title",
+      pactDuration: "Pact Duration",
+      pactReward: "Pact Reward",
+      pactStatus: "Pact Status",
+      createButton: "Create",
+      titlePlaceholder: "Enter title",
+      durationPlaceholder: "Enter duration",
+      rewardPlaceholder: "Enter reward",
+      titleRequired: "Title is required",
+      durationRequired: "Duration is required",
+      durationInvalid: "Invalid duration",
+      days: "days",
+      stepOneTitle: "Step 1",
+      stepTwoTitle: "Step 2",
+      stepThreeTitle: "Step 3",
+      placeholders: {
+        title: "Title",
+        rejection: "Rejection",
+        reward: "Reward"
+      },
+      ascesisWarning: "Ascesis Warning",
+      customDays: "Custom Days",
+      notAsking: "Not Asking",
+      nextButton: "Next"
+    },
+    onboarding: {
+      title: "Onboarding",
+      description: "Onboarding description",
+      goal1: "Goal 1",
+      goal2: "Goal 2",
+      goal3: "Goal 3",
+      goal4: "Goal 4",
+      goal5: "Goal 5",
+      goal6: "Goal 6",
+      selectGoal: "Select Goal",
+      continueButton: "Continue",
+      steps: {
+        welcome: "Welcome",
+        goal: "Goal",
+        complete: "Complete",
+        title: "Title",
+        content: "Content",
+        length: 0,
+        map: []
+      },
+      buttons: {
+        next: "Next",
+        start: "Start",
+        skip: "Skip",
+        enter: "Enter",
+        startJourney: "Start Journey"
+      }
+    },
     universe: {
       title: "Universe",
       question: "Question",
@@ -381,15 +756,261 @@ export const translations: Translations = {
         dateRequired: "Please enter your birth date"
       }
     },
-    // ... keep existing code (other English translations)
+    profile: {
+      title: "Profile",
+      name: "Name",
+      birthDate: "Birth Date",
+      goal: "Goal",
+      stats: "Stats",
+      achievements: "Achievements",
+      saveButton: "Save",
+      updateSuccess: "Updated successfully",
+      updateError: "Update error",
+      nameRequired: "Name is required",
+      birthDateRequired: "Birth date is required",
+      savingButton: "Saving..."
+    },
+    meditation: {
+      title: "Meditation",
+      description: "Meditation description",
+      startButton: "Start",
+      play: "Play",
+      unlock: "Unlock",
+      pageTitle: "Meditation Page",
+      categories: {
+        all: "All",
+        basic: "Basic",
+        sleep: "Sleep",
+        focus: "Focus",
+        advanced: "Advanced",
+        morning: "Morning",
+        evening: "Evening",
+        stress: "Stress",
+        mantra: "Mantra",
+        visual: "Visualization"
+      },
+      morning: {
+        title: "Morning Meditations",
+        description: "Description of morning meditations",
+        title1: "Morning Awakening",
+        desc1: "Description of morning awakening",
+        title2: "Morning Focus",
+        desc2: "Description of morning focus"
+      },
+      evening: {
+        title: "Evening Meditations",
+        description: "Description of evening meditations",
+        title1: "Evening Relaxation",
+        desc1: "Description of evening relaxation"
+      },
+      stress: {
+        title: "Stress Meditations",
+        description: "Description of stress meditations",
+        title1: "Stress Relief",
+        desc1: "Description of stress relief"
+      },
+      mantra: {
+        title: "Mantra Meditations",
+        description: "Description of mantra meditations",
+        title1: "Mantra for Calmness",
+        desc1: "Description of mantra for calmness"
+      },
+      visualization: {
+        title: "Visualization",
+        description: "Description of visualization",
+        title1: "Visualization of Success",
+        desc1: "Description of visualization of success"
+      }
+    },
+    subscription: {
+      title: "Subscription",
+      description: "Subscription description",
+      upgradeButton: "Upgrade",
+      proFeatures: "PRO Features",
+      proTitle: "PRO Version",
+      cancelButton: "Cancel",
+      successMessage: "Updated successfully",
+      errorMessage: "Update error",
+      bannerTitle: "Upgrade to PRO",
+      bannerDesc: "Get access to additional features",
+      upgradeNow: "Upgrade Now"
+    },
+    nav: {
+      home: "Home",
+      universe: "Universe",
+      profile: "Profile",
+      comparison: "Comparison"
+    },
+    calendar: {
+      today: "Today",
+      month: "Month",
+      year: "Year"
+    },
+    minimumPeriod: "Minimum period",
+    userProfile: {
+      personal: "Personal Information",
+      name: "Name",
+      birthDate: "Birth Date",
+      emailAddressLabel: "Email Address",
+      updateProfile: "Update Profile",
+      passwordLabel: "Password",
+      changePassword: "Change Password",
+      profileUpdated: "Profile updated",
+      updateFailed: "Update failed",
+      bioLabel: "Bio",
+      updateButton: "Update",
+      savingButton: "Saving...",
+      nameRequired: "Name is required",
+      emailRequired: "Email is required",
+      dobRequired: "Date of birth is required",
+      nameLabel: "Name",
+      birthDateLabel: "Birth Date",
+      namePlaceholder: "Enter your name",
+      birthDatePlaceholder: "Enter birth date",
+      title: "User Profile",
+      age: "Age",
+      continueButton: "Continue",
+      currentDate: "Current Date",
+      languageLabel: "Language",
+      birthDateRequired: "Birth date is required"
+    }
   },
   es: {
+    welcome: {
+      title: "Bienvenido",
+      description: "¡Bienvenido a nuestra aplicación!",
+      startButton: "Comenzar",
+      subtitle: "Tu viaje comienza aquí"
+    },
+    login: {
+      title: "Iniciar sesión",
+      emailLabel: "Correo electrónico",
+      passwordLabel: "Contraseña",
+      emailPlaceholder: "Introduce tu correo electrónico",
+      passwordPlaceholder: "Introduce tu contraseña",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      signInButton: "Iniciar sesión",
+      signUpButton: "Registrarse",
+      noAccount: "¿No tienes una cuenta?",
+      haveAccount: "¿Ya tienes una cuenta?",
+      emailRequired: "El correo electrónico es obligatorio"
+    },
+    auth: {
+      signIn: "Iniciar sesión",
+      signUp: "Registrarse",
+      email: "Correo electrónico",
+      password: "Contraseña",
+      forgotPassword: "¿Olvidaste tu contraseña?",
+      resetPassword: "Restablecer contraseña",
+      resetPasswordSuccess: "Contraseña restablecida con éxito",
+      resetPasswordError: "Error al restablecer la contraseña",
+      resetPasswordButton: "Restablecer contraseña",
+      signInButton: "Iniciar sesión",
+      signUpButton: "Registrarse",
+      noAccount: "¿No tienes una cuenta?",
+      haveAccount: "¿Ya tienes una cuenta?",
+      emailRequired: "El correo electrónico es obligatorio",
+      passwordRequired: "La contraseña es obligatoria",
+      orContinueWith: "o continuar con",
+      guestSignIn: "Iniciar sesión como invitado",
+      welcomeBack: "Bienvenido de nuevo"
+    },
+    main: {
+      title: "Principal",
+      createPact: "Crear pacto",
+      universe: "Universo",
+      profile: "Perfil",
+      comparison: "Comparación",
+      meditation: "Meditación",
+      energyPoints: "Puntos de energía",
+      totalDays: "Días totales",
+      currentPacts: "Pactos actuales",
+      noPacts: "No hay pactos",
+      completedToday: "Completado hoy",
+      daysLeft: "Días restantes",
+      days: "días",
+      todayCompleted: "Hoy completado",
+      askUniverse: "Preguntar al Universo",
+      path: "Camino",
+      ascesis: "Ascética",
+      nav: {
+        path: "Camino",
+        ascesis: "Ascética",
+        universe: "Universo",
+        profile: "Perfil"
+      }
+    },
+    pactOath: {
+      title: "Juramento del pacto",
+      subtitle: "Confirma tu juramento",
+      agreeText: "Acepto los términos",
+      oath1: "Prometo",
+      oath2: "Me comprometo",
+      oath3: "Juro",
+      createButton: "Crear pacto",
+      days: "días"
+    },
+    createPact: {
+      title: "Crear pacto",
+      pactTitle: "Título del pacto",
+      pactDuration: "Duración del pacto",
+      pactReward: "Recompensa del pacto",
+      pactStatus: "Estado del pacto",
+      createButton: "Crear",
+      titlePlaceholder: "Introduce el título",
+      durationPlaceholder: "Introduce la duración",
+      rewardPlaceholder: "Introduce la recompensa",
+      titleRequired: "El título es obligatorio",
+      durationRequired: "La duración es obligatoria",
+      durationInvalid: "Duración no válida",
+      days: "días",
+      stepOneTitle: "Paso 1",
+      stepTwoTitle: "Paso 2",
+      stepThreeTitle: "Paso 3",
+      placeholders: {
+        title: "Título",
+        rejection: "Rechazo",
+        reward: "Recompensa"
+      },
+      ascesisWarning: "Advertencia de ascética",
+      customDays: "Días personalizados",
+      notAsking: "No preguntando",
+      nextButton: "Siguiente"
+    },
+    onboarding: {
+      title: "Onboarding",
+      description: "Descripción del onboarding",
+      goal1: "Objetivo 1",
+      goal2: "Objetivo 2",
+      goal3: "Objetivo 3",
+      goal4: "Objetivo 4",
+      goal5: "Objetivo 5",
+      goal6: "Objetivo 6",
+      selectGoal: "Selecciona un objetivo",
+      continueButton: "Continuar",
+      steps: {
+        welcome: "Bienvenido",
+        goal: "Objetivo",
+        complete: "Completar",
+        title: "Título",
+        content: "Contenido",
+        length: 0,
+        map: []
+      },
+      buttons: {
+        next: "Siguiente",
+        start: "Comenzar",
+        skip: "Saltar",
+        enter: "Entrar",
+        startJourney: "Iniciar viaje"
+      }
+    },
     universe: {
       title: "Universo",
       question: "Pregunta",
       answer: "Respuesta",
-      askButton: "Hacer Pregunta",
-      questionPlaceholder: "Ingresa tu pregunta...",
+      askButton: "Hacer pregunta",
+      questionPlaceholder: "Introduce tu pregunta...",
       answerPlaceholder: "La respuesta del Universo aparecerá aquí...",
       yourQuestion: "Tu pregunta",
       universeAnswer: "Respuesta del Universo",
@@ -426,7 +1047,124 @@ export const translations: Translations = {
         dateRequired: "Por favor ingresa tu fecha de nacimiento"
       }
     },
-    // ... keep existing code (other Spanish translations)
+    profile: {
+      title: "Perfil",
+      name: "Nombre",
+      birthDate: "Fecha de nacimiento",
+      goal: "Objetivo",
+      stats: "Estadísticas",
+      achievements: "Logros",
+      saveButton: "Guardar",
+      updateSuccess: "Actualizado con éxito",
+      updateError: "Error al actualizar",
+      nameRequired: "El nombre es obligatorio",
+      birthDateRequired: "La fecha de nacimiento es obligatoria",
+      savingButton: "Guardando..."
+    },
+    meditation: {
+      title: "Meditación",
+      description: "Descripción de la meditación",
+      startButton: "Comenzar",
+      play: "Reproducir",
+      unlock: "Desbloquear",
+      pageTitle: "Página de meditación",
+      categories: {
+        all: "Todo",
+        basic: "Básico",
+        sleep: "Sueño",
+        focus: "Enfoque",
+        advanced: "Avanzado",
+        morning: "Mañana",
+        evening: "Noche",
+        stress: "Estrés",
+        mantra: "Mantra",
+        visual: "Visualización"
+      },
+      morning: {
+        title: "Meditaciones de la mañana",
+        description: "Descripción de las meditaciones de la mañana",
+        title1: "Despertar matutino",
+        desc1: "Descripción del despertar matutino",
+        title2: "Enfoque matutino",
+        desc2: "Descripción del enfoque matutino"
+      },
+      evening: {
+        title: "Meditaciones de la noche",
+        description: "Descripción de las meditaciones de la noche",
+        title1: "Relajación nocturna",
+        desc1: "Descripción de la relajación nocturna"
+      },
+      stress: {
+        title: "Meditaciones para el estrés",
+        description: "Descripción de las meditaciones para el estrés",
+        title1: "Alivio del estrés",
+        desc1: "Descripción del alivio del estrés"
+      },
+      mantra: {
+        title: "Meditaciones con mantras",
+        description: "Descripción de las meditaciones con mantras",
+        title1: "Mantra para la calma",
+        desc1: "Descripción del mantra para la calma"
+      },
+      visualization: {
+        title: "Visualización",
+        description: "Descripción de la visualización",
+        title1: "Visualización del éxito",
+        desc1: "Descripción de la visualización del éxito"
+      }
+    },
+    subscription: {
+      title: "Suscripción",
+      description: "Descripción de la suscripción",
+      upgradeButton: "Actualizar",
+      proFeatures: "Funciones PRO",
+      proTitle: "Versión PRO",
+      cancelButton: "Cancelar",
+      successMessage: "Actualizado con éxito",
+      errorMessage: "Error al actualizar",
+      bannerTitle: "Actualiza a PRO",
+      bannerDesc: "Obtén acceso a funciones adicionales",
+      upgradeNow: "Actualizar ahora"
+    },
+    nav: {
+      home: "Inicio",
+      universe: "Universo",
+      profile: "Perfil",
+      comparison: "Comparación"
+    },
+    calendar: {
+      today: "Hoy",
+      month: "Mes",
+      year: "Año"
+    },
+    minimumPeriod: "Período mínimo",
+    userProfile: {
+      personal: "Información personal",
+      name: "Nombre",
+      birthDate: "Fecha de nacimiento",
+      emailAddressLabel: "Correo electrónico",
+      updateProfile: "Actualizar perfil",
+      passwordLabel: "Contraseña",
+      changePassword: "Cambiar contraseña",
+      profileUpdated: "Perfil actualizado",
+      updateFailed: "Error al actualizar",
+      bioLabel: "Biografía",
+      updateButton: "Actualizar",
+      savingButton: "Guardando...",
+      nameRequired: "El nombre es obligatorio",
+      emailRequired: "El correo electrónico es obligatorio",
+      dobRequired: "La fecha de nacimiento es obligatoria",
+      nameLabel: "Nombre",
+      birthDateLabel: "Fecha de nacimiento",
+      namePlaceholder: "Introduce tu nombre",
+      birthDatePlaceholder: "Introduce la fecha de nacimiento",
+      title: "Perfil de usuario",
+      age: "Edad",
+      continueButton: "Continuar",
+      currentDate: "Fecha actual",
+      languageLabel: "Idioma",
+      birthDateRequired: "La fecha de nacimiento es obligatoria"
+    }
   }
 };
 
