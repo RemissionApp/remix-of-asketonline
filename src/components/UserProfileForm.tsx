@@ -70,12 +70,12 @@ const UserProfileForm: React.FC = () => {
       birthDate: values.birthDate
     });
     
-    // Check if onboarding is complete or not
+    // After profile update, determine the next page based on onboarding status
     if (onboardingComplete) {
-      // If onboarding was already completed, go to main
+      // If onboarding was already completed, go directly to main
       navigate('/main');
     } else {
-      // Otherwise go to onboarding
+      // If onboarding not completed, go to onboarding page
       navigate('/onboarding');
     }
   };

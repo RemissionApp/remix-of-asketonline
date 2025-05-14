@@ -1018,15 +1018,10 @@ export const useAppStore = create<AppState>()((set, get) => ({
       await get().loadPacts();
       await get().loadUniverseQuestions();
       
-      const { userProfile } = get();
-      
       toast({
         title: "Вход выполнен",
         description: "Вы успешно вошли в систему"
       });
-      
-      // Don't set activeScreen here - we'll handle navigation in the component
-      // based on the profile data that's loaded
       
       return true; // Return true on success
     } catch (error: any) {

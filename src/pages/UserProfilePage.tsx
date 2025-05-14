@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -10,21 +9,24 @@ const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile, user, loading } = useAppStore();
   
-  // Check if user is logged in and already has profile data
+  // Check if user is logged in and handle profile completion status
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // If user already has a name other than the default and a birthdate set, 
-    // they've completed profile setup, so redirect to main
+    // Only redirect to main if both conditions are met:
+    // 1. Not in loading state
+    // 2. Profile is complete (has name other than default and has birthDate)
     if (!loading && 
         userProfile && 
         userProfile.name !== 'Искатель' && 
         userProfile.birthDate) {
+      // User has completed profile setup, go to main
       navigate('/main');
     }
+    // Otherwise stay on this page to complete profile setup
   }, [userProfile, user, loading, navigate]);
 
   return (

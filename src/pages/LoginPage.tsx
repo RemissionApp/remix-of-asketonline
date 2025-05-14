@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,6 +24,20 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
   
+  // Check if user is already logged in
+  useEffect(() => {
+    if (user) {
+      // If user is logged in and has a complete profile, redirect to main
+      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+        navigate('/main');
+      }
+      // If user is logged in but doesn't have a complete profile, redirect to profile setup
+      else {
+        navigate('/profile-setup');
+      }
+    }
+  }, [user, userProfile, navigate]);
+  
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -31,14 +46,8 @@ const LoginPage: React.FC = () => {
     
     const success = await signIn(email, password);
     if (success) {
-      // Check if user already has completed profile setup
-      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-        // If profile is already setup, go directly to main
-        navigate('/main');
-      } else {
-        // Otherwise, go to profile setup
-        navigate('/profile-setup');
-      }
+      // Redirection will be handled by the useEffect above
+      // No need for additional navigation logic here
     }
   };
   
