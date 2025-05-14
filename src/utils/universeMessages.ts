@@ -80,7 +80,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     // Construct the custom prompt with information about the user's vow
     const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути. 
       Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
-      Его цель: ${currentVow.reward || 'духовный рост'}.
+      Его цель: ${currentVow.purpose || currentVow.reward || 'духовный рост'}.
       Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.
       
       Предоставь вдумчивый, мудрый ответ, который поможет ему обрести ясность и понимание. 
