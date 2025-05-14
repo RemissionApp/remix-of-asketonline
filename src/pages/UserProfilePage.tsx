@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,26 +8,39 @@ import { useAppStore } from '@/store/useAppStore';
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile, user, loading } = useAppStore();
+  const [checkingAuth, setCheckingAuth] = useState(true);
   
   // Check if user is logged in and handle profile completion status
   useEffect(() => {
+    // First check - redirect to login if no user
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Only redirect to main if both conditions are met:
-    // 1. Not in loading state
-    // 2. Profile is complete (has name other than default and has birthDate)
-    if (!loading && 
-        userProfile && 
-        userProfile.name !== 'Искатель' && 
-        userProfile.birthDate) {
-      // User has completed profile setup, go to main
-      navigate('/main');
+    // Wait until we're not in loading state to make decisions
+    if (!loading) {
+      setCheckingAuth(false);
+      
+      // If profile is complete, go to main
+      if (userProfile && 
+          userProfile.name !== 'Искатель' && 
+          userProfile.birthDate) {
+        // User has completed profile setup, go to main
+        navigate('/main');
+      }
+      // Otherwise stay on this page to complete profile setup
     }
-    // Otherwise stay on this page to complete profile setup
   }, [userProfile, user, loading, navigate]);
+
+  // Show loading or the form
+  if (loading || checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">

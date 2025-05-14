@@ -31,3 +31,8 @@ export const cleanupAuthState = () => {
     }
   });
 };
+
+// Helper function to check if profile is complete
+export const isProfileComplete = (profile: any) => {
+  return profile && profile.name !== 'Искатель' && profile.birthDate;
+};

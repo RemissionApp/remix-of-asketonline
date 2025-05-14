@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -10,7 +9,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase, cleanupAuthState } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
@@ -23,20 +22,24 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
   
-  // Check if user is already logged in
+  // Check if user is already logged in - but only once
   useEffect(() => {
-    if (user) {
-      // If user is logged in and has a complete profile, redirect to main
-      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+    // Check once if user is logged in with profile data loaded
+    if (!initialCheckDone && user && userProfile) {
+      setInitialCheckDone(true);
+      
+      // If user has complete profile, go to main
+      if (userProfile.name !== 'Искатель' && userProfile.birthDate) {
         navigate('/main');
       }
-      // If user is logged in but doesn't have a complete profile, redirect to profile setup
+      // If user exists but profile is incomplete, go to profile setup
       else {
         navigate('/profile-setup');
       }
     }
-  }, [user, userProfile, navigate]);
+  }, [user, userProfile, navigate, initialCheckDone]);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +47,25 @@ const LoginPage: React.FC = () => {
     // Clean up auth state before signing in to prevent issues
     cleanupAuthState();
     
-    const success = await signIn(email, password);
-    if (success) {
-      // Redirection will be handled by the useEffect above
-      // No need for additional navigation logic here
+    try {
+      const success = await signIn(email, password);
+      if (success) {
+        // Wait a brief moment for profile to load fully
+        setTimeout(() => {
+          // Check if user profile is complete
+          const { userProfile } = useAppStore.getState();
+          
+          if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+            // Complete profile - go to main
+            navigate('/main');
+          } else {
+            // Incomplete profile - go to setup
+            navigate('/profile-setup');
+          }
+        }, 300);
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
     }
   };
   

@@ -201,6 +201,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
       
       if (error) throw error;
       
+      // Update local state immediately to prevent flashing
       set((state) => ({
         userProfile: { ...state.userProfile, ...profileData }
       }));
@@ -209,12 +210,15 @@ export const useAppStore = create<AppState>()((set, get) => ({
         title: "Профиль обновлен",
         description: "Ваш профиль был успешно обновлен"
       });
+      
+      return true; // Indicate success
     } catch (error: any) {
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось обновить профиль",
         variant: "destructive"
       });
+      return false;
     } finally {
       set({ loading: false });
     }
@@ -1004,6 +1008,9 @@ export const useAppStore = create<AppState>()((set, get) => ({
     set({ loading: true });
     
     try {
+      // Clean up auth state before signing in
+      cleanupAuthState();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -1101,6 +1108,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
     if (!user) return;
     
     try {
+      console.log("Loading user profile for:", user.id);
+      
       // Get profile data
       const { data, error } = await supabase
         .from('profiles')
@@ -1108,7 +1117,12 @@ export const useAppStore = create<AppState>()((set, get) => ({
         .eq('id', user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading profile:", error);
+        throw error;
+      }
+      
+      console.log("Profile data loaded:", data);
       
       // Check subscription status
       const { data: subscription } = await supabase
@@ -1161,7 +1175,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
         completed: false
       } : undefined;
       
-      // Update local state
+      // Update local state with all user data
       set({
         userProfile: {
           name: data.name,
@@ -1175,6 +1189,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
           activeMission
         }
       });
+      
+      console.log("User profile fully loaded and set to state");
     } catch (error) {
       console.error("Error loading user profile:", error);
     }
