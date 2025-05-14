@@ -12,17 +12,26 @@ const UserProfilePage: React.FC = () => {
   
   // Check if user is logged in and already has profile data
   useEffect(() => {
-    if (!user) {
+    // Added a console.log to help debug the auth flow
+    console.log("Profile setup: user status", { user, userProfile, loading });
+
+    // If user is still loading, don't redirect yet
+    if (loading) return;
+    
+    // If no user is found after loading completes, redirect to login
+    if (!user && !loading) {
+      console.log("No user found, redirecting to login");
       navigate('/login');
       return;
     }
 
-    // If user already has a name other than the default and a birthdate set, 
-    // they've completed profile setup, so redirect to main
+    // Only redirect to main if not loading and user has completed profile
+    // User has completed profile if they have a name other than default and a birthdate
     if (!loading && 
         userProfile && 
         userProfile.name !== 'Искатель' && 
         userProfile.birthDate) {
+      console.log("Profile already completed, redirecting to main");
       navigate('/main');
     }
   }, [userProfile, user, loading, navigate]);
