@@ -12,9 +12,9 @@ const LanguagePage: React.FC = () => {
   const { setLanguage } = useAppStore();
   
   const languages = [
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'en', name: 'English', flag: '🇬🇧' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
   ];
   
   const handleSelectLanguage = (langCode: SupportedLanguage) => {
@@ -40,7 +40,11 @@ const LanguagePage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-center mb-6">
               <Globe className="w-6 h-6 text-cosmic-accent mr-2" />
-              <h2 className="text-2xl font-serif text-white">Выберите язык / Select language / Seleccione idioma</h2>
+              <h2 className="text-2xl font-serif text-white">
+                <span className="block">Select language</span>
+                <span className="block">Seleccione idioma</span>
+                <span className="block">Выберите язык</span>
+              </h2>
             </div>
             
             <div className="flex flex-col space-y-3">
