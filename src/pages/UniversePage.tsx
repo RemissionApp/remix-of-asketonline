@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Sparkles } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, isUserPro } = useAppStore();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
@@ -48,6 +48,10 @@ const UniversePage: React.FC = () => {
     }, 2000); // Delay for effect
   };
   
+  const handleNavigateToDecoding = () => {
+    navigate('/universe-decode');
+  };
+  
   return (
     <div className="min-h-screen flex flex-col relative">
       <StarField starCount={150} />
@@ -67,6 +71,25 @@ const UniversePage: React.FC = () => {
       
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-lg mx-auto w-full">
+        {/* Universe Decoding feature button */}
+        <div className="w-full mb-6">
+          <div className="cosmic-card bg-cosmic-accent/10 cursor-pointer" onClick={handleNavigateToDecoding}>
+            <div className="flex items-center">
+              <div className="w-12 h-12 rounded-full bg-cosmic-accent/20 flex items-center justify-center mr-4">
+                <Sparkles size={20} className="text-cosmic-gold" />
+              </div>
+              <div>
+                <h3 className="text-lg font-serif text-cosmic-gold">
+                  {t.universe.decode?.title || "Universe Decoding"}
+                </h3>
+                <p className="text-sm text-cosmic-secondary">
+                  {t.universe.decode?.shortDescription || "Discover your cosmic patterns through numerology and astrology"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         {currentAnswer ? (
           <div className="animate-fade-in w-full">
             <div className="cosmic-card mb-6">

@@ -15,6 +15,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import MainPage from "./pages/MainPage";
 import CreatePactPage from "./pages/CreatePactPage";
 import UniversePage from "./pages/UniversePage";
+import UniverseDecodePage from "./pages/UniverseDecodePage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
@@ -37,6 +38,7 @@ const App = () => {
             <Route path="/main" element={<MainPage />} />
             <Route path="/create-pact" element={<CreatePactPage />} />
             <Route path="/universe" element={<UniversePage />} />
+            <Route path="/universe-decode" element={<UniverseDecodePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/comparison" element={<ComparisonPage />} />
             <Route path="/meditation" element={<MeditationPage />} />
