@@ -37,7 +37,7 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   });
   
   // Get user's name or use default
-  const userName = userProfile?.name || 'Искатель';
+  const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
   
   // Format current date based on language
   const currentDate = new Date().toLocaleDateString(
@@ -199,9 +199,15 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   if (!userProfile?.birthDate) {
     return (
       <div className={`text-center p-6 ${className}`}>
-        <h3 className="text-cosmic-gold mb-2">Необходимо указать дату рождения</h3>
+        <h3 className="text-cosmic-gold mb-2">
+          {language === 'ru' ? 'Необходимо указать дату рождения' : 
+          language === 'es' ? 'Es necesario especificar la fecha de nacimiento' : 
+          'Birth date must be specified'}
+        </h3>
         <p className="text-cosmic-secondary">
-          Пожалуйста, укажите дату рождения в профиле, чтобы получить персональный гороскоп.
+          {language === 'ru' ? 'Пожалуйста, укажите дату рождения в профиле, чтобы получить персональный гороскоп.' : 
+          language === 'es' ? 'Por favor, especifique la fecha de nacimiento en su perfil para recibir un horóscopo personalizado.' : 
+          'Please specify your birth date in your profile to receive a personalized horoscope.'}
         </p>
       </div>
     );
@@ -210,8 +216,9 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
   return (
     <div className={`p-4 ${className}`}>
       <div className="text-center mb-6">
-        <h2 className="text-xl text-cosmic-gold font-serif mb-1">
-          {userName}, это твой день!
+        <h2 className="text-2xl text-cosmic-gold font-serif mb-1 flex items-center justify-center gap-2">
+          <span className="text-amber-500">⭐</span>
+          {userName}, {language === 'ru' ? 'это твой день!' : language === 'es' ? '¡este es tu día!' : 'this is your day!'}
         </h2>
         <p className="text-cosmic-accent text-sm">
           {currentDate}
@@ -222,7 +229,7 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
       {zodiacInfo && (
         <div className="flex justify-center mb-6">
           <div className="flex items-center gap-2 bg-cosmic-accent/10 px-4 py-2 rounded-full">
-            <span className="text-2xl">{zodiacInfo.symbol}</span>
+            <span className="text-xl">{zodiacInfo.symbol}</span>
             <span className="text-white">{zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en}</span>
           </div>
         </div>
@@ -236,49 +243,49 @@ export const DetailedHoroscopeDisplay: React.FC<DetailedHoroscopeDisplayProps> =
         <AdviceSection content={horoscopeSections.advice} />
       </div>
       
-      {/* Additional info */}
-      <div className="mt-8 bg-cosmic-accent/5 rounded-lg p-4 border border-cosmic-accent/20">
-        <h3 className="text-cosmic-gold text-center mb-3">
-          {language === 'ru' ? 'Дополнительно' : language === 'es' ? 'Adicional' : 'Additional'}
-        </h3>
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-cosmic-accent">🎲</span>
-            <span className="text-cosmic-secondary">
-              {language === 'ru' ? 'Счастливое число:' : language === 'es' ? 'Número de la suerte:' : 'Lucky number:'}
-            </span>
-            <span className="text-white">{additionalInfo.lucky_number}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-cosmic-accent">🕒</span>
-            <span className="text-cosmic-secondary">
-              {language === 'ru' ? 'Время удачи:' : language === 'es' ? 'Hora de la suerte:' : 'Lucky time:'}
-            </span>
-            <span className="text-white">{additionalInfo.lucky_time}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-cosmic-accent">🎨</span>
-            <span className="text-cosmic-secondary">
-              {language === 'ru' ? 'Цвет дня:' : language === 'es' ? 'Color del día:' : 'Color of the day:'}
-            </span>
-            <span className="text-white">{additionalInfo.color}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-cosmic-accent">💫</span>
-            <span className="text-cosmic-secondary">
-              {language === 'ru' ? 'Настроение:' : language === 'es' ? 'Estado de ánimo:' : 'Mood:'}
-            </span>
-            <span className="text-white">{additionalInfo.mood}</span>
-          </div>
-        </div>
-      </div>
-      
-      <div className="mt-6 text-center text-cosmic-accent text-sm italic">
-        <p>
-          {language === 'ru' ? 'Пусть твой день будет продуктивным и гармоничным!' : 
+      {/* Day wish message */}
+      <div className="my-8 text-center">
+        <p className="text-indigo-400 italic text-lg">
+          {language === 'ru' ? 'Пусть ваш день будет продуктивным и гармоничным!' : 
            language === 'es' ? '¡Que tu día sea productivo y armonioso!' : 
            'May your day be productive and harmonious!'}
         </p>
+      </div>
+      
+      {/* Additional info */}
+      <div className="mt-4 grid grid-cols-2 gap-y-4 text-base">
+        <div className="flex items-center gap-2">
+          <span className="text-cosmic-secondary">
+            {language === 'ru' ? 'Счастливое число:' : 
+             language === 'es' ? 'Número de la suerte:' : 
+             'Lucky number:'}
+          </span>
+          <span className="text-indigo-400 font-medium">{additionalInfo.lucky_number}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-cosmic-secondary">
+            {language === 'ru' ? 'Удачное время:' : 
+             language === 'es' ? 'Hora de la suerte:' : 
+             'Lucky time:'}
+          </span>
+          <span className="text-indigo-400 font-medium">{additionalInfo.lucky_time}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-cosmic-secondary">
+            {language === 'ru' ? 'Цвет дня:' : 
+             language === 'es' ? 'Color del día:' : 
+             'Color of the day:'}
+          </span>
+          <span className="text-indigo-400 font-medium">{additionalInfo.color}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-cosmic-secondary">
+            {language === 'ru' ? 'Настроение:' : 
+             language === 'es' ? 'Estado de ánimo:' : 
+             'Mood:'}
+          </span>
+          <span className="text-indigo-400 font-medium">{additionalInfo.mood}</span>
+        </div>
       </div>
     </div>
   );
