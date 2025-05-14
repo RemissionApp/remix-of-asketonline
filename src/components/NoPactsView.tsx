@@ -4,8 +4,12 @@ import { CosmicButton } from './CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 
-export const NoPactsView: React.FC = () => {
-  const { setActiveScreen } = useAppStore();
+interface NoPactsViewProps {
+  onCreatePactClick?: () => void;
+}
+
+export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) => {
+  const { language } = useAppStore();
   const { t } = useTranslations();
   
   return (
@@ -15,10 +19,11 @@ export const NoPactsView: React.FC = () => {
       </h1>
       
       <CosmicButton 
-        onClick={() => setActiveScreen('create-pact')}
+        onClick={onCreatePactClick}
         className="mt-4"
       >
-        {t.main.createPact}
+        {language === 'ru' ? 'Заключить договор' : 
+         language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
       </CosmicButton>
     </div>
   );

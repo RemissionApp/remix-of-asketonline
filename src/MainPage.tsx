@@ -11,6 +11,7 @@ import { ActivePactDisplay } from '@/components/ActivePactDisplay';
 import { NoPactsView } from '@/components/NoPactsView';
 import { PactNavigation } from '@/components/PactNavigation';
 import { ActionButtons } from '@/components/ActionButtons';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
   const { 
@@ -22,6 +23,7 @@ const MainPage: React.FC = () => {
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
+  const navigate = useNavigate();
   
   // Sync pacts with current date when component mounts
   useEffect(() => {
@@ -61,6 +63,11 @@ const MainPage: React.FC = () => {
         setShowEnergyEffect(false);
       }, 2000);
     }
+  };
+
+  // Navigate to create pact page
+  const handleCreatePact = () => {
+    navigate('/create-pact');
   };
   
   // Function to format the rejection text based on language
@@ -153,7 +160,7 @@ const MainPage: React.FC = () => {
             <ActionButtons />
           </>
         ) : (
-          <NoPactsView />
+          <NoPactsView onCreatePactClick={handleCreatePact} />
         )}
       </div>
       
