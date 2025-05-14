@@ -1,8 +1,19 @@
 
 import React from 'react';
-import { ZodiacDisplay } from '@/components/MainPageComponents/ZodiacDisplay';
+import { ZodiacInfo } from '@/components/ZodiacInfo';
+import { useAppStore } from '@/store/useAppStore';
 
-// Deprecated component - use ZodiacDisplay from MainPageComponents instead
 export const ZodiacBadgeDisplay: React.FC = () => {
-  return <ZodiacDisplay />;
+  const { userProfile } = useAppStore();
+  
+  // Only display if user has a birthdate
+  if (!userProfile?.birthDate) {
+    return null;
+  }
+  
+  return (
+    <div className="mb-6 mt-4">
+      <ZodiacInfo />
+    </div>
+  );
 };
