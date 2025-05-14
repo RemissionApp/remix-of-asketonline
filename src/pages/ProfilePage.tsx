@@ -17,6 +17,8 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { SupportedLanguage } from '@/i18n/translations';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage } = useAppStore();
@@ -95,6 +97,26 @@ const ProfilePage: React.FC = () => {
             </div>
             
             <h2 className="text-xl text-white font-serif mb-4">Подписка</h2>
+            
+            {/* Developer Mode Subscription Toggle */}
+            <div className="bg-cosmic-accent/10 border border-red-500/30 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-white font-medium">Режим разработчика</span>
+                  <span className="text-cosmic-secondary text-sm">Быстрое переключение подписки</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="pro-mode" className={userProfile.isPro ? "text-cosmic-gold" : "text-cosmic-secondary"}>
+                    {userProfile.isPro ? "PRO" : "Бесплатно"}
+                  </Label>
+                  <Switch
+                    id="pro-mode"
+                    checked={userProfile.isPro}
+                    onCheckedChange={handleManageSubscription}
+                  />
+                </div>
+              </div>
+            </div>
             
             {userProfile.isPro ? (
               <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-4">
