@@ -131,6 +131,11 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
                   language === 'es' ? '¡Te saludo' : 
                   'Greetings';
   
+  // Date prefix based on language
+  const datePrefix = language === 'ru' ? 'Сегодня' : 
+                    language === 'es' ? 'Hoy es' : 
+                    'Today is';
+  
   // Signature based on language
   const signature = language === 'ru' ? '— Послание Вселенной' : 
                    language === 'es' ? '— Mensaje del Universo' : 
@@ -177,9 +182,14 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   
   return (
     <div className={`text-center p-6 max-w-lg mx-auto ${className}`}>
-      <p className="text-cosmic-gold text-lg font-serif mb-2">
-        {greeting}, {userName}! {currentDate}
-      </p>
+      <div className="mb-4">
+        <p className="text-cosmic-gold text-lg font-serif">
+          {greeting}, {userName}!
+        </p>
+        <p className="text-cosmic-accent text-sm mt-1">
+          {datePrefix} {currentDate}
+        </p>
+      </div>
       {renderHoroscope()}
       <p className="mt-4 text-sm text-cosmic-accent/80">{signature}</p>
     </div>
