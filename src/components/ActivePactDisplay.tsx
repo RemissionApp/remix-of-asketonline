@@ -23,13 +23,8 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
   
   if (!pact) return null;
   
-  // Safely access and filter days
-  const days = pact.days || [];
-  const activeDaysCompleted = Array.isArray(days) 
-    ? days.filter(day => day?.completed).length 
-    : 0;
-    
-  const progress = Math.round((activeDaysCompleted / (pact.duration || 1)) * 100);
+  const activeDaysCompleted = pact.days.filter(day => day.completed).length;
+  const progress = Math.round((activeDaysCompleted / pact.duration) * 100);
   
   return (
     <>
@@ -40,7 +35,7 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
       <EnergyCircle progress={progress} size="lg">
         <div className="text-center p-4">
           <p className="text-4xl font-bold font-serif text-white">
-            {activeDaysCompleted}/{pact.duration || 0}
+            {activeDaysCompleted}/{pact.duration}
           </p>
           <p className="text-lg text-cosmic-accent mt-2">{t.main?.days || "days"}</p>
         </div>

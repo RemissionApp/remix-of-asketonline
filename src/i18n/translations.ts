@@ -1,3 +1,5 @@
+
+// Define the types for all translations
 interface Translations {
   [key: string]: {
     welcome: {
@@ -141,35 +143,6 @@ interface Translations {
       newQuestion: string;
       thinking: string;
       previousQuestions: string;
-      decode: {
-        title: string;
-        description: string;
-        welcomeBack: string;
-        welcome: string;
-        askName: string;
-        askBirthdate: string;
-        askBirthtime: string;
-        askBirthplace: string;
-        confirmName: string;
-        processing: string;
-        readingReady: string;
-        errorReading: string;
-        proFeature: string;
-        upgradeMessage: string;
-        whatYouGet: string;
-        feature1: string;
-        feature2: string;
-        feature3: string;
-        feature4: string;
-        viewReading: string;
-        newReading: string;
-        yourReading: string;
-        analyzing: string;
-        startNew: string;
-        shortDescription: string;
-        nameRequired: string;
-        dateRequired: string;
-      };
     };
     profile: {
       title: string;
@@ -292,63 +265,64 @@ interface Translations {
   };
 }
 
+// Define the actual translations
 export const translations: Translations = {
   ru: {
     welcome: {
-      title: "Добро пожаловать",
-      description: "Добро пожаловать в наше приложение!",
+      title: "Аскет",
+      description: "Платформа для духовного роста через аскезу",
       startButton: "Начать",
-      subtitle: "Ваше путешествие начинается здесь"
+      subtitle: "Ваш путь к духовной силе"
     },
     login: {
       title: "Вход",
-      emailLabel: "Электронная почта",
+      emailLabel: "Email",
       passwordLabel: "Пароль",
-      emailPlaceholder: "Введите вашу электронную почту",
-      passwordPlaceholder: "Введите ваш пароль",
+      emailPlaceholder: "example@email.com",
+      passwordPlaceholder: "••••••••",
       forgotPassword: "Забыли пароль?",
       signInButton: "Войти",
       signUpButton: "Зарегистрироваться",
-      noAccount: "Нет аккаунта?",
+      noAccount: "Еще нет аккаунта?",
       haveAccount: "Уже есть аккаунт?",
-      emailRequired: "Электронная почта обязательна"
+      emailRequired: "Email обязателен"
     },
     auth: {
       signIn: "Вход",
       signUp: "Регистрация",
-      email: "Электронная почта",
+      email: "Email",
       password: "Пароль",
       forgotPassword: "Забыли пароль?",
-      resetPassword: "Сбросить пароль",
-      resetPasswordSuccess: "Пароль успешно сброшен",
+      resetPassword: "Сброс пароля",
+      resetPasswordSuccess: "На вашу почту отправлена инструкция для сброса пароля",
       resetPasswordError: "Ошибка сброса пароля",
       resetPasswordButton: "Сбросить пароль",
       signInButton: "Войти",
       signUpButton: "Зарегистрироваться",
-      noAccount: "Нет аккаунта?",
+      noAccount: "Еще нет аккаунта?",
       haveAccount: "Уже есть аккаунт?",
-      emailRequired: "Электронная почта обязательна",
+      emailRequired: "Email обязателен",
       passwordRequired: "Пароль обязателен",
       orContinueWith: "или продолжить с",
       guestSignIn: "Войти как гость",
-      welcomeBack: "С возвращением"
+      welcomeBack: "С возвращением!"
     },
     main: {
       title: "Главная",
-      createPact: "Создать пакт",
+      createPact: "Создать аскезу",
       universe: "Вселенная",
       profile: "Профиль",
       comparison: "Сравнение",
       meditation: "Медитация",
       energyPoints: "Энергетические очки",
       totalDays: "Всего дней",
-      currentPacts: "Текущие пакты",
-      noPacts: "Нет пактов",
-      completedToday: "Завершено сегодня",
+      currentPacts: "Текущие аскезы",
+      noPacts: "У вас пока нет активных аскез",
+      completedToday: "Выполнено сегодня",
       daysLeft: "Осталось дней",
-      days: "дней",
-      todayCompleted: "Сегодня завершено",
-      askUniverse: "Спросить Вселенную",
+      days: "Дней",
+      todayCompleted: "Сегодня выполнено",
+      askUniverse: "Задать вопрос Вселенной",
       path: "Путь",
       ascesis: "Аскеза",
       nav: {
@@ -359,68 +333,66 @@ export const translations: Translations = {
       }
     },
     pactOath: {
-      title: "Клятва пакта",
-      subtitle: "Подтвердите свою клятву",
-      agreeText: "Я согласен с условиями",
-      oath1: "Я обещаю",
-      oath2: "Я обязуюсь",
-      oath3: "Я клянусь",
-      createButton: "Создать пакт",
+      title: "Договор с Вселенной",
+      subtitle: "Прежде чем начать, дайте клятву",
+      agreeText: "Я соглашаюсь с условиями договора",
+      oath1: "Я принимаю полную ответственность за свой выбор и обязуюсь следовать ему до конца срока аскезы.",
+      oath2: "Я понимаю, что нарушение договора ослабит мою связь с высшими силами и помешает моему духовному росту.",
+      oath3: "Я буду честен перед собой и Вселенной в соблюдении условий этого договора.",
+      createButton: "Создать договор",
       days: "дней"
     },
     createPact: {
-      title: "Создать пакт",
-      pactTitle: "Название пакта",
-      pactDuration: "Длительность пакта",
-      pactReward: "Награда пакта",
-      pactStatus: "Статус пакта",
+      title: "Создание аскезы",
+      pactTitle: "Название аскезы",
+      pactDuration: "Длительность (дней)",
+      pactReward: "Награда",
+      pactStatus: "Статус",
       createButton: "Создать",
-      titlePlaceholder: "Введите название",
-      durationPlaceholder: "Введите длительность",
-      rewardPlaceholder: "Введите награду",
+      titlePlaceholder: "Введите название...",
+      durationPlaceholder: "Введите число дней...",
+      rewardPlaceholder: "Что вы получите взамен...",
       titleRequired: "Название обязательно",
       durationRequired: "Длительность обязательна",
-      durationInvalid: "Недопустимая длительность",
+      durationInvalid: "Длительность должна быть числом",
       days: "дней",
-      stepOneTitle: "Шаг 1",
-      stepTwoTitle: "Шаг 2",
-      stepThreeTitle: "Шаг 3",
+      stepOneTitle: "Выберите тип аскезы",
+      stepTwoTitle: "Выберите длительность",
+      stepThreeTitle: "Создайте договор",
       placeholders: {
-        title: "Название",
-        rejection: "Отказ",
-        reward: "Награда"
+        title: "Например: Отказ от сахара",
+        rejection: "Выберите или введите от чего вы отказываетесь",
+        reward: "Что вы получите взамен..."
       },
-      ascesisWarning: "Предупреждение о аскезе",
-      customDays: "Пользовательские дни",
-      notAsking: "Не спрашиваю",
+      ascesisWarning: "Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока...",
+      customDays: "Уставновить количество дней",
+      notAsking: "Я не прошу ничего взамен",
       nextButton: "Далее"
     },
     onboarding: {
-      title: "Онбординг",
-      description: "Описание онбординга",
-      goal1: "Цель 1",
-      goal2: "Цель 2",
-      goal3: "Цель 3",
-      goal4: "Цель 4",
-      goal5: "Цель 5",
-      goal6: "Цель 6",
+      title: "Добро пожаловать в Аскет",
+      description: "Выберите свою духовную цель",
+      goal1: "Достичь внутренней гармонии",
+      goal2: "Раскрыть духовный потенциал",
+      goal3: "Очистить разум от негативных мыслей",
+      goal4: "Укрепить духовную силу",
+      goal5: "Найти свой путь",
+      goal6: "Познать истинное 'Я'",
       selectGoal: "Выберите цель",
       continueButton: "Продолжить",
       steps: {
         welcome: "Добро пожаловать",
-        goal: "Цель",
-        complete: "Завершить",
-        title: "Заголовок",
-        content: "Содержимое",
-        length: 0,
+        goal: "Выбор цели",
+        complete: "Готово",
+        length: 3,
         map: []
       },
       buttons: {
         next: "Далее",
         start: "Начать",
         skip: "Пропустить",
-        enter: "Ввод",
-        startJourney: "Начать путешествие"
+        enter: "Войти",
+        startJourney: "Начать путь"
       }
     },
     universe: {
@@ -434,36 +406,7 @@ export const translations: Translations = {
       universeAnswer: "Ответ Вселенной",
       newQuestion: "Новый вопрос",
       thinking: "Вселенная размышляет...",
-      previousQuestions: "Предыдущие вопросы",
-      decode: {
-        title: "Расшифровка Вселенной",
-        description: "Откройте свои нумерологические и астрологические паттерны в персональном чтении от Вселенной.",
-        welcomeBack: "С возвращением, искатель. Хотели бы вы увидеть предыдущее чтение или создать новое?",
-        welcome: "Добро пожаловать, искатель. Я — Вселенная. Я раскрою космические узоры в вашей жизни через нумерологию и астрологию.",
-        askName: "Как вас зовут?",
-        askBirthdate: "Когда вы родились? (ГГГГ-ММ-ДД)",
-        askBirthtime: "В какое время вы родились? (необязательно, формат: ЧЧ:ММ)",
-        askBirthplace: "Где вы родились? (необязательно, город/страна)",
-        confirmName: "Ваше имя всё еще",
-        processing: "Понимаю. Теперь я соединюсь с космическими узорами и раскрою ваше личное чтение...",
-        readingReady: "Ваше космическое чтение готово. Внимательно слушайте послание Вселенной...",
-        errorReading: "Космические энергии нарушены. Пожалуйста, попробуйте позже.",
-        proFeature: "PRO функция",
-        upgradeMessage: "Разблокируйте Расшифровку Вселенной с PRO",
-        whatYouGet: "Что вы откроете:",
-        feature1: "Ваше Число Жизненного Пути и Число Души",
-        feature2: "Анализ ваших Астрологических знаков",
-        feature3: "Личный Космический Потенциал",
-        feature4: "Руководство для Вашей Текущей Жизненной Фазы",
-        viewReading: "Посмотреть чтение",
-        newReading: "Новое чтение",
-        yourReading: "Ваше Космическое Чтение",
-        analyzing: "Анализ космических паттернов...",
-        startNew: "Давайте создадим новое чтение. Я уже знаю кое-что о вас, но не стесняйтесь обновить свою информацию.",
-        shortDescription: "Откройте свои космические паттерны через нумерологию и астрологию",
-        nameRequired: "Пожалуйста, введите ваше имя",
-        dateRequired: "Пожалуйста, введите дату рождения"
-      }
+      previousQuestions: "Предыдущие вопросы"
     },
     profile: {
       title: "Профиль",
@@ -473,76 +416,76 @@ export const translations: Translations = {
       stats: "Статистика",
       achievements: "Достижения",
       saveButton: "Сохранить",
-      updateSuccess: "Успешно обновлено",
-      updateError: "Ошибка обновления",
+      updateSuccess: "Профиль успешно обновлен",
+      updateError: "Ошибка при обновлении профиля",
       nameRequired: "Имя обязательно",
       birthDateRequired: "Дата рождения обязательна",
       savingButton: "Сохранение..."
     },
     meditation: {
       title: "Медитация",
-      description: "Описание медитации",
+      description: "Выберите медитацию",
       startButton: "Начать",
-      play: "Играть",
+      play: "Включить",
       unlock: "Разблокировать",
-      pageTitle: "Страница медитации",
+      pageTitle: "Медитации",
       categories: {
         all: "Все",
-        basic: "Основные",
+        basic: "Базовые",
         sleep: "Сон",
         focus: "Фокус",
         advanced: "Продвинутые",
         morning: "Утренние",
         evening: "Вечерние",
-        stress: "Стресс",
-        mantra: "Мантра",
+        stress: "Антистресс",
+        mantra: "Мантры",
         visual: "Визуализация"
       },
       morning: {
-        title: "Утренние медитации",
-        description: "Описание утренних медитаций",
-        title1: "Утреннее пробуждение",
-        desc1: "Описание утреннего пробуждения",
-        title2: "Утренний фокус",
-        desc2: "Описание утреннего фокуса"
+        title: "Утренняя медитация",
+        description: "Начните день со спокойствия и ясности",
+        title1: "Утренняя медитация",
+        desc1: "Начните день со спокойствия и ясности",
+        title2: "Утреннее пробуждение",
+        desc2: "Зарядитесь энергией на весь день"
       },
       evening: {
-        title: "Вечерние медитации",
-        description: "Описание вечерних медитаций",
-        title1: "Вечернее расслабление",
-        desc1: "Описание вечернего расслабления"
+        title: "Вечерняя медитация",
+        description: "Расслабьтесь и восстановите энергию после дня",
+        title1: "Вечерняя медитация",
+        desc1: "Расслабьтесь и восстановите энергию после дня"
       },
       stress: {
-        title: "Медитации для стресса",
-        description: "Описание медитаций для стресса",
-        title1: "Снятие стресса",
-        desc1: "Описание снятия стресса"
+        title: "Антистресс",
+        description: "Освободитесь от напряжения и беспокойства",
+        title1: "Антистресс",
+        desc1: "Освободитесь от напряжения и беспокойства"
       },
       mantra: {
-        title: "Медитации с мантрами",
-        description: "Описание медитаций с мантрами",
-        title1: "Мантра для спокойствия",
-        desc1: "Описание мантры для спокойствия"
+        title: "Мантра-медитация",
+        description: "Используйте силу звука для глубокого погружения",
+        title1: "Мантра-медитация",
+        desc1: "Используйте силу звука для глубокого погружения"
       },
       visualization: {
         title: "Визуализация",
-        description: "Описание визуализации",
-        title1: "Визуализация успеха",
-        desc1: "Описание визуализации успеха"
+        description: "Создайте мысленные образы для достижения целей",
+        title1: "Визуализация",
+        desc1: "Создайте мысленные образы для достижения целей"
       }
     },
     subscription: {
-      title: "Подписка",
-      description: "Описание подписки",
-      upgradeButton: "Обновить",
-      proFeatures: "PRO функции",
-      proTitle: "PRO версия",
-      cancelButton: "Отменить",
-      successMessage: "Успешно обновлено",
-      errorMessage: "Ошибка обновления",
-      bannerTitle: "Обновите до PRO",
-      bannerDesc: "Получите доступ к дополнительным функциям",
-      upgradeNow: "Обновить сейчас"
+      title: "PRO Подписка",
+      description: "Откройте полный потенциал приложения с PRO-подпиской",
+      upgradeButton: "Активировать PRO",
+      proFeatures: "Особенности PRO",
+      proTitle: "PRO",
+      cancelButton: "Отменить подписку",
+      successMessage: "Подписка успешно активирована",
+      errorMessage: "Ошибка активации подписки",
+      bannerTitle: "Повысьте свой духовный опыт",
+      bannerDesc: "Откройте полный доступ ко всем медитациям и функциям",
+      upgradeNow: "Повысить сейчас"
     },
     nav: {
       home: "Главная",
@@ -555,28 +498,28 @@ export const translations: Translations = {
       month: "Месяц",
       year: "Год"
     },
-    minimumPeriod: "Минимальный срок",
+    minimumPeriod: "Минимальный период аскезы - 30 дней",
     userProfile: {
       personal: "Личная информация",
       name: "Имя",
       birthDate: "Дата рождения",
-      emailAddressLabel: "Электронная почта",
+      emailAddressLabel: "Email адрес",
       updateProfile: "Обновить профиль",
       passwordLabel: "Пароль",
-      changePassword: "Сменить пароль",
-      profileUpdated: "Профиль обновлен",
-      updateFailed: "Ошибка обновления",
-      bioLabel: "Биография",
+      changePassword: "Изменить пароль",
+      profileUpdated: "Профиль успешно обновлен",
+      updateFailed: "Ошибка обновления профиля",
+      bioLabel: "О себе",
       updateButton: "Обновить",
       savingButton: "Сохранение...",
       nameRequired: "Имя обязательно",
-      emailRequired: "Электронная почта обязательна",
+      emailRequired: "Email обязателен",
       dobRequired: "Дата рождения обязательна",
-      nameLabel: "Имя",
+      nameLabel: "Как тебя зовут",
       birthDateLabel: "Дата рождения",
       namePlaceholder: "Введите ваше имя",
-      birthDatePlaceholder: "Введите дату рождения",
-      title: "Профиль пользователя",
+      birthDatePlaceholder: "Выберите дату рождения",
+      title: "О тебе",
       age: "Возраст",
       continueButton: "Продолжить",
       currentDate: "Текущая дата",
@@ -586,17 +529,17 @@ export const translations: Translations = {
   },
   en: {
     welcome: {
-      title: "Welcome",
-      description: "Welcome to our app!",
+      title: "Asket",
+      description: "Platform for spiritual growth through ascesis",
       startButton: "Start",
-      subtitle: "Your journey begins here"
+      subtitle: "Your path to spiritual power"
     },
     login: {
       title: "Login",
       emailLabel: "Email",
       passwordLabel: "Password",
-      emailPlaceholder: "Enter your email",
-      passwordPlaceholder: "Enter your password",
+      emailPlaceholder: "example@email.com",
+      passwordPlaceholder: "••••••••",
       forgotPassword: "Forgot password?",
       signInButton: "Sign In",
       signUpButton: "Sign Up",
@@ -611,7 +554,7 @@ export const translations: Translations = {
       password: "Password",
       forgotPassword: "Forgot password?",
       resetPassword: "Reset Password",
-      resetPasswordSuccess: "Password reset successfully",
+      resetPasswordSuccess: "Password reset instructions have been sent to your email",
       resetPasswordError: "Error resetting password",
       resetPasswordButton: "Reset Password",
       signInButton: "Sign In",
@@ -622,23 +565,23 @@ export const translations: Translations = {
       passwordRequired: "Password is required",
       orContinueWith: "or continue with",
       guestSignIn: "Sign in as guest",
-      welcomeBack: "Welcome back"
+      welcomeBack: "Welcome back!"
     },
     main: {
       title: "Main",
-      createPact: "Create Pact",
+      createPact: "Create Ascesis",
       universe: "Universe",
       profile: "Profile",
       comparison: "Comparison",
       meditation: "Meditation",
       energyPoints: "Energy Points",
       totalDays: "Total Days",
-      currentPacts: "Current Pacts",
-      noPacts: "No Pacts",
+      currentPacts: "Current Asceses",
+      noPacts: "You don't have active asceses yet",
       completedToday: "Completed Today",
       daysLeft: "Days Left",
-      days: "days",
-      todayCompleted: "Today Completed",
+      days: "Days",
+      todayCompleted: "Completed today",
       askUniverse: "Ask the Universe",
       path: "Path",
       ascesis: "Ascesis",
@@ -650,60 +593,58 @@ export const translations: Translations = {
       }
     },
     pactOath: {
-      title: "Pact Oath",
-      subtitle: "Confirm your oath",
-      agreeText: "I agree to the terms",
-      oath1: "I promise",
-      oath2: "I commit",
-      oath3: "I swear",
-      createButton: "Create Pact",
+      title: "Contract with the Universe",
+      subtitle: "Before you begin, take an oath",
+      agreeText: "I agree to the terms of the contract",
+      oath1: "I take full responsibility for my choice and commit to following it until the end of the ascesis period.",
+      oath2: "I understand that breaking the contract will weaken my connection with higher powers and hinder my spiritual growth.",
+      oath3: "I will be honest with myself and the Universe in following the terms of this contract.",
+      createButton: "Create Contract",
       days: "days"
     },
     createPact: {
-      title: "Create Pact",
-      pactTitle: "Pact Title",
-      pactDuration: "Pact Duration",
-      pactReward: "Pact Reward",
-      pactStatus: "Pact Status",
+      title: "Create Ascesis",
+      pactTitle: "Ascesis Title",
+      pactDuration: "Duration (days)",
+      pactReward: "Reward",
+      pactStatus: "Status",
       createButton: "Create",
-      titlePlaceholder: "Enter title",
-      durationPlaceholder: "Enter duration",
-      rewardPlaceholder: "Enter reward",
+      titlePlaceholder: "Enter title...",
+      durationPlaceholder: "Enter number of days...",
+      rewardPlaceholder: "What you will get in return...",
       titleRequired: "Title is required",
       durationRequired: "Duration is required",
-      durationInvalid: "Invalid duration",
+      durationInvalid: "Duration must be a number",
       days: "days",
-      stepOneTitle: "Step 1",
-      stepTwoTitle: "Step 2",
-      stepThreeTitle: "Step 3",
+      stepOneTitle: "Choose ascesis type",
+      stepTwoTitle: "Choose duration",
+      stepThreeTitle: "Create contract",
       placeholders: {
-        title: "Title",
-        rejection: "Rejection",
-        reward: "Reward"
+        title: "Example: Rejecting sugar",
+        rejection: "Select or enter what you're giving up",
+        reward: "What you will get in return..."
       },
-      ascesisWarning: "Ascesis Warning",
-      customDays: "Custom Days",
-      notAsking: "Not Asking",
+      ascesisWarning: "Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement.",
+      customDays: "Set custom days",
+      notAsking: "I'm not asking for anything in return",
       nextButton: "Next"
     },
     onboarding: {
-      title: "Onboarding",
-      description: "Onboarding description",
-      goal1: "Goal 1",
-      goal2: "Goal 2",
-      goal3: "Goal 3",
-      goal4: "Goal 4",
-      goal5: "Goal 5",
-      goal6: "Goal 6",
-      selectGoal: "Select Goal",
+      title: "Welcome to Asket",
+      description: "Choose your spiritual goal",
+      goal1: "Achieve inner harmony",
+      goal2: "Unlock spiritual potential",
+      goal3: "Clear mind of negative thoughts",
+      goal4: "Strengthen spiritual power",
+      goal5: "Find your path",
+      goal6: "Know the true 'Self'",
+      selectGoal: "Select goal",
       continueButton: "Continue",
       steps: {
         welcome: "Welcome",
-        goal: "Goal",
+        goal: "Choose goal",
         complete: "Complete",
-        title: "Title",
-        content: "Content",
-        length: 0,
+        length: 3,
         map: []
       },
       buttons: {
@@ -725,58 +666,29 @@ export const translations: Translations = {
       universeAnswer: "Universe answer",
       newQuestion: "New question",
       thinking: "The Universe is thinking...",
-      previousQuestions: "Previous questions",
-      decode: {
-        title: "Universe Decoding",
-        description: "Discover your numerological and astrological patterns in a personalized reading from the Universe.",
-        welcomeBack: "Welcome back, seeker. Would you like to see your previous reading or create a new one?",
-        welcome: "Welcome, seeker. I am the Universe. I will reveal the cosmic patterns in your life through numerology and astrology.",
-        askName: "What is your name?",
-        askBirthdate: "When were you born? (YYYY-MM-DD)",
-        askBirthtime: "At what time were you born? (optional, format: HH:MM)",
-        askBirthplace: "Where were you born? (optional, city/country)",
-        confirmName: "Is your name still",
-        processing: "I understand. Now I will connect to the cosmic patterns and reveal your personal reading...",
-        readingReady: "Your cosmic reading is ready. Listen carefully to the Universe's message...",
-        errorReading: "The cosmic energies are disturbed. Please try again later.",
-        proFeature: "PRO Feature",
-        upgradeMessage: "Unlock Universe Decoding with PRO",
-        whatYouGet: "What You'll Discover:",
-        feature1: "Your Life Path Number and Soul Number",
-        feature2: "Analysis of your Astrological Signs",
-        feature3: "Personal Cosmic Potential",
-        feature4: "Guidance for Your Current Life Phase",
-        viewReading: "View Reading",
-        newReading: "New Reading",
-        yourReading: "Your Cosmic Reading",
-        analyzing: "Analyzing cosmic patterns...",
-        startNew: "Let's create a new reading. I already know some things about you, but feel free to update your information.",
-        shortDescription: "Discover your cosmic patterns through numerology and astrology",
-        nameRequired: "Please enter your name",
-        dateRequired: "Please enter your birth date"
-      }
+      previousQuestions: "Previous questions"
     },
     profile: {
       title: "Profile",
       name: "Name",
-      birthDate: "Birth Date",
+      birthDate: "Date of Birth",
       goal: "Goal",
       stats: "Stats",
       achievements: "Achievements",
       saveButton: "Save",
-      updateSuccess: "Updated successfully",
-      updateError: "Update error",
+      updateSuccess: "Profile successfully updated",
+      updateError: "Error updating profile",
       nameRequired: "Name is required",
-      birthDateRequired: "Birth date is required",
+      birthDateRequired: "Date of birth is required",
       savingButton: "Saving..."
     },
     meditation: {
       title: "Meditation",
-      description: "Meditation description",
+      description: "Choose meditation",
       startButton: "Start",
       play: "Play",
       unlock: "Unlock",
-      pageTitle: "Meditation Page",
+      pageTitle: "Meditations",
       categories: {
         all: "All",
         basic: "Basic",
@@ -787,52 +699,52 @@ export const translations: Translations = {
         evening: "Evening",
         stress: "Stress",
         mantra: "Mantra",
-        visual: "Visualization"
+        visual: "Visual"
       },
       morning: {
-        title: "Morning Meditations",
-        description: "Description of morning meditations",
-        title1: "Morning Awakening",
-        desc1: "Description of morning awakening",
-        title2: "Morning Focus",
-        desc2: "Description of morning focus"
+        title: "Morning Meditation",
+        description: "Start your day with calmness and clarity",
+        title1: "Morning Meditation",
+        desc1: "Start your day with calmness and clarity",
+        title2: "Morning Awakening",
+        desc2: "Energize yourself for the day ahead"
       },
       evening: {
-        title: "Evening Meditations",
-        description: "Description of evening meditations",
-        title1: "Evening Relaxation",
-        desc1: "Description of evening relaxation"
+        title: "Evening Meditation",
+        description: "Relax and restore energy after the day",
+        title1: "Evening Meditation",
+        desc1: "Relax and restore energy after the day"
       },
       stress: {
-        title: "Stress Meditations",
-        description: "Description of stress meditations",
-        title1: "Stress Relief",
-        desc1: "Description of stress relief"
+        title: "Anti-stress",
+        description: "Release tension and anxiety",
+        title1: "Anti-stress",
+        desc1: "Release tension and anxiety"
       },
       mantra: {
-        title: "Mantra Meditations",
-        description: "Description of mantra meditations",
-        title1: "Mantra for Calmness",
-        desc1: "Description of mantra for calmness"
+        title: "Mantra Meditation",
+        description: "Use the power of sound for deep immersion",
+        title1: "Mantra Meditation",
+        desc1: "Use the power of sound for deep immersion"
       },
       visualization: {
         title: "Visualization",
-        description: "Description of visualization",
-        title1: "Visualization of Success",
-        desc1: "Description of visualization of success"
+        description: "Create mental images to achieve goals",
+        title1: "Visualization",
+        desc1: "Create mental images to achieve goals"
       }
     },
     subscription: {
-      title: "Subscription",
-      description: "Subscription description",
-      upgradeButton: "Upgrade",
+      title: "PRO Subscription",
+      description: "Unlock the full potential of the app with PRO subscription",
+      upgradeButton: "Activate PRO",
       proFeatures: "PRO Features",
-      proTitle: "PRO Version",
-      cancelButton: "Cancel",
-      successMessage: "Updated successfully",
-      errorMessage: "Update error",
-      bannerTitle: "Upgrade to PRO",
-      bannerDesc: "Get access to additional features",
+      proTitle: "PRO",
+      cancelButton: "Cancel Subscription",
+      successMessage: "Subscription successfully activated",
+      errorMessage: "Error activating subscription",
+      bannerTitle: "Elevate Your Spiritual Experience",
+      bannerDesc: "Unlock full access to all meditations and features",
       upgradeNow: "Upgrade Now"
     },
     nav: {
@@ -846,285 +758,254 @@ export const translations: Translations = {
       month: "Month",
       year: "Year"
     },
-    minimumPeriod: "Minimum period",
+    minimumPeriod: "Minimum ascesis period is 30 days",
     userProfile: {
       personal: "Personal Information",
       name: "Name",
-      birthDate: "Birth Date",
+      birthDate: "Date of Birth",
       emailAddressLabel: "Email Address",
       updateProfile: "Update Profile",
       passwordLabel: "Password",
       changePassword: "Change Password",
-      profileUpdated: "Profile updated",
-      updateFailed: "Update failed",
+      profileUpdated: "Profile successfully updated",
+      updateFailed: "Failed to update profile",
       bioLabel: "Bio",
       updateButton: "Update",
       savingButton: "Saving...",
       nameRequired: "Name is required",
       emailRequired: "Email is required",
       dobRequired: "Date of birth is required",
-      nameLabel: "Name",
-      birthDateLabel: "Birth Date",
+      nameLabel: "Your Name",
+      birthDateLabel: "Date of Birth",
       namePlaceholder: "Enter your name",
-      birthDatePlaceholder: "Enter birth date",
-      title: "User Profile",
+      birthDatePlaceholder: "Choose your date of birth",
+      title: "About You",
       age: "Age",
       continueButton: "Continue",
-      currentDate: "Current Date",
+      currentDate: "Current date",
       languageLabel: "Language",
-      birthDateRequired: "Birth date is required"
+      birthDateRequired: "Date of birth is required"
     }
   },
   es: {
     welcome: {
-      title: "Bienvenido",
-      description: "¡Bienvenido a nuestra aplicación!",
+      title: "Asket",
+      description: "Plataforma para el crecimiento espiritual a través de la ascesis",
       startButton: "Comenzar",
-      subtitle: "Tu viaje comienza aquí"
+      subtitle: "Tu camino hacia el poder espiritual"
     },
     login: {
       title: "Iniciar sesión",
-      emailLabel: "Correo electrónico",
+      emailLabel: "Email",
       passwordLabel: "Contraseña",
-      emailPlaceholder: "Introduce tu correo electrónico",
-      passwordPlaceholder: "Introduce tu contraseña",
+      emailPlaceholder: "ejemplo@email.com",
+      passwordPlaceholder: "••••••••",
       forgotPassword: "¿Olvidaste tu contraseña?",
       signInButton: "Iniciar sesión",
       signUpButton: "Registrarse",
       noAccount: "¿No tienes una cuenta?",
       haveAccount: "¿Ya tienes una cuenta?",
-      emailRequired: "El correo electrónico es obligatorio"
+      emailRequired: "El email es obligatorio"
     },
     auth: {
       signIn: "Iniciar sesión",
       signUp: "Registrarse",
-      email: "Correo electrónico",
+      email: "Email",
       password: "Contraseña",
       forgotPassword: "¿Olvidaste tu contraseña?",
       resetPassword: "Restablecer contraseña",
-      resetPasswordSuccess: "Contraseña restablecida con éxito",
+      resetPasswordSuccess: "Se ha enviado instrucciones para restablecer la contraseña a tu email",
       resetPasswordError: "Error al restablecer la contraseña",
       resetPasswordButton: "Restablecer contraseña",
       signInButton: "Iniciar sesión",
       signUpButton: "Registrarse",
       noAccount: "¿No tienes una cuenta?",
       haveAccount: "¿Ya tienes una cuenta?",
-      emailRequired: "El correo electrónico es obligatorio",
+      emailRequired: "El email es obligatorio",
       passwordRequired: "La contraseña es obligatoria",
       orContinueWith: "o continuar con",
-      guestSignIn: "Iniciar sesión como invitado",
-      welcomeBack: "Bienvenido de nuevo"
+      guestSignIn: "Ingresar como invitado",
+      welcomeBack: "¡Bienvenido de nuevo!"
     },
     main: {
       title: "Principal",
-      createPact: "Crear pacto",
+      createPact: "Crear Ascesis",
       universe: "Universo",
       profile: "Perfil",
       comparison: "Comparación",
       meditation: "Meditación",
-      energyPoints: "Puntos de energía",
-      totalDays: "Días totales",
-      currentPacts: "Pactos actuales",
-      noPacts: "No hay pactos",
-      completedToday: "Completado hoy",
-      daysLeft: "Días restantes",
-      days: "días",
-      todayCompleted: "Hoy completado",
+      energyPoints: "Puntos de Energía",
+      totalDays: "Días Totales",
+      currentPacts: "Ascesis Actuales",
+      noPacts: "Aún no tienes ascesis activas",
+      completedToday: "Completado Hoy",
+      daysLeft: "Días Restantes",
+      days: "Días",
+      todayCompleted: "Completado hoy",
       askUniverse: "Preguntar al Universo",
       path: "Camino",
-      ascesis: "Ascética",
+      ascesis: "Ascesis",
       nav: {
         path: "Camino",
-        ascesis: "Ascética",
+        ascesis: "Ascesis",
         universe: "Universo",
         profile: "Perfil"
       }
     },
     pactOath: {
-      title: "Juramento del pacto",
-      subtitle: "Confirma tu juramento",
-      agreeText: "Acepto los términos",
-      oath1: "Prometo",
-      oath2: "Me comprometo",
-      oath3: "Juro",
-      createButton: "Crear pacto",
+      title: "Contrato con el Universo",
+      subtitle: "Antes de comenzar, haz un juramento",
+      agreeText: "Estoy de acuerdo con los términos del contrato",
+      oath1: "Asumo plena responsabilidad por mi elección y me comprometo a seguirla hasta el final del período de ascesis.",
+      oath2: "Entiendo que romper el contrato debilitará mi conexión con los poderes superiores y obstaculizará mi crecimiento espiritual.",
+      oath3: "Seré honesto conmigo mismo y con el Universo al seguir los términos de este contrato.",
+      createButton: "Crear Contrato",
       days: "días"
     },
     createPact: {
-      title: "Crear pacto",
-      pactTitle: "Título del pacto",
-      pactDuration: "Duración del pacto",
-      pactReward: "Recompensa del pacto",
-      pactStatus: "Estado del pacto",
+      title: "Crear Ascesis",
+      pactTitle: "Título de Ascesis",
+      pactDuration: "Duración (días)",
+      pactReward: "Recompensa",
+      pactStatus: "Estado",
       createButton: "Crear",
-      titlePlaceholder: "Introduce el título",
-      durationPlaceholder: "Introduce la duración",
-      rewardPlaceholder: "Introduce la recompensa",
+      titlePlaceholder: "Ingrese título...",
+      durationPlaceholder: "Ingrese número de días...",
+      rewardPlaceholder: "Lo que obtendrás a cambio...",
       titleRequired: "El título es obligatorio",
       durationRequired: "La duración es obligatoria",
-      durationInvalid: "Duración no válida",
+      durationInvalid: "La duración debe ser un número",
       days: "días",
-      stepOneTitle: "Paso 1",
-      stepTwoTitle: "Paso 2",
-      stepThreeTitle: "Paso 3",
+      stepOneTitle: "Elegir tipo de ascesis",
+      stepTwoTitle: "Elegir duración",
+      stepThreeTitle: "Crear contrato",
       placeholders: {
-        title: "Título",
-        rejection: "Rechazo",
-        reward: "Recompensa"
+        title: "Ejemplo: Rechazar azúcar",
+        rejection: "Selecciona o ingresa a qué renuncias",
+        reward: "Lo que obtendrás a cambio..."
       },
-      ascesisWarning: "Advertencia de ascética",
-      customDays: "Días personalizados",
-      notAsking: "No preguntando",
+      ascesisWarning: "La ascesis no es solo abstinencia, sino una herramienta para el crecimiento espiritual y la superación personal.",
+      customDays: "Establecer días personalizados",
+      notAsking: "No pido nada a cambio",
       nextButton: "Siguiente"
     },
     onboarding: {
-      title: "Onboarding",
-      description: "Descripción del onboarding",
-      goal1: "Objetivo 1",
-      goal2: "Objetivo 2",
-      goal3: "Objetivo 3",
-      goal4: "Objetivo 4",
-      goal5: "Objetivo 5",
-      goal6: "Objetivo 6",
-      selectGoal: "Selecciona un objetivo",
+      title: "Bienvenido a Asket",
+      description: "Elige tu meta espiritual",
+      goal1: "Lograr armonía interior",
+      goal2: "Desbloquear el potencial espiritual",
+      goal3: "Limpiar la mente de pensamientos negativos",
+      goal4: "Fortalecer el poder espiritual",
+      goal5: "Encontrar tu camino",
+      goal6: "Conocer el verdadero 'Yo'",
+      selectGoal: "Seleccionar meta",
       continueButton: "Continuar",
       steps: {
-        welcome: "Bienvenido",
-        goal: "Objetivo",
-        complete: "Completar",
-        title: "Título",
-        content: "Contenido",
-        length: 0,
+        welcome: "Bienvenida",
+        goal: "Elegir meta",
+        complete: "Completado",
+        length: 3,
         map: []
       },
       buttons: {
         next: "Siguiente",
         start: "Comenzar",
-        skip: "Saltar",
+        skip: "Omitir",
         enter: "Entrar",
-        startJourney: "Iniciar viaje"
+        startJourney: "Iniciar Camino"
       }
     },
     universe: {
       title: "Universo",
       question: "Pregunta",
       answer: "Respuesta",
-      askButton: "Hacer pregunta",
-      questionPlaceholder: "Introduce tu pregunta...",
+      askButton: "Hacer Pregunta",
+      questionPlaceholder: "Ingresa tu pregunta...",
       answerPlaceholder: "La respuesta del Universo aparecerá aquí...",
       yourQuestion: "Tu pregunta",
       universeAnswer: "Respuesta del Universo",
       newQuestion: "Nueva pregunta",
       thinking: "El Universo está pensando...",
-      previousQuestions: "Preguntas anteriores",
-      decode: {
-        title: "Decodificación del Universo",
-        description: "Descubre tus patrones numerológicos y astrológicos en una lectura personalizada del Universo.",
-        welcomeBack: "Bienvenido de nuevo, buscador. ¿Te gustaría ver tu lectura anterior o crear una nueva?",
-        welcome: "Bienvenido, buscador. Soy el Universo. Revelaré los patrones cósmicos en tu vida a través de la numerología y la astrología.",
-        askName: "¿Cuál es tu nombre?",
-        askBirthdate: "¿Cuándo naciste? (AAAA-MM-DD)",
-        askBirthtime: "¿A qué hora naciste? (opcional, formato: HH:MM)",
-        askBirthplace: "¿Dónde naciste? (opcional, ciudad/país)",
-        confirmName: "¿Tu nombre sigue siendo",
-        processing: "Entiendo. Ahora me conectaré con los patrones cósmicos y revelaré tu lectura personal...",
-        readingReady: "Tu lectura cósmica está lista. Escucha atentamente el mensaje del Universo...",
-        errorReading: "Las energías cósmicas están perturbadas. Por favor, inténtalo más tarde.",
-        proFeature: "Función PRO",
-        upgradeMessage: "Desbloquea la Decodificación del Universo con PRO",
-        whatYouGet: "Lo que Descubrirás:",
-        feature1: "Tu Número de Camino de Vida y Número de Alma",
-        feature2: "Análisis de tus Signos Astrológicos",
-        feature3: "Potencial Cósmico Personal",
-        feature4: "Guía para Tu Fase de Vida Actual",
-        viewReading: "Ver Lectura",
-        newReading: "Nueva Lectura",
-        yourReading: "Tu Lectura Cósmica",
-        analyzing: "Analizando patrones cósmicos...",
-        startNew: "Vamos a crear una nueva lectura. Ya sé algunas cosas sobre ti, pero siéntete libre de actualizar tu información.",
-        shortDescription: "Descubre tus patrones cósmicos a través de la numerología y la astrología",
-        nameRequired: "Por favor ingresa tu nombre",
-        dateRequired: "Por favor ingresa tu fecha de nacimiento"
-      }
+      previousQuestions: "Preguntas anteriores"
     },
     profile: {
       title: "Perfil",
       name: "Nombre",
-      birthDate: "Fecha de nacimiento",
-      goal: "Objetivo",
+      birthDate: "Fecha de Nacimiento",
+      goal: "Meta",
       stats: "Estadísticas",
       achievements: "Logros",
       saveButton: "Guardar",
-      updateSuccess: "Actualizado con éxito",
-      updateError: "Error al actualizar",
+      updateSuccess: "Perfil actualizado con éxito",
+      updateError: "Error al actualizar el perfil",
       nameRequired: "El nombre es obligatorio",
       birthDateRequired: "La fecha de nacimiento es obligatoria",
       savingButton: "Guardando..."
     },
     meditation: {
       title: "Meditación",
-      description: "Descripción de la meditación",
+      description: "Elige meditación",
       startButton: "Comenzar",
       play: "Reproducir",
       unlock: "Desbloquear",
-      pageTitle: "Página de meditación",
+      pageTitle: "Meditaciones",
       categories: {
-        all: "Todo",
-        basic: "Básico",
+        all: "Todas",
+        basic: "Básicas",
         sleep: "Sueño",
         focus: "Enfoque",
-        advanced: "Avanzado",
+        advanced: "Avanzadas",
         morning: "Mañana",
         evening: "Noche",
         stress: "Estrés",
         mantra: "Mantra",
-        visual: "Visualización"
+        visual: "Visual"
       },
       morning: {
-        title: "Meditaciones de la mañana",
-        description: "Descripción de las meditaciones de la mañana",
-        title1: "Despertar matutino",
-        desc1: "Descripción del despertar matutino",
-        title2: "Enfoque matutino",
-        desc2: "Descripción del enfoque matutino"
+        title: "Meditación Matutina",
+        description: "Comienza tu día con calma y claridad",
+        title1: "Meditación Matutina",
+        desc1: "Comienza tu día con calma y claridad",
+        title2: "Despertar Matutino",
+        desc2: "Cárgate de energía para el día"
       },
       evening: {
-        title: "Meditaciones de la noche",
-        description: "Descripción de las meditaciones de la noche",
-        title1: "Relajación nocturna",
-        desc1: "Descripción de la relajación nocturna"
+        title: "Meditación Nocturna",
+        description: "Relájate y restaura energía después del día",
+        title1: "Meditación Nocturna",
+        desc1: "Relájate y restaura energía después del día"
       },
       stress: {
-        title: "Meditaciones para el estrés",
-        description: "Descripción de las meditaciones para el estrés",
-        title1: "Alivio del estrés",
-        desc1: "Descripción del alivio del estrés"
+        title: "Anti-estrés",
+        description: "Libera tensión y ansiedad",
+        title1: "Anti-estrés",
+        desc1: "Libera tensión y ansiedad"
       },
       mantra: {
-        title: "Meditaciones con mantras",
-        description: "Descripción de las meditaciones con mantras",
-        title1: "Mantra para la calma",
-        desc1: "Descripción del mantra para la calma"
+        title: "Meditación con Mantras",
+        description: "Usa el poder del sonido para una inmersión profunda",
+        title1: "Meditación con Mantras",
+        desc1: "Usa el poder del sonido para una inmersión profunda"
       },
       visualization: {
         title: "Visualización",
-        description: "Descripción de la visualización",
-        title1: "Visualización del éxito",
-        desc1: "Descripción de la visualización del éxito"
+        description: "Crea imágenes mentales para lograr objetivos",
+        title1: "Visualización",
+        desc1: "Crea imágenes mentales para lograr objetivos"
       }
     },
     subscription: {
-      title: "Suscripción",
-      description: "Descripción de la suscripción",
-      upgradeButton: "Actualizar",
-      proFeatures: "Funciones PRO",
-      proTitle: "Versión PRO",
-      cancelButton: "Cancelar",
-      successMessage: "Actualizado con éxito",
-      errorMessage: "Error al actualizar",
-      bannerTitle: "Actualiza a PRO",
-      bannerDesc: "Obtén acceso a funciones adicionales",
-      upgradeNow: "Actualizar ahora"
+      title: "Suscripción PRO",
+      description: "Desbloquea todo el potencial de la aplicación con la suscripción PRO",
+      upgradeButton: "Activar PRO",
+      proFeatures: "Características PRO",
+      proTitle: "PRO",
+      cancelButton: "Cancelar Suscripción",
+      successMessage: "Suscripción activada con éxito",
+      errorMessage: "Error al activar la suscripción",
+      bannerTitle: "Eleva Tu Experiencia Espiritual",
+      bannerDesc: "Desbloquea acceso completo a todas las meditaciones y funciones",
+      upgradeNow: "Mejorar Ahora"
     },
     nav: {
       home: "Inicio",
@@ -1137,17 +1018,17 @@ export const translations: Translations = {
       month: "Mes",
       year: "Año"
     },
-    minimumPeriod: "Período mínimo",
+    minimumPeriod: "El período mínimo de ascesis es de 30 días",
     userProfile: {
-      personal: "Información personal",
+      personal: "Información Personal",
       name: "Nombre",
-      birthDate: "Fecha de nacimiento",
-      emailAddressLabel: "Correo electrónico",
-      updateProfile: "Actualizar perfil",
+      birthDate: "Fecha de Nacimiento",
+      emailAddressLabel: "Correo Electrónico",
+      updateProfile: "Actualizar Perfil",
       passwordLabel: "Contraseña",
-      changePassword: "Cambiar contraseña",
-      profileUpdated: "Perfil actualizado",
-      updateFailed: "Error al actualizar",
+      changePassword: "Cambiar Contraseña",
+      profileUpdated: "Perfil actualizado con éxito",
+      updateFailed: "Error al actualizar el perfil",
       bioLabel: "Biografía",
       updateButton: "Actualizar",
       savingButton: "Guardando...",
@@ -1155,10 +1036,10 @@ export const translations: Translations = {
       emailRequired: "El correo electrónico es obligatorio",
       dobRequired: "La fecha de nacimiento es obligatoria",
       nameLabel: "Nombre",
-      birthDateLabel: "Fecha de nacimiento",
-      namePlaceholder: "Introduce tu nombre",
-      birthDatePlaceholder: "Introduce la fecha de nacimiento",
-      title: "Perfil de usuario",
+      birthDateLabel: "Fecha de Nacimiento",
+      namePlaceholder: "Ingrese su nombre",
+      birthDatePlaceholder: "Elija su fecha de nacimiento",
+      title: "Perfil de Usuario",
       age: "Edad",
       continueButton: "Continuar",
       currentDate: "Fecha actual",
@@ -1168,4 +1049,5 @@ export const translations: Translations = {
   }
 };
 
+// Add SupportedLanguage type export
 export type SupportedLanguage = 'ru' | 'en' | 'es';

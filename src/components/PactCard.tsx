@@ -11,12 +11,7 @@ interface PactCardProps {
 }
 
 export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
-  // Exit early if pact is undefined or null
-  if (!pact) {
-    return null;
-  }
-  
-  const daysCompleted = pact.days?.filter(day => day.completed)?.length || 0;
+  const daysCompleted = pact.days.filter(day => day.completed).length;
   const progress = Math.round((daysCompleted / pact.duration) * 100);
   const { language } = useAppStore();
   const { t } = useTranslations();
@@ -64,3 +59,4 @@ export const PactCard: React.FC<PactCardProps> = ({ pact, onClick }) => {
     </div>
   );
 };
+
