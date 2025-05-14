@@ -1,123 +1,162 @@
 import React, { useState, useEffect } from 'react';
-import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
+import { StarField } from '@/components/StarField';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const OnboardingPage: React.FC = () => {
-  const [step, setStep] = useState(0);
-  const { setOnboardingComplete, setActiveScreen, user, userProfile, updateUserProfile } = useAppStore();
+  const { updateUserProfile, userProfile, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  // Check if user is logged in and redirect if necessary
+  const [step, setStep] = useState(0);
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [userName, setUserName] = useState(userProfile?.name || '');
+  const [goal, setGoal] = useState(userProfile?.goal || '');
+  
+  // Check if onboardingComplete is already true
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    
-    // If user has already completed onboarding, redirect to main page
     if (userProfile?.onboardingComplete) {
+      // If onboarding is already completed, redirect to main
+      setActiveScreen('main');
       navigate('/main');
     }
-  }, [user, userProfile, navigate]);
+  }, [userProfile, setActiveScreen, navigate]);
   
-  const handleNext = () => {
-    if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
-      setStep(step + 1);
-    } else {
-      // Complete onboarding
-      completeOnboarding();
-    }
-  };
-  
-  const completeOnboarding = async () => {
-    // Set onboarding complete in local state and in backend
-    setOnboardingComplete(true);
-    await updateUserProfile({ onboardingComplete: true });
+  // Handle onboarding completion
+  const handleFinish = async () => {
+    // Update user profile
+    await updateUserProfile({
+      name: userName,
+      birthDate,
+      goal,
+      onboardingComplete: true
+    });
     
-    // Set active screen and navigate to main
+    // Navigate to main page
     setActiveScreen('main');
     navigate('/main');
   };
   
-  // Function to skip onboarding
-  const skipOnboarding = async () => {
-    await completeOnboarding();
+  const renderStep = () => {
+    switch (step) {
+      case 0:
+        return (
+          <div className="animate-fade-in mx-auto w-full max-w-md text-center">
+            <h2 className="text-2xl font-serif text-white mb-8 text-center">
+              {t.onboarding?.stepOneTitle || "Welcome, Seeker!"}
+            </h2>
+            
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder={t.onboarding?.placeholders?.name || "Enter your name..."}
+              className="cosmic-input w-full mb-6"
+            />
+            
+            <DatePicker
+              selected={birthDate}
+              onChange={(date: Date) => setBirthDate(date)}
+              placeholderText={t.onboarding?.placeholders?.birthDate || "Select your birth date..."}
+              className="cosmic-input w-full mb-6"
+              dateFormat="yyyy-MM-dd"
+            />
+            
+            <p className="text-sm text-cosmic-secondary mb-8 text-center">
+              {t.onboarding?.stepOneDescription || "We need this information to personalize your experience."}
+            </p>
+          </div>
+        );
+      case 1:
+        return (
+          <div className="animate-fade-in mx-auto w-full max-w-md text-center">
+            <h2 className="text-2xl font-serif text-white mb-8 text-center">
+              {t.onboarding?.stepTwoTitle || "What is your goal?"}
+            </h2>
+            
+            <textarea
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              placeholder={t.onboarding?.placeholders?.goal || "Enter your main goal..."}
+              className="cosmic-input w-full h-40 resize-none mb-4"
+            />
+            
+            <p className="text-sm text-cosmic-secondary mb-8 text-center">
+              {t.onboarding?.stepTwoDescription || "This will help us guide you on your journey."}
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
   
-  // Function to split text by newlines and render paragraphs
-  const renderContent = (content: string) => {
-    return content.split('\n').map((paragraph, index) => (
-      paragraph ? <p key={index} className="text-xl text-cosmic-secondary mb-4">{paragraph}</p> : <br key={index} />
-    ));
+  const handleNext = () => {
+    if (step < 1) {
+      setStep(step + 1);
+    } else {
+      handleFinish();
+    }
+  };
+  
+  const handleBack = () => {
+    if (step > 0) {
+      setStep(step - 1);
+    }
+  };
+  
+  const isNextDisabled = () => {
+    if (step === 0) return !userName;
+    if (step === 1) return !goal;
+    return false;
   };
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
-      <StarField starCount={150} />
+    <div className="min-h-screen flex flex-col relative">
+      <StarField starCount={100} />
       
-      {/* Skip link */}
-      <div className="absolute top-6 right-6 z-20">
-        <button 
-          onClick={skipOnboarding}
-          className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm"
-        >
-          {t.onboarding?.buttons?.skip || "Пропустить"}
-        </button>
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8">
+        {renderStep()}
       </div>
       
-      <div className="relative z-10 w-full max-w-lg px-4">
-        {step === 0 ? (
-          <div className="animate-fade-in text-center">
-            <div className="w-56 h-56 mx-auto mb-8 relative">
-              <div className="absolute inset-0 rounded-full bg-cosmic-accent/10 animate-pulse-slow"></div>
-              <div className="absolute inset-4 rounded-full bg-cosmic-accent/20 animate-pulse-slow" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute inset-8 rounded-full bg-cosmic-accent/30 animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute inset-12 rounded-full bg-cosmic-accent/40 animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
-              <div className="absolute inset-16 rounded-full bg-cosmic-accent/50 animate-circle-expand"></div>
-            </div>
-            
-            <h1 className="text-4xl font-serif text-white mb-6">
-              {t.onboarding.title}
-            </h1>
-            
-            <div className="mb-8">
-              <p className="text-xl text-cosmic-secondary mb-4">{t.onboarding.description}</p>
-            </div>
-            
-            <CosmicButton onClick={handleNext}>
-              {t.onboarding.buttons.enter || "Войти"}
-            </CosmicButton>
-          </div>
-        ) : (
-          <div className="animate-fade-in text-center">
-            <h1 className="text-3xl font-serif text-white mb-6">
-              {step === 1 ? t.onboarding.steps.goal : t.onboarding.steps.complete}
-            </h1>
-            
-            <div className="mb-8">
-              <p className="text-xl text-cosmic-secondary mb-4">
-                {step === 1 ? t.onboarding.description : t.onboarding.description}
-              </p>
-            </div>
-            
-            <div className="flex justify-center mb-8">
-              {[0, 1, 2].map((i) => (
-                <div 
-                  key={i}
-                  className={`w-3 h-3 mx-1 rounded-full ${i === step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'}`}
-                />
-              ))}
-            </div>
-            
-            <CosmicButton onClick={handleNext}>
-              {step < 2 ? t.onboarding.buttons.next : (t.onboarding.buttons.startJourney || "Начать путь")}
-            </CosmicButton>
-          </div>
-        )}
+      {/* Bottom Navigation */}
+      <div className="relative z-10 p-4 max-w-lg mx-auto w-full text-center">
+        <div className="flex justify-between items-center mb-6">
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              className={`flex-1 h-1 rounded-full mx-1 ${
+                i <= step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'
+              }`}
+            />
+          ))}
+        </div>
+        
+        <div className="flex justify-between">
+          <CosmicButton 
+            variant="secondary"
+            onClick={handleBack}
+            disabled={step === 0}
+          >
+            {t.onboarding?.backButton || "Back"}
+          </CosmicButton>
+          
+          <CosmicButton 
+            onClick={handleNext} 
+            disabled={isNextDisabled()}
+          >
+            {step < 1 ? (
+              t.onboarding?.nextButton || "Next"
+            ) : (
+              t.onboarding?.finishButton || "Finish"
+            )}
+          </CosmicButton>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -8,11 +7,27 @@ import { PactOath } from '@/components/PactOath';
 import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/useToast';
 
 const CreatePactPage: React.FC = () => {
-  const { addPact, setActiveScreen, language } = useAppStore();
+  const { addPact, setActiveScreen, language, user } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // Add useEffect to check authentication
+  useEffect(() => {
+    // If not authenticated, redirect to login
+    if (!user) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Пожалуйста, войдите в систему для создания аскезы",
+        variant: "destructive"
+      });
+      setActiveScreen('login');
+      navigate('/login');
+    }
+  }, [user, setActiveScreen, navigate, toast]);
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -84,14 +99,33 @@ const CreatePactPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
+      if (!user) {
+        toast({
+          title: "Ошибка",
+          description: "Вы должны войти в систему для создания аскезы",
+          variant: "destructive"
+        });
+        setActiveScreen('login');
+        navigate('/login');
+        return;
+      }
+      
       addPact({
         title: selectedItems.length > 0 ? selectedItems.join(', ') : title,
         duration,
         reward,
         status: 'active'
+      }).then(() => {
+        setActiveScreen('main');
+        navigate('/main');
+      }).catch(error => {
+        console.error("Error creating pact:", error);
+        toast({
+          title: "Ошибка",
+          description: "Не удалось создать аскезу",
+          variant: "destructive"
+        });
       });
-      setActiveScreen('main');
-      navigate('/main');
     }
   };
   

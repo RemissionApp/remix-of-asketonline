@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -21,6 +20,7 @@ export interface Database {
           rank: string
           created_at: string
           updated_at: string
+          onboardingComplete: boolean | null // Add this field
         }
         Insert: {
           id: string
@@ -32,6 +32,7 @@ export interface Database {
           rank?: string
           created_at?: string
           updated_at?: string
+          onboardingComplete?: boolean | null // Add this field
         }
         Update: {
           id?: string
@@ -43,6 +44,7 @@ export interface Database {
           rank?: string
           created_at?: string
           updated_at?: string
+          onboardingComplete?: boolean | null // Add this field
         }
       }
       pacts: {

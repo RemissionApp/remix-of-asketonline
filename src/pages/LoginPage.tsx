@@ -15,37 +15,27 @@ import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading, user, userProfile, loadUserProfile } = useAppStore();
-  const { t } = useTranslations();
-  
+  const { signIn, signUp, loading, user, userProfile, setActiveScreen } = useAppStore();
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("login");
+  const { t } = useTranslations();
   
-  // Effect to check if user is already logged in
+  // Check if user is already logged in
   useEffect(() => {
-    // If user is logged in
     if (user) {
-      console.log("Login page: user is logged in", { user, userProfile });
-      
-      // Check if user profile is complete (has name and birthdate)
-      if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
-        console.log("User profile incomplete, redirecting to profile setup");
-        navigate('/profile-setup');
-      }
-      // If user has not completed onboarding
-      else if (!userProfile.onboardingComplete) {
-        console.log("User profile complete but onboarding incomplete, redirecting to onboarding");
+      // If user is logged in but hasn't completed onboarding, direct them there
+      if (!userProfile?.onboardingComplete) {
+        setActiveScreen('onboarding');
         navigate('/onboarding');
-      }
-      // If user has completed profile and onboarding
-      else {
-        console.log("User profile and onboarding complete, redirecting to main");
+      } else {
+        // Otherwise go to main page
+        setActiveScreen('main');
         navigate('/main');
       }
     }
-  }, [user, userProfile, navigate]);
+  }, [user, userProfile, setActiveScreen, navigate]);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
