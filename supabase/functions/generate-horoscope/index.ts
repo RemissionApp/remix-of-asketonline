@@ -11,8 +11,6 @@ interface HoroscopeRequest {
   sign: string;
   language: string;
   detailed?: boolean;
-  forceRefresh?: boolean;
-  customPrompt?: string; // Added parameter for custom prompt
 }
 
 serve(async (req) => {
@@ -27,16 +25,16 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { sign, language, detailed = false, forceRefresh = false, customPrompt = null } = await req.json() as HoroscopeRequest;
+    const { sign, language, detailed = false } = await req.json() as HoroscopeRequest;
 
     if (!sign) {
       throw new Error('Zodiac sign is required');
     }
 
-    console.log(`Generating ${detailed ? 'detailed' : 'simple'} horoscope for ${sign} in ${language}${forceRefresh ? ' (forced refresh)' : ''}${customPrompt ? ' with custom prompt' : ''}`);
+    console.log(`Generating ${detailed ? 'detailed' : 'simple'} horoscope for ${sign} in ${language}`);
 
-    // Get system prompt - use custom if provided
-    const systemPrompt = customPrompt || getSystemPrompt(language, detailed);
+    // Get the appropriate system prompt based on language
+    const systemPrompt = getSystemPrompt(language, detailed);
     const userPrompt = getUserPrompt(sign, language, detailed);
 
     console.log("Sending request to OpenAI with system prompt:", systemPrompt);
