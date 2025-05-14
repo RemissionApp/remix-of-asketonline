@@ -323,6 +323,8 @@ const CreatePactPage: React.FC = () => {
             onBack={handleBack}
           />
         );
+      default:
+        return null;
     }
   };
   

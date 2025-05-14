@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,15 +8,34 @@ import { StarField } from '@/components/StarField';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+// Define onboarding translations interface
+interface OnboardingTranslations {
+  stepOneTitle?: string;
+  stepOneDescription?: string;
+  stepTwoTitle?: string;
+  stepTwoDescription?: string;
+  backButton?: string;
+  nextButton?: string;
+  finishButton?: string;
+  placeholders?: {
+    name?: string;
+    birthDate?: string;
+    goal?: string;
+  };
+}
+
 const OnboardingPage: React.FC = () => {
   const { updateUserProfile, userProfile, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   
   const [step, setStep] = useState(0);
-  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [birthDate, setBirthDate] = useState<Date | null>(undefined);
   const [userName, setUserName] = useState(userProfile?.name || '');
   const [goal, setGoal] = useState(userProfile?.goal || '');
+  
+  // Add typecasting for onboarding translations
+  const onboardingT = t.onboarding as unknown as OnboardingTranslations;
   
   // Check if onboardingComplete is already true
   useEffect(() => {
@@ -47,27 +67,27 @@ const OnboardingPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
-              {t.onboarding?.stepOneTitle || "Welcome, Seeker!"}
+              {onboardingT?.stepOneTitle || "Welcome, Seeker!"}
             </h2>
             
             <input
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              placeholder={t.onboarding?.placeholders?.name || "Enter your name..."}
+              placeholder={onboardingT?.placeholders?.name || "Enter your name..."}
               className="cosmic-input w-full mb-6"
             />
             
             <DatePicker
               selected={birthDate}
               onChange={(date: Date) => setBirthDate(date)}
-              placeholderText={t.onboarding?.placeholders?.birthDate || "Select your birth date..."}
+              placeholderText={onboardingT?.placeholders?.birthDate || "Select your birth date..."}
               className="cosmic-input w-full mb-6"
               dateFormat="yyyy-MM-dd"
             />
             
             <p className="text-sm text-cosmic-secondary mb-8 text-center">
-              {t.onboarding?.stepOneDescription || "We need this information to personalize your experience."}
+              {onboardingT?.stepOneDescription || "We need this information to personalize your experience."}
             </p>
           </div>
         );
@@ -75,18 +95,18 @@ const OnboardingPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-2xl font-serif text-white mb-8 text-center">
-              {t.onboarding?.stepTwoTitle || "What is your goal?"}
+              {onboardingT?.stepTwoTitle || "What is your goal?"}
             </h2>
             
             <textarea
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              placeholder={t.onboarding?.placeholders?.goal || "Enter your main goal..."}
+              placeholder={onboardingT?.placeholders?.goal || "Enter your main goal..."}
               className="cosmic-input w-full h-40 resize-none mb-4"
             />
             
             <p className="text-sm text-cosmic-secondary mb-8 text-center">
-              {t.onboarding?.stepTwoDescription || "This will help us guide you on your journey."}
+              {onboardingT?.stepTwoDescription || "This will help us guide you on your journey."}
             </p>
           </div>
         );
@@ -139,11 +159,11 @@ const OnboardingPage: React.FC = () => {
         
         <div className="flex justify-between">
           <CosmicButton 
-            variant="secondary"
+            variant="outline"
             onClick={handleBack}
             disabled={step === 0}
           >
-            {t.onboarding?.backButton || "Back"}
+            {onboardingT?.backButton || "Back"}
           </CosmicButton>
           
           <CosmicButton 
@@ -151,9 +171,9 @@ const OnboardingPage: React.FC = () => {
             disabled={isNextDisabled()}
           >
             {step < 1 ? (
-              t.onboarding?.nextButton || "Next"
+              onboardingT?.nextButton || "Next"
             ) : (
-              t.onboarding?.finishButton || "Finish"
+              onboardingT?.finishButton || "Finish"
             )}
           </CosmicButton>
         </div>
