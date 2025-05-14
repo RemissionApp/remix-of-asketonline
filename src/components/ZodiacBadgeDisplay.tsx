@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { ZodiacInfo } from '@/components/ZodiacInfo';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -13,7 +12,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   }
   
   return (
-    <div className="mb-12 mt-6">
+    <div className="mb-6 mt-4">
       <ZodiacInfo />
     </div>
   );

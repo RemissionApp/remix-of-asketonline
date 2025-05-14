@@ -163,12 +163,13 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Display QuoteDisplay (universe message) above ZodiacBadgeDisplay */}
+            {/* Display QuoteDisplay (universe message) */}
             <QuoteDisplay quote={dailyQuote} className="mt-6 mb-4" />
             
-            {/* Then display the ZodiacBadgeDisplay */}
+            {/* Then display the ZodiacBadgeDisplay right under the quote */}
             <ZodiacBadgeDisplay />
             
+            {/* Move ActionButtons below ZodiacBadgeDisplay */}
             <ActionButtons />
           </>
         ) : (
