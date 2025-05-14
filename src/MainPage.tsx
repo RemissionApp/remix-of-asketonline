@@ -163,10 +163,11 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Add ZodiacBadgeDisplay here */}
-            <ZodiacBadgeDisplay />
+            {/* First display the QuoteDisplay (universe message) */}
+            <QuoteDisplay quote={dailyQuote} className="mt-6" />
             
-            <QuoteDisplay quote={dailyQuote} className="mt-12" />
+            {/* Then display the ZodiacBadgeDisplay */}
+            <ZodiacBadgeDisplay />
             
             <ActionButtons />
           </>
