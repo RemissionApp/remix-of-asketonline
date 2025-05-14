@@ -10,7 +10,7 @@ const Index = () => {
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-cosmic">
-      <div className="text-center text-white">
+      <div className="text-center text-white max-w-lg mx-auto px-4">
         <div className="flex flex-col items-center mb-6">
           <UserAvatar size="lg" showRankBorder={true} />
           <h2 className="mt-3 text-lg text-cosmic-accent">{userProfile.name}</h2>

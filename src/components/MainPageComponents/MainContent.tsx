@@ -1,13 +1,13 @@
 
 import React from 'react';
 import { PactDisplay } from './PactDisplay';
-import { QuoteDisplay } from '@/components/QuoteDisplay';
-import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
+import { DailyQuoteDisplay } from './DailyQuoteDisplay';
+import { ZodiacDisplay } from './ZodiacDisplay';
 import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
-import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
+import { HoroscopeDisplay } from './HoroscopeDisplay';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -34,7 +34,7 @@ export const MainContent: React.FC<MainContentProps> = ({
   formatRejection
 }) => {
   return (
-    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16">
+    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16 max-w-lg mx-auto">
       {activePacts.length > 0 ? (
         <>
           <PactDisplay
@@ -51,14 +51,14 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Countdown timer for current pact */}
           {currentPact && <CountdownTimer />}
           
-          {/* Quote display */}
-          <QuoteDisplay quote={dailyQuote} className="mt-8" />
-          
-          {/* Horoscope display after greeting */}
+          {/* Horoscope display */}
           <HoroscopeDisplay />
           
+          {/* Quote display */}
+          <DailyQuoteDisplay quote={dailyQuote} className="mt-2" />
+          
           {/* Zodiac badge display */}
-          <ZodiacBadgeDisplay />
+          <ZodiacDisplay />
           
           {/* Action buttons */}
           <ActionButtonsSection />
