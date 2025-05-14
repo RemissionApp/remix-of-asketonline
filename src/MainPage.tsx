@@ -140,8 +140,8 @@ const MainPage: React.FC = () => {
       <StarField starCount={100} />
       <TopBar />
       
-      {/* Countdown Timer - positioned at the top */}
-      <CountdownTimer />
+      {/* Countdown Timer - now shows current pact's time left */}
+      {currentPact && <CountdownTimer pactId={currentPact.id} />}
       
       <EnergyEffect show={showEnergyEffect} />
       
