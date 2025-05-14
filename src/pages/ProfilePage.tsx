@@ -21,7 +21,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ZodiacInfo } from '@/components/ZodiacInfo';
+import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
+import { ZodiacBadge } from '@/components/ZodiacBadge';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage, signOut } = useAppStore();
@@ -58,6 +59,10 @@ const ProfilePage: React.FC = () => {
             {userProfile?.isPro && (
               <ProBadge size="md" />
             )}
+            
+            {userProfile?.birthDate && (
+              <ZodiacBadge size="md" />
+            )}
           </div>
           
           <h1 className="text-2xl text-white font-serif mb-4">
@@ -67,12 +72,7 @@ const ProfilePage: React.FC = () => {
           <UserProfileForm />
           
           {/* Zodiac Information */}
-          {userProfile?.birthDate && (
-            <div className="mt-6">
-              <h2 className="text-xl text-white font-serif mb-4">Ваш знак зодиака</h2>
-              <ZodiacInfo />
-            </div>
-          )}
+          <ZodiacBadgeDisplay />
           
           <div className="mt-8">
             <h2 className="text-xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "App language"}</h2>
