@@ -163,13 +163,16 @@ const MainPage: React.FC = () => {
               formatRejection={formatRejection}
             />
             
-            {/* Display QuoteDisplay (universe message) above ZodiacBadgeDisplay */}
+            {/* Display QuoteDisplay (universe message) right below the ActivePactDisplay button */}
             <QuoteDisplay quote={dailyQuote} className="mt-6 mb-4" />
             
-            {/* Then display the ZodiacBadgeDisplay */}
-            <ZodiacBadgeDisplay />
-            
+            {/* ActionButtons moved between quote and zodiac badge */}
             <ActionButtons />
+            
+            {/* ZodiacBadgeDisplay moved to the bottom of the content */}
+            <div className="mt-8">
+              <ZodiacBadgeDisplay />
+            </div>
           </>
         ) : (
           <NoPactsView />
