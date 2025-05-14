@@ -29,8 +29,8 @@ interface AppState {
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   syncPactsWithCurrentDate: () => Promise<void>;
   
-  // Auth methods
-  signIn: (email: string, password: string) => Promise<void>;
+  // Auth methods - Update signIn return type to Promise<boolean>
+  signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   
