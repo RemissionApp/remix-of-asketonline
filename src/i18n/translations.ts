@@ -105,10 +105,17 @@ export const translations = {
     minimumPeriod: "Minimum 30 days required",
     universe: {
       title: "Ask the Cosmic Universe",
+      question: "What would you like to ask the universe?",
       questionPlaceholder: "Ask your question...",
       submitButton: "Ask",
       responseTitle: "The Universe Says:",
-      errorMessage: "Failed to get an answer. Please try again."
+      errorMessage: "Failed to get an answer. Please try again.",
+      yourQuestion: "Your Question",
+      universeAnswer: "The Universe Answers",
+      newQuestion: "Ask Another Question",
+      thinking: "The universe is contemplating your question...",
+      askButton: "Ask the Universe",
+      previousQuestions: "Previous Questions"
     },
     profile: {
       title: "My Profile",
@@ -316,7 +323,7 @@ export const translations = {
       },
       step3: {
         title: "Размышляйте и Растите",
-        description: "Используйте это путешествие, чтобы лучше понять себя. Отслеживайте свой прогресс и отмечайте вехи."
+        description: "Используйте это путешествие, чтобы лучше поня��ь себя. Отслеживайте свой прогресс и отмечайте вехи."
       },
       startButton: "Начните Свой Путь"
     },
@@ -344,10 +351,17 @@ export const translations = {
     minimumPeriod: "Минимум 30 дней",
     universe: {
       title: "Спросите у Космической Вселенной",
+      question: "Что бы вы хотели спросить у вселенной?",
       questionPlaceholder: "Задайте свой вопрос...",
       submitButton: "Спросить",
       responseTitle: "Вселенная Говорит:",
-      errorMessage: "Не удалось получить ответ. Пожалуйста, попробуйте еще раз."
+      errorMessage: "Не удалось получить ответ. Пожалуйста, попробуйте еще раз.",
+      yourQuestion: "Ваш Вопрос",
+      universeAnswer: "Ответ Вселенной",
+      newQuestion: "Задать Другой Вопрос",
+      thinking: "Вселенная обдумывает ваш вопрос...",
+      askButton: "Спросить Вселенную",
+      previousQuestions: "Предыдущие Вопросы"
     },
     profile: {
       title: "Мой Профиль",
@@ -583,10 +597,17 @@ export const translations = {
     minimumPeriod: "Se requiere un mínimo de 30 días",
     universe: {
       title: "Pregunta al Universo Cósmico",
+      question: "¿Qué te gustaría preguntarle al universo?",
       questionPlaceholder: "Haz tu pregunta...",
       submitButton: "Preguntar",
       responseTitle: "El Universo Dice:",
-      errorMessage: "No se pudo obtener una respuesta. Por favor, inténtalo de nuevo."
+      errorMessage: "No se pudo obtener una respuesta. Por favor, inténtalo de nuevo.",
+      yourQuestion: "Tu Pregunta",
+      universeAnswer: "El Universo Responde",
+      newQuestion: "Hacer Otra Pregunta",
+      thinking: "El universo está contemplando tu pregunta...",
+      askButton: "Preguntar al Universo",
+      previousQuestions: "Preguntas Anteriores"
     },
     profile: {
       title: "Mi Perfil",
