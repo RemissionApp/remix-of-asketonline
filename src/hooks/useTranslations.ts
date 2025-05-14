@@ -1,5 +1,8 @@
+
 import { useAppStore } from '@/store/useAppStore';
 import translations from '@/i18n/translations';
+
+export type SupportedLanguage = 'ru' | 'en' | 'es';
 
 /**
  * Returns correct Russian declension for years
@@ -64,7 +67,8 @@ export const useTranslations = () => {
       clear: 'Очистить',
       now: 'Сейчас',
       am: 'AM',
-      pm: 'PM'
+      pm: 'PM',
+      year: 'Год' // Added missing property
     },
     welcome: {
       title: 'АСКЕТ',
@@ -174,6 +178,7 @@ export const useTranslations = () => {
     },
     meditation: {
       title: 'Медитация',
+      pageTitle: 'Медитации',
       subtitle: 'Выберите тип медитации',
       start: 'Начать',
       pause: 'Пауза',
@@ -181,6 +186,8 @@ export const useTranslations = () => {
       stop: 'Остановить',
       duration: 'Длительность',
       minutes: 'мин',
+      play: 'Слушать',
+      unlock: 'Открыть PRO',
       breathe: {
         in: 'Вдох',
         hold: 'Задержка',
@@ -197,6 +204,9 @@ export const useTranslations = () => {
     createPact: {
       title: 'Создать пакт',
       subtitle: 'Определите условия вашего пакта',
+      stepOneTitle: 'От чего ты отказываешься?',
+      stepTwoTitle: 'Срок испытания',
+      stepThreeTitle: 'Что ты хочешь получить?',
       name: 'Название',
       namePlaceholder: 'Введите название пакта',
       description: 'Описание',
@@ -210,11 +220,34 @@ export const useTranslations = () => {
         hard: 'Сложная'
       },
       create: 'Создать',
-      cancel: 'Отмена'
+      cancel: 'Отмена',
+      whatRejecting: 'От чего ты отказываешься?',
+      examples: [
+        'Сахар', 
+        'Телефон после 22:00', 
+        'Сигареты', 
+        'Прокрастинация', 
+        'Социальные сети'
+      ],
+      trialPeriod: 'Срок испытания',
+      customDays: 'Или укажите своё количество дней:',
+      days: 'дней',
+      whatWant: 'Что ты хочешь получить?',
+      notAsking: 'Ты не просишь. Ты настраиваешь реальность.',
+      nextButton: 'Далее',
+      startPathButton: 'Начать путь',
+      placeholders: {
+        rejection: 'Например: Сахар, Соцсети, Алкоголь...',
+        reward: 'Например: Крепкое здоровье, Ясность мышления, Финансовую стабильность...'
+      },
+      ascesisWarning: 'Вы должны понимать, что Аскеза — серьёзная практика и отнестись к ней необходимо максимально ответственно. Вы даёте слово Вселенной о выполнении обязательств с Вашей стороны и просите взамен исполнения желания / решения какого-то вопроса. Если Вы дадите не справиться и не сдержите Ваше слово, то Вселенная не будет воспринимать Вас всерьёз и есть риск выпасть из потока...'
     },
     subscription: {
       title: 'АСКЕТ PRO',
       subtitle: 'Разблокируйте полный потенциал',
+      bannerTitle: 'Раскройте свой потенциал с ASKET PRO',
+      bannerDesc: 'Доступ к медитациям, расширенным практикам и многому другому',
+      upgradeNow: 'Улучшить сейчас',
       features: [
         'Доступ ко всем практикам',
         'Персональные рекомендации',
@@ -233,6 +266,15 @@ export const useTranslations = () => {
       current: 'Текущий план',
       upgrade: 'Улучшить',
       manage: 'Управление'
+    },
+    pactOath: {
+      title: 'Моя Аскеза',
+      subtitle: 'Я даю обет',
+      iPromise: 'Я обещаю отказаться от',
+      duration: 'на срок',
+      days: 'дней',
+      inReturn: 'Взамен я притягиваю в свою жизнь',
+      confirmButton: 'Подтверждаю Договор'
     }
   };
   
@@ -244,5 +286,3 @@ export const useTranslations = () => {
     getYearWord
   };
 };
-
-export type SupportedLanguage = 'ru' | 'en' | 'es';
