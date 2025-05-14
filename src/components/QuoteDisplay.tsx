@@ -95,6 +95,8 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
           throw new Error('Could not determine zodiac sign');
         }
         
+        console.log('Fetching horoscope for sign:', sign);
+        
         // Fetch horoscope from our edge function
         const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
           body: { 
@@ -105,8 +107,11 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
         });
         
         if (error) {
-          throw new Error(error.message);
+          console.error('Supabase function error:', error);
+          throw new Error(`Error fetching horoscope: ${error.message}`);
         }
+        
+        console.log('Horoscope response:', data);
         
         if (data && data.success && data.data) {
           setHoroscope(data.data);
@@ -140,53 +145,47 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
                   language === 'es' ? '¡Te saludo' : 
                   'Greetings';
   
-  // Signature based on language
-  const signature = language === 'ru' ? '— Послание Вселенной' : 
-                   language === 'es' ? '— Mensaje del Universo' : 
-                   '— Message from the Universe';
-                   
   // Get zodiac sign symbol and name if available
   const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
-  
-  const renderHoroscope = () => {
-    if (loading) {
-      return <p className="italic text-cosmic-accent/70">Loading your cosmic message...</p>;
-    }
-    
-    if (error || !horoscope) {
-      return <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>;
-    }
-    
-    return (
-      <div className="space-y-3">
-        {zodiacInfo && (
-          <p className="text-lg font-medium">
-            {zodiacInfo.symbol} {zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en} — {horoscope.current_date}
-          </p>
-        )}
-        
-        <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">
-          ✨ {horoscope.description}
-        </p>
-        
-        <div className="grid grid-cols-2 gap-2 text-sm mt-3 text-cosmic-accent">
-          <p>💫 {language === 'ru' ? 'Настроение' : language === 'es' ? 'Estado de ánimo' : 'Mood'}: {horoscope.mood}</p>
-          <p>🎨 {language === 'ru' ? 'Цвет дня' : language === 'es' ? 'Color del día' : 'Color'}: {horoscope.color}</p>
-          <p>🎲 {language === 'ru' ? 'Счастливое число' : language === 'es' ? 'Número de la suerte' : 'Lucky number'}: {horoscope.lucky_number}</p>
-          <p>🕒 {language === 'ru' ? 'Время удачи' : language === 'es' ? 'Hora de la suerte' : 'Lucky time'}: {horoscope.lucky_time}</p>
-        </div>
-      </div>
-    );
-  };
   
   return (
     <div className={`text-center p-6 max-w-lg mx-auto ${className}`}>
       <p className="text-cosmic-gold text-lg font-serif mb-2">
         {greeting}, {userName}! {currentDate}
       </p>
-      {renderHoroscope()}
-      <p className="mt-4 text-sm text-cosmic-accent/80">{signature}</p>
+      
+      {loading ? (
+        <p className="italic text-cosmic-accent/70">Загрузка вашего гороскопа...</p>
+      ) : error || !horoscope ? (
+        <div className="space-y-3">
+          {zodiacInfo && (
+            <p className="text-lg font-medium">
+              {zodiacInfo.symbol} {zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en}
+            </p>
+          )}
+          <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">{quote}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {zodiacInfo && (
+            <p className="text-lg font-medium">
+              {zodiacInfo.symbol} {zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en} — {horoscope.current_date}
+            </p>
+          )}
+          
+          <p className="cosmic-gradient-text text-xl italic font-serif leading-relaxed">
+            ✨ {horoscope.description}
+          </p>
+          
+          <div className="grid grid-cols-2 gap-2 text-sm mt-3 text-cosmic-accent">
+            <p>💫 {language === 'ru' ? 'Настроение' : language === 'es' ? 'Estado de ánimo' : 'Mood'}: {horoscope.mood}</p>
+            <p>🎨 {language === 'ru' ? 'Цвет дня' : language === 'es' ? 'Color del día' : 'Color'}: {horoscope.color}</p>
+            <p>🎲 {language === 'ru' ? 'Счастливое число' : language === 'es' ? 'Número de la suerte' : 'Lucky number'}: {horoscope.lucky_number}</p>
+            <p>🕒 {language === 'ru' ? 'Время удачи' : language === 'es' ? 'Hora de la suerte' : 'Lucky time'}: {horoscope.lucky_time}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
