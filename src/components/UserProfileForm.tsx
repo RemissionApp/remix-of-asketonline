@@ -16,18 +16,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { SupportedLanguage } from '@/i18n/translations';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUserProfile, userProfile, language, setLanguage } = useAppStore();
+  const { updateUserProfile, userProfile, language } = useAppStore();
   const { t, getYearWord } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   
@@ -67,16 +59,6 @@ const UserProfileForm: React.FC = () => {
     navigate('/onboarding');
   };
 
-  const languages = [
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-  ];
-
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value as SupportedLanguage);
-  };
-
   return (
     <div className="w-full max-w-md mx-auto text-center">
       <div className="flex justify-center mb-4">
@@ -105,7 +87,7 @@ const UserProfileForm: React.FC = () => {
                 </FormLabel>
                 <FormControl>
                   <Input 
-                    className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+                    className="bg-transparent backdrop-blur-sm border-cosmic-accent/30 text-white"
                     placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
                     {...field} 
                   />
@@ -129,7 +111,7 @@ const UserProfileForm: React.FC = () => {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-full bg-cosmic-dark/50 border-cosmic-accent/30 text-left font-normal text-white",
+                          "w-full bg-transparent backdrop-blur-sm border-cosmic-accent/30 text-left font-normal text-white",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -160,36 +142,11 @@ const UserProfileForm: React.FC = () => {
             )}
           />
           
-          <div className="text-left">
-            <FormLabel className="text-cosmic-secondary text-sm block mb-2">
-              {t.userProfile?.languageLabel || "Язык приложения"}
-            </FormLabel>
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white">
-                <SelectValue>
-                  <div className="flex items-center">
-                    <span className="mr-2 text-lg">
-                      {languages.find(lang => lang.code === language)?.flag}
-                    </span>
-                    {languages.find(lang => lang.code === language)?.name}
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
-                {languages.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code} className="cursor-pointer">
-                    <div className="flex items-center">
-                      <span className="mr-2 text-lg">{lang.flag}</span>
-                      {lang.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
           <div className="pt-4">
-            <CosmicButton className="w-full">
+            <CosmicButton 
+              className="w-full bg-transparent backdrop-blur-sm border border-cosmic-accent hover:bg-cosmic-accent/30"
+              type="submit"
+            >
               {t.userProfile?.continueButton || "Продолжить"}
             </CosmicButton>
           </div>
