@@ -1,10 +1,7 @@
+
 import { AppLanguage } from '@/store/types';
 
-type Translations = {
-  [key in AppLanguage]: {
-    [key: string]: string;
-  };
-};
+export type SupportedLanguage = AppLanguage;
 
 export const translations = {
   en: {
@@ -85,12 +82,11 @@ export const translations = {
     universeQuestion: 'Ask your question to the universe',
     universeQuestionTooShort: 'Question is too short',
     universeErrorMessage: 'The universe is silent. Try again later.',
-    universeAnswer: 'Universe answer',
     universeAskButton: 'Ask',
     universeQuestionPlaceholder: 'Write your question here...',
     universeAnswerPlaceholder: 'Answer will appear here',
     yourQuestion: 'Your question',
-    universeAnswer: 'Universe answer',
+    universeAnswerText: 'Universe answer',
     newQuestion: 'New question',
     thinking: 'The universe is contemplating the answer...',
     previousQuestions: 'Previous questions',
@@ -206,12 +202,11 @@ export const translations = {
     universeQuestion: 'Задай свой вопрос вселенной',
     universeQuestionTooShort: 'Вопрос слишком короткий',
     universeErrorMessage: 'Вселенная молчит. Попробуйте позже.',
-    universeAnswer: 'Ответ вселенной',
+    universeAnswerText: 'Ответ вселенной',
     universeAskButton: 'Спросить',
     universeQuestionPlaceholder: 'Напиши свой вопрос сюда...',
     universeAnswerPlaceholder: 'Ответ появится здесь',
     yourQuestion: 'Твой вопрос',
-    universeAnswer: 'Ответ вселенной',
     newQuestion: 'Новый вопрос',
     thinking: 'Вселенная размышляет над ответом...',
     previousQuestions: 'Предыдущие вопросы',
@@ -327,12 +322,11 @@ export const translations = {
     universeQuestion: 'Haz tu pregunta al universo',
     universeQuestionTooShort: 'La pregunta es demasiado corta',
     universeErrorMessage: 'El universo está en silencio. Inténtalo más tarde.',
-    universeAnswer: 'Respuesta del universo',
+    universeAnswerText: 'Respuesta del universo',
     universeAskButton: 'Preguntar',
     universeQuestionPlaceholder: 'Escribe tu pregunta aquí...',
     universeAnswerPlaceholder: 'La respuesta aparecerá aquí',
     yourQuestion: 'Tu pregunta',
-    universeAnswer: 'Respuesta del universo',
     newQuestion: 'Nueva pregunta',
     thinking: 'El universo está contemplando la respuesta...',
     previousQuestions: 'Preguntas anteriores',
@@ -369,7 +363,11 @@ export const translations = {
     signupTermsLink: 'Términos de servicio',
     signupPrivacyLink: 'Política de privacidad',
     signupAnd: 'y',
-  },
+  }
+};
+
+// Add namespaced translations
+export const namespacedTranslations = {
   universe: {
     ru: {
       title: 'Спроси у вселенной',
@@ -417,4 +415,148 @@ export const translations = {
       previousQuestions: 'Preguntas anteriores'
     }
   },
+  calendar: {
+    en: {
+      year: 'Year',
+      month: 'Month',
+      day: 'Day',
+      today: 'Today'
+    },
+    ru: {
+      year: 'Год',
+      month: 'Месяц',
+      day: 'День',
+      today: 'Сегодня'
+    },
+    es: {
+      year: 'Año',
+      month: 'Mes',
+      day: 'Día',
+      today: 'Hoy'
+    }
+  },
+  meditation: {
+    en: {
+      play: 'Play',
+      unlock: 'Unlock'
+    },
+    ru: {
+      play: 'Играть',
+      unlock: 'Разблокировать'
+    },
+    es: {
+      play: 'Reproducir',
+      unlock: 'Desbloquear'
+    }
+  },
+  pactOath: {
+    en: {
+      title: 'Contract with the Universe',
+      subtitle: 'Before you begin, take an oath',
+      createButton: 'Create Pact'
+    },
+    ru: {
+      title: 'Договор со Вселенной',
+      subtitle: 'Прежде чем начать, примите обет',
+      createButton: 'Создать пакт'
+    },
+    es: {
+      title: 'Contrato con el Universo',
+      subtitle: 'Antes de comenzar, haz un juramento',
+      createButton: 'Crear pacto'
+    }
+  },
+  subscription: {
+    en: {
+      title: 'PRO Subscription',
+      description: 'Unlock the full potential of the app',
+      upgradeButton: 'Upgrade Now'
+    },
+    ru: {
+      title: 'PRO Подписка',
+      description: 'Разблокируйте полный потенциал приложения',
+      upgradeButton: 'Обновить сейчас'
+    },
+    es: {
+      title: 'Suscripción PRO',
+      description: 'Desbloquea todo el potencial de la aplicación',
+      upgradeButton: 'Actualizar ahora'
+    }
+  },
+  userProfile: {
+    en: {
+      name: 'Name',
+      birthdate: 'Birthdate',
+      editProfile: 'Edit profile',
+      nameRequired: 'Name is required',
+      birthDateRequired: 'Birthdate is required',
+      title: 'About You',
+      age: 'Age',
+      nameLabel: 'Your Name',
+      namePlaceholder: 'Enter your name',
+      birthDateLabel: 'Date of Birth',
+      birthDatePlaceholder: 'Select your birthdate',
+      savingButton: 'Saving...',
+      continueButton: 'Continue',
+      currentDate: 'Current date'
+    },
+    ru: {
+      name: 'Имя',
+      birthdate: 'Дата рождения',
+      editProfile: 'Редактировать профиль',
+      nameRequired: 'Имя обязательно',
+      birthDateRequired: 'Укажите дату рождения',
+      title: 'О тебе',
+      age: 'Возраст',
+      nameLabel: 'Как тебя зовут',
+      namePlaceholder: 'Введите ваше имя',
+      birthDateLabel: 'Дата рождения',
+      birthDatePlaceholder: 'Выберите дату рождения',
+      savingButton: 'Сохранение...',
+      continueButton: 'Продолжить',
+      currentDate: 'Текущая дата'
+    },
+    es: {
+      name: 'Nombre',
+      birthdate: 'Fecha de nacimiento',
+      editProfile: 'Editar perfil',
+      nameRequired: 'El nombre es obligatorio',
+      birthDateRequired: 'La fecha de nacimiento es obligatoria',
+      title: 'Acerca de ti',
+      age: 'Edad',
+      nameLabel: 'Tu nombre',
+      namePlaceholder: 'Ingresa tu nombre',
+      birthDateLabel: 'Fecha de nacimiento',
+      birthDatePlaceholder: 'Selecciona tu fecha de nacimiento',
+      savingButton: 'Guardando...',
+      continueButton: 'Continuar',
+      currentDate: 'Fecha actual'
+    }
+  },
+  createPact: {
+    en: {
+      title: 'Create a New Pact',
+      covenantTitle: 'Covenant Title',
+      lastsDays: 'Lasts (days)',
+      whatWillYouGet: 'What will you get?',
+      whatWillYouGiveUp: 'What will you give up?',
+      createButton: 'Create Covenant'
+    },
+    ru: {
+      title: 'Создать новый пакт',
+      covenantTitle: 'Название завета',
+      lastsDays: 'Длится (дней)',
+      whatWillYouGet: 'Что вы получите?',
+      whatWillYouGiveUp: 'От чего вы откажетесь?',
+      createButton: 'Создать завет'
+    },
+    es: {
+      title: 'Crear un nuevo pacto',
+      covenantTitle: 'Título del pacto',
+      lastsDays: 'Duración (días)',
+      whatWillYouGet: '¿Qué obtendrás?',
+      whatWillYouGiveUp: '¿A qué renunciarás?',
+      createButton: 'Crear pacto'
+    }
+  }
 };

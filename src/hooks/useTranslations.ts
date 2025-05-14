@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { translations, SupportedLanguage } from '@/i18n/translations';
+import { translations, namespacedTranslations, SupportedLanguage } from '@/i18n/translations';
 import { useAppStore } from '@/store/useAppStore';
 
 // Helper function for pluralization in Russian
@@ -46,30 +46,7 @@ export const useTranslations = () => {
                language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
                'No active pacts. Create one to start your journey!'
     },
-    universe: {
-      title: language === 'ru' ? 'Вселенная' :
-            language === 'es' ? 'Universo' : 'Universe',
-      yourQuestion: language === 'ru' ? 'Ваш вопрос' :
-                   language === 'es' ? 'Tu pregunta' : 'Your question',
-      universeAnswer: language === 'ru' ? 'Ответ Вселенной' :
-                     language === 'es' ? 'Respuesta del Universo' : 'Universe Answer',
-      newQuestion: language === 'ru' ? 'Новый вопрос' :
-                  language === 'es' ? 'Nueva pregunta' : 'New Question',
-      thinking: language === 'ru' ? 'Вселенная размышляет...' :
-               language === 'es' ? 'El Universo está pensando...' : 'Universe is thinking...',
-      question: language === 'ru' ? 'О чём вы хотите спросить Вселенную?' :
-                language === 'es' ? '¿Qué quieres preguntar al Universo?' : 'What do you want to ask the Universe?',
-      questionPlaceholder: language === 'ru' ? 'Введите свой вопрос здесь...' :
-                          language === 'es' ? 'Escribe tu pregunta aquí...' : 'Type your question here...',
-      askButton: language === 'ru' ? 'Спросить' :
-                 language === 'es' ? 'Preguntar' : 'Ask',
-      previousQuestions: language === 'ru' ? 'Предыдущие вопросы' :
-                          language === 'es' ? 'Preguntas anteriores' : 'Previous questions',
-      questionTooShort: language === 'ru' ? 'Вопрос слишком короткий' :
-                        language === 'es' ? 'La pregunta es demasiado corta' : 'Question too short',
-      errorMessage: language === 'ru' ? 'Вселенная молчит. Попробуйте позже.' :
-                    language === 'es' ? 'El Universo está en silencio. Intenta más tarde.' : 'The Universe is silent. Try again later.'
-    },
+    universe: namespacedTranslations.universe[language],
     profile: {
       title: language === 'ru' ? 'Профиль' :
              language === 'es' ? 'Perfil' : 'Profile'
@@ -97,38 +74,13 @@ export const useTranslations = () => {
                       language === 'es' ? 'Cancelar' :
                       'Cancel'
     },
-    // Add missing meditation translations
-    meditation: {
-      play: language === 'ru' ? 'Играть' :
-            language === 'es' ? 'Reproducir' : 'Play',
-      unlock: language === 'ru' ? 'Разблокировать' :
-              language === 'es' ? 'Desbloquear' : 'Unlock'
-    },
-    // Add missing PactOath translations
-    pactOath: {
-      title: language === 'ru' ? 'Договор со Вселенной' :
-             language === 'es' ? 'Contrato con el Universo' : 'Contract with the Universe',
-      subtitle: language === 'ru' ? 'Прежде чем начать, примите обет' :
-               language === 'es' ? 'Antes de comenzar, haz un juramento' : 'Before you begin, take an oath'
-    },
-    // Add missing subscription translations
-    subscription: {
-      title: language === 'ru' ? 'PRO Подписка' :
-             language === 'es' ? 'Suscripción PRO' : 'PRO Subscription',
-      description: language === 'ru' ? 'Разблокируйте полный потенциал приложения' :
-                   language === 'es' ? 'Desbloquea todo el potencial de la aplicación' : 'Unlock the full potential of the app',
-      upgradeButton: language === 'ru' ? 'Обновить сейчас' :
-                     language === 'es' ? 'Actualizar ahora' : 'Upgrade Now'
-    },
-    // Add missing userProfile translations
-    userProfile: {
-      name: language === 'ru' ? 'Имя' :
-            language === 'es' ? 'Nombre' : 'Name',
-      birthdate: language === 'ru' ? 'Дата рождения' :
-                language === 'es' ? 'Fecha de nacimiento' : 'Birthdate',
-      editProfile: language === 'ru' ? 'Редактировать профиль' :
-                  language === 'es' ? 'Editar perfil' : 'Edit profile'
-    }
+    // Add namespaced translations
+    calendar: namespacedTranslations.calendar[language],
+    meditation: namespacedTranslations.meditation[language],
+    pactOath: namespacedTranslations.pactOath[language],
+    subscription: namespacedTranslations.subscription[language],
+    userProfile: namespacedTranslations.userProfile[language],
+    createPact: namespacedTranslations.createPact[language]
   });
 
   useEffect(() => {
@@ -153,30 +105,7 @@ export const useTranslations = () => {
                  language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
                  'No active pacts. Create one to start your journey!'
       },
-      universe: {
-        title: language === 'ru' ? 'Вселенная' :
-              language === 'es' ? 'Universo' : 'Universe',
-        yourQuestion: language === 'ru' ? 'Ваш вопрос' :
-                     language === 'es' ? 'Tu pregunta' : 'Your question',
-        universeAnswer: language === 'ru' ? 'Ответ Вселенной' :
-                       language === 'es' ? 'Respuesta del Universo' : 'Universe Answer',
-        newQuestion: language === 'ru' ? 'Новый вопрос' :
-                    language === 'es' ? 'Nueva pregunta' : 'New Question',
-        thinking: language === 'ru' ? 'Вселенная размышляет...' :
-                 language === 'es' ? 'El Universo está pensando...' : 'Universe is thinking...',
-        question: language === 'ru' ? 'О чём вы хотите спросить Вселенную?' :
-                  language === 'es' ? '¿Qué quieres preguntar al Universo?' : 'What do you want to ask the Universe?',
-        questionPlaceholder: language === 'ru' ? 'Введите свой вопрос здесь...' :
-                            language === 'es' ? 'Escribe tu pregunta aquí...' : 'Type your question here...',
-        askButton: language === 'ru' ? 'Спросить' :
-                   language === 'es' ? 'Preguntar' : 'Ask',
-        previousQuestions: language === 'ru' ? 'Предыдущие вопросы' :
-                            language === 'es' ? 'Preguntas anteriores' : 'Previous questions',
-        questionTooShort: language === 'ru' ? 'Вопрос слишком короткий' :
-                          language === 'es' ? 'La pregunta es demasiado corta' : 'Question too short',
-        errorMessage: language === 'ru' ? 'Вселенная молчит. Попробуйте позже.' :
-                      language === 'es' ? 'El Universo está en silencio. Intenta más tarde.' : 'The Universe is silent. Try again later.'
-      },
+      universe: namespacedTranslations.universe[language],
       profile: {
         title: language === 'ru' ? 'Профиль' :
                language === 'es' ? 'Perfil' : 'Profile'
@@ -204,38 +133,13 @@ export const useTranslations = () => {
                         language === 'es' ? 'Cancelar' :
                         'Cancel'
       },
-      // Add missing meditation translations in the useEffect
-      meditation: {
-        play: language === 'ru' ? 'Играть' :
-              language === 'es' ? 'Reproducir' : 'Play',
-        unlock: language === 'ru' ? 'Разблокировать' :
-                language === 'es' ? 'Desbloquear' : 'Unlock'
-      },
-      // Add missing PactOath translations in the useEffect
-      pactOath: {
-        title: language === 'ru' ? 'Договор со Вселенной' :
-               language === 'es' ? 'Contrato con el Universo' : 'Contract with the Universe',
-        subtitle: language === 'ru' ? 'Прежде чем начать, примите обет' :
-                 language === 'es' ? 'Antes de comenzar, haz un juramento' : 'Before you begin, take an oath'
-      },
-      // Add missing subscription translations in the useEffect
-      subscription: {
-        title: language === 'ru' ? 'PRO Подписка' :
-               language === 'es' ? 'Suscripción PRO' : 'PRO Subscription',
-        description: language === 'ru' ? 'Разблокируйте полный потенциал приложения' :
-                     language === 'es' ? 'Desbloquea todo el potencial de la aplicación' : 'Unlock the full potential of the app',
-        upgradeButton: language === 'ru' ? 'Обновить сейчас' :
-                       language === 'es' ? 'Actualizar ahora' : 'Upgrade Now'
-      },
-      // Add missing userProfile translations in the useEffect
-      userProfile: {
-        name: language === 'ru' ? 'Имя' :
-              language === 'es' ? 'Nombre' : 'Name',
-        birthdate: language === 'ru' ? 'Дата рождения' :
-                  language === 'es' ? 'Fecha de nacimiento' : 'Birthdate',
-        editProfile: language === 'ru' ? 'Редактировать профиль' :
-                    language === 'es' ? 'Editar perfil' : 'Edit profile'
-      }
+      // Update namespaced translations in useEffect
+      calendar: namespacedTranslations.calendar[language],
+      meditation: namespacedTranslations.meditation[language],
+      pactOath: namespacedTranslations.pactOath[language],
+      subscription: namespacedTranslations.subscription[language],
+      userProfile: namespacedTranslations.userProfile[language],
+      createPact: namespacedTranslations.createPact[language]
     });
   }, [language]);
 
