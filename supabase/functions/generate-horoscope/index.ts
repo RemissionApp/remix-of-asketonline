@@ -31,9 +31,13 @@ serve(async (req) => {
       throw new Error('Zodiac sign is required');
     }
 
+    console.log(`Generating ${detailed ? 'detailed' : 'simple'} horoscope for ${sign} in ${language}`);
+
     // Get the appropriate system prompt based on language
     const systemPrompt = getSystemPrompt(language, detailed);
     const userPrompt = getUserPrompt(sign, language, detailed);
+
+    console.log("Sending request to OpenAI with system prompt:", systemPrompt);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -58,13 +62,21 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`OpenAI API error (${response.status}):`, errorText);
+      throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+    }
+
     const data = await response.json();
     
     if (data.error) {
+      console.error("OpenAI returned error:", data.error);
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
     const horoscopeText = data.choices[0].message.content;
+    console.log("Generated horoscope text:", horoscopeText.substring(0, 100) + "...");
 
     // Generate additional data for detailed horoscopes
     let additionalData = {};
@@ -78,6 +90,7 @@ serve(async (req) => {
       };
     }
 
+    console.log("Returning successful response");
     return new Response(JSON.stringify({ 
       success: true, 
       data: {
