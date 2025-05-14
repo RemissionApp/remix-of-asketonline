@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -15,7 +16,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { UserAvatar } from '@/components/UserAvatar';
+import { AvatarUpload } from '@/components/AvatarUpload';
 
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
@@ -82,8 +83,8 @@ const UserProfileForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto text-center">
-      <div className="flex justify-center mb-4">
-        <UserAvatar size="lg" />
+      <div className="flex justify-center mb-6">
+        <AvatarUpload size="lg" />
       </div>
       
       <h2 className="text-3xl font-serif text-white mb-6">

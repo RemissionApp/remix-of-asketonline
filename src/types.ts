@@ -1,8 +1,11 @@
 
-export type PactStatus = 'active' | 'completed' | 'broken';
+import { Tables } from './types/supabase';
+
+export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
 
 export interface PactDay {
-  date: string;
+  id: string;
+  date: Date | string;
   completed: boolean;
 }
 
@@ -10,50 +13,55 @@ export interface Pact {
   id: string;
   title: string;
   duration: number;
+  reward: string | null;
+  status: 'active' | 'completed' | 'failed';
   days: PactDay[];
-  reward: string;
-  status: PactStatus;
-  createdAt: string;
+}
+
+export interface UserProfile {
+  name: string;
+  birthDate: Date | null;
+  totalDays: number;
+  energyPoints: number;
+  goal: string | null;
+  rank: SpiritualRank;
+  isPro: boolean;
+  avatar_url: string | null;
 }
 
 export interface UniverseQuestion {
   id: string;
   question: string;
   answer: string;
-  date: string;
 }
-
-export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
 
 export interface Achievement {
   id: string;
+  type: string;
   title: string;
   description: string;
   icon: string;
-  unlocked: boolean;
-  unlockedAt?: string;
+  unlockedAt: Date | null;
 }
 
 export interface Mission {
   id: string;
   title: string;
   description: string;
-  requirements: string[];
-  reward: {
-    energyPoints: number;
-    achievement?: string;
-  };
+  requirements: any;
+  reward: any;
   completed: boolean;
 }
 
-export interface UserProfile {
-  name: string;
-  birthDate?: Date;
-  totalDays: number;
-  energyPoints: number;
-  goal: string;
-  isPro: boolean;
-  rank: SpiritualRank;
-  achievements: Achievement[];
-  activeMission?: Mission;
-}
+export const mapDbProfileToUserProfile = (dbProfile: Tables<'profiles'>, isPro: boolean = false): UserProfile => {
+  return {
+    name: dbProfile.name,
+    birthDate: dbProfile.birth_date ? new Date(dbProfile.birth_date) : null,
+    totalDays: dbProfile.total_days,
+    energyPoints: dbProfile.energy_points,
+    goal: dbProfile.goal,
+    rank: dbProfile.rank as SpiritualRank,
+    isPro,
+    avatar_url: dbProfile.avatar_url
+  };
+};

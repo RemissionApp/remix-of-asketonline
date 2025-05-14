@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { ProBadge } from '@/components/ProBadge';
 import { CosmicButton } from '@/components/CosmicButton';
-import { Globe, SparklesIcon } from 'lucide-react';
+import { Globe, LogOut, SparklesIcon, User } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { 
   Select,
@@ -19,6 +19,10 @@ import {
 import { SupportedLanguage } from '@/i18n/translations';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { AvatarUpload } from '@/components/AvatarUpload';
+import { PrivacyPolicy } from '@/components/PrivacyPolicy';
+import { supabase, cleanupAuthState } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, setActiveScreen, language, setLanguage } = useAppStore();
@@ -37,6 +41,34 @@ const ProfilePage: React.FC = () => {
   const handleLanguageChange = (value: string) => {
     setLanguage(value as SupportedLanguage);
   };
+
+  const handleLogout = async () => {
+    try {
+      // Clean up auth state
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.error("Error during signout:", err);
+      }
+      
+      toast({
+        title: t.auth?.logoutSuccess || "Успех",
+        description: t.auth?.logoutMessage || "Вы успешно вышли из системы"
+      });
+      
+      // Navigate to home page
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: t.auth?.error || "Ошибка",
+        description: error.message || t.auth?.logoutError || "Не удалось выйти из системы",
+        variant: "destructive"
+      });
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -54,7 +86,17 @@ const ProfilePage: React.FC = () => {
             {t.main?.profile || "Профиль"}
           </h1>
           
-          <UserProfileForm />
+          <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-6 mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <AvatarUpload size="md" />
+              <div>
+                <h2 className="text-lg text-white">{userProfile.name}</h2>
+                <p className="text-cosmic-secondary text-sm">{userProfile.rank}</p>
+              </div>
+            </div>
+            
+            <UserProfileForm />
+          </div>
           
           <div className="mt-8">
             <h2 className="text-xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "App language"}</h2>
@@ -119,7 +161,7 @@ const ProfilePage: React.FC = () => {
             </div>
             
             {userProfile.isPro ? (
-              <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-4">
+              <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-white font-medium flex items-center">
@@ -135,8 +177,25 @@ const ProfilePage: React.FC = () => {
                 </CosmicButton>
               </div>
             ) : (
-              <SubscriptionBanner />
+              <div className="mb-6">
+                <SubscriptionBanner />
+              </div>
             )}
+            
+            {/* Privacy Policy */}
+            <PrivacyPolicy />
+            
+            {/* Logout Button */}
+            <div className="mt-8">
+              <CosmicButton 
+                variant="destructive" 
+                className="w-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                {t.auth?.logout || "Выйти из системы"}
+              </CosmicButton>
+            </div>
           </div>
         </div>
       </div>
