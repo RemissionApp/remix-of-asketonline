@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -11,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -61,6 +63,19 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleGuestLogin = () => {
+    toast({
+      title: "Гостевой режим",
+      description: "Внимание: прогресс пользователя не будет сохранен",
+      variant: "warning"
+    });
+    
+    // Navigate to main page as guest
+    setTimeout(() => {
+      navigate('/main');
+    }, 1500);
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -81,7 +96,7 @@ const LoginPage: React.FC = () => {
       <div className="relative z-10 max-w-md w-full mx-auto px-4">
         <h1 className="text-4xl font-serif text-white text-center mb-8">Asket</h1>
         
-        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/40 border-cosmic-accent/30">
+        <Card className="cosmic-card backdrop-blur-lg bg-cosmic-dark/30 border-cosmic-accent/30">
           <CardContent className="pt-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -161,6 +176,26 @@ const LoginPage: React.FC = () => {
                         Зарегистрироваться
                       </button>
                     </p>
+                  </div>
+
+                  <div className="pt-4 relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-cosmic-accent/20"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-cosmic-dark/50 px-2 text-xs text-cosmic-accent">или</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                      onClick={handleGuestLogin}
+                    >
+                      Войти как гость
+                    </Button>
                   </div>
                 </form>
               </TabsContent>
