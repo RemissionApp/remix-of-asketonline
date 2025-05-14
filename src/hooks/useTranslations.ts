@@ -138,6 +138,17 @@ export const useTranslations = () => {
       currentDate: language === 'ru' ? 'Текущая дата' : language === 'es' ? 'Fecha actual' : 'Current date',
       languageLabel: language === 'ru' ? 'Язык приложения' : language === 'es' ? 'Idioma de la aplicación' : 'App language',
       back: language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : 'Back'
+    },
+    onboarding: {
+      steps: [
+        // This will be filled from i18n/translations.ts, but we need to define the type
+      ],
+      buttons: {
+        next: language === 'ru' ? 'Далее' : language === 'es' ? 'Siguiente' : 'Next',
+        enter: language === 'ru' ? 'Войти' : language === 'es' ? 'Entrar' : 'Enter',
+        startJourney: language === 'ru' ? 'Начать путь' : language === 'es' ? 'Comenzar el camino' : 'Start Journey',
+        skip: language === 'ru' ? 'Пропустить' : language === 'es' ? 'Omitir' : 'Skip'
+      }
     }
   };
   
