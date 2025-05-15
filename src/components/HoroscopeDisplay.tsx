@@ -11,10 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 
 interface BriefHoroscope {
   description: string;
-  mood?: string;
-  color?: string;
-  lucky_number?: string;
-  lucky_time?: string;
 }
 
 export const HoroscopeDisplay: React.FC = () => {
@@ -30,13 +26,11 @@ export const HoroscopeDisplay: React.FC = () => {
     en: 'See More',
     es: 'Ver Más',
   }[language] || 'See More';
-
-  // Translations for error messages
-  const errorMessages = {
-    ru: 'Не удалось загрузить гороскоп',
-    en: 'Failed to load horoscope',
-    es: 'Error al cargar el horóscopo',
-  };
+  
+  // Signature based on language
+  const signature = language === 'ru' ? '— Послание Вселенной' : 
+                   language === 'es' ? '— Mensaje del Universo' : 
+                   '— Message from the Universe';
 
   // Translations for loading text
   const loadingText = {
@@ -44,11 +38,6 @@ export const HoroscopeDisplay: React.FC = () => {
     en: 'Connecting with the cosmos...',
     es: 'Conectando con el cosmos...',
   }[language] || 'Connecting with the cosmos...';
-  
-  // Signature based on language
-  const signature = language === 'ru' ? '— Послание Вселенной' : 
-                   language === 'es' ? '— Mensaje del Universo' : 
-                   '— Message from the Universe';
   
   useEffect(() => {
     const fetchHoroscope = async () => {
@@ -88,7 +77,6 @@ export const HoroscopeDisplay: React.FC = () => {
         });
         
         if (error) {
-          console.error("Supabase function error:", error);
           throw new Error(error.message || 'Failed to fetch horoscope');
         }
         
@@ -96,16 +84,12 @@ export const HoroscopeDisplay: React.FC = () => {
           throw new Error('Invalid response from fetch-horoscope function');
         }
         
-        // Set the horoscope and cache it
-        setHoroscope(data.data);
-        localStorage.setItem(`horoscope_${sign}_${today}_brief`, JSON.stringify(data.data));
+        // Set the horoscope with just the description
+        const briefHoroscope = { description: data.data.description };
+        setHoroscope(briefHoroscope);
+        localStorage.setItem(`horoscope_${sign}_${today}_brief`, JSON.stringify(briefHoroscope));
       } catch (error) {
         console.error('Error fetching horoscope:', error);
-        toast({
-          title: errorMessages[language] || errorMessages.en,
-          description: error.message,
-          variant: 'destructive'
-        });
         setHoroscope({ description: getDefaultMessage(language) });
       } finally {
         setLoading(false);
@@ -120,7 +104,7 @@ export const HoroscopeDisplay: React.FC = () => {
       setHoroscope({ description: getDefaultMessage(language) });
       setLoading(false);
     }
-  }, [userProfile?.birthDate, language, toast, user, userProfile]);
+  }, [userProfile?.birthDate, language, user, userProfile]);
 
   const handleSeeMore = () => {
     // Check if user is PRO
@@ -138,7 +122,6 @@ export const HoroscopeDisplay: React.FC = () => {
       <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
         <p className="text-cosmic-accent italic">{loadingText}</p>
         <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
-        <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
       </div>
     );
   }
