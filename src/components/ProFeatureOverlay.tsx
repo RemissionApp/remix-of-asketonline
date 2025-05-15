@@ -35,8 +35,8 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
       </div>
       
       {/* Overlay with upgrade CTA */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-cosmic-dark/70 backdrop-blur-sm">
-        <div className="p-6 rounded-lg text-center max-w-xs">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-cosmic-dark/70 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
+        <div className="p-6 text-center max-w-xs">
           <div className="w-12 h-12 bg-cosmic-gold/20 rounded-full mx-auto flex items-center justify-center mb-4">
             <LockIcon size={24} className="text-cosmic-gold" />
           </div>

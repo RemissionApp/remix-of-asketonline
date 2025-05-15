@@ -8,6 +8,7 @@ import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 
 interface BriefHoroscope {
   description: string;
@@ -38,6 +39,9 @@ export const HoroscopeDisplay: React.FC = () => {
     en: 'Connecting with the cosmos...',
     es: 'Conectando con el cosmos...',
   }[language] || 'Connecting with the cosmos...';
+  
+  // Check if user is PRO
+  const isPro = userProfile?.isPro || false;
   
   useEffect(() => {
     const fetchHoroscope = async () => {
@@ -107,39 +111,48 @@ export const HoroscopeDisplay: React.FC = () => {
   }, [userProfile?.birthDate, language, user, userProfile]);
 
   const handleSeeMore = () => {
-    // Check if user is PRO
-    if (userProfile?.isPro) {
-      // Navigate to detailed horoscope page
-      navigate('/detailed-horoscope');
-    } else {
-      // Navigate to PRO subscription page
-      navigate('/comparison');
-    }
+    // Navigate to detailed horoscope page
+    navigate('/detailed-horoscope');
   };
   
-  if (loading) {
+  const horoscopeContent = (
+    <div className="w-full max-w-lg mx-auto text-center">
+      {loading ? (
+        <>
+          <p className="text-cosmic-accent italic">{loadingText}</p>
+          <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+        </>
+      ) : (
+        <>
+          <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
+            {horoscope?.description || getDefaultMessage(language)}
+          </p>
+          <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
+          <Button 
+            onClick={handleSeeMore}
+            variant="outline" 
+            className="border-cosmic-gold/50 text-cosmic-gold hover:bg-cosmic-gold/10 mt-3"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            {seeMoreText}
+          </Button>
+        </>
+      )}
+    </div>
+  );
+  
+  // For non-PRO users, wrap with ProFeatureOverlay if showing detailed content
+  if (!isPro && !loading) {
     return (
-      <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
-        <p className="text-cosmic-accent italic">{loadingText}</p>
-        <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+      <div className="cosmic-block bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
+        {horoscopeContent}
       </div>
     );
   }
   
   return (
-    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
-      <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
-        {horoscope?.description || getDefaultMessage(language)}
-      </p>
-      <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
-      <Button 
-        onClick={handleSeeMore}
-        variant="outline" 
-        className="border-cosmic-gold/50 text-cosmic-gold hover:bg-cosmic-gold/10 mt-3"
-      >
-        <Sparkles className="mr-2 h-4 w-4" />
-        {seeMoreText}
-      </Button>
+    <div className="cosmic-block bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
+      {horoscopeContent}
     </div>
   );
 };

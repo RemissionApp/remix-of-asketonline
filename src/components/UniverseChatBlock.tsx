@@ -18,26 +18,25 @@ export const UniverseChatBlock: React.FC = () => {
   const chatContent = (
     <div 
       onClick={handleChatClick}
-      className="relative overflow-hidden flex items-center bg-cosmic-dark/70 backdrop-blur-sm border border-cosmic-accent/30 rounded-md p-3 cursor-pointer hover:bg-cosmic-dark/90 transition-colors mb-6"
+      className="cosmic-block relative overflow-hidden flex items-center bg-cosmic-dark/70 backdrop-blur-sm border border-cosmic-accent/30 rounded-lg p-4 cursor-pointer hover:bg-cosmic-dark/90 transition-colors mb-6 w-full max-w-lg mx-auto"
       style={{
         backgroundImage: 'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        width: '100%',
-        height: '64px'
+        height: '80px'
       }}
     >
       {/* Semi-transparent overlay to ensure text readability */}
       <div className="absolute inset-0 bg-cosmic-dark/60 backdrop-blur-sm"></div>
       
-      <div className="flex items-center justify-center h-8 w-8 rounded-full bg-cosmic-accent/20 mr-3 z-10">
-        <MessageSquare size={16} className="text-cosmic-accent" />
+      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-cosmic-accent/20 mr-3 z-10">
+        <MessageSquare size={20} className="text-cosmic-accent" />
       </div>
       <div className="z-10">
-        <h3 className="text-cosmic-accent text-sm font-medium">
+        <h3 className="text-cosmic-accent text-base font-medium">
           {t.universe?.chatTitle || "Диалог со Вселенной"}
         </h3>
-        <p className="text-xs text-cosmic-secondary">
+        <p className="text-sm text-cosmic-secondary">
           {t.universe?.chatDescription || "Задайте вопрос Вселенной"}
         </p>
       </div>
@@ -50,7 +49,7 @@ export const UniverseChatBlock: React.FC = () => {
       <ProFeatureOverlay 
         title={t.universe?.chatProTitle || "Диалог со Вселенной"}
         message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
-        className="mb-6"
+        className="mb-6 w-full max-w-lg mx-auto"
       >
         {chatContent}
       </ProFeatureOverlay>
