@@ -1,4 +1,3 @@
-
 import { Translations } from '../types/translationTypes';
 
 export const enTranslations: Translations = {
@@ -23,8 +22,7 @@ export const enTranslations: Translations = {
   },
   auth: {
     signIn: "Sign In",
-    signUp: "Sign Up",
-    email: "Email",
+    signUp: "Email",
     password: "Password",
     forgotPassword: "Forgot password?",
     resetPassword: "Reset Password",
@@ -144,6 +142,7 @@ export const enTranslations: Translations = {
       startJourney: "Start Journey"
     }
   },
+  
   universe: {
     title: "Universe",
     question: "Question",
@@ -166,6 +165,7 @@ export const enTranslations: Translations = {
     chatProTitle: "Chat with the Universe",
     chatProMessage: "Unlock PRO to have a dialog with the Universe"
   },
+  
   profile: {
     title: "Profile",
     name: "Name",

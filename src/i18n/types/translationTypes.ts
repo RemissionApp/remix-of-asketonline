@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'en' | 'ru' | 'es';
 
 export interface Translations {
@@ -134,7 +133,6 @@ export interface Translations {
   };
   universe: {
     title: string;
-    description: string;
     question: string;
     answer: string;
     askButton: string;
@@ -145,15 +143,15 @@ export interface Translations {
     newQuestion: string;
     thinking: string;
     previousQuestions: string;
-    description: string;
+    description: string; // Main universe page description
     proMessage: string;
     proTitle: string;
     learnMore: string;
-    chatTitle: string;
-    chatDescription: string;
-    enterChat: string;
-    chatProTitle: string;
-    chatProMessage: string;
+    chatTitle: string;      // Title for the chat preview card
+    chatDescription: string; // Description for the chat preview card
+    enterChat: string;       // Button text to enter chat
+    chatProTitle: string;    // Pro overlay title for chat
+    chatProMessage: string;  // Pro overlay message for chat
   };
   profile: {
     title: string;
