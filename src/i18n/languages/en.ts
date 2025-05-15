@@ -22,7 +22,8 @@ export const enTranslations: Translations = {
   },
   auth: {
     signIn: "Sign In",
-    signUp: "Email",
+    signUp: "Sign Up",
+    email: "Email",
     password: "Password",
     forgotPassword: "Forgot password?",
     resetPassword: "Reset Password",
