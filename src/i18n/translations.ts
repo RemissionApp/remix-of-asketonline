@@ -1,4 +1,3 @@
-
 // Define the types for all translations
 interface Translations {
   [key: string]: {
@@ -143,6 +142,15 @@ interface Translations {
       newQuestion: string;
       thinking: string;
       previousQuestions: string;
+      description?: string;
+      proMessage?: string;
+      proTitle?: string;
+      learnMore?: string;
+      chatTitle?: string;
+      chatDescription?: string;
+      enterChat?: string;
+      chatProTitle?: string;
+      chatProMessage?: string;
     };
     profile: {
       title: string;
@@ -406,7 +414,16 @@ export const translations: Translations = {
       universeAnswer: "Ответ Вселенной",
       newQuestion: "Новый вопрос",
       thinking: "Вселенная размышляет...",
-      previousQuestions: "Предыдущие вопросы"
+      previousQuestions: "Предыдущие вопросы",
+      description: "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной",
+      proMessage: "Разблокируй PRO чтобы вести диалог со Вселенной",
+      proTitle: "Диалог со Вселенной",
+      learnMore: "Подробнее",
+      chatTitle: "Чат со Вселенной",
+      chatDescription: "Задавай вопросы и получай ответы от Вселенной в режиме реального времени",
+      enterChat: "Войти в чат",
+      chatProTitle: "Чат со Вселенной",
+      chatProMessage: "Разблокируй PRO чтобы вести диалог со Вселенной"
     },
     profile: {
       title: "Профиль",
@@ -666,7 +683,16 @@ export const translations: Translations = {
       universeAnswer: "Universe answer",
       newQuestion: "New question",
       thinking: "The Universe is thinking...",
-      previousQuestions: "Previous questions"
+      previousQuestions: "Previous questions",
+      description: "Ask any questions and get wise answers directly from the Universe",
+      proMessage: "Unlock PRO to have a dialog with the Universe",
+      proTitle: "Dialog with the Universe",
+      learnMore: "Learn more",
+      chatTitle: "Chat with the Universe",
+      chatDescription: "Ask questions and get answers from the Universe in real time",
+      enterChat: "Enter chat",
+      chatProTitle: "Chat with the Universe",
+      chatProMessage: "Unlock PRO to have a dialog with the Universe"
     },
     profile: {
       title: "Profile",
@@ -926,7 +952,16 @@ export const translations: Translations = {
       universeAnswer: "Respuesta del Universo",
       newQuestion: "Nueva pregunta",
       thinking: "El Universo está pensando...",
-      previousQuestions: "Preguntas anteriores"
+      previousQuestions: "Preguntas anteriores",
+      description: "Haz cualquier pregunta y recibe respuestas sabias directamente del Universo",
+      proMessage: "Desbloquea PRO para dialogar con el Universo",
+      proTitle: "Diálogo con el Universo",
+      learnMore: "Más información",
+      chatTitle: "Chat con el Universo",
+      chatDescription: "Haz preguntas y recibe respuestas del Universo en tiempo real",
+      enterChat: "Entrar al chat",
+      chatProTitle: "Chat con el Universo",
+      chatProMessage: "Desbloquea PRO para dialogar con el Universo"
     },
     profile: {
       title: "Perfil",

@@ -57,9 +57,9 @@ export const useTranslations = () => {
       description: language === 'ru' ? 'Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной' :
                    language === 'es' ? 'Haz cualquier pregunta y recibe respuestas sabias directamente del Universo' :
                    'Ask any questions and get wise answers directly from the Universe',
-      askButton: language === 'ru' ? 'Войти в чат' :
-                language === 'es' ? 'Entrar al chat' :
-                'Enter chat',
+      askButton: language === 'ru' ? 'Задать вопрос' :
+                language === 'es' ? 'Hacer una pregunta' :
+                'Ask a question',
       proMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
                  language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
                  'Unlock PRO to have a dialog with the Universe',
@@ -68,7 +68,66 @@ export const useTranslations = () => {
                'Dialog with the Universe',
       learnMore: language === 'ru' ? 'Подробнее' :
                 language === 'es' ? 'Más información' :
-                'Learn more'
+                'Learn more',
+      question: language === 'ru' ? 'Задайте вопрос Вселенной' :
+               language === 'es' ? 'Haz una pregunta al Universo' :
+               'Ask the Universe a question',
+      answer: language === 'ru' ? 'Ответ' :
+             language === 'es' ? 'Respuesta' :
+             'Answer',
+      questionPlaceholder: language === 'ru' ? 'Введите ваш вопрос...' :
+                          language === 'es' ? 'Ingresa tu pregunta...' :
+                          'Enter your question...',
+      answerPlaceholder: language === 'ru' ? 'Здесь появится ответ Вселенной...' :
+                        language === 'es' ? 'La respuesta del Universo aparecerá aquí...' :
+                        'The Universe\'s answer will appear here...',
+      yourQuestion: language === 'ru' ? 'Ваш вопрос' :
+                   language === 'es' ? 'Tu pregunta' :
+                   'Your question',
+      universeAnswer: language === 'ru' ? 'Ответ Вселенной' :
+                     language === 'es' ? 'Respuesta del Universo' :
+                     'Universe answer',
+      newQuestion: language === 'ru' ? 'Новый вопрос' :
+                  language === 'es' ? 'Nueva pregunta' :
+                  'New question',
+      thinking: language === 'ru' ? 'Вселенная размышляет...' :
+               language === 'es' ? 'El Universo está pensando...' :
+               'The Universe is thinking...',
+      previousQuestions: language === 'ru' ? 'Предыдущие вопросы' :
+                         language === 'es' ? 'Preguntas anteriores' :
+                         'Previous questions',
+      chatTitle: language === 'ru' ? 'Чат со Вселенной' :
+                language === 'es' ? 'Chat con el Universo' :
+                'Chat with the Universe',
+      chatDescription: language === 'ru' ? 'Задавай вопросы и получай ответы от Вселенной в режиме реального времени' :
+                      language === 'es' ? 'Haz preguntas y recibe respuestas del Universo en tiempo real' :
+                      'Ask questions and get answers from the Universe in real time',
+      enterChat: language === 'ru' ? 'Войти в чат' :
+                language === 'es' ? 'Entrar al chat' :
+                'Enter chat',
+      chatProTitle: language === 'ru' ? 'Чат со Вселенной' :
+                   language === 'es' ? 'Chat con el Universo' :
+                   'Chat with the Universe',
+      chatProMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
+                     language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
+                     'Unlock PRO to have a dialog with the Universe'
+    },
+    numerology: {
+      title: language === 'ru' ? 'Нумерология' :
+             language === 'es' ? 'Numerología' :
+             'Numerology',
+      description: language === 'ru' ? 'Узнайте свой нумерологический профиль и получите глубокое понимание своей личности' :
+                   language === 'es' ? 'Descubre tu perfil numerológico y obtén una comprensión profunda de tu personalidad' :
+                   'Discover your numerological profile and gain a deep understanding of your personality',
+      learnMore: language === 'ru' ? 'Подробнее' :
+                language === 'es' ? 'Más información' :
+                'Learn more',
+      proTitle: language === 'ru' ? 'Нумерологический анализ' :
+               language === 'es' ? 'Análisis numerológico' :
+               'Numerological Analysis',
+      proMessage: language === 'ru' ? 'Разблокируй PRO чтобы получить полный нумерологический разбор' :
+                 language === 'es' ? 'Desbloquea PRO para obtener un análisis numerológico completo' :
+                 'Unlock PRO to get a complete numerological analysis'
     }
   });
 
@@ -105,9 +164,9 @@ export const useTranslations = () => {
         description: language === 'ru' ? 'Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной' :
                      language === 'es' ? 'Haz cualquier pregunta y recibe respuestas sabias directamente del Universo' :
                      'Ask any questions and get wise answers directly from the Universe',
-        askButton: language === 'ru' ? 'Войти в чат' :
-                  language === 'es' ? 'Entrar al chat' :
-                  'Enter chat',
+        askButton: language === 'ru' ? 'Задать вопрос' :
+                  language === 'es' ? 'Hacer una pregunta' :
+                  'Ask a question',
         proMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
                    language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
                    'Unlock PRO to have a dialog with the Universe',
@@ -116,7 +175,66 @@ export const useTranslations = () => {
                  'Dialog with the Universe',
         learnMore: language === 'ru' ? 'Подробнее' :
                   language === 'es' ? 'Más información' :
-                  'Learn more'
+                  'Learn more',
+        question: language === 'ru' ? 'Задайте вопрос Вселенной' :
+                 language === 'es' ? 'Haz una pregunta al Universo' :
+                 'Ask the Universe a question',
+        answer: language === 'ru' ? 'Ответ' :
+               language === 'es' ? 'Respuesta' :
+               'Answer',
+        questionPlaceholder: language === 'ru' ? 'Введите ваш вопрос...' :
+                            language === 'es' ? 'Ingresa tu pregunta...' :
+                            'Enter your question...',
+        answerPlaceholder: language === 'ru' ? 'Здесь появится ответ Вселенной...' :
+                          language === 'es' ? 'La respuesta del Universo aparecerá aquí...' :
+                          'The Universe\'s answer will appear here...',
+        yourQuestion: language === 'ru' ? 'Ваш вопрос' :
+                     language === 'es' ? 'Tu pregunta' :
+                     'Your question',
+        universeAnswer: language === 'ru' ? 'Ответ Вселенной' :
+                       language === 'es' ? 'Respuesta del Universo' :
+                       'Universe answer',
+        newQuestion: language === 'ru' ? 'Новый вопрос' :
+                    language === 'es' ? 'Nueva pregunta' :
+                    'New question',
+        thinking: language === 'ru' ? 'Вселенная размышляет...' :
+                 language === 'es' ? 'El Universo está pensando...' :
+                 'The Universe is thinking...',
+        previousQuestions: language === 'ru' ? 'Предыдущие вопросы' :
+                           language === 'es' ? 'Preguntas anteriores' :
+                           'Previous questions',
+        chatTitle: language === 'ru' ? 'Чат со Вселенной' :
+                  language === 'es' ? 'Chat con el Universo' :
+                  'Chat with the Universe',
+        chatDescription: language === 'ru' ? 'Задавай вопросы и получай ответы от Вселенной в режиме реального времени' :
+                        language === 'es' ? 'Haz preguntas y recibe respuestas del Universo en tiempo real' :
+                        'Ask questions and get answers from the Universe in real time',
+        enterChat: language === 'ru' ? 'Войти в чат' :
+                  language === 'es' ? 'Entrar al chat' :
+                  'Enter chat',
+        chatProTitle: language === 'ru' ? 'Чат со Вселенной' :
+                     language === 'es' ? 'Chat con el Universo' :
+                     'Chat with the Universe',
+        chatProMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
+                       language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
+                       'Unlock PRO to have a dialog with the Universe'
+      },
+      numerology: {
+        title: language === 'ru' ? 'Нумерология' :
+               language === 'es' ? 'Numerología' :
+               'Numerology',
+        description: language === 'ru' ? 'Узнайте свой нумерологический профиль и получите глубокое понимание своей личности' :
+                     language === 'es' ? 'Descubre tu perfil numerológico y obtén una comprensión profunda de tu personalidad' :
+                     'Discover your numerological profile and gain a deep understanding of your personality',
+        learnMore: language === 'ru' ? 'Подробнее' :
+                  language === 'es' ? 'Más información' :
+                  'Learn more',
+        proTitle: language === 'ru' ? 'Нумерологический анализ' :
+                 language === 'es' ? 'Análisis numerológico' :
+                 'Numerological Analysis',
+        proMessage: language === 'ru' ? 'Разблокируй PRO чтобы получить полный нумерологический разбор' :
+                   language === 'es' ? 'Desbloquea PRO para obtener un análisis numerológico completo' :
+                   'Unlock PRO to get a complete numerological analysis'
       }
     });
   }, [language]);
