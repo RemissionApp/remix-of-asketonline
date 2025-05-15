@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { PactDisplay } from './PactDisplay';
-import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
@@ -65,9 +64,6 @@ export const MainContent: React.FC<MainContentProps> = ({
           
           {/* Countdown timer for current pact */}
           {currentPact && <CountdownTimer />}
-          
-          {/* Quote display */}
-          <QuoteDisplay quote={dailyQuote} className="mt-8" />
           
           {/* Horoscope display after greeting */}
           <HoroscopeDisplay />

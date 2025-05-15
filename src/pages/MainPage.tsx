@@ -14,14 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 const MainPage: React.FC = () => {
   const { 
     pacts = [], 
-    dailyQuote, 
-    markDayComplete, 
     syncPactsWithCurrentDate,
     language,
     user,
     loadUserProfile,
     userProfile,
-    setActiveScreen
+    setActiveScreen,
+    markDayComplete
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
@@ -88,6 +87,9 @@ const MainPage: React.FC = () => {
       }, 2000);
     }
   };
+  
+  // Empty string for dailyQuote since we're removing QuoteDisplay
+  const dailyQuote = '';
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
