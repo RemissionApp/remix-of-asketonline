@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ZodiacInfo } from '@/components/ZodiacInfo';
+import ZodiacInfo from '@/components/ZodiacInfo';
 import { useAppStore } from '@/store/useAppStore';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
