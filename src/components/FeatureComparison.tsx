@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon } from 'lucide-react';
+import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -99,13 +100,31 @@ const FeatureComparison: React.FC = () => {
     navigate('/profile');
   };
   
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <Button 
+          variant="ghost" 
+          className="flex items-center gap-1 text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20"
+          onClick={handleGoBack}
+        >
+          <ArrowLeftIcon size={16} />
+          <span>Назад</span>
+        </Button>
+        
+        <h2 className="text-2xl font-bold text-white">
+          🔶 Актуальная Freemium-модель
+        </h2>
+        
+        <div className="w-[80px]"></div> {/* Empty div for flex balance */}
+      </div>
+      
       <div className="text-center mb-8">
         <SparklesIcon size={40} className="text-cosmic-gold mx-auto mb-3" />
-        <h2 className="text-2xl font-bold text-white mb-2">
-          🔶 Актуальная Freemium-модель — ASKET vs ASKET PRO
-        </h2>
         <p className="text-cosmic-secondary max-w-md mx-auto">
           Upgrade to PRO to unlock your full potential with premium features and exclusive content.
         </p>
