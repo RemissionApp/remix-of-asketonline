@@ -5,33 +5,76 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { setOnboardingComplete, setActiveScreen, user, loading, onboardingComplete } = useAppStore();
+  const { 
+    setOnboardingComplete, 
+    setActiveScreen, 
+    user, 
+    loading, 
+    onboardingComplete, 
+    userProfile,
+    emailConfirmed,
+    checkEmailConfirmation
+  } = useAppStore();
   const { t } = useTranslations();
   const [step, setStep] = useState(0);
   
-  // Check if user is logged in
+  // Check if user is logged in, email confirmed, and profile is completed
   useEffect(() => {
     // Added console log to debug onboarding flow
-    console.log("Onboarding: user status", { user, loading, onboardingComplete });
+    console.log("Onboarding: user status", { 
+      user, 
+      loading, 
+      onboardingComplete, 
+      userProfile,
+      emailConfirmed
+    });
     
-    if (loading) return;
+    const checkAuth = async () => {
+      if (loading) return;
+      
+      // If no user is logged in, redirect to login
+      if (!user && !loading) {
+        console.log("No user found, redirecting to login");
+        navigate('/login');
+        return;
+      }
+      
+      // Check if email is confirmed
+      if (user && !loading) {
+        const isConfirmed = await checkEmailConfirmation();
+        console.log("Email confirmed status:", isConfirmed);
+        
+        if (!isConfirmed) {
+          toast({
+            title: "Подтвердите email",
+            description: "Пожалуйста, подтвердите ваш email перед продолжением",
+            variant: "warning"
+          });
+          navigate('/login');
+          return;
+        }
+      }
+      
+      // If profile is not completed, redirect to profile setup
+      if (user && !loading && (!userProfile || !userProfile.birthDate || userProfile.name === 'Искатель')) {
+        console.log("Profile not completed, redirecting to profile setup");
+        navigate('/profile-setup');
+        return;
+      }
+      
+      // If onboarding is already complete, go to main
+      if (onboardingComplete && !loading) {
+        console.log("Onboarding already completed, redirecting to main");
+        navigate('/main');
+      }
+    };
     
-    if (!user && !loading) {
-      // No user is logged in, redirect to login
-      console.log("No user found, redirecting to login");
-      navigate('/login');
-      return;
-    }
-    
-    // If onboarding is already complete, go to main
-    if (onboardingComplete && !loading) {
-      console.log("Onboarding already completed, redirecting to main");
-      navigate('/main');
-    }
-  }, [user, loading, navigate, onboardingComplete]);
+    checkAuth();
+  }, [user, loading, navigate, onboardingComplete, userProfile, emailConfirmed, checkEmailConfirmation]);
   
   const handleNext = () => {
     if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)

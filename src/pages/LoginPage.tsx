@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -15,7 +16,7 @@ import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading, user, userProfile } = useAppStore();
+  const { signIn, signUp, loading, user, userProfile, checkEmailConfirmation, emailConfirmed } = useAppStore();
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');
@@ -29,19 +30,36 @@ const LoginPage: React.FC = () => {
     // If user is loading, don't do anything yet
     if (loading) return;
     
-    if (user) {
-      console.log("Login page: user is logged in", { user, userProfile });
-      
-      // Check if user has completed their profile
-      if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-        // User has a completed profile, navigate to main
-        navigate('/main');
-      } else {
-        // User needs to complete their profile
-        navigate('/profile-setup');
+    const checkUser = async () => {
+      if (user) {
+        console.log("Login page: user is logged in", { user, userProfile, emailConfirmed });
+        
+        // Check if email is confirmed
+        const isConfirmed = await checkEmailConfirmation();
+        console.log("Email confirmation status:", isConfirmed);
+        
+        if (!isConfirmed) {
+          toast({
+            title: "Подтвердите email",
+            description: "Пожалуйста, подтвердите ваш email перед продолжением",
+            variant: "warning"
+          });
+          return;
+        }
+        
+        // Check if user has completed their profile
+        if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+          // User has a completed profile, navigate to main or onboarding
+          navigate('/onboarding');
+        } else {
+          // User needs to complete their profile
+          navigate('/profile-setup');
+        }
       }
-    }
-  }, [user, userProfile, loading, navigate]);
+    };
+    
+    checkUser();
+  }, [user, userProfile, loading, navigate, checkEmailConfirmation, emailConfirmed]);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +69,26 @@ const LoginPage: React.FC = () => {
     
     const success = await signIn(email, password);
     if (success) {
-      console.log("Sign in successful, redirecting to profile setup or main page");
-      // Navigate handled in the effect above
+      console.log("Sign in successful");
+      // Check if email is confirmed
+      const isConfirmed = await checkEmailConfirmation();
+      
+      if (!isConfirmed) {
+        toast({
+          title: "Подтвердите email",
+          description: "Пожалуйста, подтвердите ваш email перед продолжением",
+          variant: "warning"
+        });
+        return;
+      }
+      
+      // Navigate to profile setup if profile is not complete
+      if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
+        navigate('/profile-setup');
+      } else {
+        // Navigate to onboarding if profile is complete
+        navigate('/onboarding');
+      }
     }
   };
   

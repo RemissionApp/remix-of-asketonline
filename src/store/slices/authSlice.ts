@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -7,15 +6,18 @@ import { defaultAchievements } from '../data/constants';
 
 export interface AuthSlice {
   user: any | null;
+  emailConfirmed: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loadUserProfile: () => Promise<void>;
   updateUserProfile: (profileData: Partial<import('@/types').UserProfile>) => Promise<void>;
+  checkEmailConfirmation: () => Promise<boolean>;
 }
 
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
   user: null,
+  emailConfirmed: false,
   
   signIn: async (email, password) => {
     set({ loading: true });
@@ -76,10 +78,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           description: "Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль."
         });
         
-        // Set active screen to profile setup instead of onboarding
+        // Set active screen to profile setup
         set({ activeScreen: 'profile' });
+        set({ emailConfirmed: true });
       } else {
         // Email confirmation is required
+        set({ emailConfirmed: false });
         toast({
           title: "Регистрация выполнена",
           description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
@@ -121,6 +125,30 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       });
     } finally {
       set({ loading: false });
+    }
+  },
+  
+  // Check if user's email is confirmed
+  checkEmailConfirmation: async () => {
+    const { user } = get();
+    
+    if (!user) return false;
+    
+    try {
+      // Get user data to check email confirmed status
+      const { data, error } = await supabase.auth.getUser();
+      
+      if (error) throw error;
+      
+      const isConfirmed = data.user?.email_confirmed_at != null;
+      set({ emailConfirmed: isConfirmed });
+      
+      console.log("Email confirmation status:", isConfirmed, data.user);
+      
+      return isConfirmed;
+    } catch (error) {
+      console.error("Error checking email confirmation:", error);
+      return false;
     }
   },
   
