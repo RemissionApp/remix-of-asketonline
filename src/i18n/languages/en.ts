@@ -105,7 +105,7 @@ export const enTranslations: Translations = {
   },
   onboarding: {
     title: "Welcome to Asket",
-    description: "Choose your spiritual goal",
+    description: "Your guide to a mindful life through spiritual practices and ascesis",
     goal1: "Achieve inner harmony",
     goal2: "Unlock spiritual potential",
     goal3: "Clear mind of negative thoughts",
