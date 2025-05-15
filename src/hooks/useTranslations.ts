@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { translations, namespacedTranslations, SupportedLanguage } from '@/i18n/translations';
+import { translations, SupportedLanguage } from '@/i18n/translations';
 import { useAppStore } from '@/store/useAppStore';
 
 // Helper function for pluralization in Russian
@@ -27,30 +27,6 @@ export const useTranslations = () => {
   const { language } = useAppStore();
   const [t, setT] = useState({
     ...translations[language],
-    main: {
-      path: language === 'ru' ? 'Путь' :
-            language === 'es' ? 'Camino' : 'Path',
-      ascesis: language === 'ru' ? 'Аскеза' :
-              language === 'es' ? 'Ascesis' : 'Ascesis',
-      universe: language === 'ru' ? 'Вселенная' :
-                language === 'es' ? 'Universo' : 'Universe',
-      profile: language === 'ru' ? 'Профиль' :
-               language === 'es' ? 'Perfil' : 'Profile',
-      days: language === 'ru' ? 'дней' :
-            language === 'es' ? 'días' : 'days',
-      todayCompleted: language === 'ru' ? 'Завершить день' :
-                      language === 'es' ? 'Completar hoy' : 'Complete today',
-      askUniverse: language === 'ru' ? 'Спросить Вселенную' :
-                   language === 'es' ? 'Preguntar al Universo' : 'Ask Universe',
-      noPacts: language === 'ru' ? 'Нет активных пактов. Создайте один, чтобы начать свое путешествие!' :
-               language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
-               'No active pacts. Create one to start your journey!'
-    },
-    universe: namespacedTranslations.universe[language],
-    profile: {
-      title: language === 'ru' ? 'Профиль' :
-             language === 'es' ? 'Perfil' : 'Profile'
-    },
     zodiac: {
       yourZodiacSign: language === 'ru' ? 'Ваш знак зодиака' : 
                       language === 'es' ? 'Tu signo zodiacal' : 
@@ -73,43 +49,12 @@ export const useTranslations = () => {
       cancelBirthDate: language === 'ru' ? 'Отмена' :
                       language === 'es' ? 'Cancelar' :
                       'Cancel'
-    },
-    // Add namespaced translations
-    calendar: namespacedTranslations.calendar[language],
-    meditation: namespacedTranslations.meditation[language],
-    pactOath: namespacedTranslations.pactOath[language],
-    subscription: namespacedTranslations.subscription[language],
-    userProfile: namespacedTranslations.userProfile[language],
-    createPact: namespacedTranslations.createPact[language]
+    }
   });
 
   useEffect(() => {
     setT({
       ...translations[language],
-      main: {
-        path: language === 'ru' ? 'Путь' :
-              language === 'es' ? 'Camino' : 'Path',
-        ascesis: language === 'ru' ? 'Аскеза' :
-                language === 'es' ? 'Ascesis' : 'Ascesis',
-        universe: language === 'ru' ? 'Вселенная' :
-                  language === 'es' ? 'Universo' : 'Universe',
-        profile: language === 'ru' ? 'Профиль' :
-                 language === 'es' ? 'Perfil' : 'Profile',
-        days: language === 'ru' ? 'дней' :
-              language === 'es' ? 'días' : 'days',
-        todayCompleted: language === 'ru' ? 'Завершить день' :
-                        language === 'es' ? 'Completar hoy' : 'Complete today',
-        askUniverse: language === 'ru' ? 'Спросить Вселенную' :
-                     language === 'es' ? 'Preguntar al Universo' : 'Ask Universe',
-        noPacts: language === 'ru' ? 'Нет активных пактов. Создайте один, чтобы начать свое путешествие!' :
-                 language === 'es' ? '¡No hay pactos activos. Crea uno para comenzar tu viaje!' : 
-                 'No active pacts. Create one to start your journey!'
-      },
-      universe: namespacedTranslations.universe[language],
-      profile: {
-        title: language === 'ru' ? 'Профиль' :
-               language === 'es' ? 'Perfil' : 'Profile'
-      },
       zodiac: {
         yourZodiacSign: language === 'ru' ? 'Ваш знак зодиака' : 
                         language === 'es' ? 'Tu signo zodiacal' : 
@@ -132,14 +77,7 @@ export const useTranslations = () => {
         cancelBirthDate: language === 'ru' ? 'Отмена' :
                         language === 'es' ? 'Cancelar' :
                         'Cancel'
-      },
-      // Update namespaced translations in useEffect
-      calendar: namespacedTranslations.calendar[language],
-      meditation: namespacedTranslations.meditation[language],
-      pactOath: namespacedTranslations.pactOath[language],
-      subscription: namespacedTranslations.subscription[language],
-      userProfile: namespacedTranslations.userProfile[language],
-      createPact: namespacedTranslations.createPact[language]
+      }
     });
   }, [language]);
 

@@ -20,7 +20,7 @@ interface BriefHoroscope {
 export const HoroscopeDisplay: React.FC = () => {
   const [horoscope, setHoroscope] = useState<BriefHoroscope | null>(null);
   const [loading, setLoading] = useState(true);
-  const { userProfile, language, user, setActiveScreen } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -40,7 +40,7 @@ export const HoroscopeDisplay: React.FC = () => {
 
   // Translations for loading text
   const loadingText = {
-    ru: 'Соедин��емся с космосом...',
+    ru: 'Соединяемся с космосом...',
     en: 'Connecting with the cosmos...',
     es: 'Conectando con el cosmos...',
   }[language] || 'Connecting with the cosmos...';
@@ -123,16 +123,22 @@ export const HoroscopeDisplay: React.FC = () => {
   }, [userProfile?.birthDate, language, toast, user, userProfile]);
 
   const handleSeeMore = () => {
-    // Navigate to detailed horoscope page
-    navigate('/detailed-horoscope');
+    // Check if user is PRO
+    if (userProfile?.isPro) {
+      // Navigate to detailed horoscope page
+      navigate('/detailed-horoscope');
+    } else {
+      // Navigate to PRO subscription page
+      navigate('/comparison');
+    }
   };
   
   if (loading) {
     return (
       <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
         <p className="text-cosmic-accent italic">{loadingText}</p>
-        <Skeleton className="h-20 w-full bg-cosmic-accent/20 rounded-md" />
-        <Skeleton className="h-8 w-32 bg-cosmic-accent/20 rounded-md mx-auto" />
+        <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+        <Skeleton className="h-8 w-32 bg-cosmic-accent/10 rounded-md mx-auto" />
       </div>
     );
   }

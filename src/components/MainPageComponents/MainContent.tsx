@@ -6,8 +6,8 @@ import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
-import { UniverseMessageBlock } from '@/components/UniverseMessageBlock';
 import { Pact } from '@/types';
+import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
 
 interface MainContentProps {
@@ -69,11 +69,11 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Quote display */}
           <QuoteDisplay quote={dailyQuote} className="mt-8" />
           
+          {/* Horoscope display after greeting */}
+          <HoroscopeDisplay />
+          
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />
-          
-          {/* Universe message block */}
-          <UniverseMessageBlock />
           
           {/* Action buttons */}
           <ActionButtonsSection />

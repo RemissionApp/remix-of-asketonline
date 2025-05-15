@@ -1,7 +1,7 @@
 
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
-import { supabase, cleanupAuthState } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 
@@ -14,27 +14,13 @@ export interface AuthSlice {
   updateUserProfile: (profileData: Partial<import('@/types').UserProfile>) => Promise<void>;
 }
 
-export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get, api) => ({
+export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
   user: null,
   
   signIn: async (email, password) => {
-    if (!email || !password) {
-      toast({
-        title: "Ошибка входа",
-        description: "Пожалуйста, введите email и пароль",
-        variant: "destructive"
-      });
-      return false;
-    }
-
     set({ loading: true });
     
     try {
-      console.log("Signing in with email:", email);
-      
-      // Clean up auth state before signing in
-      cleanupAuthState();
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -42,22 +28,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       if (error) throw error;
       
-      console.log("Sign in successful:", data.user?.id);
       set({ user: data.user });
       
-      // Load user data after successful sign in
-      try {
-        await get().loadUserProfile();
-        await get().loadPacts();
-        
-        // Load universe questions if available
-        if (typeof get().loadUniverseQuestions === 'function') {
-          await get().loadUniverseQuestions();
-        }
-      } catch (profileError) {
-        console.error("Error loading user data after sign in:", profileError);
-        // Don't fail the sign in if profile loading fails
-      }
+      // Load user data
+      await get().loadUserProfile();
+      await get().loadPacts();
+      await get().loadUniverseQuestions();
+      
+      const { userProfile } = get();
       
       toast({
         title: "Вход выполнен",
@@ -66,8 +44,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       return true; // Return true on success
     } catch (error: any) {
-      console.error("Sign in error:", error);
-      
       toast({
         title: "Ошибка входа",
         description: error.message || "Не удалось войти в систему",
@@ -80,23 +56,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   },
   
   signUp: async (email, password) => {
-    if (!email || !password) {
-      toast({
-        title: "Ошибка регистрации",
-        description: "Пожалуйста, введите email и пароль",
-        variant: "destructive"
-      });
-      return;
-    }
-
     set({ loading: true });
     
     try {
-      console.log("Signing up with email:", email);
-      
-      // Clean up auth state before signing up
-      cleanupAuthState();
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password
@@ -104,7 +66,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       if (error) throw error;
       
-      console.log("Sign up successful:", data.user?.id);
       set({ user: data.user });
       
       toast({
@@ -114,8 +75,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ activeScreen: 'onboarding' });
     } catch (error: any) {
-      console.error("Sign up error:", error);
-      
       toast({
         title: "Ошибка регистрации",
         description: error.message || "Не удалось создать аккаунт",
@@ -130,9 +89,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Clean up auth state before signing out
-      cleanupAuthState();
-      
       await supabase.auth.signOut();
       
       set({ 
@@ -231,27 +187,17 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   loadUserProfile: async () => {
     const { user } = get();
     
-    if (!user) {
-      console.log("Cannot load profile: no user logged in");
-      return;
-    }
+    if (!user) return;
     
     try {
-      console.log("Loading profile for user:", user.id);
-      
       // Get profile data
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
       
       if (error) throw error;
-      
-      if (!data) {
-        console.log("No profile found for user, might be a new user");
-        return;
-      }
       
       // Check subscription status
       const { data: subscription } = await supabase
@@ -269,10 +215,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .select('*')
         .eq('user_id', user.id);
       
-      if (achievementsError) {
-        console.error("Error loading achievements:", achievementsError);
-        // Continue loading profile even if achievements load fails
-      }
+      if (achievementsError) throw achievementsError;
       
       // Map achievements to our app's format
       const mappedAchievements = defaultAchievements.map(defaultAch => {
@@ -296,10 +239,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .order('created_at', { ascending: false })
         .limit(1);
       
-      if (missionsError) {
-        console.error("Error loading missions:", missionsError);
-        // Continue loading profile even if missions load fails
-      }
+      if (missionsError) throw missionsError;
       
       const activeMission = missions && missions.length > 0 ? {
         id: missions[0].id,
@@ -309,8 +249,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         reward: missions[0].reward as any,
         completed: false
       } : undefined;
-      
-      console.log("Profile loaded successfully:", data.name);
       
       // Update local state
       set({

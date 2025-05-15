@@ -5,12 +5,10 @@ import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
 import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
-import { useTranslations } from '@/hooks/useTranslations';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile, user, loading } = useAppStore();
-  const { t } = useTranslations();
   
   // Check if user is logged in and already has profile data
   useEffect(() => {

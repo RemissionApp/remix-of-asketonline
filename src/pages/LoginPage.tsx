@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -16,127 +15,53 @@ import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { signIn, signUp, loading, user, userProfile } = useAppStore();
   const { t } = useTranslations();
   
-  // We directly access the store to ensure it's ready for the component
-  const store = useAppStore((state) => state);
-  
-  // Initialize state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
-  const [loading, setLoading] = useState(false);
   
   // Effect to check if user is already logged in
   useEffect(() => {
-    // Check if user is already logged in
-    const checkAuthState = async () => {
-      if (store.user) {
-        console.log("Login page: user is logged in", { user: store.user });
-        navigate('/main');
-      }
-    };
-    
-    checkAuthState();
-  }, [store.user, navigate]);
+    // If user is logged in
+    if (user) {
+      console.log("Login page: user is logged in", { user, userProfile });
+      
+      // Navigate directly to main page if the user exists
+      navigate('/main');
+    }
+  }, [user, userProfile, navigate]);
   
-  // Handle sign in with safety checks
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast({
-        title: "Ошибка входа",
-        description: "Пожалуйста, введите email и пароль",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Clean up auth state before signing in to prevent issues
+    cleanupAuthState();
     
-    setLoading(true);
-    
-    try {
-      // Clean up auth state before signing in
-      cleanupAuthState();
-      
-      // Check if store has the signIn function
-      if (typeof store.signIn !== 'function') {
-        console.error("signIn function is not available", { store });
-        toast({
-          title: "System Error",
-          description: "Authentication system is currently unavailable. Please try again later.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      const success = await store.signIn(email, password);
-      
-      if (success) {
-        console.log("Sign in successful");
-        navigate('/main');
-      }
-    } catch (error: any) {
-      console.error("Login error:", error);
-      toast({
-        title: "Ошибка входа",
-        description: error.message || "Произошла ошибка при входе",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
+    const success = await signIn(email, password);
+    if (success) {
+      console.log("Sign in successful, redirecting to main page");
+      // Navigate directly to the main page
+      navigate('/main');
     }
   };
   
-  // Handle sign up with safety checks
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast({
-        title: "Ошибка регистрации",
-        description: "Пожалуйста, введите email и пароль",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Clean up auth state before signing up
+    cleanupAuthState();
     
-    setLoading(true);
-    
-    try {
-      // Clean up auth state before signing up
-      cleanupAuthState();
-      
-      // Check if store has the signUp function
-      if (typeof store.signUp !== 'function') {
-        console.error("signUp function is not available", { store });
-        toast({
-          title: "System Error",
-          description: "Registration system is currently unavailable. Please try again later.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      await store.signUp(email, password);
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      toast({
-        title: "Ошибка регистрации",
-        description: error.message || "Произошла ошибка при регистрации",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    await signUp(email, password);
   };
 
   const handleForgotPassword = async () => {
     if (!email) {
       toast({
-        title: "Введите email",
-        description: "Для сброса пароля необходимо указать email",
+        title: t.auth.resetPasswordError,
+        description: t.auth.resetPasswordButton,
         variant: "destructive"
       });
       return;
@@ -150,14 +75,13 @@ const LoginPage: React.FC = () => {
       if (error) throw error;
 
       toast({
-        title: "Сброс пароля",
-        description: "Инструкции по сбросу пароля отправлены на ваш email"
+        title: t.auth.resetPassword,
+        description: t.auth.resetPasswordSuccess
       });
     } catch (error: any) {
-      console.error("Password reset error:", error);
       toast({
-        title: "Ошибка сброса пароля",
-        description: error.message || "Не удалось отправить инструкции по сбросу пароля",
+        title: t.auth.resetPasswordError,
+        description: error.message || t.auth.resetPasswordError,
         variant: "destructive"
       });
     }
@@ -165,8 +89,8 @@ const LoginPage: React.FC = () => {
 
   const handleGuestLogin = () => {
     toast({
-      title: "Гостевой вход",
-      description: "Вход в качестве гостя",
+      title: t.auth.welcomeBack,
+      description: t.auth.signInButton,
       variant: "warning"
     });
     
@@ -200,14 +124,14 @@ const LoginPage: React.FC = () => {
           <CardContent className="pt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
-                <TabsTrigger value="login">Вход</TabsTrigger>
-                <TabsTrigger value="signup">Регистрация</TabsTrigger>
+                <TabsTrigger value="login">{t.auth.signIn}</TabsTrigger>
+                <TabsTrigger value="signup">{t.auth.signUp}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="login">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white">{t.auth?.email || "Email"}</Label>
+                    <Label htmlFor="email" className="text-white">{t.auth.email}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -223,7 +147,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white">{t.auth?.password || "Пароль"}</Label>
+                    <Label htmlFor="password" className="text-white">{t.auth.password}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -251,7 +175,7 @@ const LoginPage: React.FC = () => {
                       onClick={handleForgotPassword}
                       className="text-cosmic-accent hover:text-cosmic-accent/80 text-sm transition-colors"
                     >
-                      {t.auth?.forgotPassword || "Забыли пароль?"}
+                      {t.auth.forgotPassword}
                     </button>
                   </div>
                   
@@ -261,19 +185,19 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? (t.auth?.loggingIn || "Вход...") : (t.auth?.signInButton || "Войти")}
+                      {loading ? t.auth.signInButton : t.auth.signInButton}
                     </CosmicButton>
                   </div>
 
                   <div className="text-center pt-2">
                     <p className="text-white text-sm">
-                      {t.auth?.noAccount || "Нет аккаунта?"}{" "}
+                      {t.auth.noAccount}{" "}
                       <button
                         type="button"
                         onClick={() => setActiveTab("signup")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
-                        {t.auth?.signUp || "Регистрация"}
+                        {t.auth.signUp}
                       </button>
                     </p>
                   </div>
@@ -283,7 +207,7 @@ const LoginPage: React.FC = () => {
                       <div className="w-full border-t border-cosmic-accent/20"></div>
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="bg-cosmic-dark/10 backdrop-blur-sm px-2 text-xs text-cosmic-accent">{t.auth?.orContinueWith || "Или войти как"}</span>
+                      <span className="bg-cosmic-dark/10 backdrop-blur-sm px-2 text-xs text-cosmic-accent">{t.auth.orContinueWith}</span>
                     </div>
                   </div>
 
@@ -294,7 +218,7 @@ const LoginPage: React.FC = () => {
                       className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
                       onClick={handleGuestLogin}
                     >
-                      {t.auth?.guestSignIn || "Гость"}
+                      {t.auth.guestSignIn || "Sign in as guest"}
                     </Button>
                   </div>
                 </form>
@@ -303,7 +227,7 @@ const LoginPage: React.FC = () => {
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-white">{t.auth?.email || "Email"}</Label>
+                    <Label htmlFor="signup-email" className="text-white">{t.auth.email}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -319,7 +243,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-white">{t.auth?.password || "Пароль"}</Label>
+                    <Label htmlFor="signup-password" className="text-white">{t.auth.password}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
                       <Input
@@ -347,19 +271,19 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? (t.auth?.signingUp || "Регистрация...") : (t.auth?.signUpButton || "Зарегистрироваться")}
+                      {loading ? t.auth.signUpButton : t.auth.signUpButton}
                     </CosmicButton>
                   </div>
 
                   <div className="text-center pt-2">
                     <p className="text-white text-sm">
-                      {t.auth?.haveAccount || "Уже есть аккаунт?"}{" "}
+                      {t.auth.haveAccount}{" "}
                       <button
                         type="button"
                         onClick={() => setActiveTab("login")}
                         className="text-cosmic-accent hover:text-cosmic-accent/80 transition-colors"
                       >
-                        {t.auth?.signIn || "Войти"}
+                        {t.auth.signIn}
                       </button>
                     </p>
                   </div>

@@ -10,7 +10,6 @@ import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
-import { DetailedHoroscopeDisplay } from '@/components/DetailedHoroscopeDisplay';
 
 const MainPage: React.FC = () => {
   const { 
@@ -27,7 +26,6 @@ const MainPage: React.FC = () => {
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [showHoroscope, setShowHoroscope] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
@@ -90,11 +88,6 @@ const MainPage: React.FC = () => {
       }, 2000);
     }
   };
-
-  // Toggle horoscope display
-  const toggleHoroscope = () => {
-    setShowHoroscope(!showHoroscope);
-  };
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -107,49 +100,24 @@ const MainPage: React.FC = () => {
       <div className="absolute top-20 right-4 z-20">
         <DeveloperSwitch />
       </div>
-
-      {/* Toggle horoscope button */}
-      <div className="absolute top-20 left-4 z-20">
-        <button 
-          onClick={toggleHoroscope} 
-          className="bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-cosmic-gold px-3 py-1 rounded-full text-xs font-medium"
-        >
-          {showHoroscope ? (
-            language === 'ru' ? 'Скрыть гороскоп' : 
-            language === 'es' ? 'Ocultar horóscopo' : 
-            'Hide horoscope'
-          ) : (
-            language === 'ru' ? 'Показать гороскоп' : 
-            language === 'es' ? 'Mostrar horóscopo' : 
-            'Show horoscope'
-          )}
-        </button>
-      </div>
       
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
       
-      {/* Show either the horoscope or the main content */}
-      {showHoroscope ? (
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16 overflow-auto">
-          <DetailedHoroscopeDisplay className="max-w-2xl mx-auto" />
-        </div>
-      ) : (
-        /* Main content */
-        <MainContent
-          activePacts={activePacts}
-          currentPactIndex={currentPactIndex}
-          currentPact={currentPact}
-          dailyQuote={dailyQuote}
-          isLoading={isLoading}
-          showEnergyEffect={showEnergyEffect}
-          handlePrevPact={handlePrevPact}
-          handleNextPact={handleNextPact}
-          handleCompleteDayWithEffect={handleCompleteDayWithEffect}
-          getAscesisPrefix={getAscesisPrefix}
-          formatRejection={formatRejection}
-        />
-      )}
+      {/* Main content */}
+      <MainContent
+        activePacts={activePacts}
+        currentPactIndex={currentPactIndex}
+        currentPact={currentPact}
+        dailyQuote={dailyQuote}
+        isLoading={isLoading}
+        showEnergyEffect={showEnergyEffect}
+        handlePrevPact={handlePrevPact}
+        handleNextPact={handleNextPact}
+        handleCompleteDayWithEffect={handleCompleteDayWithEffect}
+        getAscesisPrefix={getAscesisPrefix}
+        formatRejection={formatRejection}
+      />
       
       {/* Bottom navigation */}
       <BottomNavigation />

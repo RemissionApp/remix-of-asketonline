@@ -22,7 +22,6 @@ serve(async (req) => {
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY is not set');
       throw new Error('OPENAI_API_KEY is not set');
     }
 
@@ -33,82 +32,45 @@ serve(async (req) => {
       { system: systemPrompt, user: `Вопрос искателя: ${question}` } :
       getUniversePrompt(question, language);
 
-    console.log("Using prompt:", JSON.stringify(prompt));
-    console.log("OPENAI_API_KEY exists:", !!OPENAI_API_KEY);
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini", // Using a more accessible model
+        messages: [
+          {
+            role: "system",
+            content: prompt.system
+          },
+          {
+            role: "user",
+            content: prompt.user
+          }
+        ],
+        temperature: 0.9,
+        max_tokens: 500  // Increased from 250 to allow for longer responses
+      }),
+    });
 
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // Using a more accessible model
-          messages: [
-            {
-              role: "system",
-              content: prompt.system
-            },
-            {
-              role: "user",
-              content: prompt.user
-            }
-          ],
-          temperature: 0.9,
-          max_tokens: 500
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`OpenAI API error (${response.status}):`, errorText);
-        
-        // Check for quota exceeded errors specifically
-        if (response.status === 429 || errorText.includes('quota') || errorText.includes('rate limit')) {
-          return new Response(JSON.stringify({ error: "API quota exceeded", errorType: "quota_exceeded" }), {
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        
-        return new Response(JSON.stringify({ error: errorText }), {
-          status: response.status,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-
-      const data = await response.json();
-      
-      if (data.error) {
-        console.error("OpenAI API error:", data.error);
-        throw new Error(data.error.message || 'Error from OpenAI API');
-      }
-
-      const answer = data.choices[0].message.content;
-      console.log("Generated answer:", answer);
-
-      return new Response(JSON.stringify({ answer }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (openAIError) {
-      console.error("OpenAI API error:", openAIError);
-      throw openAIError;
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || 'Error from OpenAI API');
     }
+
+    const answer = data.choices[0].message.content;
+
+    return new Response(JSON.stringify({ answer }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error:', error);
     
-    const isQuotaError = error.message && (
-      error.message.includes('quota') || 
-      error.message.includes('rate limit') || 
-      error.message.includes('exceeded')
-    );
-    
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      errorType: isQuotaError ? "quota_exceeded" : "general_error"
-    }), {
-      status: isQuotaError ? 429 : 500,
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
