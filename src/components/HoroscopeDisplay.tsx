@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign } from '@/utils/zodiac';
@@ -18,7 +18,6 @@ export const HoroscopeDisplay: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { userProfile, language, user } = useAppStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   // Translations for the button text
   const seeMoreText = {
@@ -119,27 +118,35 @@ export const HoroscopeDisplay: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
-        <p className="text-cosmic-accent italic">{loadingText}</p>
-        <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+      <div className="bg-background border border-border rounded-lg p-6 mb-6 w-full max-w-lg mx-auto text-center">
+        <p className="text-muted-foreground text-sm">{loadingText}</p>
+        <Skeleton className="h-20 w-full bg-muted/50 rounded-md mt-3" />
       </div>
     );
   }
   
   return (
-    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto text-center">
-      <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
-        {horoscope?.description || getDefaultMessage(language)}
-      </p>
-      <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
-      <Button 
-        onClick={handleSeeMore}
-        variant="outline" 
-        className="border-cosmic-gold/50 text-cosmic-gold hover:bg-cosmic-gold/10 mt-3"
-      >
-        <Sparkles className="mr-2 h-4 w-4" />
-        {seeMoreText}
-      </Button>
+    <div className="bg-card border border-input rounded-lg p-6 mb-6 w-full max-w-lg mx-auto">
+      <blockquote className="border-l-2 border-muted pl-4 italic text-foreground">
+        <p className="leading-relaxed">
+          {horoscope?.description || getDefaultMessage(language)}
+        </p>
+        <footer className="mt-2 text-sm text-muted-foreground text-right">
+          {signature}
+        </footer>
+      </blockquote>
+      
+      <div className="mt-4 flex justify-end">
+        <Button 
+          onClick={handleSeeMore}
+          variant="outline" 
+          size="sm"
+          className="text-sm"
+        >
+          {seeMoreText}
+          <ArrowRight className="ml-1 h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };
