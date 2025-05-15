@@ -71,6 +71,7 @@ export default {
 					'gold': '#f59e0b', // Gold accent
 					'dark': '#0f0721', // Very dark blue
 					'star': '#ffffff', // Star color
+					'secondary': 'hsl(240, 5%, 64.9%)' // Add cosmic-secondary color
 				}
 			},
 			borderRadius: {

@@ -87,7 +87,8 @@
   }
   
   .cosmic-gradient-text {
-    @apply bg-gradient-to-br from-white via-cosmic-accent text-cosmic-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-white via-cosmic-accent bg-clip-text text-transparent;
+    color: hsl(var(--cosmic-secondary)); /* Use CSS variable directly instead of non-existent Tailwind class */
   }
 }
 
