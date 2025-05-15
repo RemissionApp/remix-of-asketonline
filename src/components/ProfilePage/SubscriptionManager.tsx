@@ -59,7 +59,7 @@ export const SubscriptionManager: React.FC = () => {
           </CosmicButton>
         </div>
       ) : (
-        <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-4 mb-6">
+        <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
             <div>
               <h3 className="text-white font-medium">Премиум доступ</h3>
@@ -72,7 +72,7 @@ export const SubscriptionManager: React.FC = () => {
             onClick={handleManageSubscription}
           >
             <SparklesIcon size={16} className="mr-2" />
-            Подробнее
+            Unlock PRO
           </CosmicButton>
         </div>
       )}

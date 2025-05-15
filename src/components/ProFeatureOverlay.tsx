@@ -47,7 +47,7 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
             variant="gold"
           >
             <SparklesIcon size={16} className="mr-2" />
-            Подробнее
+            Unlock PRO
           </CosmicButton>
         </div>
       </div>
