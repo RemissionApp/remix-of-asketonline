@@ -18,6 +18,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   user: null,
   
   signIn: async (email, password) => {
+    if (!email || !password) {
+      toast({
+        title: "Ошибка входа",
+        description: "Пожалуйста, введите email и пароль",
+        variant: "destructive"
+      });
+      return false;
+    }
+
     set({ loading: true });
     
     try {
@@ -66,6 +75,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   },
   
   signUp: async (email, password) => {
+    if (!email || !password) {
+      toast({
+        title: "Ошибка регистрации",
+        description: "Пожалуйста, введите email и пароль",
+        variant: "destructive"
+      });
+      return;
+    }
+
     set({ loading: true });
     
     try {

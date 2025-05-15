@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -16,8 +17,14 @@ import { Button } from '@/components/ui/button';
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const store = useAppStore();
-  const { signIn, signUp, loading, user, userProfile } = store;
   const { t } = useTranslations();
+  
+  // Initialize auth functions directly from store
+  const signIn = store?.signIn;
+  const signUp = store?.signUp;
+  const loading = store?.loading;
+  const user = store?.user;
+  const userProfile = store?.userProfile;
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,8 +33,14 @@ const LoginPage: React.FC = () => {
   
   // Effect to check if user is already logged in
   useEffect(() => {
-    // Check if store and auth functions are ready
-    if (!store || typeof store.signIn !== 'function') {
+    // Check if store is initialized
+    if (!store) {
+      console.error("Store is not initialized");
+      return;
+    }
+    
+    // Check if auth functions are ready
+    if (typeof store.signIn !== 'function') {
       console.error("Auth functions not ready:", { store });
       return;
     }
@@ -40,7 +53,7 @@ const LoginPage: React.FC = () => {
     }
   }, [user, userProfile, navigate, store]);
   
-  // Validate that auth functions exist
+  // Handle sign in with safety checks
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -58,7 +71,7 @@ const LoginPage: React.FC = () => {
     cleanupAuthState();
     
     try {
-      const success = await signIn(email, password);
+      const success = await store.signIn(email, password);
       if (success) {
         console.log("Sign in successful, redirecting to main page");
         // Navigate directly to the main page
@@ -74,6 +87,7 @@ const LoginPage: React.FC = () => {
     }
   };
   
+  // Handle sign up with safety checks
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -91,7 +105,7 @@ const LoginPage: React.FC = () => {
     cleanupAuthState();
     
     try {
-      await signUp(email, password);
+      await store.signUp(email, password);
     } catch (error) {
       console.error("Error during sign up:", error);
       toast({
@@ -231,7 +245,7 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? t.auth.signInButton : t.auth.signInButton}
+                      {loading ? t.auth.loggingIn : t.auth.signInButton}
                     </CosmicButton>
                   </div>
 
@@ -317,7 +331,7 @@ const LoginPage: React.FC = () => {
                       className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                       disabled={loading}
                     >
-                      {loading ? t.auth.signUpButton : t.auth.signUpButton}
+                      {loading ? t.auth.signingUp : t.auth.signUpButton}
                     </CosmicButton>
                   </div>
 
