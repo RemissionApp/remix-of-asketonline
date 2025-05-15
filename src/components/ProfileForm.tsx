@@ -125,15 +125,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
         />
         
         <div className="pt-4">
-          <CosmicButton 
-            className="w-full bg-transparent backdrop-blur-[5px] border border-cosmic-accent hover:bg-cosmic-accent/20"
+          <Button 
+            className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30"
             type="submit"
             disabled={isSaving}
           >
             {isSaving ? 
               (t.userProfile?.savingButton || "Сохранение...") : 
               (t.userProfile?.continueButton || "Продолжить")}
-          </CosmicButton>
+          </Button>
         </div>
       </form>
     </Form>
