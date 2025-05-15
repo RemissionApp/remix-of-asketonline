@@ -1,11 +1,12 @@
 
-// Define the types for all translations
+export type SupportedLanguage = 'en' | 'ru' | 'es';
+
 export interface Translations {
   welcome: {
     title: string;
     description: string;
     startButton: string;
-    subtitle?: string;
+    subtitle: string;
   };
   login: {
     title: string;
@@ -115,19 +116,20 @@ export interface Translations {
     continueButton: string;
     steps: {
       welcome: string;
-      goal: string;
+      features: string;
+      proFeatures: string;
       complete: string;
-      title?: string;
-      content?: string;
-      length?: number;
-      map?: any[];
+      length: number;
+      map: string[];
     };
+    freeFeatures: string[];
+    proFeatures: string[];
     buttons: {
       next: string;
       start: string;
       skip: string;
-      enter?: string;
-      startJourney?: string;
+      enter: string;
+      startJourney: string;
     };
   };
   universe: {
@@ -142,15 +144,15 @@ export interface Translations {
     newQuestion: string;
     thinking: string;
     previousQuestions: string;
-    description?: string;
-    proMessage?: string;
-    proTitle?: string;
-    learnMore?: string;
-    chatTitle?: string;
-    chatDescription?: string;
-    enterChat?: string;
-    chatProTitle?: string;
-    chatProMessage?: string;
+    description: string;
+    proMessage: string;
+    proTitle: string;
+    learnMore: string;
+    chatTitle: string;
+    chatDescription: string;
+    enterChat: string;
+    chatProTitle: string;
+    chatProMessage: string;
   };
   profile: {
     title: string;
@@ -287,6 +289,3 @@ export interface Translations {
     proMessage: string;
   };
 }
-
-// Define the supported languages
-export type SupportedLanguage = 'ru' | 'en' | 'es';

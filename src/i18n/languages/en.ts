@@ -116,11 +116,26 @@ export const enTranslations: Translations = {
     continueButton: "Continue",
     steps: {
       welcome: "Welcome",
-      goal: "Choose goal",
+      features: "Free Features",
+      proFeatures: "Premium Features",
       complete: "Complete",
       length: 3,
       map: []
     },
+    freeFeatures: [
+      "Create and track spiritual practices & ascesis",
+      "Daily meditation exercises",
+      "Basic horoscope readings",
+      "Ask the Universe a question",
+      "Track your spiritual progress"
+    ],
+    proFeatures: [
+      "Unlimited conversations with the Universe",
+      "Full numerological analysis",
+      "Advanced astrology readings",
+      "Premium meditation content",
+      "Advanced spiritual progress analytics"
+    ],
     buttons: {
       next: "Next",
       start: "Start",

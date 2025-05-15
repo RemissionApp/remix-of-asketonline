@@ -116,11 +116,26 @@ export const esTranslations: Translations = {
     continueButton: "Continuar",
     steps: {
       welcome: "Bienvenida",
-      goal: "Elegir meta",
+      features: "Funciones Gratuitas",
+      proFeatures: "Funciones Premium",
       complete: "Completado",
       length: 3,
       map: []
     },
+    freeFeatures: [
+      "Crear y seguir prácticas espirituales y ascesis",
+      "Ejercicios diarios de meditación",
+      "Lecturas básicas de horóscopo",
+      "Hacer una pregunta al Universo",
+      "Seguimiento de tu progreso espiritual"
+    ],
+    proFeatures: [
+      "Conversaciones ilimitadas con el Universo",
+      "Análisis numerológico completo",
+      "Lecturas avanzadas de astrología",
+      "Contenido premium de meditación",
+      "Análisis avanzados del progreso espiritual"
+    ],
     buttons: {
       next: "Siguiente",
       start: "Comenzar",

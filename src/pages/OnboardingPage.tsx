@@ -106,6 +106,19 @@ const OnboardingPage: React.FC = () => {
     ));
   };
   
+  const renderFeatureList = (features: string[]) => {
+    return (
+      <ul className="text-left mb-6">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-start mb-3">
+            <span className="text-cosmic-accent mr-2">✦</span>
+            <span className="text-cosmic-secondary">{feature}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
@@ -146,13 +159,15 @@ const OnboardingPage: React.FC = () => {
         ) : (
           <div className="animate-fade-in text-center">
             <h1 className="text-3xl font-serif text-white mb-6">
-              {step === 1 ? t.onboarding.steps.goal : t.onboarding.steps.complete}
+              {step === 1 ? t.onboarding.steps.features : t.onboarding.steps.proFeatures}
             </h1>
             
-            <div className="mb-8">
-              <p className="text-xl text-cosmic-secondary mb-4">
-                {step === 1 ? t.onboarding.description : t.onboarding.description}
-              </p>
+            <div className="mb-6">
+              {step === 1 ? (
+                renderFeatureList(t.onboarding.freeFeatures)
+              ) : (
+                renderFeatureList(t.onboarding.proFeatures)
+              )}
             </div>
             
             <div className="flex justify-center mb-8">
