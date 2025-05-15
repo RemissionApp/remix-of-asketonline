@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, loading, user, userProfile } = useAppStore();
+  const store = useAppStore();
+  const { signIn, signUp, loading, user, userProfile } = store;
   const { t } = useTranslations();
   
   const [email, setEmail] = useState('');
@@ -25,43 +26,87 @@ const LoginPage: React.FC = () => {
   
   // Effect to check if user is already logged in
   useEffect(() => {
+    // Check if store and auth functions are ready
+    if (!store || typeof store.signIn !== 'function') {
+      console.error("Auth functions not ready:", { store });
+      return;
+    }
+    
     // If user is logged in
     if (user) {
       console.log("Login page: user is logged in", { user, userProfile });
-      
       // Navigate directly to main page if the user exists
       navigate('/main');
     }
-  }, [user, userProfile, navigate]);
+  }, [user, userProfile, navigate, store]);
   
+  // Validate that auth functions exist
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!store || typeof store.signIn !== 'function') {
+      console.error("signIn function is not available", { store });
+      toast({
+        title: "System Error",
+        description: "Authentication system is currently unavailable. Please try again later.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     // Clean up auth state before signing in to prevent issues
     cleanupAuthState();
     
-    const success = await signIn(email, password);
-    if (success) {
-      console.log("Sign in successful, redirecting to main page");
-      // Navigate directly to the main page
-      navigate('/main');
+    try {
+      const success = await signIn(email, password);
+      if (success) {
+        console.log("Sign in successful, redirecting to main page");
+        // Navigate directly to the main page
+        navigate('/main');
+      }
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      toast({
+        title: "Ошибка входа",
+        description: "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже.",
+        variant: "destructive"
+      });
     }
   };
   
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!store || typeof store.signUp !== 'function') {
+      console.error("signUp function is not available", { store });
+      toast({
+        title: "System Error",
+        description: "Registration system is currently unavailable. Please try again later.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Clean up auth state before signing up
     cleanupAuthState();
     
-    await signUp(email, password);
+    try {
+      await signUp(email, password);
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      toast({
+        title: "Ошибка регистрации",
+        description: "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleForgotPassword = async () => {
     if (!email) {
       toast({
-        title: t.auth.resetPasswordError,
-        description: t.auth.resetPasswordButton,
+        title: "Введите email",
+        description: "Для сброса пароля необходимо указать email",
         variant: "destructive"
       });
       return;
@@ -75,13 +120,14 @@ const LoginPage: React.FC = () => {
       if (error) throw error;
 
       toast({
-        title: t.auth.resetPassword,
-        description: t.auth.resetPasswordSuccess
+        title: "Сброс пароля",
+        description: "Инструкции по сбросу пароля отправлены на ваш email"
       });
     } catch (error: any) {
+      console.error("Password reset error:", error);
       toast({
-        title: t.auth.resetPasswordError,
-        description: error.message || t.auth.resetPasswordError,
+        title: "Ошибка сброса пароля",
+        description: error.message || "Не удалось отправить инструкции по сбросу пароля",
         variant: "destructive"
       });
     }
@@ -89,8 +135,8 @@ const LoginPage: React.FC = () => {
 
   const handleGuestLogin = () => {
     toast({
-      title: t.auth.welcomeBack,
-      description: t.auth.signInButton,
+      title: "Гостевой вход",
+      description: "Вход в качестве гостя",
       variant: "warning"
     });
     
@@ -124,8 +170,8 @@ const LoginPage: React.FC = () => {
           <CardContent className="pt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
-                <TabsTrigger value="login">{t.auth.signIn}</TabsTrigger>
-                <TabsTrigger value="signup">{t.auth.signUp}</TabsTrigger>
+                <TabsTrigger value="login">Вход</TabsTrigger>
+                <TabsTrigger value="signup">Регистрация</TabsTrigger>
               </TabsList>
               
               <TabsContent value="login">

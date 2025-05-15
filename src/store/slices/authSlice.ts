@@ -14,13 +14,17 @@ export interface AuthSlice {
   updateUserProfile: (profileData: Partial<import('@/types').UserProfile>) => Promise<void>;
 }
 
-export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
+export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get, api) => ({
   user: null,
   
   signIn: async (email, password) => {
     set({ loading: true });
     
     try {
+      // Clean up auth state before signing in to prevent issues
+      const { cleanupAuthState } = require('@/lib/supabase');
+      cleanupAuthState();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -33,7 +37,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       // Load user data
       await get().loadUserProfile();
       await get().loadPacts();
-      await get().loadUniverseQuestions();
+      
+      // Load universe questions if available
+      if (typeof get().loadUniverseQuestions === 'function') {
+        await get().loadUniverseQuestions();
+      }
       
       const { userProfile } = get();
       
@@ -44,6 +52,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       return true; // Return true on success
     } catch (error: any) {
+      console.error("Sign in error:", error);
+      
       toast({
         title: "Ошибка входа",
         description: error.message || "Не удалось войти в систему",
@@ -59,6 +69,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
+      // Clean up auth state before signing up
+      const { cleanupAuthState } = require('@/lib/supabase');
+      cleanupAuthState();
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password
@@ -75,6 +89,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ activeScreen: 'onboarding' });
     } catch (error: any) {
+      console.error("Sign up error:", error);
+      
       toast({
         title: "Ошибка регистрации",
         description: error.message || "Не удалось создать аккаунт",
