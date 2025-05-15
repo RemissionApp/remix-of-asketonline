@@ -8,6 +8,7 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
 import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
+import { ProFeaturesSection } from '@/components/ProFeatures/ProFeaturesSection';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -70,6 +71,9 @@ export const MainContent: React.FC<MainContentProps> = ({
           
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />
+          
+          {/* PRO Features Section */}
+          <ProFeaturesSection />
           
           {/* Action buttons */}
           <ActionButtonsSection />

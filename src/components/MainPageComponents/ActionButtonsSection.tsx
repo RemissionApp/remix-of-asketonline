@@ -11,11 +11,6 @@ export const ActionButtonsSection: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  const handleUniverseClick = () => {
-    setActiveScreen('universe');
-    navigate('/universe');
-  };
-  
   const handleMeditationClick = () => {
     setActiveScreen('meditation');
     navigate('/meditation');
@@ -26,13 +21,6 @@ export const ActionButtonsSection: React.FC = () => {
   
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-6">
-      <CosmicButton 
-        variant="outline" 
-        onClick={handleUniverseClick}
-      >
-        {t.main.askUniverse}
-      </CosmicButton>
-      
       <CosmicButton 
         variant="outline"
         onClick={handleMeditationClick}
