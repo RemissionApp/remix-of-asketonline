@@ -27,6 +27,18 @@ import { supabase, cleanupAuthState } from "./lib/supabase";
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
 
+// Global onboarding check component
+const AppInitializer = () => {
+  const { checkOnboardingStatus } = useAppStore();
+  
+  useEffect(() => {
+    // Check onboarding status on app load
+    checkOnboardingStatus();
+  }, [checkOnboardingStatus]);
+  
+  return null;
+};
+
 // AuthCallback component to handle OAuth redirects
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -85,6 +97,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
+          <AppInitializer />
           <Routes>
             <Route path="/" element={<WelcomePage />} />
             <Route path="/language" element={<LanguagePage />} />

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -17,22 +16,23 @@ const OnboardingPage: React.FC = () => {
     onboardingComplete, 
     userProfile,
     emailConfirmed,
-    checkEmailConfirmation
+    checkEmailConfirmation,
+    checkOnboardingStatus
   } = useAppStore();
   const { t } = useTranslations();
   const [step, setStep] = useState(0);
   
-  // Check if user is logged in, email confirmed, and profile is completed
+  // Check if user has completed onboarding before
   useEffect(() => {
-    // Added console log to debug onboarding flow
-    console.log("Onboarding: user status", { 
-      user, 
-      loading, 
-      onboardingComplete, 
-      userProfile,
-      emailConfirmed
-    });
+    const isOnboardingComplete = checkOnboardingStatus();
     
+    if (isOnboardingComplete) {
+      console.log("Onboarding previously completed, redirecting to main");
+      navigate('/main');
+      return;
+    }
+    
+    // Continue with normal auth checks if onboarding wasn't already completed
     const checkAuth = async () => {
       if (loading) return;
       
@@ -65,16 +65,10 @@ const OnboardingPage: React.FC = () => {
         navigate('/profile-setup');
         return;
       }
-      
-      // If onboarding is already complete, go to main
-      if (onboardingComplete && !loading) {
-        console.log("Onboarding already completed, redirecting to main");
-        navigate('/main');
-      }
     };
     
     checkAuth();
-  }, [user, loading, navigate, onboardingComplete, userProfile, emailConfirmed, checkEmailConfirmation]);
+  }, [navigate, loading, user, userProfile, emailConfirmed, checkEmailConfirmation, checkOnboardingStatus, onboardingComplete]);
   
   const handleNext = () => {
     if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
