@@ -27,6 +27,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   },
   user: null,
   loading: false,
+  emailConfirmed: false,
   
   // Combine all slices
   ...createUISlice(set, get, api),

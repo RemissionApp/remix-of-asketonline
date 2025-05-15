@@ -12,6 +12,7 @@ export interface AppState {
   userProfile: UserProfile;
   user: any | null;
   loading: boolean;
+  emailConfirmed: boolean;
   
   addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
@@ -29,6 +30,7 @@ export interface AppState {
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  checkEmailConfirmation: () => Promise<boolean>;
   
   // Data loading methods
   loadUserProfile: () => Promise<void>;

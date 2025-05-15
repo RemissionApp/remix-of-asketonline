@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -79,8 +80,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         });
         
         // Set active screen to profile setup
-        set({ activeScreen: 'profile' });
-        set({ emailConfirmed: true });
+        set({ activeScreen: 'profile', emailConfirmed: true });
       } else {
         // Email confirmation is required
         set({ emailConfirmed: false });
@@ -110,7 +110,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         user: null,
         pacts: [],
         activeQuestions: [],
-        activeScreen: 'welcome'
+        activeScreen: 'welcome',
+        emailConfirmed: false
       });
       
       toast({
