@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 
 interface StarFieldProps {
@@ -39,7 +38,7 @@ export const StarField: React.FC<StarFieldProps> = ({
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Background image */}
+      {/* Background image with increased brightness */}
       <div 
         className="absolute inset-0" 
         style={{
@@ -47,12 +46,13 @@ export const StarField: React.FC<StarFieldProps> = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: -1,
-          opacity: 0.8
+          opacity: 1, // Increased from 0.8 to 1 for more brightness
+          filter: 'brightness(1.3)' // Added brightness filter to make image brighter
         }}
       />
       
-      {/* Semi-transparent overlay to ensure stars visibility */}
-      <div className="absolute inset-0 bg-cosmic-dark/60 backdrop-blur-sm" style={{ zIndex: -1 }}></div>
+      {/* Lighter semi-transparent overlay to ensure stars visibility while keeping image bright */}
+      <div className="absolute inset-0 bg-cosmic-dark/40 backdrop-blur-sm" style={{ zIndex: -1 }}></div>
       
       {/* Галактики */}
       {galaxies.map((galaxy) => (
