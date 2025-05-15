@@ -1,10 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import { useAppStore } from "./store/useAppStore";
 import WelcomePage from "./pages/WelcomePage";
@@ -20,9 +20,58 @@ import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
 import MeditationPage from "./pages/MeditationPage";
 import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
+import { supabase } from "./lib/supabase";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
+
+// AuthCallback component to handle OAuth redirects
+const AuthCallback = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser } = useAppStore();
+
+  useEffect(() => {
+    const handleAuthCallback = async () => {
+      // Get the auth data from the URL
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      const queryParams = new URLSearchParams(location.search);
+      
+      // Check if this is an auth callback
+      if (hashParams.get('access_token') || queryParams.get('code')) {
+        try {
+          // Handle the redirect internally
+          const { data, error } = await supabase.auth.getSession();
+          
+          if (error) throw error;
+          
+          if (data?.session?.user) {
+            setUser(data.session.user);
+            // Navigate to profile setup or main
+            navigate('/profile-setup');
+          }
+        } catch (error) {
+          console.error('Auth callback error:', error);
+          navigate('/login');
+        }
+      } else {
+        // Not an auth callback, redirect to home
+        navigate('/');
+      }
+    };
+
+    handleAuthCallback();
+  }, [location, navigate, setUser]);
+
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p className="text-cosmic-secondary">Выполняется вход...</p>
+      </div>
+    </div>
+  );
+};
 
 const App = () => {
   return (
@@ -42,6 +91,7 @@ const App = () => {
             <Route path="/comparison" element={<ComparisonPage />} />
             <Route path="/meditation" element={<MeditationPage />} />
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

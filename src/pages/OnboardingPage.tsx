@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,10 +7,20 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 
 const OnboardingPage: React.FC = () => {
-  const [step, setStep] = useState(0);
-  const { setOnboardingComplete, setActiveScreen } = useAppStore();
-  const { t } = useTranslations();
   const navigate = useNavigate();
+  const { setOnboardingComplete, setActiveScreen, user, loading } = useAppStore();
+  const { t } = useTranslations();
+  const [step, setStep] = useState(0);
+  
+  // Check if user is logged in
+  useEffect(() => {
+    if (loading) return;
+    
+    if (!user && !loading) {
+      // No user is logged in, redirect to login
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
   
   const handleNext = () => {
     if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
@@ -25,6 +35,11 @@ const OnboardingPage: React.FC = () => {
     // Set onboarding complete and navigate to main screen
     setOnboardingComplete(true);
     setActiveScreen('main');
+    
+    // Save onboarding completion to localStorage
+    localStorage.setItem('onboarded', 'true');
+    
+    // Navigate to main page
     navigate('/main');
   };
   

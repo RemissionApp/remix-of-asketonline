@@ -68,12 +68,23 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ user: data.user });
       
-      toast({
-        title: "Регистрация выполнена",
-        description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
-      });
-      
-      set({ activeScreen: 'onboarding' });
+      // Check if email confirmation is required
+      if (data.session) {
+        // Email confirmation is not required, user is signed in
+        toast({
+          title: "Регистрация выполнена",
+          description: "Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль."
+        });
+        
+        // Set active screen to profile setup instead of onboarding
+        set({ activeScreen: 'profile' });
+      } else {
+        // Email confirmation is required
+        toast({
+          title: "Регистрация выполнена",
+          description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
+        });
+      }
     } catch (error: any) {
       toast({
         title: "Ошибка регистрации",

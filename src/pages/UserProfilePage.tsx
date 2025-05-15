@@ -8,7 +8,7 @@ import { useAppStore } from '@/store/useAppStore';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { userProfile, user, loading } = useAppStore();
+  const { userProfile, user, loading, onboardingComplete } = useAppStore();
   
   // Check if user is logged in and already has profile data
   useEffect(() => {
@@ -25,16 +25,23 @@ const UserProfilePage: React.FC = () => {
       return;
     }
 
-    // Only redirect to main if not loading and user has completed profile
-    // User has completed profile if they have a name other than default and a birthdate
+    // Only redirect to onboarding or main if user has completed profile
     if (!loading && 
         userProfile && 
         userProfile.name !== 'Искатель' && 
         userProfile.birthDate) {
-      console.log("Profile already completed, redirecting to main");
-      navigate('/main');
+      
+      // If user hasn't completed onboarding yet, send them there first
+      if (!onboardingComplete) {
+        console.log("Profile completed, redirecting to onboarding");
+        navigate('/onboarding');
+      } else {
+        // If onboarding is already complete, go to main
+        console.log("Profile and onboarding already completed, redirecting to main");
+        navigate('/main');
+      }
     }
-  }, [userProfile, user, loading, navigate]);
+  }, [userProfile, user, loading, navigate, onboardingComplete]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
