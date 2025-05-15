@@ -28,7 +28,7 @@ export const cleanupAuthState = () => {
       }
     });
     
-    // Remove from sessionStorage if in use
+    // Also clean sessionStorage if used
     if (typeof sessionStorage !== 'undefined') {
       Object.keys(sessionStorage).forEach((key) => {
         if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
@@ -36,7 +36,20 @@ export const cleanupAuthState = () => {
         }
       });
     }
+
+    console.log('Auth state cleanup complete');
   } catch (error) {
     console.error("Error cleaning up auth state:", error);
+  }
+};
+
+// Initialize auth state
+export const initializeAuthState = async () => {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session;
+  } catch (error) {
+    console.error("Failed to initialize auth state:", error);
+    return null;
   }
 };

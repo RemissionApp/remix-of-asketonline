@@ -1,7 +1,7 @@
 
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
-import { supabase } from '@/lib/supabase';
+import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 
@@ -30,8 +30,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Clean up auth state before signing in to prevent issues
-      const { cleanupAuthState } = require('@/lib/supabase');
+      console.log("Signing in with email:", email);
+      
+      // Clean up auth state before signing in
       cleanupAuthState();
       
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -41,18 +42,22 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       if (error) throw error;
       
+      console.log("Sign in successful:", data.user?.id);
       set({ user: data.user });
       
-      // Load user data
-      await get().loadUserProfile();
-      await get().loadPacts();
-      
-      // Load universe questions if available
-      if (typeof get().loadUniverseQuestions === 'function') {
-        await get().loadUniverseQuestions();
+      // Load user data after successful sign in
+      try {
+        await get().loadUserProfile();
+        await get().loadPacts();
+        
+        // Load universe questions if available
+        if (typeof get().loadUniverseQuestions === 'function') {
+          await get().loadUniverseQuestions();
+        }
+      } catch (profileError) {
+        console.error("Error loading user data after sign in:", profileError);
+        // Don't fail the sign in if profile loading fails
       }
-      
-      const { userProfile } = get();
       
       toast({
         title: "Вход выполнен",
@@ -87,8 +92,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
+      console.log("Signing up with email:", email);
+      
       // Clean up auth state before signing up
-      const { cleanupAuthState } = require('@/lib/supabase');
       cleanupAuthState();
       
       const { data, error } = await supabase.auth.signUp({
@@ -98,6 +104,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       if (error) throw error;
       
+      console.log("Sign up successful:", data.user?.id);
       set({ user: data.user });
       
       toast({
@@ -123,6 +130,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
+      // Clean up auth state before signing out
+      cleanupAuthState();
+      
       await supabase.auth.signOut();
       
       set({ 
@@ -221,17 +231,27 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   loadUserProfile: async () => {
     const { user } = get();
     
-    if (!user) return;
+    if (!user) {
+      console.log("Cannot load profile: no user logged in");
+      return;
+    }
     
     try {
+      console.log("Loading profile for user:", user.id);
+      
       // Get profile data
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
+      
+      if (!data) {
+        console.log("No profile found for user, might be a new user");
+        return;
+      }
       
       // Check subscription status
       const { data: subscription } = await supabase
@@ -249,7 +269,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .select('*')
         .eq('user_id', user.id);
       
-      if (achievementsError) throw achievementsError;
+      if (achievementsError) {
+        console.error("Error loading achievements:", achievementsError);
+        // Continue loading profile even if achievements load fails
+      }
       
       // Map achievements to our app's format
       const mappedAchievements = defaultAchievements.map(defaultAch => {
@@ -273,7 +296,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .order('created_at', { ascending: false })
         .limit(1);
       
-      if (missionsError) throw missionsError;
+      if (missionsError) {
+        console.error("Error loading missions:", missionsError);
+        // Continue loading profile even if missions load fails
+      }
       
       const activeMission = missions && missions.length > 0 ? {
         id: missions[0].id,
@@ -283,6 +309,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         reward: missions[0].reward as any,
         completed: false
       } : undefined;
+      
+      console.log("Profile loaded successfully:", data.name);
       
       // Update local state
       set({
