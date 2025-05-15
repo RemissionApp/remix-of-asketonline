@@ -5,6 +5,7 @@ import { RankBadge } from './RankBadge';
 import { useAppStore } from '@/store/useAppStore';
 import { ProBadge } from './ProBadge';
 import { ZodiacBadge } from './ZodiacBadge';
+import { UserAvatar } from './UserAvatar';
 
 export const TopBar: React.FC = () => {
   const { userProfile } = useAppStore();
@@ -29,8 +30,9 @@ export const TopBar: React.FC = () => {
         </div>
       )}
       
-      {/* Rank badge */}
-      <div className="absolute top-4 left-4 z-20">
+      {/* User avatar and rank badge */}
+      <div className="absolute top-4 left-4 z-20 flex items-center space-x-2">
+        <UserAvatar size="sm" showZodiacBadge={false} />
         <RankBadge size="sm" />
       </div>
     </>
