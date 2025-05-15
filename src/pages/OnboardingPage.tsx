@@ -8,19 +8,30 @@ import { useNavigate } from 'react-router-dom';
 
 const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { setOnboardingComplete, setActiveScreen, user, loading } = useAppStore();
+  const { setOnboardingComplete, setActiveScreen, user, loading, onboardingComplete } = useAppStore();
   const { t } = useTranslations();
   const [step, setStep] = useState(0);
   
   // Check if user is logged in
   useEffect(() => {
+    // Added console log to debug onboarding flow
+    console.log("Onboarding: user status", { user, loading, onboardingComplete });
+    
     if (loading) return;
     
     if (!user && !loading) {
       // No user is logged in, redirect to login
+      console.log("No user found, redirecting to login");
       navigate('/login');
+      return;
     }
-  }, [user, loading, navigate]);
+    
+    // If onboarding is already complete, go to main
+    if (onboardingComplete && !loading) {
+      console.log("Onboarding already completed, redirecting to main");
+      navigate('/main');
+    }
+  }, [user, loading, navigate, onboardingComplete]);
   
   const handleNext = () => {
     if (step < 2) { // Just use a hardcoded number for steps (0, 1, 2)
@@ -32,6 +43,8 @@ const OnboardingPage: React.FC = () => {
   };
   
   const completeOnboarding = () => {
+    console.log("Completing onboarding");
+    
     // Set onboarding complete and navigate to main screen
     setOnboardingComplete(true);
     setActiveScreen('main');

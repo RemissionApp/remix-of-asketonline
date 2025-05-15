@@ -12,6 +12,7 @@ export interface UISlice {
   setActiveScreen: (screen: ActiveScreen) => void;
   setOnboardingComplete: (completed: boolean) => void;
   setLanguage: (language: AppLanguage) => void;
+  setDailyQuote: (quote: string) => void;
 }
 
 export const createUISlice: StateCreator<AppState, [], [], UISlice> = (set) => ({
@@ -23,5 +24,6 @@ export const createUISlice: StateCreator<AppState, [], [], UISlice> = (set) => (
   
   setLanguage: (language) => set({ language }),
   setOnboardingComplete: (completed) => set({ onboardingComplete: completed }),
-  setActiveScreen: (screen) => set({ activeScreen: screen })
+  setActiveScreen: (screen) => set({ activeScreen: screen }),
+  setDailyQuote: (quote) => set({ dailyQuote: quote })
 });

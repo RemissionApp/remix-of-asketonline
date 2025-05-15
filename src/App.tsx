@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
 import MeditationPage from "./pages/MeditationPage";
 import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
-import { supabase } from "./lib/supabase";
+import { supabase, cleanupAuthState } from "./lib/supabase";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -29,7 +29,7 @@ const queryClient = new QueryClient();
 const AuthCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateUserProfile, user } = useAppStore();
+  const { updateUserProfile, user, loadUserProfile } = useAppStore();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -46,19 +46,11 @@ const AuthCallback = () => {
           if (error) throw error;
           
           if (data?.session?.user) {
-            // Check if user exists in the profiles table
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', data.session.user.id)
-              .single();
+            // Clean up auth state to prevent issues
+            cleanupAuthState();
             
-            if (profileData) {
-              updateUserProfile({
-                ...profileData,
-                birthDate: profileData.birth_date ? new Date(profileData.birth_date) : undefined
-              });
-            }
+            // Load user profile data
+            await loadUserProfile();
             
             // Navigate to profile setup or main
             navigate('/profile-setup');
@@ -74,7 +66,7 @@ const AuthCallback = () => {
     };
 
     handleAuthCallback();
-  }, [location, navigate, updateUserProfile, user]);
+  }, [location, navigate, updateUserProfile, user, loadUserProfile]);
 
   return (
     <div className="flex items-center justify-center h-screen">

@@ -13,7 +13,7 @@ const UserProfilePage: React.FC = () => {
   // Check if user is logged in and already has profile data
   useEffect(() => {
     // Added a console.log to help debug the auth flow
-    console.log("Profile setup: user status", { user, userProfile, loading });
+    console.log("Profile setup: user status", { user, userProfile, loading, onboardingComplete });
 
     // If user is still loading, don't redirect yet
     if (loading) return;
@@ -28,10 +28,11 @@ const UserProfilePage: React.FC = () => {
     // Only redirect to onboarding or main if user has completed profile
     if (!loading && 
         userProfile && 
+        userProfile.name && 
         userProfile.name !== 'Искатель' && 
         userProfile.birthDate) {
       
-      // If user hasn't completed onboarding yet, send them there first
+      // If user hasn't completed onboarding yet, send them there
       if (!onboardingComplete) {
         console.log("Profile completed, redirecting to onboarding");
         navigate('/onboarding');
