@@ -67,17 +67,11 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Countdown timer for current pact */}
           {currentPact && <CountdownTimer />}
           
-          {/* Horoscope display after greeting */}
+          {/* Horoscope display */}
           <HoroscopeDisplay />
           
-          {/* Universe Chat Preview - styled like Zodiac Badge Display */}
-          <UniverseChatPreview />
-          
-          {/* Zodiac badge display */}
+          {/* Only one chat-like component - the Zodiac Badge */}
           <ZodiacBadgeDisplay />
-          
-          {/* PRO Features Section */}
-          <ProFeaturesSection />
           
           {/* Action buttons */}
           <ActionButtonsSection />
