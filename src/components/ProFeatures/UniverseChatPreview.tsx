@@ -18,24 +18,25 @@ export const UniverseChatPreview: React.FC = () => {
   };
   
   const chatPreviewContent = (
-    <Card className="bg-cosmic-dark/50 border-cosmic-accent/30 backdrop-blur-sm">
+    <Card className="bg-cosmic-dark/50 border-cosmic-accent/30 backdrop-blur-sm mb-6 w-full max-w-lg mx-auto">
       <CardContent className="p-4">
         <div className="flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-cosmic-accent/20 flex items-center justify-center mb-4">
             <MessageSquare size={28} className="text-cosmic-accent" />
           </div>
           <h3 className="text-xl font-serif text-cosmic-accent mb-2">
-            {t.universe?.title || "Диалог со Вселенной"}
+            {t.universe?.chatTitle || "Диалог со Вселенной"}
           </h3>
           <p className="text-cosmic-secondary mb-4 text-sm">
-            {t.universe?.description || "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной"}
+            {t.universe?.chatDescription || "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной"}
           </p>
           <CosmicButton 
             onClick={handleEnterChat} 
-            className="mt-2"
+            className="mt-2 w-full max-w-xs"
+            variant="outline"
           >
             <MessageSquare size={16} className="mr-2" />
-            {t.universe?.askButton || "Войти в чат"}
+            {t.universe?.enterChat || "Войти в чат"}
             <ArrowRight size={16} className="ml-2" />
           </CosmicButton>
         </div>
@@ -47,8 +48,8 @@ export const UniverseChatPreview: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay 
-        title={t.universe?.title || "Диалог со Вселенной"}
-        message={t.universe?.proMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
+        title={t.universe?.chatProTitle || "Диалог со Вселенной"}
+        message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
       >
         {chatPreviewContent}
       </ProFeatureOverlay>

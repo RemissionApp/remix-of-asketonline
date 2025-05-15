@@ -134,6 +134,7 @@ export interface Translations {
   };
   universe: {
     title: string;
+    description: string;
     question: string;
     answer: string;
     askButton: string;

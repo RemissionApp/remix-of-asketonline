@@ -9,6 +9,7 @@ import { Pact } from '@/types';
 import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
 import { ProFeaturesSection } from '@/components/ProFeatures/ProFeaturesSection';
+import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -68,6 +69,9 @@ export const MainContent: React.FC<MainContentProps> = ({
           
           {/* Horoscope display after greeting */}
           <HoroscopeDisplay />
+          
+          {/* Universe Chat Preview - styled like Zodiac Badge Display */}
+          <UniverseChatPreview />
           
           {/* Zodiac badge display */}
           <ZodiacBadgeDisplay />
