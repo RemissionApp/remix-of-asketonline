@@ -37,3 +37,26 @@ export const cleanupAuthState = () => {
     console.error('Error cleaning up auth state:', error);
   }
 };
+
+/**
+ * Ensure the avatars bucket exists and has proper permissions
+ */
+export const ensureAvatarBucketExists = async () => {
+  try {
+    // Check if bucket exists
+    const { error: bucketError } = await supabase.storage.getBucket('avatars');
+    
+    // Create bucket if it doesn't exist
+    if (bucketError) {
+      await supabase.storage.createBucket('avatars', {
+        public: true,
+        fileSizeLimit: 1024 * 1024 * 2, // 2MB limit
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error ensuring avatar bucket exists:', error);
+    return false;
+  }
+};

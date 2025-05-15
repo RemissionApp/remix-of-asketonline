@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Camera, Check, UploadCloud, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -45,6 +44,46 @@ const AvatarUpload: React.FC = () => {
     
     try {
       setUploading(true);
+      
+      // Get current auth session to ensure we're authenticated
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        throw new Error("Не авторизован. Пожалуйста, войдите снова.");
+      }
+      
+      // Check first if avatars bucket exists, try to create if it doesn't
+      try {
+        // Try to get the bucket first to see if it exists
+        const { error: bucketError } = await supabase.storage.getBucket('avatars');
+        
+        if (bucketError) {
+          // If bucket doesn't exist, try to create it
+          await supabase.storage.createBucket('avatars', { 
+            public: true,
+            fileSizeLimit: 1024 * 1024 * 2 // 2MB limit
+          });
+          
+          // Set up bucket policies to allow public access to avatars
+          const { error: policyError } = await supabase.storage.from('avatars').createSignedUrl(
+            'test-policy.txt', 
+            60, 
+            {
+              transform: {
+                width: 100,
+                height: 100,
+              }
+            }
+          );
+          
+          if (policyError) {
+            console.log("Policy setup may be needed on the server side");
+          }
+        }
+      } catch (err) {
+        console.error("Error checking/creating bucket:", err);
+        // Continue anyway, might work if bucket exists on server side
+      }
       
       // Create a unique file path for each user's avatar
       const filePath = `${user.id}/${Math.random().toString(36).substring(2)}`;

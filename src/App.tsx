@@ -29,7 +29,7 @@ const queryClient = new QueryClient();
 const AuthCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useAppStore();
+  const { updateUserProfile, user } = useAppStore();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -46,7 +46,20 @@ const AuthCallback = () => {
           if (error) throw error;
           
           if (data?.session?.user) {
-            setUser(data.session.user);
+            // Check if user exists in the profiles table
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.session.user.id)
+              .single();
+            
+            if (profileData) {
+              updateUserProfile({
+                ...profileData,
+                birthDate: profileData.birth_date ? new Date(profileData.birth_date) : undefined
+              });
+            }
+            
             // Navigate to profile setup or main
             navigate('/profile-setup');
           }
@@ -61,7 +74,7 @@ const AuthCallback = () => {
     };
 
     handleAuthCallback();
-  }, [location, navigate, setUser]);
+  }, [location, navigate, updateUserProfile, user]);
 
   return (
     <div className="flex items-center justify-center h-screen">
