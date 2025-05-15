@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
-import { Camera, Check, UploadCloud, X } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { UserAvatar } from './UserAvatar';
 import { toast } from '@/hooks/use-toast';
-import { Button } from './ui/button';
+import { supabase } from '@/lib/supabase';
+import { UploadButton } from './avatar/UploadButton';
+import { ConfirmUpload } from './avatar/ConfirmUpload';
+import { ensureAvatarBucket, uploadAvatarFile, updateProfileAvatar } from '@/utils/avatarStorage';
 
 const AvatarUpload: React.FC = () => {
   const { user, userProfile, updateUserProfile } = useAppStore();
@@ -52,64 +53,14 @@ const AvatarUpload: React.FC = () => {
         throw new Error("Не авторизован. Пожалуйста, войдите снова.");
       }
       
-      // Check first if avatars bucket exists, try to create if it doesn't
-      try {
-        // Try to get the bucket first to see if it exists
-        const { error: bucketError } = await supabase.storage.getBucket('avatars');
-        
-        if (bucketError) {
-          // If bucket doesn't exist, try to create it
-          await supabase.storage.createBucket('avatars', { 
-            public: true,
-            fileSizeLimit: 1024 * 1024 * 2 // 2MB limit
-          });
-          
-          // Set up bucket policies to allow public access to avatars
-          const { error: policyError } = await supabase.storage.from('avatars').createSignedUrl(
-            'test-policy.txt', 
-            60, 
-            {
-              transform: {
-                width: 100,
-                height: 100,
-              }
-            }
-          );
-          
-          if (policyError) {
-            console.log("Policy setup may be needed on the server side");
-          }
-        }
-      } catch (err) {
-        console.error("Error checking/creating bucket:", err);
-        // Continue anyway, might work if bucket exists on server side
-      }
+      // Ensure avatar bucket exists
+      await ensureAvatarBucket();
       
-      // Create a unique file path for each user's avatar
-      const filePath = `${user.id}/${Math.random().toString(36).substring(2)}`;
+      // Upload the file
+      const publicUrl = await uploadAvatarFile(user.id, selectedFile);
       
-      // Upload the file to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, selectedFile, {
-          cacheControl: '3600',
-          upsert: true
-        });
-      
-      if (error) throw error;
-      
-      // Get the public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(data.path);
-      
-      // Update the user's profile with the new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-      
-      if (updateError) throw updateError;
+      // Update profile with new avatar URL
+      await updateProfileAvatar(user.id, publicUrl);
       
       // Update local state
       updateUserProfile({
@@ -141,80 +92,19 @@ const AvatarUpload: React.FC = () => {
     }
   };
   
-  // If showing confirmation UI
-  if (showConfirm) {
-    return (
-      <div className="flex flex-col items-center">
-        <div className="relative mb-4">
-          {previewUrl && (
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="h-24 w-24 rounded-full object-cover border-2 border-cosmic-accent"
-            />
-          )}
-        </div>
-        
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-400 hover:text-red-500 hover:bg-red-500/10"
-            onClick={cancelUpload}
-            disabled={uploading}
-          >
-            <X className="mr-1 h-4 w-4" />
-            Отмена
-          </Button>
-          
-          <Button
-            variant="default"
-            size="sm"
-            className="bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white"
-            onClick={uploadAvatar}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <div className="flex items-center">
-                <div className="animate-spin h-4 w-4 mr-2 border-2 border-cosmic-accent border-t-transparent rounded-full" />
-                Загрузка...
-              </div>
-            ) : (
-              <>
-                <Check className="mr-1 h-4 w-4" />
-                Сохранить
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    );
-  }
-  
-  // Default upload button UI
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative mb-4">
-        <UserAvatar size="lg" />
-        
-        <label
-          htmlFor="avatar-upload"
-          className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-cosmic-accent text-white cursor-pointer"
-          title="Загрузить аватар"
-        >
-          <Camera size={16} />
-        </label>
-        
-        <input
-          id="avatar-upload"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-          disabled={uploading}
-        />
-      </div>
-    </div>
+  // Return the appropriate component based on current state
+  return showConfirm ? (
+    <ConfirmUpload 
+      previewUrl={previewUrl} 
+      uploading={uploading}
+      onCancel={cancelUpload}
+      onConfirm={uploadAvatar}
+    />
+  ) : (
+    <UploadButton 
+      onFileChange={handleFileChange}
+      uploading={uploading}
+    />
   );
 };
 
