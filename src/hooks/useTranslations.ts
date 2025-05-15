@@ -49,6 +49,26 @@ export const useTranslations = () => {
       cancelBirthDate: language === 'ru' ? 'Отмена' :
                       language === 'es' ? 'Cancelar' :
                       'Cancel'
+    },
+    universe: {
+      title: language === 'ru' ? 'Диалог со Вселенной' :
+             language === 'es' ? 'Diálogo con el Universo' :
+             'Dialog with the Universe',
+      description: language === 'ru' ? 'Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной' :
+                   language === 'es' ? 'Haz cualquier pregunta y recibe respuestas sabias directamente del Universo' :
+                   'Ask any questions and get wise answers directly from the Universe',
+      askButton: language === 'ru' ? 'Войти в чат' :
+                language === 'es' ? 'Entrar al chat' :
+                'Enter chat',
+      proMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
+                 language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
+                 'Unlock PRO to have a dialog with the Universe',
+      proTitle: language === 'ru' ? 'Диалог со Вселенной' :
+               language === 'es' ? 'Diálogo con el Universo' :
+               'Dialog with the Universe',
+      learnMore: language === 'ru' ? 'Подробнее' :
+                language === 'es' ? 'Más información' :
+                'Learn more'
     }
   });
 
@@ -77,6 +97,26 @@ export const useTranslations = () => {
         cancelBirthDate: language === 'ru' ? 'Отмена' :
                         language === 'es' ? 'Cancelar' :
                         'Cancel'
+      },
+      universe: {
+        title: language === 'ru' ? 'Диалог со Вселенной' :
+               language === 'es' ? 'Diálogo con el Universo' :
+               'Dialog with the Universe',
+        description: language === 'ru' ? 'Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной' :
+                     language === 'es' ? 'Haz cualquier pregunta y recibe respuestas sabias directamente del Universo' :
+                     'Ask any questions and get wise answers directly from the Universe',
+        askButton: language === 'ru' ? 'Войти в чат' :
+                  language === 'es' ? 'Entrar al chat' :
+                  'Enter chat',
+        proMessage: language === 'ru' ? 'Разблокируй PRO чтобы вести диалог со Вселенной' :
+                   language === 'es' ? 'Desbloquea PRO para dialogar con el Universo' :
+                   'Unlock PRO to have a dialog with the Universe',
+        proTitle: language === 'ru' ? 'Диалог со Вселенной' :
+                 language === 'es' ? 'Diálogo con el Universo' :
+                 'Dialog with the Universe',
+        learnMore: language === 'ru' ? 'Подробнее' :
+                  language === 'es' ? 'Más información' :
+                  'Learn more'
       }
     });
   }, [language]);

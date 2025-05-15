@@ -7,7 +7,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ListNumbers } from 'lucide-react';
+import { ChevronLeft, List } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { UserAvatar } from '@/components/UserAvatar';
 
@@ -70,7 +70,7 @@ const NumerologyPage = () => {
         </Button>
         
         <div className="flex items-center flex-1">
-          <ListNumbers size={24} className="text-cosmic-accent mr-3" />
+          <List size={24} className="text-cosmic-accent mr-3" />
           <div>
             <h2 className="text-cosmic-accent font-serif">Нумерологический анализ</h2>
           </div>

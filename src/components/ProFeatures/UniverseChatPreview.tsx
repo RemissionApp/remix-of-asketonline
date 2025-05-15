@@ -25,17 +25,17 @@ export const UniverseChatPreview: React.FC = () => {
             <MessageSquare size={28} className="text-cosmic-accent" />
           </div>
           <h3 className="text-xl font-serif text-cosmic-accent mb-2">
-            {t.universe?.chatTitle || "Диалог со Вселенной"}
+            {t.universe?.title || "Диалог со Вселенной"}
           </h3>
           <p className="text-cosmic-secondary mb-4 text-sm">
-            {t.universe?.chatDescription || "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной"}
+            {t.universe?.description || "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной"}
           </p>
           <CosmicButton 
             onClick={handleEnterChat} 
             className="mt-2"
           >
             <MessageSquare size={16} className="mr-2" />
-            {t.universe?.enterChat || "Войти в чат"}
+            {t.universe?.askButton || "Войти в чат"}
             <ArrowRight size={16} className="ml-2" />
           </CosmicButton>
         </div>
@@ -47,8 +47,8 @@ export const UniverseChatPreview: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay 
-        title={t.universe?.chatProTitle || "Диалог со Вселенной"}
-        message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
+        title={t.universe?.title || "Диалог со Вселенной"}
+        message={t.universe?.proMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
       >
         {chatPreviewContent}
       </ProFeatureOverlay>
