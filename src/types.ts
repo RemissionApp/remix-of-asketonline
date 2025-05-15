@@ -56,4 +56,5 @@ export interface UserProfile {
   rank: SpiritualRank;
   achievements: Achievement[];
   activeMission?: Mission;
+  avatar_url?: string;
 }

@@ -6,6 +6,7 @@ import { SpiritualRank } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { ZodiacBadge } from './ZodiacBadge';
 import { getZodiacSign } from '@/utils/zodiac';
+import { supabase } from '@/lib/supabase';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
@@ -20,7 +21,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   showRankBorder = true,
   showZodiacBadge = true
 }) => {
-  const { userProfile } = useAppStore();
+  const { userProfile, user } = useAppStore();
   
   // Определяем размер аватара
   const sizeClasses = {
@@ -36,6 +37,16 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     'warrior': 'border-indigo-400',
     'master': 'border-purple-500',
     'enlightened': 'border-cosmic-gold'
+  };
+  
+  // Get avatar URL from userProfile if available
+  const getAvatarUrl = () => {
+    if (userProfile?.avatar_url) {
+      return userProfile.avatar_url;
+    }
+    
+    // If no custom avatar, use rank-based default avatar
+    return getAvatarImagePath(userProfile.rank);
   };
   
   // Получаем путь к изображению аватара в зависимости от ранга
@@ -71,8 +82,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         className
       )}>
         <AvatarImage 
-          src={getAvatarImagePath(userProfile.rank)} 
-          alt={`${userProfile.rank} avatar`} 
+          src={getAvatarUrl()} 
+          alt={`${userProfile.name} avatar`} 
         />
         <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
           {userProfile.name.substring(0, 2).toUpperCase()}

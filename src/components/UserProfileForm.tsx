@@ -20,6 +20,7 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
+import AvatarUpload from './AvatarUpload';
 
 // Create a local ZodiacInfo component
 const ZodiacInfo: React.FC = () => {
@@ -475,16 +476,7 @@ const UserProfileForm: React.FC = () => {
   return (
     <div className="w-full max-w-md mx-auto text-center">
       <div className="flex justify-center mb-4 relative">
-        <UserAvatar size="lg" />
-        {userProfile?.birthDate && (
-          <div 
-            className="absolute top-0 right-0 bg-cosmic-accent/20 rounded-full p-1 cursor-pointer"
-            onClick={handleEditBirthDate}
-            title={t.zodiac?.editBirthDate || "Edit birth date"}
-          >
-            <Edit2Icon size={16} className="text-cosmic-accent" />
-          </div>
-        )}
+        <AvatarUpload />
       </div>
       
       {location.pathname !== '/profile' && (
