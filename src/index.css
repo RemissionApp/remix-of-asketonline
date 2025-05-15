@@ -87,7 +87,7 @@
   }
   
   .cosmic-gradient-text {
-    @apply bg-gradient-to-br from-white via-cosmic-accent to-cosmic-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-white via-cosmic-accent text-cosmic-secondary bg-clip-text text-transparent;
   }
 }
 
