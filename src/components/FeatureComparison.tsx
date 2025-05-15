@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CheckIcon, XIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -169,7 +168,7 @@ const FeatureComparison: React.FC = () => {
               onClick={handleUpgrade}
             >
               <SparklesIcon className="mr-2" size={18} />
-              Открыть силу PRO ✨
+              Unlock PRO ✨
             </Button>
           </div>
         )}
@@ -232,7 +231,7 @@ const FeatureComparison: React.FC = () => {
                   onClick={handleUpgrade}
                 >
                   <SparklesIcon className="mr-2" size={16} />
-                  Открыть силу PRO ✨
+                  Unlock PRO ✨
                 </Button>
               )}
             </CardContent>

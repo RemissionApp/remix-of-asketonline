@@ -44,7 +44,7 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
           <p className="text-sm text-cosmic-secondary mb-4">{message}</p>
           <CosmicButton onClick={handleUpgrade}>
             <SparklesIcon size={16} className="mr-2" />
-            Unlock PRO Features
+            Unlock PRO
           </CosmicButton>
         </div>
       </div>

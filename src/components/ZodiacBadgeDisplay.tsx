@@ -24,8 +24,8 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay 
-        title={t.zodiac?.title || "Гороскоп"}
-        message={t.zodiac?.proMessage || "Разблокируй PRO чтобы получить полный доступ к гороскопу"}
+        title="Гороскоп"
+        message="Разблокируй PRO чтобы получить полный доступ к гороскопу"
         className="mb-6 w-full max-w-lg mx-auto"
       >
         {zodiacContent}
