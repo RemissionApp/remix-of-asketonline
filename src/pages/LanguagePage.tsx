@@ -74,7 +74,7 @@ const LanguagePage = () => {
         }`}>
           <h1 className="text-4xl font-serif text-white mb-8">Asket</h1>
           
-          <p className="text-cosmic-secondary text-lg mb-12">
+          <p className="text-white text-lg mb-12">
             {getWelcomeText()}
           </p>
         
@@ -85,8 +85,8 @@ const LanguagePage = () => {
                 onClick={() => setSelectedLang(lang.code as SupportedLanguage)}
                 className={`w-full py-6 justify-start text-left px-6 ${
                   selectedLang === lang.code
-                    ? 'bg-cosmic-accent/40 hover:bg-cosmic-accent/50 border border-cosmic-accent'
-                    : 'bg-cosmic-dark/40 hover:bg-cosmic-dark/60 border border-cosmic-accent/30'
+                    ? 'bg-cosmic-accent/40 hover:bg-cosmic-accent/50 border border-cosmic-accent text-white'
+                    : 'bg-cosmic-dark/40 hover:bg-cosmic-dark/60 border border-cosmic-accent/30 text-white'
                 }`}
               >
                 <span className="text-2xl mr-4">{lang.flag}</span>
