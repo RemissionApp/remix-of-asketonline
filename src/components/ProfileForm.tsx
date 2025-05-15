@@ -1,0 +1,143 @@
+
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { CosmicButton } from '@/components/CosmicButton';
+import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/useTranslations';
+import { ru, es, enUS } from 'date-fns/locale';
+import { useAppStore } from '@/store/useAppStore';
+
+interface ProfileFormProps {
+  onSubmit: (values: z.infer<any>) => Promise<void>;
+  isSaving: boolean;
+}
+
+const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
+  const { t } = useTranslations();
+  const { language } = useAppStore();
+  
+  // Get locale based on selected language
+  const getLocale = () => {
+    switch (language) {
+      case 'ru':
+        return ru;
+      case 'es':
+        return es;
+      default:
+        return enUS;
+    }
+  };
+  
+  // Create form schema based on language
+  const formSchema = z.object({
+    name: z.string().min(2, { 
+      message: t.userProfile?.nameRequired || "Имя обязательно" 
+    }),
+    birthDate: z.date({
+      required_error: t.userProfile?.birthDateRequired || "Укажите дату рождения"
+    }),
+  });
+
+  // Initialize form with placeholder values
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      birthDate: new Date(),
+    },
+  });
+  
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="text-left">
+              <FormLabel className="text-cosmic-secondary text-sm">
+                {t.userProfile?.nameLabel || "Как тебя зовут"}
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white"
+                  placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem className="text-left">
+              <FormLabel className="text-cosmic-secondary text-sm">
+                {t.userProfile?.birthDateLabel || "Дата рождения"}
+              </FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-normal text-white",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP", { locale: getLocale() })
+                      ) : (
+                        <span>{t.userProfile?.birthDatePlaceholder || "Выберите дату рождения"}</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+        
+        <div className="pt-4">
+          <CosmicButton 
+            className="w-full bg-transparent backdrop-blur-[5px] border border-cosmic-accent hover:bg-cosmic-accent/20"
+            type="submit"
+            disabled={isSaving}
+          >
+            {isSaving ? 
+              (t.userProfile?.savingButton || "Сохранение...") : 
+              (t.userProfile?.continueButton || "Продолжить")}
+          </CosmicButton>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export default ProfileForm;
