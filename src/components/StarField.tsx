@@ -39,6 +39,21 @@ export const StarField: React.FC<StarFieldProps> = ({
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      {/* Background image */}
+      <div 
+        className="absolute inset-0" 
+        style={{
+          backgroundImage: 'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: -1,
+          opacity: 0.8
+        }}
+      />
+      
+      {/* Semi-transparent overlay to ensure stars visibility */}
+      <div className="absolute inset-0 bg-cosmic-dark/60 backdrop-blur-sm" style={{ zIndex: -1 }}></div>
+      
       {/* Галактики */}
       {galaxies.map((galaxy) => (
         <div
