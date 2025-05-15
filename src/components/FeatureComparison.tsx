@@ -101,7 +101,8 @@ const FeatureComparison: React.FC = () => {
   };
   
   const handleGoBack = () => {
-    navigate(-1);
+    // Navigate to main page instead of going back in history
+    navigate('/main');
   };
   
   return (
