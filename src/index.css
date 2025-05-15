@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -28,9 +29,12 @@
     --radius: 0.75rem;
     
     --cosmic-dark: 252 40% 7%;
-    --cosmic-accent: 262 100% 77%;
+    --cosmic-accent: 260 80% 65%;      /* Updated to match image purple */
+    --cosmic-accent2: 258 70% 45%;     /* New darker accent color for hover states */
     --cosmic-secondary: 240 5% 64.9%;
     --cosmic-gold: 43 74% 66%;
+    --cosmic-indigo: 230 60% 50%;      /* New color from the image */
+    --cosmic-deep-blue: 240 70% 30%;   /* New deep blue from the image */
   }
 }
 
@@ -68,7 +72,7 @@
   }
   
   .cosmic-button {
-    @apply px-6 py-3 bg-cosmic-accent text-white rounded-full font-medium transition-all hover:bg-cosmic-accent2 hover:shadow-lg hover:shadow-cosmic-accent/30 active:scale-95;
+    @apply px-6 py-3 bg-gradient-to-r from-cosmic-accent to-cosmic-indigo text-white rounded-full font-medium transition-all hover:from-cosmic-accent2 hover:to-cosmic-deep-blue hover:shadow-lg hover:shadow-cosmic-accent/30 active:scale-95;
   }
   
   .cosmic-input {

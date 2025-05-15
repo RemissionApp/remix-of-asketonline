@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -66,12 +65,14 @@ export default {
 				cosmic: {
 					DEFAULT: '#1a103d', // Deep cosmic blue
 					'foreground': '#ffffff',
-					'accent': '#8b5cf6', // Purple
-					'accent2': '#6d28d9', // Darker purple
+					'accent': '#9d7cf6', // Updated Purple
+					'accent2': '#6d45d9', // Darker purple for hover states
 					'gold': '#f59e0b', // Gold accent
 					'dark': '#0f0721', // Very dark blue
 					'star': '#ffffff', // Star color
-					'secondary': 'hsl(240, 5%, 64.9%)' // Add cosmic-secondary color
+					'secondary': 'hsl(240, 5%, 64.9%)', // Secondary color
+					'indigo': '#4e54c8', // New indigo color from the image
+					'deep-blue': '#3730a3', // New deep blue from the image
 				}
 			},
 			borderRadius: {
@@ -83,6 +84,9 @@ export default {
 				'serif': ['Cinzel', 'serif'],
 				'sans': ['Inter', 'sans-serif'],
 				'cormorant': ['Cormorant', 'serif'],
+			},
+			backgroundImage: {
+				'cosmic-gradient': 'linear-gradient(to right, var(--tw-gradient-stops))',
 			},
 			keyframes: {
 				'accordion-down': {
