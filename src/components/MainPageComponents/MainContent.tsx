@@ -49,7 +49,7 @@ export const MainContent: React.FC<MainContentProps> = ({
   }
   
   return (
-    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16">
+    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-24">
       {activePacts.length > 0 ? (
         <>
           <PactDisplay
@@ -63,16 +63,16 @@ export const MainContent: React.FC<MainContentProps> = ({
             formatRejection={formatRejection}
           />
           
-          {/* Countdown timer for current pact */}
+          {/* Countdown timer for current pact - now fixed at top */}
           {currentPact && <CountdownTimer />}
           
           {/* Horoscope display */}
           <HoroscopeDisplay />
           
-          {/* Make sure ZodiacBadgeDisplay is shown */}
+          {/* Zodiac Badge Display */}
           <ZodiacBadgeDisplay />
           
-          {/* Universe Chat block with similar design to ZodiacBadgeDisplay */}
+          {/* Universe Chat block with similar design */}
           <UniverseChatBlock />
           
           {/* Action buttons */}

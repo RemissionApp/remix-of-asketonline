@@ -15,7 +15,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   }
   
   const zodiacContent = (
-    <div className="cosmic-block bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
+    <div className="cosmic-block bg-cosmic-dark/70 backdrop-blur-sm border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
       <ZodiacInfo />
     </div>
   );
@@ -24,8 +24,8 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay 
-        title="Гороскоп"
-        message="Разблокируй PRO чтобы получить полный доступ к гороскопу"
+        title={t.zodiac?.title || "Гороскоп"}
+        message={t.zodiac?.proMessage || "Разблокируй PRO чтобы получить полный доступ к гороскопу"}
         className="mb-6 w-full max-w-lg mx-auto"
       >
         {zodiacContent}
