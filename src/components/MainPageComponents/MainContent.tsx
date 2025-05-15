@@ -8,8 +8,6 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
 import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
-import { ProFeaturesSection } from '@/components/ProFeatures/ProFeaturesSection';
-import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -70,7 +68,7 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Horoscope display */}
           <HoroscopeDisplay />
           
-          {/* Only one chat-like component - the Zodiac Badge */}
+          {/* Make sure ZodiacBadgeDisplay is shown */}
           <ZodiacBadgeDisplay />
           
           {/* Action buttons */}
