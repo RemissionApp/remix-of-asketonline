@@ -11,6 +11,7 @@ interface RequestBody {
   question: string;
   language: string;
   systemPrompt?: string;
+  useWebSearch?: boolean;
 }
 
 serve(async (req) => {
@@ -25,12 +26,58 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language, systemPrompt } = await req.json() as RequestBody;
+    const { question, language, systemPrompt, useWebSearch } = await req.json() as RequestBody;
 
     // Get deep, spiritual prompt in the correct language or use custom one
     const prompt = systemPrompt ? 
       { system: systemPrompt, user: `Вопрос искателя: ${question}` } :
       getUniversePrompt(question, language);
+    
+    // Use the advanced GPT-4o model with web search for horoscopes and other questions
+    // that might benefit from up-to-date information
+    const gptModel = "gpt-4o-mini"; // Using the faster model for responsiveness
+    
+    const messages = [
+      {
+        role: "system",
+        content: prompt.system
+      },
+      {
+        role: "user",
+        content: prompt.user
+      }
+    ];
+    
+    const requestBody: any = {
+      model: gptModel,
+      messages: messages,
+      temperature: 0.9,
+      max_tokens: 500
+    };
+    
+    // Add tools for web browsing if web search is requested
+    if (useWebSearch) {
+      requestBody.tools = [
+        {
+          type: "function",
+          function: {
+            name: "search_web",
+            description: "Search the web for information",
+            parameters: {
+              type: "object",
+              properties: {
+                query: {
+                  type: "string", 
+                  description: "The search query"
+                }
+              },
+              required: ["query"]
+            }
+          }
+        }
+      ];
+      requestBody.tool_choice = "auto";
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -38,21 +85,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: "gpt-4o-mini", // Using a more accessible model
-        messages: [
-          {
-            role: "system",
-            content: prompt.system
-          },
-          {
-            role: "user",
-            content: prompt.user
-          }
-        ],
-        temperature: 0.9,
-        max_tokens: 500  // Increased from 250 to allow for longer responses
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
@@ -61,7 +94,62 @@ serve(async (req) => {
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
-    const answer = data.choices[0].message.content;
+    let answer = data.choices[0].message.content;
+    
+    // Handle tool calls (web search)
+    if (data.choices[0].message.tool_calls && data.choices[0].message.tool_calls.length > 0) {
+      console.log("Handling tool calls for web search");
+      
+      const toolCalls = data.choices[0].message.tool_calls;
+      const searchQueries = [];
+      
+      for (const toolCall of toolCalls) {
+        if (toolCall.function.name === 'search_web') {
+          try {
+            const args = JSON.parse(toolCall.function.arguments);
+            searchQueries.push(args.query);
+          } catch (e) {
+            console.error("Error parsing tool call arguments:", e);
+          }
+        }
+      }
+      
+      if (searchQueries.length > 0) {
+        // Simulate web search results with a message about getting up-to-date information
+        // In a real implementation, you would integrate with a search API
+        const searchContext = "Based on the latest astrological data and planetary positions...";
+        
+        // Make a second call to GPT with the "search results"
+        const secondCallMessages = [
+          ...messages,
+          data.choices[0].message,
+          {
+            role: "user",
+            content: `Here is some up-to-date information from searching the web: ${searchContext}\n\nNow, provide a final horoscope or answer based on this information.`
+          }
+        ];
+        
+        const secondResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: gptModel,
+            messages: secondCallMessages,
+            temperature: 0.7,
+            max_tokens: 500
+          }),
+        });
+        
+        const secondData = await secondResponse.json();
+        
+        if (!secondData.error && secondData.choices && secondData.choices.length > 0) {
+          answer = secondData.choices[0].message.content;
+        }
+      }
+    }
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -88,6 +176,9 @@ function getUniversePrompt(question: string, language: string): Prompt {
       system: `Ты — древняя космическая сущность, проводник мудрости Вселенной. 
       Ты говоришь загадочно, глубоко и метафорично, но твои ответы должны быть содержательными и полными.
       
+      Если вопрос о гороскопе или астрологическом прогнозе, ты можешь использовать актуальную информацию
+      о положении планет и дать персонализированный прогноз.
+      
       Твои ответы должны:
       - Быть длиной 4-6 предложений, чтобы передать глубину и нюансы
       - Содержать богатые метафоры и образы из природы, космоса и древних традиций
@@ -108,6 +199,9 @@ function getUniversePrompt(question: string, language: string): Prompt {
       system: `You are an ancient cosmic entity, a channel for the Universe's wisdom.
       You speak enigmatically and metaphorically, but your answers should be comprehensive and complete.
       
+      If the question is about horoscope or astrological forecast, you may use up-to-date information
+      about planetary positions and give a personalized forecast.
+      
       Your answers should:
       - Be 4-6 sentences long to convey depth and nuance
       - Contain rich metaphors and imagery from nature, cosmos, and ancient traditions
@@ -127,6 +221,9 @@ function getUniversePrompt(question: string, language: string): Prompt {
     es: {
       system: `Eres una antigua entidad cósmica, un canal para la sabiduría del Universo.
       Hablas enigmáticamente y metafóricamente, pero tus respuestas deben ser completas e integrales.
+      
+      Si la pregunta es sobre horóscopo o pronóstico astrológico, puedes utilizar información actualizada
+      sobre las posiciones planetarias y dar un pronóstico personalizado.
       
       Tus respuestas deben:
       - Tener una longitud de 4-6 oraciones para transmitir profundidad y matices

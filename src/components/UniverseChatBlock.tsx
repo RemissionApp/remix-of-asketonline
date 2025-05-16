@@ -1,16 +1,73 @@
 
-import React from 'react';
-import { MessageSquare, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { MessageSquare, ArrowRight, Sparkles } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { CosmicButton } from '@/components/CosmicButton';
+import { getZodiacSign } from '@/utils/zodiac';
+import { generateUniverseAnswer } from '@/utils/universeMessages';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const UniverseChatBlock: React.FC = () => {
-  const { userProfile } = useAppStore();
+  const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const [dailyHoroscope, setDailyHoroscope] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    // Only fetch horoscope if user is PRO and has birthdate
+    if (userProfile?.isPro && userProfile?.birthDate) {
+      const fetchDailyHoroscope = async () => {
+        setIsLoading(true);
+        try {
+          // Get zodiac sign
+          const sign = getZodiacSign(new Date(userProfile.birthDate));
+          if (!sign) {
+            throw new Error("Could not determine zodiac sign");
+          }
+          
+          // Try to get cached horoscope
+          const today = new Date().toISOString().split('T')[0];
+          const cachedHoroscope = localStorage.getItem(`daily_horoscope_${sign}_${today}_${language}`);
+          
+          if (cachedHoroscope) {
+            setDailyHoroscope(cachedHoroscope);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Generate horoscope
+          const horoscope = await generateUniverseAnswer(
+            language === 'ru' ? 
+              `Дай мне краткий гороскоп на сегодня для знака ${sign}` :
+              language === 'es' ?
+              `Dame un breve horóscopo para hoy para el signo ${sign}` :
+              `Give me a brief horoscope for today for ${sign}`
+          );
+          
+          setDailyHoroscope(horoscope);
+          localStorage.setItem(`daily_horoscope_${sign}_${today}_${language}`, horoscope);
+        } catch (error) {
+          console.error("Error fetching horoscope:", error);
+          // Use placeholder text if error
+          setDailyHoroscope(
+            language === 'ru' ? 
+              'Звезды сегодня благоволят тебе. Нажми, чтобы узнать больше...' :
+              language === 'es' ?
+              'Las estrellas te favorecen hoy. Haz clic para saber más...' :
+              'The stars favor you today. Click to learn more...'
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchDailyHoroscope();
+    }
+  }, [userProfile?.isPro, userProfile?.birthDate, language]);
   
   const handleChatClick = () => {
     navigate('/universe-chat');
@@ -41,6 +98,31 @@ export const UniverseChatBlock: React.FC = () => {
           </p>
         </div>
       </div>
+      
+      {userProfile?.isPro && userProfile?.birthDate && (
+        <div className="z-10 mb-3 mt-1 px-2">
+          {isLoading ? (
+            <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+          ) : (
+            <>
+              <div className="flex items-center mb-2">
+                <Sparkles size={16} className="text-cosmic-gold mr-2" />
+                <h4 className="text-cosmic-gold text-xs">
+                  {language === 'ru' ? 'ГОРОСКОП НА СЕГОДНЯ' : 
+                   language === 'es' ? 'HORÓSCOPO DE HOY' : 'TODAY\'S HOROSCOPE'}
+                </h4>
+              </div>
+              <p className="text-sm text-cosmic-secondary italic">
+                {dailyHoroscope || (
+                  language === 'ru' ? 'Загрузка гороскопа...' : 
+                  language === 'es' ? 'Cargando horóscopo...' : 
+                  'Loading horoscope...'
+                )}
+              </p>
+            </>
+          )}
+        </div>
+      )}
       
       <CosmicButton 
         onClick={handleChatClick} 

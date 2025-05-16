@@ -145,7 +145,7 @@ const UniversePage: React.FC = () => {
                   {activeQuestions.slice(0, 3).map((q) => (
                     <div key={q.id} className="cosmic-card bg-cosmic-dark/60">
                       <p className="text-sm text-cosmic-secondary mb-2">
-                        {new Date(q.date).toLocaleDateString()}
+                        {new Date(q.created_at).toLocaleDateString()}
                       </p>
                       <p className="text-white mb-2">{q.question}</p>
                       <QuoteDisplay quote={q.answer} className="!text-sm !p-0" />

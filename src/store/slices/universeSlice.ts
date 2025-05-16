@@ -9,6 +9,7 @@ export interface UniverseSlice {
   activeQuestions: UniverseQuestion[];
   askUniverse: (question: string) => Promise<UniverseQuestion>;
   loadUniverseQuestions: () => Promise<void>;
+  saveUniverseQuestion: (question: UniverseQuestion) => Promise<void>;
 }
 
 export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> = (set, get) => ({
@@ -21,27 +22,60 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
     }
 
     try {
-      // Получаем ответ от нашей функции universe message
+      // Get user data for context
+      const { userProfile } = get();
+      const zodiacSign = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
+      
+      // Get answer from our universe message function
       const answer = await generateUniverseAnswer(question);
       
-      // Создаем запись вопроса
+      // Create question record
       const id = Date.now().toString();
-      const newQuestion = {
+      const newQuestion: UniverseQuestion = {
         id,
         question,
         answer,
-        date: new Date().toISOString()
+        created_at: new Date().toISOString()
       };
 
-      // Добавляем вопрос в хранилище
+      // Add question to store
       set((state) => ({
-        activeQuestions: [newQuestion, ...state.activeQuestions].slice(0, 20) // Ограничение до 20 вопросов
+        activeQuestions: [newQuestion, ...state.activeQuestions].slice(0, 20) // Limit to 20 questions
       }));
+
+      // Save to database if user is logged in
+      const { user } = get();
+      if (user) {
+        await get().saveUniverseQuestion(newQuestion);
+      }
 
       return newQuestion;
     } catch (error) {
       console.error('Error in askUniverse:', error);
       throw error;
+    }
+  },
+  
+  saveUniverseQuestion: async (question: UniverseQuestion) => {
+    const { user } = get();
+    
+    if (!user) return;
+    
+    try {
+      // Convert from app format to database format
+      const { error } = await supabase
+        .from('universe_questions')
+        .insert({
+          id: question.id,
+          user_id: user.id,
+          question: question.question,
+          answer: question.answer,
+          created_at: question.created_at
+        });
+      
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error saving universe question:", error);
     }
   },
   
@@ -70,7 +104,7 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
         id: q.id,
         question: q.question,
         answer: q.answer,
-        date: q.created_at
+        created_at: q.created_at
       }));
       
       // Update local state

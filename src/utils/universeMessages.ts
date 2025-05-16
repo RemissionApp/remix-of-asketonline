@@ -2,7 +2,9 @@
 import { useAppStore } from "@/store/useAppStore";
 import { supabase } from "@/lib/supabase";
 import { Pact } from "@/types";
+import { getZodiacSign } from "@/utils/zodiac";
 
+// Fallback answers if API call fails
 const russianAnswers = [
   "Твой путь уже начался. Следуй за знаками.",
   "Ответ внутри тебя. Спрашивай своё сердце.",
@@ -75,10 +77,46 @@ function isCustomPact(pact: any): pact is {
   return pact && 'restrictions' in pact && 'purpose' in pact;
 }
 
+// Get today's date formatted for horoscope data
+function getTodayFormatted() {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+}
+
 export async function generateUniverseAnswer(question: string): Promise<string> {
   const store = useAppStore.getState();
-  const { language, pacts } = store;
+  const { language, pacts, userProfile } = store;
   
+  // Check if this is a horoscope request
+  const isHoroscopeRequest = question.toLowerCase().includes('гороскоп') || 
+                           question.toLowerCase().includes('horoscope') ||
+                           question.toLowerCase().includes('zodiac') ||
+                           question.toLowerCase().includes('звезды') ||
+                           question.toLowerCase().includes('предсказание') ||
+                           question.toLowerCase().includes('прогноз');
+
+  // Special handling for horoscope requests
+  if (isHoroscopeRequest && userProfile?.birthDate) {
+    try {
+      const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
+      if (!zodiacSign) throw new Error("Couldn't determine zodiac sign");
+      
+      // Get daily horoscope through the edge function
+      const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
+        body: { sign: zodiacSign, language, detailed: false }
+      });
+      
+      if (error) throw error;
+      if (data.success && data.data.description) {
+        return data.data.description;
+      }
+      throw new Error("No horoscope data available");
+    } catch (error) {
+      console.error("Horoscope error:", error);
+      // If horoscope fetch fails, continue with regular answer
+    }
+  }
+
   // Get current active pact if available
   const currentVow = pacts?.find(p => p.status === 'active') || {
     title: '',
@@ -89,12 +127,27 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
   };
   
   try {
-    // Construct the custom prompt with information about the user's vow
-    const systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути. 
-      Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
-      Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as Pact).reward || 'духовный рост'}.
-      Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.
-      
+    // Construct the custom prompt with information about the user's vow and zodiac sign
+    let systemPrompt = `Ты — голос Вселенной, предоставляющий глубокие философские прозрения человеку на аскетическом пути.`;
+    
+    // Add pact information if available
+    if (currentVow) {
+      systemPrompt += `
+        Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
+        Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as Pact).reward || 'духовный рост'}.
+        Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.`;
+    }
+    
+    // Add zodiac information if available
+    if (userProfile?.birthDate) {
+      const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
+      if (zodiacSign) {
+        systemPrompt += `
+        Его знак зодиака: ${zodiacSign}.`;
+      }
+    }
+    
+    systemPrompt += `
       Предоставь вдумчивый, мудрый ответ, который поможет ему обрести ясность и понимание. 
       Будь глубоким, но лаконичным (100-150 слов). Используй мягкий, мудрый тон.
       Иногда используй звезды, космос или природные элементы как метафоры.
@@ -105,7 +158,8 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
       body: { 
         question, 
         language,
-        systemPrompt 
+        systemPrompt,
+        useWebSearch: isHoroscopeRequest // Use web search for horoscope questions
       },
     });
 
