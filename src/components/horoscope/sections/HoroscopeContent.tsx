@@ -30,8 +30,8 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     }
   };
 
+  // If there are no sections, just show the full description
   if (!horoscope.sections) {
-    // If there are no sections, just show the full description
     return (
       <div className="cosmic-gradient-text text-base font-serif leading-relaxed whitespace-pre-wrap">
         <TypingEffect text={horoscope.description} />
