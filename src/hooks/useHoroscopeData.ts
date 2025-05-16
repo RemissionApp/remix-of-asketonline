@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { getZodiacSign } from '@/utils/zodiac';
 import { getTodayDateString, isHoroscopeFromToday, generateFallbackHoroscope } from '@/utils/horoscopeUtils';
+import { useAppStore } from '@/store/useAppStore';
 
 interface UseHoroscopeDataProps {
   userProfile: any;
@@ -17,6 +18,7 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
   const [horoscope, setHoroscope] = useState<DetailedHoroscope | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAppStore(); // Get user from app store
   
   // Get zodiac sign info
   const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
@@ -112,7 +114,7 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
     // Always fetch horoscope when component mounts, regardless of PRO status
     // This way it will work for all users while showing a PRO overlay for non-PRO users
     fetchDetailedHoroscope();
-  }, [userProfile?.birthDate, zodiacSign, language, toast, translations]);
+  }, [userProfile?.birthDate, zodiacSign, language, toast, translations, user]);
 
   return {
     horoscope,
