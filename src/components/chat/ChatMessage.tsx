@@ -14,13 +14,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   const isUser = message?.sender === 'user';
   const content = message?.content || '';
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
-  const messageId = message?.id || `fallback-${Date.now()}`;
+  const messageId = message?.id || `fallback-${Date.now()}-${Math.random()}`;
   
   console.log('Rendering message:', messageId, { isUser, content, timestamp });
   
   // Prevent rendering of empty messages
-  if (!message || (!content && !message.id)) {
-    console.warn('Attempted to render empty or invalid message:', message);
+  if (!content) {
+    console.warn('Attempted to render empty message content:', message);
     return null;
   }
   
@@ -38,7 +38,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       )}
       
       <div 
-        className={`max-w-xs md:max-w-md rounded-2xl p-3 ${
+        className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-3 ${
           isUser 
             ? 'bg-cosmic-accent/30 text-white rounded-tr-none' 
             : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none'

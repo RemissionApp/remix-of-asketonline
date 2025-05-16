@@ -47,6 +47,8 @@ serve(async (req) => {
     // Use GPT-4o-mini for responses
     const gptModel = "gpt-4o-mini";
     
+    console.log(`Processing request with model ${gptModel}. Question: ${question.substring(0, 100)}...`);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -73,12 +75,13 @@ serve(async (req) => {
     const data = await response.json();
     
     if (data.error) {
+      console.error('OpenAI API error:', data.error);
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
     const answer = data.choices[0].message.content;
     
-    console.log("Generated GPT answer:", answer);
+    console.log("Generated GPT answer:", answer.substring(0, 100) + "...");
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
