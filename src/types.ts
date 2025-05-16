@@ -9,7 +9,7 @@ export interface UserProfile {
   goal: string;
   isPro: boolean;
   rank: SpiritualRank;
-  avatar_url?: string; // Added avatar_url field to UserProfile type
+  avatar_url?: string;
   achievements?: Achievement[];
   activeMission?: Mission;
 }
@@ -27,8 +27,11 @@ export interface Mission {
   id: string;
   title: string;
   description: string;
-  requirements: MissionRequirement;
-  reward: MissionReward;
+  requirements: string[];
+  reward: {
+    energyPoints: number;
+    achievement?: string;
+  };
   completed: boolean;
 }
 
@@ -40,4 +43,28 @@ export interface MissionRequirement {
 export interface MissionReward {
   type: 'energy' | 'rank';
   value: number | SpiritualRank;
+  energyPoints?: number;
+  achievement?: string;
+}
+
+export interface Pact {
+  id: string;
+  title: string;
+  duration: number;
+  reward?: string;
+  status: 'active' | 'completed' | 'broken';
+  createdAt?: string;
+  days: PactDay[];
+}
+
+export interface PactDay {
+  date: string;
+  completed: boolean;
+}
+
+export interface UniverseQuestion {
+  id?: string;
+  question: string;
+  answer: string;
+  createdAt?: string;
 }
