@@ -96,7 +96,7 @@ const UniverseChatPage = () => {
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'chat' | 'sessions')}
-        className="w-full max-w-2xl mx-auto mt-16 mb-28"
+        className="w-full max-w-2xl mx-auto mt-16"
       >
         <TabsList className="w-full bg-cosmic-dark/50 backdrop-blur-md mb-4 border border-cosmic-accent/20 rounded-lg overflow-hidden">
           <TabsTrigger value="sessions" className="w-1/2 data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white">
@@ -107,7 +107,7 @@ const UniverseChatPage = () => {
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="sessions" className="px-4 pb-20">
+        <TabsContent value="sessions" className="px-4 pb-24">
           <ChatSessionsList 
             sessions={chatSessions}
             onSelectSession={handleSelectSession}
@@ -115,7 +115,7 @@ const UniverseChatPage = () => {
           />
         </TabsContent>
         
-        <TabsContent value="chat" className="pb-20">
+        <TabsContent value="chat" className="pb-24">
           <ChatTabContent 
             isLoadingChat={isLoadingChat}
             chatMessages={chatMessages}

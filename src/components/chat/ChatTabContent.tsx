@@ -18,7 +18,7 @@ export const ChatTabContent: React.FC<ChatTabContentProps> = ({
   }, [chatMessages]);
   
   return (
-    <div className="px-4 pb-20 h-[calc(100vh-280px)] flex flex-col">
+    <div className="px-4 pb-28 h-[calc(100vh-220px)] flex flex-col">
       <div className="flex-1 overflow-hidden">
         <ChatMessagesDisplay 
           isLoading={isLoadingChat} 

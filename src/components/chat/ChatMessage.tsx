@@ -24,11 +24,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   
   return (
     <div 
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`}
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
       data-message-id={messageId}
     >
       {!isUser && (
-        <div className="flex-shrink-0 mr-3 relative">
+        <div className="flex-shrink-0 mr-3 self-end relative">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 flex items-center justify-center shadow-lg shadow-cosmic-accent/10">
             <span className="text-white text-xl">✧</span>
             {/* Cosmic effect */}
@@ -43,7 +43,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       )}
       
       <div 
-        className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-4 relative ${
+        className={`max-w-xs md:max-w-md rounded-2xl p-4 relative ${
           isUser 
             ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm' 
             : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md'
@@ -57,13 +57,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
           </div>
         )}
         <p className="whitespace-pre-wrap relative z-10">{content}</p>
-        <div className={`text-xs mt-2 ${isUser ? 'text-cosmic-secondary' : 'text-cosmic-secondary/70'}`}>
+        <div className={`text-xs mt-2 ${isUser ? 'text-cosmic-secondary/70' : 'text-cosmic-secondary/50'}`}>
           {formatRelativeTime(timestamp)}
         </div>
       </div>
       
       {isUser && (
-        <div className="flex-shrink-0 ml-3">
+        <div className="flex-shrink-0 ml-3 self-end">
           <UserAvatar size="sm" />
         </div>
       )}

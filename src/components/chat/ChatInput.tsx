@@ -69,7 +69,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
   };
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 z-30 bg-cosmic-dark/80 backdrop-blur-md pb-20">
+    <div className="fixed bottom-16 left-0 right-0 p-4 z-30 bg-cosmic-dark/80 backdrop-blur-md">
       <div className="flex items-end max-w-2xl mx-auto">
         <div className="flex-1 mx-2 relative">
           <Textarea

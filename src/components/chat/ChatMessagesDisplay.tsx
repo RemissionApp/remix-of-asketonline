@@ -5,6 +5,7 @@ import { ChatMessage } from '@/components/chat/ChatMessage';
 import { UniverseChatMessage } from '@/utils/universeChat';
 import { EmptyChatState } from '@/components/chat/EmptyChatState';
 import { Progress } from "@/components/ui/progress"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface ChatMessagesDisplayProps {
   isLoading: boolean;
@@ -16,7 +17,6 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   messages 
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = React.useState(0);
   
   // Simulate loading progress for better UX
@@ -68,30 +68,29 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   }
   
   return (
-    <div 
-      ref={chatContainerRef}
-      className="h-full overflow-y-auto pr-2 pb-4 space-y-4"
-    >
-      {messages.map((message) => (
-        <ChatMessage 
-          key={message.id || `temp-${Date.now()}-${Math.random()}`} 
-          message={message} 
-        />
-      ))}
-      
-      {isLoading && (
-        <div className="flex items-center justify-center py-6">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-cosmic-dark border border-cosmic-accent/20 flex items-center justify-center relative overflow-hidden">
-              <Stars className="absolute inset-0 h-full w-full text-cosmic-accent/10 animate-spin" style={{animationDuration: '15s'}} />
-              <Loader2 className="h-5 w-5 text-cosmic-accent animate-spin relative z-10" />
+    <ScrollArea className="h-full pr-2 pb-4">
+      <div className="space-y-4 px-1 py-2">
+        {messages.map((message) => (
+          <ChatMessage 
+            key={message.id || `temp-${Date.now()}-${Math.random()}`} 
+            message={message} 
+          />
+        ))}
+        
+        {isLoading && (
+          <div className="flex items-center justify-center py-6">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-cosmic-dark border border-cosmic-accent/20 flex items-center justify-center relative overflow-hidden">
+                <Stars className="absolute inset-0 h-full w-full text-cosmic-accent/10 animate-spin" style={{animationDuration: '15s'}} />
+                <Loader2 className="h-5 w-5 text-cosmic-accent animate-spin relative z-10" />
+              </div>
+              <div className="absolute inset-0 animate-ping bg-cosmic-accent/5 rounded-full"></div>
             </div>
-            <div className="absolute inset-0 animate-ping bg-cosmic-accent/5 rounded-full"></div>
           </div>
-        </div>
-      )}
-      
-      <div ref={messagesEndRef} />
-    </div>
+        )}
+        
+        <div ref={messagesEndRef} />
+      </div>
+    </ScrollArea>
   );
 };
