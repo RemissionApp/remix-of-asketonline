@@ -9,7 +9,8 @@ import {
   loadChatSessions as loadChatSessionsUtil,
   loadSessionMessages,
   sendMessageToUniverse,
-  subscribeToSessionMessages
+  subscribeToSessionMessages,
+  saveMessage
 } from '@/utils/universeChat';
 import { UniverseChatState } from './universeChatTypes';
 
@@ -21,7 +22,7 @@ export interface UniverseChatActions {
   createChatSession: (title: string) => Promise<string | null>;
   setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
-  sendChatMessage: (message: string) => Promise<void>;
+  sendChatMessage: (message: string, isWelcomeMessage?: boolean) => Promise<void>;
 }
 
 /**
@@ -167,7 +168,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     }
   },
   
-  sendChatMessage: async (message: string) => {
+  sendChatMessage: async (message: string, isWelcomeMessage: boolean = false) => {
     const { user } = get();
     const sessionId = get().currentChatSession;
     
@@ -198,6 +199,29 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     
     try {
       set({ isSendingMessage: true } as unknown as Partial<T>);
+      
+      // If this is a welcome message, save it directly as a universe message
+      if (isWelcomeMessage) {
+        // Save the welcome message directly as coming from the universe
+        const universeMessageId = await saveMessage(user.id, sessionId, message, 'universe');
+        
+        if (!universeMessageId) {
+          throw new Error('Failed to save welcome message');
+        }
+        
+        console.log('Welcome message saved with ID:', universeMessageId);
+        
+        // Load updated messages after saving the welcome message
+        const updatedMessages = await loadSessionMessages(sessionId);
+        set({ 
+          chatMessages: updatedMessages,
+          isSendingMessage: false
+        } as unknown as Partial<T>);
+        
+        return;
+      }
+      
+      // For regular user messages, continue with normal flow
       
       // Add temporary message to state immediately
       const tempUserMsg: UniverseChatMessage = {

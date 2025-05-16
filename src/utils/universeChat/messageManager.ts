@@ -90,7 +90,7 @@ export const sendMessageToUniverse = async (
     await updateSessionTimestamp(sessionId);
 
     // Generate the universe's response
-    console.log('Generating universe answer through GPT...');
+    console.log('Generating universe answer through the dialogue API...');
     const universeResponse = await generateUniverseAnswer(message);
     console.log('Generated answer:', universeResponse.substring(0, 50) + '...');
     

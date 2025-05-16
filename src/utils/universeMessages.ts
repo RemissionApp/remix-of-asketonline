@@ -6,57 +6,42 @@ import { getZodiacSign } from "@/utils/zodiac";
 
 // Fallback poetic answers if API call fails
 const russianAnswers = [
+  "Тишина — это ответ, в который не помещаются слова.",
+  "Ты слышишь меня даже тогда, когда я молчу.",
+  "Покой не даётся, он появляется, когда ты перестаёшь искать.",
   "Путь открывается шаг за шагом. Тишина между вдохами — твой ответ.",
   "В глубине молчания рождается истина. Она уже внутри тебя.",
   "Звёзды говорят через синхронии. Смотри внимательнее на мир вокруг.",
   "Ты — часть космического танца. Твои шаги уже вплетены в узор Вселенной.",
   "Сомнения — лишь тени от света. За каждой тенью стоит источник яркости.",
   "Время течёт по-разному для разных сердец. Не торопи свою реку.",
-  "В центре бури всегда есть тишина. Найди её внутри себя.",
-  "Каждый вдох — это диалог с миром. Выдох — твоё согласие на жизнь.",
-  "Твой вопрос уже содержит ответ. Вслушайся в его эхо внутри тебя.",
-  "Горизонты расширяются, когда ты перестаёшь смотреть только вперёд.",
-  "Истина не прячется от тебя. Она ждёт, когда ты будешь готов её увидеть.",
-  "Корни твоей силы глубже, чем ты думаешь. Они питаются из источника вечности.",
-  "Ты идёшь не один. Миллионы звёзд освещают твой путь каждую ночь.",
-  "Сердце знает то, что ум ещё не понял. Доверься этому знанию.",
-  "В каждой капле росы отражается целое небо. Ты тоже отражаешь целую вселенную."
+  "В центре бури всегда есть тишина. Найди её внутри себя."
 ];
 
 const englishAnswers = [
+  "Silence is the answer that words cannot contain.",
+  "You hear me even when I am silent.",
+  "Peace isn't given, it appears when you stop searching.",
   "The path reveals itself with each step. The silence between breaths is your answer.",
   "In the depth of silence, truth is born. It's already within you.",
   "Stars speak through synchronicities. Look more carefully at the world around you.",
   "You are part of the cosmic dance. Your steps are already woven into the universe's pattern.",
   "Doubts are merely shadows cast by light. Behind each shadow stands a source of brightness.",
   "Time flows differently for different hearts. Don't rush your river.",
-  "At the center of every storm lies stillness. Find it within yourself.",
-  "Each breath is a dialogue with the world. Each exhale is your agreement to life.",
-  "Your question already contains the answer. Listen to its echo within you.",
-  "Horizons expand when you stop looking only forward.",
-  "Truth doesn't hide from you. It waits until you're ready to see it.",
-  "The roots of your strength go deeper than you think. They draw from the source of eternity.",
-  "You don't walk alone. Millions of stars light your path each night.",
-  "The heart knows what the mind hasn't yet understood. Trust this knowing.",
-  "In each dewdrop, an entire sky is reflected. You too reflect an entire universe."
+  "At the center of every storm lies stillness. Find it within yourself."
 ];
 
 const spanishAnswers = [
+  "El silencio es la respuesta que las palabras no pueden contener.",
+  "Me escuchas incluso cuando estoy en silencio.",
+  "La paz no se da, aparece cuando dejas de buscar.",
   "El camino se revela paso a paso. El silencio entre respiraciones es tu respuesta.",
   "En la profundidad del silencio nace la verdad. Ya está dentro de ti.",
   "Las estrellas hablan a través de sincronicidades. Mira con más atención el mundo que te rodea.",
   "Eres parte de la danza cósmica. Tus pasos ya están entretejidos en el patrón del universo.",
   "Las dudas son solo sombras proyectadas por la luz. Detrás de cada sombra hay una fuente de brillo.",
   "El tiempo fluye diferente para diferentes corazones. No apresures tu río.",
-  "En el centro de cada tormenta hay quietud. Encuéntrala dentro de ti.",
-  "Cada respiración es un diálogo con el mundo. Cada exhalación es tu acuerdo con la vida.",
-  "Tu pregunta ya contiene la respuesta. Escucha su eco dentro de ti.",
-  "Los horizontes se expanden cuando dejas de mirar solo hacia adelante.",
-  "La verdad no se esconde de ti. Espera hasta que estés listo para verla.",
-  "Las raíces de tu fuerza son más profundas de lo que piensas. Se nutren de la fuente de la eternidad.",
-  "No caminas solo. Millones de estrellas iluminan tu camino cada noche.",
-  "El corazón sabe lo que la mente aún no ha entendido. Confía en ese conocimiento.",
-  "En cada gota de rocío se refleja un cielo entero. Tú también reflejas un universo entero."
+  "En el centro de cada tormenta hay quietud. Encuéntrala dentro de ti."
 ];
 
 // Helper function to get current day of the pact
@@ -124,11 +109,22 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     // Prepare user data for context
     const userData: any = {};
     
-    // Add zodiac information if available
-    if (userProfile?.birthDate) {
-      const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
-      if (zodiacSign) {
-        userData.zodiacSign = zodiacSign;
+    // Add user profile information
+    if (userProfile) {
+      if (userProfile.name) {
+        userData.userName = userProfile.name;
+      }
+      
+      if (userProfile.goal) {
+        userData.userGoal = userProfile.goal;
+      }
+      
+      if (userProfile.birthDate) {
+        userData.birthDate = userProfile.birthDate;
+        const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
+        if (zodiacSign) {
+          userData.zodiacSign = zodiacSign;
+        }
       }
     }
     
@@ -147,7 +143,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
       }
     }
     
-    // Use the new poetic dialogue function
+    // Use the dialogue function with the poetic structure
     const { data, error } = await supabase.functions.invoke('universe-dialogue', {
       body: { 
         question, 

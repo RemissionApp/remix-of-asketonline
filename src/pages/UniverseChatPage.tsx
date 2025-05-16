@@ -25,6 +25,7 @@ const UniverseChatPage = () => {
   } = useAppStore();
   
   const { t } = useTranslations();
+  const [initialMessageSent, setInitialMessageSent] = useState(false);
   
   // Load chat sessions on first render
   useEffect(() => {
@@ -56,6 +57,34 @@ const UniverseChatPage = () => {
     
     initializeChat();
   }, [currentChatSession, createChatSession, loadChatMessages, setCurrentChatSession, t.universe]);
+  
+  // Send initial welcome message from the universe when session is ready and no messages exist
+  useEffect(() => {
+    const sendWelcomeMessage = async () => {
+      // Only proceed if we have a session, messages are loaded, and no messages exist
+      if (
+        currentChatSession && 
+        !isLoadingChat && 
+        chatMessages.length === 0 && 
+        !initialMessageSent &&
+        !isSendingMessage
+      ) {
+        setInitialMessageSent(true);
+        
+        try {
+          const welcomeMessage = t.universe?.welcomeMessage || 
+            "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
+          
+          // Save the welcome message directly to the database as a universe message
+          await sendChatMessage(welcomeMessage, true); // Pass true to indicate this is a system welcome message
+        } catch (error) {
+          console.error('Error sending welcome message:', error);
+        }
+      }
+    };
+    
+    sendWelcomeMessage();
+  }, [currentChatSession, isLoadingChat, chatMessages.length, initialMessageSent, isSendingMessage, sendChatMessage, t.universe]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
