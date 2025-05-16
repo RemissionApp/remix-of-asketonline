@@ -37,7 +37,8 @@ const UniverseChatPage = () => {
       // If there's no active session, create one
       if (!currentChatSession) {
         try {
-          const defaultTitle = t.universe?.defaultChatTitle || 'Диалог со Вселенной';
+          // Using a fallback for defaultChatTitle if it doesn't exist in translations
+          const defaultTitle = t.universe?.chatTitle || 'Диалог со Вселенной';
           const sessionId = await createChatSession(defaultTitle);
           
           if (sessionId) {
@@ -96,7 +97,7 @@ const UniverseChatPage = () => {
       <div className="w-full max-w-2xl mx-auto mt-20">
         <div className="px-4 mb-24">
           <ChatTabContent 
-            isLoading={isLoadingChat}
+            isLoadingChat={isLoadingChat}
             chatMessages={chatMessages}
           />
         </div>

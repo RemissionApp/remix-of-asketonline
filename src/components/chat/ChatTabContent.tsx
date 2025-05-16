@@ -3,7 +3,7 @@ import React from 'react';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { UniverseChatMessage } from '@/utils/universeChat';
 
-interface ChatTabContentProps {
+export interface ChatTabContentProps {
   isLoadingChat: boolean;
   chatMessages: UniverseChatMessage[];
 }
