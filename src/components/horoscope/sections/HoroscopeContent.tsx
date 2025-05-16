@@ -5,7 +5,7 @@ import { HoroscopeSection } from './HoroscopeSection';
 import { DetailedHoroscope } from '@/types/horoscope';
 
 interface HoroscopeContentProps {
-  horoscope: DetailedHoroscope;
+  horoscope: DetailedHoroscope | null;
   translations: any;
   language: string;
 }
@@ -16,6 +16,11 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   language
 }) => {
   const [activeSection, setActiveSection] = useState(0);
+
+  // Safety check - if no horoscope data is available, return empty content
+  if (!horoscope) {
+    return null;
+  }
 
   const handleSectionComplete = () => {
     if (activeSection < 3) {

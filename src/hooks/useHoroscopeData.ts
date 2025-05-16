@@ -71,9 +71,15 @@ export const useHoroscopeData = ({
         // Use cached horoscope if it exists and is from today
         if (cachedHoroscopeData && cachedHoroscopeDate && isHoroscopeFromToday(cachedHoroscopeDate)) {
           console.log("Using cached horoscope data");
-          setHoroscope(JSON.parse(cachedHoroscopeData));
-          setLoading(false);
-          return;
+          try {
+            const parsedData = JSON.parse(cachedHoroscopeData);
+            setHoroscope(parsedData);
+            setLoading(false);
+            return;
+          } catch (parseError) {
+            console.error("Error parsing cached horoscope:", parseError);
+            // If parsing fails, continue to fetch new data
+          }
         }
         
         // First try to fetch from the database
