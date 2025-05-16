@@ -13,7 +13,7 @@ export const TopBar: React.FC = () => {
   return (
     <>
       {/* Energy points and Zodiac badges group */}
-      <div className="absolute top-4 right-4 z-20 flex items-center space-x-2">
+      <div className="absolute top-4 right-4 z-10 flex items-center space-x-2">
         {/* Zodiac badge - now positioned to the left of energy points */}
         <ZodiacBadge size="sm" />
         
@@ -26,13 +26,13 @@ export const TopBar: React.FC = () => {
       
       {/* Pro badge if user has pro subscription */}
       {userProfile?.isPro && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
           <ProBadge size="sm" />
         </div>
       )}
       
       {/* User avatar and rank badge */}
-      <div className="absolute top-4 left-4 z-20 flex items-center space-x-2">
+      <div className="absolute top-4 left-4 z-10 flex items-center space-x-2">
         <UserAvatar size="sm" showZodiacBadge={false} />
         <RankBadge size="sm" />
       </div>
