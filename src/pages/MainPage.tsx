@@ -10,6 +10,7 @@ import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
+import { CountdownTimer } from '@/components/CountdownTimer';
 
 const MainPage: React.FC = () => {
   const { 
@@ -97,6 +98,9 @@ const MainPage: React.FC = () => {
       
       {/* Use the TopBar component */}
       <TopBar />
+      
+      {/* Always show the countdown timer when there's an active pact */}
+      {activePacts.length > 0 && <CountdownTimer pactId={currentPact?.id} />}
       
       {/* Developer Mode Switch */}
       <div className="absolute top-20 right-4 z-20">

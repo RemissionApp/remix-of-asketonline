@@ -63,9 +63,6 @@ export const MainContent: React.FC<MainContentProps> = ({
             formatRejection={formatRejection}
           />
           
-          {/* Countdown timer for current pact - now fixed at top */}
-          {currentPact && <CountdownTimer />}
-          
           {/* Horoscope display */}
           <HoroscopeDisplay />
           

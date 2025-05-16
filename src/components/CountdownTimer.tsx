@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -24,6 +25,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     milliseconds: 0
   });
   const { language, pacts } = useAppStore();
+  const { t } = useTranslations();
 
   // Get translations for time units
   const getDaysLabel = () => {
@@ -124,6 +126,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   return (
     <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20">
       <div className="flex items-center justify-center text-xs">
+        <Clock size={16} className="text-cosmic-secondary mr-1" />
         <div className="flex items-center space-x-2">
           <div className="flex flex-col items-center">
             <span className="text-cosmic-accent font-medium">{timeLeft.days.toString().padStart(2, '0')}</span>

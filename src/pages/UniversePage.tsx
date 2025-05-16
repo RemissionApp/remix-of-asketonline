@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -11,9 +11,10 @@ import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
 import { TypingEffect } from '@/components/TypingEffect';
+import { CountdownTimer } from '@/components/CountdownTimer';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen, userProfile, language } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, userProfile, language, pacts } = useAppStore();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
@@ -22,6 +23,10 @@ const UniversePage: React.FC = () => {
     answer: string;
   }>(null);
   const navigate = useNavigate();
+  
+  // Check if there are active pacts
+  const activePacts = pacts?.filter(p => p.status === 'active') || [];
+  const hasActivePacts = activePacts.length > 0;
   
   const handleGoBack = () => {
     setActiveScreen('main');
@@ -83,6 +88,9 @@ const UniversePage: React.FC = () => {
           </h2>
         </div>
       )}
+      
+      {/* Show countdown timer if there are active pacts */}
+      {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}
       
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-lg mx-auto w-full">
