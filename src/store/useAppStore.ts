@@ -26,7 +26,10 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     rank: 'seeker',
     zodiacSign: '',
     totalDays: 0,
-    achievements: [...defaultAchievements]
+    achievements: [...defaultAchievements],
+    birthDate: null,
+    avatar_url: null,
+    activeMission: undefined
   },
   user: null,
   loading: false,

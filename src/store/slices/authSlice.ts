@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -304,14 +303,17 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       // Update local state
       set({
         userProfile: {
-          name: data.name,
-          birthDate: data.birth_date ? new Date(data.birth_date) : undefined,
+          name: data.name || 'Искатель',
+          email: user.email || '',
+          age: null,
+          birthDate: data.birth_date ? new Date(data.birth_date) : null,
           totalDays: data.total_days,
           energyPoints: data.energy_points,
           goal: data.goal || 'Познать свою истинную силу',
           isPro: isPro,
           rank: data.rank,
-          avatar_url: data.avatar_url, // Make sure to include avatar URL
+          avatar_url: data.avatar_url,
+          zodiacSign: '',
           achievements: mappedAchievements,
           activeMission
         }

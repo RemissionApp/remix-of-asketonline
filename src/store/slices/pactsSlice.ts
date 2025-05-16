@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -9,7 +8,7 @@ import { getDateString } from '../utils/dateUtils';
 export interface PactsSlice {
   pacts: Pact[];
   
-  addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
+  addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
   loadPacts: () => Promise<void>;
   syncPactsWithCurrentDate: () => Promise<void>;
@@ -270,11 +269,20 @@ export const createPactsSlice: StateCreator<AppState, [], [], PactsSlice> = (set
         return {
           id: pact.id,
           title: pact.title,
+          description: '',
+          created_at: pact.created_at,
+          start_date: pact.created_at,
+          end_date: new Date(new Date(pact.created_at).getTime() + pact.duration * 24 * 60 * 60 * 1000).toISOString(),
+          days_total: pact.duration,
+          days_completed: 0,
+          last_completed_date: '',
+          rejection: pact.title,
+          status: pact.status as 'active' | 'completed' | 'failed' | 'planned',
+          type: '',
           duration: pact.duration,
           reward: pact.reward || '',
-          status: pact.status as 'active' | 'completed' | 'broken',
-          createdAt: pact.created_at,
           days: days?.map(d => ({
+            id: d.id,
             date: d.date,
             completed: d.completed
           })) || []
