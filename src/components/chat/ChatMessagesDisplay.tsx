@@ -50,7 +50,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   if (isLoading && messages.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-4">
-        <div className="w-20 h-20 rounded-full bg-cosmic-dark border border-cosmic-accent/20 flex items-center justify-center mb-4 relative overflow-hidden">
+        <div className="w-20 h-20 rounded-full bg-cosmic-dark border-2 border-cosmic-gold flex items-center justify-center mb-4 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
             <img 
               src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
@@ -89,7 +89,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
         {isLoading && (
           <div className="flex items-center justify-center py-6">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center relative">
+              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center relative border-2 border-cosmic-gold">
                 <img 
                   src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
                   alt="Вселенная"

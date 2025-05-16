@@ -28,7 +28,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
       </Button>
       
       <div className="flex items-center flex-1">
-        <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3">
+        <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3 border-2 border-cosmic-gold">
           <img 
             src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
             alt="Вселенная"
