@@ -46,7 +46,29 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
           return;
         }
         
-        // Call our edge function to generate a detailed horoscope
+        // First try to fetch from the database
+        if (user) {
+          const { data: dbHoroscope, error: dbError } = await supabase
+            .from('detailed_horoscopes')
+            .select('content')
+            .eq('user_id', user.id)
+            .eq('zodiac_sign', zodiacSign)
+            .eq('date', today)
+            .single();
+            
+          if (!dbError && dbHoroscope) {
+            setHoroscope(dbHoroscope.content);
+            
+            // Also cache the horoscope locally
+            localStorage.setItem(cachedHoroscopeKey, JSON.stringify(dbHoroscope.content));
+            localStorage.setItem(cachedHoroscopeDateKey, today);
+            
+            setLoading(false);
+            return;
+          }
+        }
+        
+        // If not in database, call our edge function to generate a detailed horoscope
         const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
           body: { 
             sign: zodiacSign,

@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,21 +21,66 @@ serve(async (req) => {
   }
 
   try {
+    // Get API key from environment
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not set');
     }
+    
+    // Create Supabase client using environment variables
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Extract auth token from request
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Missing Authorization header');
+    }
+
+    // Get user from auth token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      throw new Error('Invalid user token');
+    }
+
+    // Parse request body
     const { sign, language, detailed = false } = await req.json() as HoroscopeRequest;
 
     if (!sign) {
       throw new Error('Zodiac sign is required');
+    }
+    
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if we already have a horoscope for this user, sign and date
+    if (detailed) {
+      const { data: existingHoroscope } = await supabase
+        .from('detailed_horoscopes')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('zodiac_sign', sign)
+        .eq('date', today)
+        .single();
+      
+      if (existingHoroscope) {
+        return new Response(JSON.stringify({ 
+          success: true,
+          data: existingHoroscope.content
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Get the appropriate system prompt based on language
     const systemPrompt = getSystemPrompt(language, detailed);
     const userPrompt = getUserPrompt(sign, language, detailed);
 
+    // Call OpenAI to generate the horoscope
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -65,12 +111,13 @@ serve(async (req) => {
     }
 
     const horoscopeText = data.choices[0].message.content;
-
-    // For detailed horoscopes, parse sections from the response
-    let formattedResponse;
+    
+    // Create response object
+    let horoscopeResponse;
     
     if (detailed) {
-      formattedResponse = {
+      // For detailed horoscopes, parse sections and additional data
+      const horoscopeData = {
         description: horoscopeText,
         sections: {
           work_finance: extractSection(horoscopeText, "работа", "финанс", "work", "finance", "💼"),
@@ -83,24 +130,37 @@ serve(async (req) => {
         color: getRandomColor(language),
         mood: getRandomMood(language)
       };
+      
+      // Store the detailed horoscope in the database
+      await supabase.from('detailed_horoscopes').insert({
+        user_id: user.id,
+        zodiac_sign: sign,
+        date: today,
+        content: horoscopeData
+      });
+      
+      horoscopeResponse = {
+        success: true,
+        data: horoscopeData
+      };
     } else {
-      formattedResponse = {
-        description: horoscopeText
+      horoscopeResponse = {
+        success: true,
+        data: {
+          description: horoscopeText
+        }
       };
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      data: formattedResponse
-    }), {
+    return new Response(JSON.stringify(horoscopeResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error generating horoscope:', error);
+    console.error('Error in fetch-horoscope function:', error);
     
     return new Response(JSON.stringify({ 
       success: false,
-      error: error.message 
+      error: `Error generating horoscope: ${error.message}` 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

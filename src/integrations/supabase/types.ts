@@ -78,6 +78,33 @@ export type Database = {
         }
         Relationships: []
       }
+      detailed_horoscopes: {
+        Row: {
+          content: Json
+          created_at: string
+          date: string
+          id: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          date: string
+          id?: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          user_id?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
       missions: {
         Row: {
           completed: boolean

@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
+import { getTodayDateString, isHoroscopeFromToday } from '@/utils/horoscopeUtils';
 
 interface BriefHoroscope {
   description: string;
@@ -68,16 +69,6 @@ export const HoroscopeDisplay: React.FC = () => {
       return () => clearInterval(typingInterval);
     }
   }, [horoscope]);
-  
-  // Create a helper function to get today's date as a string
-  const getTodayDateString = () => {
-    return new Date().toISOString().split('T')[0];
-  };
-  
-  // Check if the horoscope is from today
-  const isHoroscopeFromToday = (storedDate: string) => {
-    return storedDate === getTodayDateString();
-  };
   
   useEffect(() => {
     const fetchHoroscope = async () => {
