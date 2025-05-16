@@ -174,6 +174,7 @@ export const ruTranslations: Translations = {
     newChatTitle: "Новый диалог",
     chatTitleLabel: "Название диалога",
     chatTitlePlaceholder: "Введите название диалога...",
+    errorSendingMessage: "Не удалось отправить сообщение"
   },
   profile: {
     title: "Профиль",
@@ -321,7 +322,7 @@ export const ruTranslations: Translations = {
     submit: "Отправить"
   },
   legal: {
-    title: "Правовая информация",
+    title: "Правовая ��нформация",
     privacyPolicy: "Политика конфиденциальности",
     termsOfUse: "Правила использования",
     lastUpdated: "Последнее обновление",

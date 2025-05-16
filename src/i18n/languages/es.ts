@@ -174,6 +174,7 @@ export const esTranslations: Translations = {
     newChatTitle: "Nueva conversación",
     chatTitleLabel: "Título de la conversación",
     chatTitlePlaceholder: "Introduce el título de la conversación...",
+    errorSendingMessage: "Error al enviar el mensaje"
   },
   profile: {
     title: "Perfil",

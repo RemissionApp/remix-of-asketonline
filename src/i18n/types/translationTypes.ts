@@ -62,6 +62,7 @@ export interface UniverseTranslations {
   newChatTitle: string;
   chatTitleLabel: string;
   chatTitlePlaceholder: string;
+  errorSendingMessage: string; // Added missing key
 }
 
 export interface LegalTranslations {

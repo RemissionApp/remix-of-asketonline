@@ -175,6 +175,7 @@ export const enTranslations: Translations = {
     newChatTitle: "New conversation",
     chatTitleLabel: "Conversation title",
     chatTitlePlaceholder: "Enter conversation title...",
+    errorSendingMessage: "Failed to send message"
   },
   
   profile: {
