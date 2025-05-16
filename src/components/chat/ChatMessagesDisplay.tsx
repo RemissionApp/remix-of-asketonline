@@ -4,8 +4,7 @@ import { Loader2, Stars } from 'lucide-react';
 import { ChatMessage } from '@/components/chat/ChatMessage';
 import { UniverseChatMessage } from '@/utils/universeChat';
 import { EmptyChatState } from '@/components/chat/EmptyChatState';
-import { Progress } from "@/components/ui/progress"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Progress } from "@/components/ui/progress";
 
 interface ChatMessagesDisplayProps {
   isLoading: boolean;
@@ -17,6 +16,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   messages 
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = React.useState(0);
   
   // Simulate loading progress for better UX
@@ -68,8 +68,11 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   }
   
   return (
-    <ScrollArea className="h-full pr-2 pb-4">
-      <div className="space-y-4 px-1 py-2">
+    <div 
+      ref={containerRef} 
+      className="flex-1 overflow-y-auto px-4 pb-4 pt-2 scrollbar-thin scrollbar-thumb-cosmic-accent/20 scrollbar-track-transparent"
+    >
+      <div className="space-y-4">
         {messages.map((message) => (
           <ChatMessage 
             key={message.id || `temp-${Date.now()}-${Math.random()}`} 
@@ -89,8 +92,8 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
           </div>
         )}
         
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} className="h-4" />
       </div>
-    </ScrollArea>
+    </div>
   );
 };

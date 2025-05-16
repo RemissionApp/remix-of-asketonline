@@ -31,12 +31,12 @@ const UniverseChatPage = () => {
   const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState<'chat' | 'sessions'>('sessions');
   
-  // Load chat sessions on initial render
+  // Загружаем сессии чата при первом рендеринге
   useEffect(() => {
     loadChatSessions();
   }, [loadChatSessions]);
   
-  // When a session is selected, switch to chat tab and load messages
+  // Когда выбрана сессия, переключаемся на вкладку чата и загружаем сообщения
   useEffect(() => {
     if (currentChatSession) {
       setActiveTab('chat');
@@ -49,7 +49,7 @@ const UniverseChatPage = () => {
     
     try {
       if (!currentChatSession) {
-        // Create a new session with the message as title
+        // Создаем новую сессию с сообщением в качестве названия
         const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
         console.log('Creating new chat session with title:', title);
         
@@ -57,17 +57,17 @@ const UniverseChatPage = () => {
         
         if (sessionId) {
           console.log('Session created with ID:', sessionId);
-          // Set current session and switch to chat tab
+          // Устанавливаем текущую сессию и переключаемся на вкладку чата
           await setCurrentChatSession(sessionId);
           setActiveTab('chat');
           
-          // Wait a moment for state to update before sending
+          // Ждем немного, чтобы состояние обновилось, прежде чем отправлять
           setTimeout(() => {
             sendChatMessage(message);
           }, 200);
         }
       } else {
-        // Session exists, make sure we're on chat tab and send message
+        // Сессия существует, убеждаемся, что мы на вкладке чата, и отправляем сообщение
         setActiveTab('chat');
         await sendChatMessage(message);
       }
@@ -86,7 +86,7 @@ const UniverseChatPage = () => {
     return chatSessions.find(session => session.id === currentChatSession);
   };
   
-  // Wrap content with PRO check
+  // Оборачиваем контент проверкой PRO
   const content = (
     <div className="min-h-screen flex flex-col bg-cosmic">
       <StarField starCount={100} />
@@ -96,7 +96,7 @@ const UniverseChatPage = () => {
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'chat' | 'sessions')}
-        className="w-full max-w-2xl mx-auto mt-16"
+        className="w-full max-w-2xl mx-auto mt-20"
       >
         <TabsList className="w-full bg-cosmic-dark/50 backdrop-blur-md mb-4 border border-cosmic-accent/20 rounded-lg overflow-hidden">
           <TabsTrigger value="sessions" className="w-1/2 data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white">
@@ -107,7 +107,7 @@ const UniverseChatPage = () => {
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="sessions" className="px-4 pb-24">
+        <TabsContent value="sessions" className="px-4 mb-24">
           <ChatSessionsList 
             sessions={chatSessions}
             onSelectSession={handleSelectSession}
@@ -115,7 +115,7 @@ const UniverseChatPage = () => {
           />
         </TabsContent>
         
-        <TabsContent value="chat" className="pb-24">
+        <TabsContent value="chat" className="mb-24">
           <ChatTabContent 
             isLoadingChat={isLoadingChat}
             chatMessages={chatMessages}

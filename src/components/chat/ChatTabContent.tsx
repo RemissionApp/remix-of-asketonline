@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { UniverseChatMessage } from '@/utils/universeChat';
 
@@ -12,19 +12,12 @@ export const ChatTabContent: React.FC<ChatTabContentProps> = ({
   isLoadingChat,
   chatMessages
 }) => {
-  // Debug log messages when they change
-  useEffect(() => {
-    console.log('ChatTabContent: messages updated:', chatMessages.length);
-  }, [chatMessages]);
-  
   return (
-    <div className="px-4 pb-28 h-[calc(100vh-220px)] flex flex-col">
-      <div className="flex-1 overflow-hidden">
-        <ChatMessagesDisplay 
-          isLoading={isLoadingChat} 
-          messages={chatMessages} 
-        />
-      </div>
+    <div className="h-[calc(100vh-230px)] flex flex-col">
+      <ChatMessagesDisplay 
+        isLoading={isLoadingChat} 
+        messages={chatMessages} 
+      />
     </div>
   );
 };

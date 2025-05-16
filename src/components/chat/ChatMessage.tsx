@@ -8,30 +8,28 @@ interface ChatMessageProps {
   message: UniverseChatMessage;
 }
 
-// Use React.memo to prevent unnecessary re-renders
+// Используем React.memo для предотвращения ненужных ререндеров
 export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) => {
-  // Extract message properties with default fallbacks
+  // Извлекаем свойства сообщения с запасными значениями
   const isUser = message?.sender === 'user';
   const content = message?.content || '';
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
   const messageId = message?.id || `fallback-${Date.now()}-${Math.random()}`;
   
-  // Skip rendering empty messages
+  // Пропускаем рендеринг пустых сообщений
   if (!content) {
-    console.warn('Empty message content detected:', message);
     return null;
   }
   
   return (
     <div 
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
+      className="flex mb-4"
       data-message-id={messageId}
     >
       {!isUser && (
-        <div className="flex-shrink-0 mr-3 self-end relative">
+        <div className="flex-shrink-0 mr-3 self-end">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 flex items-center justify-center shadow-lg shadow-cosmic-accent/10">
             <span className="text-white text-xl">✧</span>
-            {/* Cosmic effect */}
             <div className="absolute inset-0 rounded-full overflow-hidden">
               <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
               <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
@@ -45,8 +43,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       <div 
         className={`max-w-xs md:max-w-md rounded-2xl p-4 relative ${
           isUser 
-            ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm' 
-            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md'
+            ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm ml-auto' 
+            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md mr-auto'
         }`}
       >
         {!isUser && (
@@ -70,13 +68,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Custom comparison function for React.memo
-  // Only re-render if the message ID or content has changed
+  // Пользовательская функция сравнения для React.memo
+  // Повторный рендеринг только в случае изменения ID или содержимого сообщения
   return (
     prevProps.message.id === nextProps.message.id &&
     prevProps.message.content === nextProps.message.content
   );
 });
 
-// Display name for debugging
+// Отображаемое имя для отладки
 ChatMessage.displayName = 'ChatMessage';

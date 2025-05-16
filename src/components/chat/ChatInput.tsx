@@ -16,7 +16,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { t } = useTranslations();
   
-  // Focus input on mount
+  // Фокус на поле ввода при монтировании
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus();
@@ -30,30 +30,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
     setIsSending(true);
     
     try {
-      // Clear input immediately for better UX
+      // Очистка поля ввода сразу для лучшего UX
       setInputText('');
       
-      // Send message
+      // Отправка сообщения
       await onSendMessage(messageToSend);
       
-      // Focus back on input
+      // Возвращение фокуса на поле ввода
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     } catch (error) {
       console.error('Error sending message:', error);
-      // If error, restore the text
+      // При ошибке восстанавливаем текст
       setInputText(messageToSend);
     } finally {
-      // Delay resetting sending state for UX
+      // Задержка сброса состояния отправки для UX
       setTimeout(() => setIsSending(false), 300);
     }
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Send message on Enter (but not with Shift+Enter)
+    // Отправка сообщения по Enter (но не с Shift+Enter)
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // Prevent new line
+      e.preventDefault(); // Предотвращаем новую строку
       handleSendMessage();
     }
   };
@@ -61,7 +61,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
     
-    // Auto-resize textarea (limited by max-h in CSS)
+    // Автоматическое изменение размера textarea (ограничено max-h в CSS)
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
       inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
@@ -69,7 +69,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
   };
   
   return (
-    <div className="fixed bottom-16 left-0 right-0 p-4 z-30 bg-cosmic-dark/80 backdrop-blur-md">
+    <div className="fixed bottom-0 left-0 right-0 p-4 pt-2 pb-20 z-30 bg-cosmic-dark/80 backdrop-blur-md border-t border-cosmic-accent/10">
       <div className="flex items-end max-w-2xl mx-auto">
         <div className="flex-1 mx-2 relative">
           <Textarea
