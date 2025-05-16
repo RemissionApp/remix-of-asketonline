@@ -1,7 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Send, Mic, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -12,6 +14,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { t } = useTranslations();
   
   const handleSendMessage = () => {
     if (!inputText.trim() || isDisabled || isSending) return;
@@ -21,6 +25,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
     try {
       onSendMessage(inputText);
       setInputText('');
+      
+      // Make sure to focus back on input after sending
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -44,6 +53,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
     }
   };
   
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Send message on Enter (but not with Shift+Enter)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevent new line
+      handleSendMessage();
+    }
+  };
+  
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 z-20 bg-cosmic-dark/80 backdrop-blur-md">
       <div className="flex items-center max-w-2xl mx-auto">
@@ -57,15 +74,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
           <Mic size={24} />
         </Button>
         
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Напишите сообщение..."
-          className="flex-1 bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-full px-4 py-2 text-white mx-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50"
-          onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
-          disabled={isDisabled || isSending}
-        />
+        <div className="flex-1 mx-2 relative">
+          <Textarea
+            ref={inputRef}
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder={t.universe?.questionPlaceholder || "Напишите сообщение..."}
+            className="resize-none bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50 min-h-[50px] max-h-[120px]"
+            onKeyDown={handleKeyDown}
+            disabled={isDisabled || isSending}
+            rows={1}
+          />
+        </div>
         
         <Button
           variant={inputText.trim() ? "default" : "ghost"}
