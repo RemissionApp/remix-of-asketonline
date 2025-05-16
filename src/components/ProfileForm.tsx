@@ -22,14 +22,12 @@ interface ProfileFormProps {
     name: string;
     birthDate: Date;
   };
-  navigateToMain?: boolean;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ 
   onSubmit, 
   isSaving, 
-  defaultValues = { name: '', birthDate: new Date() },
-  navigateToMain = false
+  defaultValues = { name: '', birthDate: new Date() }
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
@@ -67,9 +65,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   // Handle form submission with navigation
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     await onSubmit(values);
-    if (navigateToMain) {
-      navigate('/main');
-    }
+    navigate('/main');
   };
   
   return (

@@ -3,12 +3,13 @@ import React from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { ProfileSection } from '@/components/ProfilePage/ProfileSection';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const ProfilePage: React.FC = () => {
   const { userProfile } = useAppStore();
   
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       
       {/* Cosmic background image */}
@@ -23,6 +24,9 @@ const ProfilePage: React.FC = () => {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8 max-w-md mx-auto w-full">
         <ProfileSection />
       </div>
+
+      {/* Add the bottom navigation */}
+      <BottomNavigation />
     </div>
   );
 };

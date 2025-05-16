@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -140,8 +139,10 @@ const UserProfileForm: React.FC = () => {
         title: "Профиль обновлен",
         description: "Ваши данные успешно сохранены"
       });
-    
-      // We'll let the ProfileForm handle navigation now
+      
+      // Always navigate to main when clicking continue
+      navigate('/main');
+      
     } catch (error: any) {
       console.error("Error saving profile:", error);
       toast({
@@ -153,9 +154,6 @@ const UserProfileForm: React.FC = () => {
       setIsSaving(false);
     }
   };
-
-  // Determine if we should navigate to main after saving
-  const shouldNavigateToMain = location.pathname === '/profile-setup';
 
   return (
     <div className="w-full max-w-md mx-auto text-center">
@@ -183,7 +181,6 @@ const UserProfileForm: React.FC = () => {
             name: userProfile.name !== 'Искатель' ? userProfile.name : '',
             birthDate: userProfile.birthDate || new Date()
           }}
-          navigateToMain={shouldNavigateToMain}
         />
       )}
       
