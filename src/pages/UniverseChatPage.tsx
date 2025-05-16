@@ -63,7 +63,9 @@ const UniverseChatPage = () => {
         if (sessionId) {
           // Now send the message
           console.log('Session created, sending message to session:', sessionId);
-          setCurrentChatSession(sessionId);
+          await setCurrentChatSession(sessionId);
+          // Make sure to switch to chat tab
+          setActiveTab('chat');
           // Small timeout to ensure session is set
           setTimeout(() => {
             sendChatMessage(message);
@@ -76,6 +78,7 @@ const UniverseChatPage = () => {
     } else {
       // Session exists, send message
       console.log('Sending message to existing session:', currentChatSession);
+      setActiveTab('chat'); // Make sure we're on the chat tab
       sendChatMessage(message);
     }
   };
