@@ -53,7 +53,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
     return (
-      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <HoroscopeHeader 
             zodiacInfo={null}
@@ -96,7 +96,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   // Show the generate button if there's no horoscope and we're not loading
   if (!loading && !horoscope && showGenerateButton) {
     return (
-      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <HoroscopeHeader 
             zodiacInfo={zodiacInfo}
@@ -107,9 +107,10 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <p className="text-center mb-6 text-cosmic-light">
-            {language === 'ru' 
-              ? 'Узнайте, что вас ждет сегодня!'
-              : 'Find out what awaits you today!'}
+            {translations.findOutToday?.[language] || translations.findOutToday?.en || 
+              (language === 'ru' 
+                ? 'Узнайте, что вас ждет сегодня!'
+                : 'Find out what awaits you today!')}
           </p>
           <CosmicButton 
             onClick={handleGenerateClick}
@@ -117,7 +118,8 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
             className="animate-pulse"
           >
             <Star className="mr-2" />
-            {language === 'ru' ? 'Что меня ждет сегодня?' : 'What awaits me today?'}
+            {translations.generateButton?.[language] || translations.generateButton?.en ||
+              (language === 'ru' ? 'Что меня ждет сегодня?' : 'What awaits me today?')}
           </CosmicButton>
         </CardContent>
       </Card>
@@ -126,7 +128,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   if (loading) {
     return (
-      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <HoroscopeHeader 
             zodiacInfo={zodiacInfo}
@@ -137,9 +139,10 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center">
           <p className="text-center mb-6 text-cosmic-accent text-xl">
-            {language === 'ru' 
-              ? 'Вселенная думает...'
-              : 'The universe is thinking...'}
+            {translations.universeThinking?.[language] || translations.universeThinking?.en ||
+              (language === 'ru' 
+                ? 'Вселенная думает...'
+                : 'The universe is thinking...')}
           </p>
           <HoroscopeLoading 
             zodiacInfo={zodiacInfo}
@@ -154,7 +157,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   // If horoscope is null, return a message
   if (!horoscope) {
     return (
-      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <HoroscopeHeader 
             zodiacInfo={zodiacInfo}
@@ -183,7 +186,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // If we have the horoscope data, display it
   return (
-    <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+    <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
       <CardHeader>
         <HoroscopeHeader 
           zodiacInfo={zodiacInfo}

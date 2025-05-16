@@ -39,36 +39,43 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     );
   }
 
+  // Define the emojis and titles based on language
+  const sectionConfig = [
+    {
+      emoji: '💼',
+      key: 'work_finance',
+      title: translations.workFinance[language] || translations.workFinance.en
+    },
+    {
+      emoji: '❤️',
+      key: 'love_relationships',
+      title: translations.loveRelationships[language] || translations.loveRelationships.en
+    },
+    {
+      emoji: '🌿',
+      key: 'health_wellbeing',
+      title: translations.healthWellbeing[language] || translations.healthWellbeing.en
+    },
+    {
+      emoji: '✨',
+      key: 'daily_advice',
+      title: translations.dailyAdvice[language] || translations.dailyAdvice.en
+    }
+  ];
+
   return (
     <div className="space-y-4">
-      <HoroscopeSection
-        title={translations.workFinance[language] || translations.workFinance.en}
-        content={horoscope.sections.work_finance || ""}
-        onComplete={activeSection === 0 ? handleSectionComplete : undefined}
-      />
-      
-      {activeSection >= 1 && (
-        <HoroscopeSection
-          title={translations.loveRelationships[language] || translations.loveRelationships.en}
-          content={horoscope.sections.love_relationships || ""}
-          onComplete={activeSection === 1 ? handleSectionComplete : undefined}
-        />
-      )}
-      
-      {activeSection >= 2 && (
-        <HoroscopeSection
-          title={translations.healthWellbeing[language] || translations.healthWellbeing.en}
-          content={horoscope.sections.health_wellbeing || ""}
-          onComplete={activeSection === 2 ? handleSectionComplete : undefined}
-        />
-      )}
-      
-      {activeSection >= 3 && (
-        <HoroscopeSection
-          title={translations.dailyAdvice[language] || translations.dailyAdvice.en}
-          content={horoscope.sections.daily_advice || ""}
-        />
-      )}
+      {sectionConfig.map((section, index) => (
+        (activeSection >= index) && (
+          <HoroscopeSection
+            key={section.key}
+            title={`${section.emoji} ${section.title}`}
+            content={horoscope.sections[section.key] || ""}
+            onComplete={activeSection === index ? handleSectionComplete : undefined}
+            className="bg-cosmic-dark/40 border-cosmic-accent/20 backdrop-blur-sm"
+          />
+        )
+      ))}
     </div>
   );
 };

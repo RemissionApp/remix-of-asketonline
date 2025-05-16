@@ -5,7 +5,7 @@ import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { DetailedHoroscopeContent } from '@/components/horoscope/DetailedHoroscopeContent';
@@ -72,8 +72,8 @@ const DetailedHoroscopePage: React.FC = () => {
   }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign, shouldFetchHoroscope]);
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
-      <StarField starCount={150} />
+    <div className="min-h-screen flex flex-col relative pb-16 bg-gradient-to-b from-cosmic-dark to-[#1a0b2e]">
+      <StarField starCount={200} />
       <TopBar />
       
       <Button
@@ -85,7 +85,7 @@ const DetailedHoroscopePage: React.FC = () => {
         {translations.backButton[language] || translations.backButton.en}
       </Button>
       
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 mt-14">
         <div className="w-full max-w-lg">
           <DetailedHoroscopeContent
             horoscope={horoscope}

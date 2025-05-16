@@ -105,19 +105,19 @@ export const useHoroscopeData = ({
             
             setLoading(false);
             return;
-          } else if (dbError) {
+          } else if (dbError && dbError.code !== 'PGRST116') {
             console.log("Database error:", dbError);
           }
         }
         
-        console.log("Calling edge function to generate detailed horoscope", {
+        console.log("Calling generate-horoscope edge function", {
           sign: zodiacSign,
           language,
           detailed: true,
           birthDate: userProfile.birthDate
         });
         
-        // If not in database, call our edge function to generate a detailed horoscope
+        // Call our edge function to generate a detailed horoscope
         const { data, error } = await supabase.functions.invoke('generate-horoscope', {
           body: { 
             sign: zodiacSign,
@@ -134,7 +134,7 @@ export const useHoroscopeData = ({
         
         if (!data || !data.success) {
           console.error("Invalid response from edge function:", data);
-          throw new Error('Invalid response from fetch-horoscope function');
+          throw new Error('Invalid response from generate-horoscope function');
         }
         
         console.log("Detailed horoscope data received:", data);
@@ -142,6 +142,24 @@ export const useHoroscopeData = ({
         // Safety check to ensure data.data exists and has the expected structure
         if (!data.data || typeof data.data !== 'object') {
           throw new Error('Invalid horoscope data format received');
+        }
+        
+        // Store the horoscope in the database
+        if (user) {
+          const { error: insertError } = await supabase
+            .from('detailed_horoscopes')
+            .upsert({
+              user_id: user.id,
+              zodiac_sign: zodiacSign,
+              date: today,
+              content: data.data
+            });
+            
+          if (insertError) {
+            console.error("Error storing horoscope in database:", insertError);
+          } else {
+            console.log("Horoscope stored in database successfully");
+          }
         }
         
         // Set the horoscope data
