@@ -169,16 +169,21 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
+      // Prepare update object with only defined fields
+      const updateFields: any = {};
+      if (profileData.name) updateFields.name = profileData.name;
+      if (profileData.birthDate) updateFields.birth_date = profileData.birthDate;
+      if (profileData.goal) updateFields.goal = profileData.goal;
+      if (profileData.totalDays !== undefined) updateFields.total_days = profileData.totalDays;
+      if (profileData.energyPoints !== undefined) updateFields.energy_points = profileData.energyPoints;
+      if (profileData.rank) updateFields.rank = profileData.rank;
+      if (profileData.avatar_url) updateFields.avatar_url = profileData.avatar_url;
+
+      console.log("Updating profile with fields:", updateFields);
+      
       const { error } = await supabase
         .from('profiles')
-        .update({
-          name: profileData.name,
-          birth_date: profileData.birthDate,
-          goal: profileData.goal,
-          total_days: profileData.totalDays,
-          energy_points: profileData.energyPoints,
-          rank: profileData.rank
-        })
+        .update(updateFields)
         .eq('id', user.id);
       
       if (error) throw error;
@@ -229,6 +234,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     
     if (!user) return;
     
+    console.log("Loading user profile for:", user.id);
     try {
       // Get profile data
       const { data, error } = await supabase
@@ -237,7 +243,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .eq('id', user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading profile data:", error);
+        throw error;
+      }
+      
+      console.log("Retrieved profile data:", data);
       
       // Check subscription status
       const { data: subscription } = await supabase
@@ -300,6 +311,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           goal: data.goal || 'Познать свою истинную силу',
           isPro: isPro,
           rank: data.rank,
+          avatar_url: data.avatar_url, // Make sure to include avatar URL
           achievements: mappedAchievements,
           activeMission
         }

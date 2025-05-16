@@ -36,7 +36,7 @@ const UserProfileForm: React.FC = () => {
         
         const { data: profileData, error } = await supabase
           .from('profiles')
-          .select('name, birth_date')
+          .select('name, birth_date, avatar_url') // Added avatar_url field
           .eq('id', user.id)
           .single();
         
@@ -59,7 +59,8 @@ const UserProfileForm: React.FC = () => {
           // Update the store
           updateUserProfile({
             name: profileData.name,
-            birthDate: birthDate
+            birthDate: birthDate,
+            avatar_url: profileData.avatar_url // Add avatar_url to update
           });
           
           // Calculate and set age
@@ -83,7 +84,7 @@ const UserProfileForm: React.FC = () => {
       const calculatedAge = differenceInYears(new Date(), userProfile.birthDate);
       setAge(calculatedAge);
     }
-  }, [user, location.pathname]);
+  }, [user, location.pathname, updateUserProfile]);
   
   // Handle form submission
   const onSubmit = async (values: z.infer<any>) => {

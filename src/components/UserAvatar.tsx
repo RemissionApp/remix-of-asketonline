@@ -41,11 +41,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   
   // Get avatar URL from userProfile if available
   const getAvatarUrl = () => {
+    // Check if userProfile has an avatar_url
     if (userProfile?.avatar_url) {
+      console.log("Using avatar from userProfile:", userProfile.avatar_url);
       return userProfile.avatar_url;
     }
     
     // If no custom avatar, use rank-based default avatar
+    console.log("Using default avatar based on rank:", userProfile?.rank);
     return getAvatarImagePath(userProfile.rank);
   };
   
