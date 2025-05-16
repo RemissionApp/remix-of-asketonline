@@ -12,11 +12,18 @@ interface UseHoroscopeDataProps {
   language: string;
   translations: any;
   isPro: boolean;
+  shouldFetchHoroscope?: boolean;
 }
 
-export const useHoroscopeData = ({ userProfile, language, translations, isPro }: UseHoroscopeDataProps) => {
+export const useHoroscopeData = ({ 
+  userProfile, 
+  language, 
+  translations, 
+  isPro,
+  shouldFetchHoroscope = false
+}: UseHoroscopeDataProps) => {
   const [horoscope, setHoroscope] = useState<DetailedHoroscope | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAppStore(); // Get user from app store
   
@@ -25,6 +32,12 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
   const zodiacSign = birthDate ? getZodiacSign(birthDate) : null;
   
   useEffect(() => {
+    // Only fetch data when explicitly requested via shouldFetchHoroscope
+    if (!shouldFetchHoroscope) {
+      console.log("Not fetching horoscope data - waiting for user to request it");
+      return;
+    }
+    
     const fetchDetailedHoroscope = async () => {
       try {
         setLoading(true);
@@ -140,10 +153,8 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
       }
     };
     
-    // Always fetch horoscope when component mounts, regardless of PRO status
-    // This way it will work for all users while showing a PRO overlay for non-PRO users
     fetchDetailedHoroscope();
-  }, [userProfile?.birthDate, zodiacSign, language, toast, translations, user]);
+  }, [userProfile?.birthDate, zodiacSign, language, toast, translations, user, shouldFetchHoroscope]);
 
   return {
     horoscope,

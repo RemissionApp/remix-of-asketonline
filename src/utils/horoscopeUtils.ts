@@ -132,6 +132,21 @@ export function getHoroscopeTranslations(language: string, userName?: string): a
       ru: 'Получите PRO-аккаунт для доступа к расширенному гороскопу с детальным анализом.',
       en: 'Get PRO account for access to extended horoscope with detailed analysis.',
       es: 'Obtenga una cuenta PRO para acceder a un horóscopo ampliado con análisis detallado.'
+    },
+    generateButton: {
+      ru: 'Что меня ждет сегодня?',
+      en: 'What awaits me today?',
+      es: '¿Qué me espera hoy?'
+    },
+    universeThinking: {
+      ru: 'Вселенная думает...',
+      en: 'The universe is thinking...',
+      es: 'El universo está pensando...'
+    },
+    findOutToday: {
+      ru: 'Узнайте, что вас ждет сегодня!',
+      en: 'Find out what awaits you today!',
+      es: '¡Descubre qué te espera hoy!'
     }
   };
 }

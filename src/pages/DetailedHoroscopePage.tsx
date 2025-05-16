@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -17,6 +17,7 @@ const DetailedHoroscopePage: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [shouldFetchHoroscope, setShouldFetchHoroscope] = useState(false);
   
   // Get translations
   const translations = getHoroscopeTranslations(language, userProfile?.name);
@@ -43,17 +44,22 @@ const DetailedHoroscopePage: React.FC = () => {
           : 'To view your horoscope, please set your birth date in your profile.',
         variant: 'warning',
       });
-      
-      // No automatic redirect, allow user to manually navigate if they want
     }
   }, [userProfile?.birthDate, language, toast]);
   
-  // Fetch horoscope data
+  // Handle manually triggering horoscope generation
+  const handleGenerateHoroscope = () => {
+    console.log("Manually triggering horoscope generation");
+    setShouldFetchHoroscope(true);
+  };
+  
+  // Fetch horoscope data only when shouldFetchHoroscope is true
   const { horoscope, loading, zodiacSign: fetchedZodiacSign } = useHoroscopeData({
     userProfile, 
     language, 
     translations,
-    isPro: !!userProfile?.isPro
+    isPro: !!userProfile?.isPro,
+    shouldFetchHoroscope
   });
 
   // Additional debug logging
@@ -62,7 +68,8 @@ const DetailedHoroscopePage: React.FC = () => {
     console.log("Horoscope data:", horoscope);
     console.log("Is user pro:", !!userProfile?.isPro);
     console.log("Fetched zodiac sign:", fetchedZodiacSign);
-  }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign]);
+    console.log("Should fetch horoscope:", shouldFetchHoroscope);
+  }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign, shouldFetchHoroscope]);
 
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -87,6 +94,7 @@ const DetailedHoroscopePage: React.FC = () => {
             zodiacInfo={zodiacInfo}
             translations={translations}
             language={language}
+            onGenerateHoroscope={handleGenerateHoroscope}
           />
         </div>
       </div>

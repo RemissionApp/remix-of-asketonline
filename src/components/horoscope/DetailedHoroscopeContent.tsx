@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { HoroscopeHeader } from './sections/HoroscopeHeader';
@@ -9,6 +9,8 @@ import { HoroscopeLoading } from './HoroscopeLoading';
 import { HoroscopeProOverlay } from './HoroscopeProOverlay';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { CosmicButton } from '@/components/CosmicButton';
+import { Star } from 'lucide-react';
 
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -17,6 +19,7 @@ interface DetailedHoroscopeContentProps {
   zodiacInfo: any;
   translations: any;
   language: string;
+  onGenerateHoroscope?: () => void;
 }
 
 export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> = ({
@@ -25,9 +28,11 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   userProfile,
   zodiacInfo,
   translations,
-  language
+  language,
+  onGenerateHoroscope
 }) => {
   const navigate = useNavigate();
+  const [showGenerateButton, setShowGenerateButton] = useState(true);
   
   console.log("DetailedHoroscopeContent rendering with:", { 
     hasHoroscope: !!horoscope, 
@@ -36,6 +41,13 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     zodiacInfo,
     birthDate: userProfile?.birthDate
   });
+
+  const handleGenerateClick = () => {
+    setShowGenerateButton(false);
+    if (onGenerateHoroscope) {
+      onGenerateHoroscope();
+    }
+  };
 
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
@@ -80,14 +92,60 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     );
   }
 
-  if (loading || !horoscope) {
+  // Show the generate button if there's no horoscope and we're not loading
+  if (!loading && !horoscope && showGenerateButton) {
     return (
       <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
-        <HoroscopeLoading 
-          zodiacInfo={zodiacInfo}
-          translations={translations}
-          language={language}
-        />
+        <CardHeader>
+          <HoroscopeHeader 
+            zodiacInfo={zodiacInfo}
+            translations={translations}
+            language={language}
+            userName={userProfile?.name}
+          />
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <p className="text-center mb-6 text-cosmic-light">
+            {language === 'ru' 
+              ? 'Узнайте, что вас ждет сегодня!'
+              : 'Find out what awaits you today!'}
+          </p>
+          <CosmicButton 
+            onClick={handleGenerateClick}
+            size="lg"
+            className="animate-pulse"
+          >
+            <Star className="mr-2" />
+            {language === 'ru' ? 'Что меня ждет сегодня?' : 'What awaits me today?'}
+          </CosmicButton>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+        <CardHeader>
+          <HoroscopeHeader 
+            zodiacInfo={zodiacInfo}
+            translations={translations}
+            language={language}
+            userName={userProfile?.name}
+          />
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center">
+          <p className="text-center mb-6 text-cosmic-accent text-xl">
+            {language === 'ru' 
+              ? 'Вселенная думает...'
+              : 'The universe is thinking...'}
+          </p>
+          <HoroscopeLoading 
+            zodiacInfo={zodiacInfo}
+            translations={translations}
+            language={language}
+          />
+        </CardContent>
       </Card>
     );
   }
