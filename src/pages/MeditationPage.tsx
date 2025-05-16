@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
-import { MeditationCard } from '@/components/MeditationCard';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -10,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { ProBadge } from '@/components/ProBadge';
 import { useNavigate } from 'react-router-dom';
+import { MeditationSlider } from '@/components/MeditationSlider';
+import { Meditation } from '@/types';
 
 const MeditationPage: React.FC = () => {
   const { setActiveScreen, userProfile, upgradeToPro } = useAppStore();
@@ -20,60 +21,107 @@ const MeditationPage: React.FC = () => {
   // Check if user has PRO subscription
   const isPro = userProfile.isPro;
 
-  // Sample meditation data
-  const meditations = [
+  // Sample meditation data with audioSrc
+  const meditations: Meditation[] = [
+    // FREE MEDITATIONS
     {
-      id: 'morning-1',
-      title: t.meditation.morning.title,
-      description: t.meditation.morning.description,
-      duration: '10 min',
+      id: 'morning-free-1',
+      title: 'Утренняя медитация',
+      description: 'Начните свой день с этой простой 5-минутной медитации',
+      duration: '5 мин',
       category: 'morning',
-      image: '/meditation/morning1.jpg'
+      image: '/meditation/morning1.jpg',
+      audioSrc: '/meditations/morning-free.mp3',
+      locked: false,
+      requiresPro: false
     },
     {
-      id: 'morning-2',
-      title: t.meditation.morning.title,
-      description: t.meditation.morning.description,
-      duration: '15 min',
-      category: 'morning',
-      image: '/meditation/morning2.jpg'
+      id: 'evening-free-1',
+      title: 'Вечернее расслабление',
+      description: 'Подготовьтесь ко сну с этой успокаивающей медитацией',
+      duration: '7 мин',
+      category: 'evening',
+      image: '/meditation/evening1.jpg',
+      audioSrc: '/meditations/evening-free.mp3',
+      locked: false,
+      requiresPro: false
     },
     {
-      id: 'evening-1',
+      id: 'stress-free-1',
+      title: 'Снятие стресса',
+      description: 'Быстрая медитация для снятия напряжения',
+      duration: '3 мин',
+      category: 'stress',
+      image: '/meditation/stress1.jpg',
+      audioSrc: '/meditations/stress-free.mp3',
+      locked: false,
+      requiresPro: false
+    },
+    
+    // PRO MEDITATIONS
+    {
+      id: 'morning-pro-1',
+      title: t.meditation.morning.title,
+      description: t.meditation.morning.description,
+      duration: '10 мин',
+      category: 'morning',
+      image: '/meditation/morning2.jpg',
+      audioSrc: '/meditations/morning-pro-1.mp3',
+      locked: !isPro,
+      requiresPro: true
+    },
+    {
+      id: 'morning-pro-2',
+      title: 'Утренняя энергия',
+      description: 'Зарядитесь энергией на весь день',
+      duration: '15 мин',
+      category: 'morning',
+      image: '/meditation/morning3.jpg',
+      audioSrc: '/meditations/morning-pro-2.mp3',
+      locked: !isPro,
+      requiresPro: true
+    },
+    {
+      id: 'evening-pro-1',
       title: t.meditation.evening.title,
       description: t.meditation.evening.description,
-      duration: '12 min',
+      duration: '12 мин',
       category: 'evening',
-      image: '/meditation/evening1.jpg'
+      image: '/meditation/evening2.jpg',
+      audioSrc: '/meditations/evening-pro-1.mp3',
+      locked: !isPro,
+      requiresPro: true
     },
     {
-      id: 'stress-1',
+      id: 'stress-pro-1',
       title: t.meditation.stress.title,
       description: t.meditation.stress.description,
-      duration: '8 min',
+      duration: '8 мин',
       category: 'stress',
-      image: '/meditation/stress1.jpg'
+      image: '/meditation/stress2.jpg',
+      audioSrc: '/meditations/stress-pro-1.mp3',
+      locked: !isPro,
+      requiresPro: true
     },
     {
-      id: 'mantra-1',
-      title: t.meditation.mantra.title,
-      description: t.meditation.mantra.description,
-      duration: '20 min',
-      category: 'mantra',
-      image: '/meditation/mantra1.jpg'
-    },
-    {
-      id: 'visualization-1',
+      id: 'visualization-pro-1',
       title: t.meditation.visualization.title,
       description: t.meditation.visualization.description,
-      duration: '15 min',
+      duration: '15 мин',
       category: 'visualization',
-      image: '/meditation/visualization1.jpg'
+      image: '/meditation/visualization1.jpg',
+      audioSrc: '/meditations/visualization-pro-1.mp3',
+      locked: !isPro,
+      requiresPro: true
     }
   ];
 
   // Filter meditations by category
   const filteredMeditations = meditations.filter(meditation => meditation.category === selectedCategory);
+  
+  // Split into free and pro meditations
+  const freeMeditations = filteredMeditations.filter(m => !m.requiresPro);
+  const proMeditations = filteredMeditations.filter(m => m.requiresPro);
 
   const handleUpgrade = () => {
     // For demo purposes, upgrade the user immediately
@@ -101,76 +149,75 @@ const MeditationPage: React.FC = () => {
           </h1>
         </div>
 
-        {isPro ? (
-          <>
-            <Tabs 
-              defaultValue="morning" 
-              className="w-full max-w-md" 
-              onValueChange={setSelectedCategory}
-            >
-              <TabsList className="grid grid-cols-5 mb-6">
-                <TabsTrigger value="morning">{t.meditation.categories.morning}</TabsTrigger>
-                <TabsTrigger value="evening">{t.meditation.categories.evening}</TabsTrigger>
-                <TabsTrigger value="stress">{t.meditation.categories.stress}</TabsTrigger>
-                <TabsTrigger value="mantra">{t.meditation.categories.mantra}</TabsTrigger>
-                <TabsTrigger value="visualization">{t.meditation.categories.visual}</TabsTrigger>
-              </TabsList>
+        <Tabs 
+          defaultValue="morning" 
+          className="w-full max-w-lg" 
+          onValueChange={setSelectedCategory}
+        >
+          <TabsList className="grid grid-cols-5 mb-6">
+            <TabsTrigger value="morning">{t.meditation.categories.morning}</TabsTrigger>
+            <TabsTrigger value="evening">{t.meditation.categories.evening}</TabsTrigger>
+            <TabsTrigger value="stress">{t.meditation.categories.stress}</TabsTrigger>
+            <TabsTrigger value="mantra">{t.meditation.categories.mantra}</TabsTrigger>
+            <TabsTrigger value="visualization">{t.meditation.categories.visual}</TabsTrigger>
+          </TabsList>
 
-              {Object.keys(t.meditation.categories).map((category) => (
-                <TabsContent key={category} value={category} className="w-full">
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredMeditations.map(meditation => (
-                      <MeditationCard 
-                        key={meditation.id} 
-                        title={meditation.title}
-                        description={meditation.description}
-                        duration={meditation.duration}
-                        image={meditation.image}
-                      />
-                    ))}
+          {Object.keys(t.meditation.categories).map((category) => (
+            <TabsContent key={category} value={category} className="w-full">
+              <div className="space-y-8">
+                {/* Free meditations section */}
+                {freeMeditations.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-serif text-white mb-4">Бесплатные медитации</h2>
+                    <MeditationSlider meditations={freeMeditations} />
                   </div>
-                </TabsContent>
-              ))}
-            </Tabs>
-          </>
-        ) : (
-          <div className="flex flex-col items-center w-full max-w-md">
-            <SubscriptionBanner className="mb-6" onUpgrade={handleUpgrade} />
-            
-            {/* Preview section with Pro Feature Overlay */}
-            <ProFeatureOverlay 
-              title="Unlock Meditation Library" 
-              message="Get access to our full collection of guided meditations with PRO"
-              className="w-full"
-            >
-              <div className="space-y-4 w-full">
-                <MeditationCard 
-                  title={t.meditation.morning.title}
-                  description={t.meditation.morning.description}
-                  duration="10 min"
-                  image="/meditation/morning1.jpg"
-                />
-                <MeditationCard 
-                  title={t.meditation.evening.title}
-                  description={t.meditation.evening.description}
-                  duration="12 min"
-                  image="/meditation/evening1.jpg"
-                />
+                )}
+                
+                {/* PRO meditations section */}
+                {proMeditations.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <h2 className="text-lg font-serif text-white">PRO медитации</h2>
+                      {!isPro && (
+                        <span className="text-xs bg-cosmic-accent/20 text-cosmic-accent px-2 py-1 rounded-full">
+                          Обновите аккаунт
+                        </span>
+                      )}
+                    </div>
+                    
+                    {isPro ? (
+                      <MeditationSlider meditations={proMeditations} />
+                    ) : (
+                      <>
+                        <SubscriptionBanner className="mb-6" onUpgrade={handleUpgrade} />
+                        <ProFeatureOverlay 
+                          title="Доступ к PRO медитациям" 
+                          message="Получите доступ к полной коллекции медитаций с PRO"
+                          className="w-full mb-4"
+                        >
+                          <div className="grid grid-cols-2 gap-4">
+                            <MeditationCard 
+                              title={proMeditations[0]?.title || "Утренняя медитация PRO"}
+                              description={proMeditations[0]?.description || "Описание медитации"}
+                              duration={proMeditations[0]?.duration || "10 мин"}
+                              image={proMeditations[0]?.image || "/meditation/morning2.jpg"}
+                            />
+                            <MeditationCard 
+                              title={proMeditations[1]?.title || "Вечерняя медитация PRO"}
+                              description={proMeditations[1]?.description || "Описание медитации"}
+                              duration={proMeditations[1]?.duration || "12 мин"}
+                              image={proMeditations[1]?.image || "/meditation/evening2.jpg"}
+                            />
+                          </div>
+                        </ProFeatureOverlay>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
-            </ProFeatureOverlay>
-            
-            {/* Free preview meditation */}
-            <div className="mt-8 w-full">
-              <h2 className="text-lg font-serif text-white mb-4">Free Preview</h2>
-              <MeditationCard 
-                title="Starter Meditation"
-                description="A short introduction to meditative practices"
-                duration="5 min"
-                image="/meditation/morning1.jpg"
-              />
-            </div>
-          </div>
-        )}
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
 
       {/* Bottom Navigation */}

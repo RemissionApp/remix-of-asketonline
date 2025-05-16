@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LockIcon, PlayCircleIcon, SparklesIcon } from 'lucide-react';
+import { LockIcon, PlayIcon, SparklesIcon } from 'lucide-react';
 import { CosmicButton } from './CosmicButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -48,7 +48,6 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   const handleUpgrade = () => {
     // For demo purposes, immediately upgrade the user
     upgradeToPro();
-    navigate('/comparison');
   };
   
   return (
@@ -76,18 +75,18 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
         
         <CardContent className="p-0">
           <h3 className="text-lg font-serif text-white mb-1">{title}</h3>
-          <p className="text-sm text-cosmic-secondary mb-2">{description}</p>
+          <p className="text-sm text-cosmic-secondary mb-2 line-clamp-2">{description}</p>
           <div className="flex items-center justify-between">
             <span className="text-xs text-cosmic-accent">{duration}</span>
             {!locked ? (
               <CosmicButton size="sm" onClick={handlePlay}>
-                <PlayCircleIcon size={16} className="mr-1" />
-                {t.meditation.play}
+                <PlayIcon size={16} className="mr-1" />
+                {t.meditation.play || "Играть"}
               </CosmicButton>
             ) : (
               <CosmicButton size="sm" variant="outline" onClick={handleUpgrade}>
                 <SparklesIcon size={14} className="mr-1" />
-                {t.meditation.unlock}
+                {t.meditation.unlock || "Разблокировать"}
               </CosmicButton>
             )}
           </div>
