@@ -21,7 +21,7 @@ export const ProfileSection: React.FC = () => {
       
       {/* Add spacing and zodiac section heading */}
       <div className="mt-12">
-        <h2 className="text-2xl text-white font-serif mb-4">{t.zodiac?.title || "Знак зодиака"}</h2>
+        <h2 className="text-2xl text-white font-serif mb-4">{"Знак зодиака"}</h2>
         <ZodiacBadgeDisplay />
       </div>
       
