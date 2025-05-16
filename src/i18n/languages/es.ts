@@ -1,4 +1,3 @@
-
 import { Translations } from '../types/translationTypes';
 
 export const esTranslations: Translations = {
@@ -164,7 +163,17 @@ export const esTranslations: Translations = {
     chatDescription: "Haz preguntas y recibe respuestas del Universo en tiempo real",
     enterChat: "Entrar al chat",
     chatProTitle: "Chat con el Universo",
-    chatProMessage: "Desbloquea PRO para dialogar con el Universo"
+    chatProMessage: "Desbloquea PRO para dialogar con el Universo",
+    yourConversations: "Tus conversaciones",
+    newChat: "Nueva conversación",
+    noChatsYet: "Aún no tienes conversaciones con el Universo",
+    startNewChat: "Iniciar una nueva conversación",
+    conversations: "Conversaciones",
+    currentChat: "Chat actual",
+    startConversation: "Inicia la conversación haciendo tu primera pregunta",
+    newChatTitle: "Nueva conversación con el Universo",
+    chatTitleLabel: "Título de la conversación",
+    chatTitlePlaceholder: "Por ejemplo: Mi camino espiritual"
   },
   profile: {
     title: "Perfil",
@@ -299,5 +308,15 @@ export const esTranslations: Translations = {
     learnMore: "Más información",
     proTitle: "Análisis numerológico",
     proMessage: "Desbloquea PRO para obtener un análisis numerológico completo"
+  },
+  common: {
+    cancel: "Cancelar",
+    create: "Crear",
+    save: "Guardar",
+    delete: "Eliminar",
+    edit: "Editar",
+    back: "Atrás",
+    next: "Siguiente",
+    submit: "Enviar"
   }
 };

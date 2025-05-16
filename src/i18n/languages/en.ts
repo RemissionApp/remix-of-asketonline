@@ -164,7 +164,17 @@ export const enTranslations: Translations = {
     chatDescription: "Ask questions and get answers from the Universe in real time",
     enterChat: "Enter chat",
     chatProTitle: "Chat with the Universe",
-    chatProMessage: "Unlock PRO to have a dialog with the Universe"
+    chatProMessage: "Unlock PRO to have a dialog with the Universe",
+    yourConversations: "Your conversations",
+    newChat: "New chat",
+    noChatsYet: "You don't have any conversations with the Universe yet",
+    startNewChat: "Start a new conversation",
+    conversations: "Conversations",
+    currentChat: "Current chat",
+    startConversation: "Start the conversation by asking your first question",
+    newChatTitle: "New conversation with the Universe",
+    chatTitleLabel: "Conversation title",
+    chatTitlePlaceholder: "For example: My spiritual path"
   },
   
   profile: {
@@ -300,5 +310,15 @@ export const enTranslations: Translations = {
     learnMore: "Learn more",
     proTitle: "Numerological Analysis",
     proMessage: "Unlock PRO to get a complete numerological analysis"
+  },
+  common: {
+    cancel: "Cancel",
+    create: "Create",
+    save: "Save",
+    delete: "Delete",
+    edit: "Edit",
+    back: "Back",
+    next: "Next",
+    submit: "Submit"
   }
 };

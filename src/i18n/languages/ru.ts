@@ -1,4 +1,3 @@
-
 import { Translations } from '../types/translationTypes';
 
 export const ruTranslations: Translations = {
@@ -164,7 +163,17 @@ export const ruTranslations: Translations = {
     chatDescription: "Задавай вопросы и получай ответы от Вселенной в режиме реального времени",
     enterChat: "Войти в чат",
     chatProTitle: "Чат со Вселенной",
-    chatProMessage: "Разблокируй PRO чтобы вести диалог со Вселенной"
+    chatProMessage: "Разблокируй PRO чтобы вести диалог со Вселенной",
+    yourConversations: "Ваши диалоги",
+    newChat: "Новый диалог",
+    noChatsYet: "У вас пока нет диалогов со Вселенной",
+    startNewChat: "Начать новый диалог",
+    conversations: "Диалоги",
+    currentChat: "Текущий чат",
+    startConversation: "Начните диалог с Вселенной, задав свой первый вопрос",
+    newChatTitle: "Новый диалог со Вселенной",
+    chatTitleLabel: "Название диалога",
+    chatTitlePlaceholder: "Например: Поиск моего пути"
   },
   profile: {
     title: "Профиль",
@@ -299,5 +308,15 @@ export const ruTranslations: Translations = {
     learnMore: "Подробнее",
     proTitle: "Нумерологический анализ",
     proMessage: "Разблокируй PRO чтобы получить полный нумерологический разбор"
+  },
+  common: {
+    cancel: "Отмена",
+    create: "Создать",
+    save: "Сохранить",
+    delete: "Удалить",
+    edit: "Редактировать",
+    back: "Назад",
+    next: "Далее",
+    submit: "Отправить"
   }
 };
