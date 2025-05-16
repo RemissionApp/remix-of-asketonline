@@ -35,6 +35,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
             className="object-cover w-full h-full"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-cosmic-accent/20 to-transparent"></div>
+          <div className="absolute inset-0 rounded-full overflow-hidden z-0">
+            <div className="absolute animate-pulse top-0 left-1/2 w-4 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>
+            <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-4 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>
+            <div className="absolute animate-pulse delay-150 left-0 top-1/2 w-1 h-4 bg-white/20 rounded transform -translate-y-1/2 blur-sm"></div>
+            <div className="absolute animate-pulse delay-150 right-0 top-1/2 w-1 h-4 bg-white/20 rounded transform -translate-y-1/2 blur-sm"></div>
+          </div>
         </div>
         <div>
           <h2 className="text-cosmic-accent font-serif">

@@ -59,6 +59,12 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
             />
           </div>
           <Star className="h-8 w-8 text-cosmic-accent animate-spin relative z-10" />
+          <div className="absolute inset-0 rounded-full overflow-hidden z-0">
+            <div className="absolute animate-pulse top-0 left-1/2 w-8 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-md"></div>
+            <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-8 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-md"></div>
+            <div className="absolute animate-pulse delay-150 left-0 top-1/2 w-1 h-8 bg-white/20 rounded transform -translate-y-1/2 blur-md"></div>
+            <div className="absolute animate-pulse delay-150 right-0 top-1/2 w-1 h-8 bg-white/20 rounded transform -translate-y-1/2 blur-md"></div>
+          </div>
         </div>
         <span className="text-cosmic-secondary text-center font-serif mt-2">Вселенная обдумывает ваш вопрос...</span>
         <div className="w-full max-w-xs mt-4">
@@ -96,6 +102,12 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
                   className="object-cover w-full h-full opacity-70"
                 />
                 <Loader2 className="h-5 w-5 text-white animate-spin absolute z-10" />
+                <div className="absolute inset-0 rounded-full overflow-hidden z-0">
+                  <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>
+                  <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-5 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>
+                  <div className="absolute animate-pulse delay-150 left-0 top-1/2 w-1 h-5 bg-white/20 rounded transform -translate-y-1/2 blur-sm"></div>
+                  <div className="absolute animate-pulse delay-150 right-0 top-1/2 w-1 h-5 bg-white/20 rounded transform -translate-y-1/2 blur-sm"></div>
+                </div>
               </div>
               <div className="absolute inset-0 animate-ping bg-cosmic-accent/5 rounded-full"></div>
             </div>
