@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -7,6 +8,7 @@ import { PactOath } from '@/components/PactOath';
 import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
@@ -350,6 +352,9 @@ const CreatePactPage: React.FC = () => {
           {renderStep()}
         </div>
       )}
+      
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 };
