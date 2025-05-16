@@ -28,7 +28,7 @@ export interface UniverseChatActions {
  * Creates universe chat actions
  */
 export const createUniverseChatActions = <T extends AppState & UniverseChatState>(
-  set: StateCreator<T>['setState'],
+  set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
   get: () => T
 ): UniverseChatActions => ({
   loadChatSessions: async () => {
