@@ -1,3 +1,4 @@
+
 import { format, formatRelative, formatDistance } from 'date-fns';
 import { ru, enUS, es } from 'date-fns/locale';
 import { AppLanguage } from '@/store/types';
@@ -78,14 +79,20 @@ export const formatRelativeTime = (date: Date, language: AppLanguage = 'ru') => 
     es
   };
   
-  // For recent messages (less than a day old), show relative time like "5 minutes ago"
-  if (Date.now() - date.getTime() < 24 * 60 * 60 * 1000) {
-    return formatDistance(date, new Date(), {
-      addSuffix: true,
-      locale: locales[language]
-    });
+  try {
+    // For recent messages (less than a day old), show relative time like "5 minutes ago"
+    if (Date.now() - date.getTime() < 24 * 60 * 60 * 1000) {
+      return formatDistance(date, new Date(), {
+        addSuffix: true,
+        locale: locales[language]
+      });
+    }
+    
+    // For older messages, show the date and time
+    return format(date, 'dd.MM.yyyy HH:mm', { locale: locales[language] });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    // Fallback format if there's an error
+    return date.toLocaleString();
   }
-  
-  // For older messages, show the date
-  return format(date, 'PPp', { locale: locales[language] });
 };

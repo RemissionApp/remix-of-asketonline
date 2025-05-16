@@ -28,9 +28,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
     >
       {!isUser && (
         <div className="flex-shrink-0 mr-3 self-end">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 flex items-center justify-center shadow-lg shadow-cosmic-accent/10">
-            <span className="text-white text-xl">✧</span>
-            <div className="absolute inset-0 rounded-full overflow-hidden">
+          <div className="w-10 h-10 rounded-full overflow-hidden relative flex items-center justify-center bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 shadow-lg shadow-cosmic-accent/10">
+            <img 
+              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg" 
+              alt="Вселенная"
+              className="object-cover w-full h-full z-10"
+            />
+            <div className="absolute inset-0 rounded-full overflow-hidden z-0">
               <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
               <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
               <div className="absolute animate-pulse delay-150 left-0 top-1/2 w-1 h-5 bg-white/30 rounded transform -translate-y-1/2 blur-sm"></div>
