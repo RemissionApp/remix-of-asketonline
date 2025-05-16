@@ -6,6 +6,7 @@ import { SubscriptionManager } from './SubscriptionManager';
 import { LegalDocuments } from './LegalDocuments';
 import { LogoutButton } from './LogoutButton';
 import UserProfileForm from '@/components/UserProfileForm';
+import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 
 export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
@@ -17,6 +18,12 @@ export const ProfileSection: React.FC = () => {
       </h1>
       
       <UserProfileForm />
+      
+      {/* Add spacing and zodiac section heading */}
+      <div className="mt-12">
+        <h2 className="text-2xl text-white font-serif mb-4">{t.zodiac?.title || "Знак зодиака"}</h2>
+        <ZodiacBadgeDisplay />
+      </div>
       
       <div className="mt-10 space-y-6">
         <h2 className="text-2xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "Язык приложения"}</h2>
