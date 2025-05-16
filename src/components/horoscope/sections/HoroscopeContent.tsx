@@ -39,7 +39,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     );
   }
 
-  // Define the emojis and titles based on language
+  // Define the sections with correct emojis
   const sectionConfig = [
     {
       emoji: '💼',

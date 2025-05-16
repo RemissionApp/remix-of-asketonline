@@ -24,6 +24,7 @@ export const HoroscopeSection: React.FC<HoroscopeSectionProps> = ({
         text={content}
         className="cosmic-gradient-text font-serif text-base leading-relaxed"
         onComplete={onComplete}
+        speed={30}
       />
     </div>
   );

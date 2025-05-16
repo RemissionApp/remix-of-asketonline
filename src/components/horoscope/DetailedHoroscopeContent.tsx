@@ -34,7 +34,8 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     loading, 
     isPro: !!userProfile?.isPro,
     zodiacInfo,
-    birthDate: userProfile?.birthDate
+    birthDate: userProfile?.birthDate,
+    horoscopeData: horoscope
   });
 
   const handleGenerateClick = () => {
@@ -91,7 +92,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     );
   }
 
-  // If horoscope is null, return a message
+  // If horoscope is null, return an error message
   if (!horoscope) {
     return (
       <ErrorMessage

@@ -84,32 +84,6 @@ export const useHoroscopeData = ({
           }
         }
         
-        // First try to fetch from the database
-        if (user) {
-          console.log("Fetching horoscope from database for user:", user.id);
-          const { data: dbHoroscope, error: dbError } = await supabase
-            .from('detailed_horoscopes')
-            .select('content')
-            .eq('user_id', user.id)
-            .eq('zodiac_sign', zodiacSign)
-            .eq('date', today)
-            .maybeSingle();
-            
-          if (!dbError && dbHoroscope) {
-            console.log("Found horoscope in database:", dbHoroscope);
-            setHoroscope(dbHoroscope.content);
-            
-            // Also cache the horoscope locally
-            localStorage.setItem(cachedHoroscopeKey, JSON.stringify(dbHoroscope.content));
-            localStorage.setItem(cachedHoroscopeDateKey, today);
-            
-            setLoading(false);
-            return;
-          } else if (dbError && dbError.code !== 'PGRST116') {
-            console.log("Database error:", dbError);
-          }
-        }
-        
         console.log("Calling generate-horoscope edge function", {
           sign: zodiacSign,
           language,
@@ -144,21 +118,26 @@ export const useHoroscopeData = ({
           throw new Error('Invalid horoscope data format received');
         }
         
-        // Store the horoscope in the database
+        // Store the horoscope in the database if user is logged in
         if (user) {
-          const { error: insertError } = await supabase
-            .from('detailed_horoscopes')
-            .upsert({
-              user_id: user.id,
-              zodiac_sign: zodiacSign,
-              date: today,
-              content: data.data
-            });
-            
-          if (insertError) {
-            console.error("Error storing horoscope in database:", insertError);
-          } else {
-            console.log("Horoscope stored in database successfully");
+          try {
+            const { error: insertError } = await supabase
+              .from('detailed_horoscopes')
+              .upsert({
+                user_id: user.id,
+                zodiac_sign: zodiacSign,
+                date: today,
+                content: data.data
+              });
+              
+            if (insertError) {
+              console.error("Error storing horoscope in database:", insertError);
+            } else {
+              console.log("Horoscope stored in database successfully");
+            }
+          } catch (dbError) {
+            console.error("Database error:", dbError);
+            // Continue even if database storage fails
           }
         }
         
