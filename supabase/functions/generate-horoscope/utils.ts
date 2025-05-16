@@ -5,11 +5,20 @@
 export function extractSections(text: string, ru1: string, ru2: string, en1: string, en2: string, emoji: string): string {
   // Log the input text for debugging
   console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
-  console.log(`First 100 chars of text: ${text.substring(0, 100)}...`);
   
-  // Try to find the section using various patterns
+  // Try to find the section using various patterns, starting with emoji which is most reliable
   const patterns = [
+    // First try to find sections by emoji, which is most reliable
+    new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n${emoji}|$)`, 'i'),
     new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    
+    // Then try other patterns if emoji matching fails
+    new RegExp(`[^\\n]*${ru1}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
+    new RegExp(`[^\\n]*${ru2}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
+    new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
+    new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
+    
+    // Finally fallback to basic section extraction
     new RegExp(`[^\\n]*${ru1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
     new RegExp(`[^\\n]*${ru2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
     new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),

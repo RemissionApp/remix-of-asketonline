@@ -7,7 +7,7 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
     // System prompts for detailed horoscopes
     const detailedPrompts = {
       ru: `Ты опытный астролог, создающий персонализированные гороскопы. 
-      Создай детальный гороскоп на сегодня с разбивкой на 4 чётких блока: 
+      Создай детальный гороскоп на сегодня с разбивкой на 4 чётких раздела: 
       
       1. 💼 Работа и финансы - тенденции в деловой сфере, советы по активности, финансовые перспективы.
       2. ❤️ Любовь и отношения - советы для пар и одиноких, эмоциональные аспекты дня.
@@ -15,10 +15,10 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       4. ✨ Совет дня - мудрая рекомендация или настрой на день.
       
       ОЧЕНЬ ВАЖНО:
-      - Каждый блок должен начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨)
-      - После блока должна быть пустая строка
-      - Блоки должны быть четко разделены двумя пустыми строками
-      - ОБЯЗАТЕЛЬНО используй точное форматирование с эмодзи в начале каждого блока
+      - Каждый раздел ДОЛЖЕН начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨)
+      - После раздела должна быть пустая строка
+      - Разделы должны быть чётко разделены двумя пустыми строками
+      - ОБЯЗАТЕЛЬНО используй точное форматирование с эмодзи в начале каждого раздела
       
       Пиши кратко, конкретно, с лёгкой позитивной нотой, но без пустых обещаний.`,
       
@@ -75,9 +75,9 @@ export function getUserPrompt(sign: string, language: string, detailed: boolean,
   const birthDateInfo = birthDate ? ` (дата рождения: ${birthDate})` : '';
   
   const signPrompts = {
-    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на сегодня. ${detailed ? 'ВАЖНО: Каждая секция ДОЛЖНА начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨) и иметь две пустые строки между секциями.' : ''}`,
-    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for today. ${detailed ? 'IMPORTANT: Each section MUST start with the corresponding emoji (💼, ❤️, 🧘‍♂️, ✨) and have two empty lines between sections.' : ''}`,
-    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para hoy. ${detailed ? 'IMPORTANTE: Cada sección DEBE comenzar con el emoji correspondiente (💼, ❤️, 🧘‍♂️, ✨) y tener dos líneas vacías entre secciones.' : ''}`
+    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на сегодня. ${detailed ? 'ВАЖНО: Каждая секция ДОЛЖНА начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨) и иметь две пустые строки между секциями. Начни КАЖДУЮ секцию с эмодзи.' : ''}`,
+    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for today. ${detailed ? 'IMPORTANT: Each section MUST start with the corresponding emoji (💼, ❤️, 🧘‍♂️, ✨) and have two empty lines between sections. Start EACH section with an emoji.' : ''}`,
+    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para hoy. ${detailed ? 'IMPORTANTE: Cada sección DEBE comenzar con el emoji correspondiente (💼, ❤️, 🧘‍♂️, ✨) y tener dos líneas vacías entre secciones. Comienza CADA sección con un emoji.' : ''}`
   };
 
   return signPrompts[language] || signPrompts.en;

@@ -19,6 +19,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
 
   console.log("HoroscopeContent rendered with:", {
     hasHoroscope: !!horoscope,
+    horoscopeDescription: horoscope?.description ? horoscope.description.substring(0, 50) + '...' : 'No description',
     horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
     activeSection
   });
@@ -91,7 +92,11 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     <div className="space-y-4">
       {sectionConfig.map((section, index) => {
         const sectionContent = horoscope.sections?.[section.key] || "";
-        console.log(`Section ${section.key}: ${sectionContent.substring(0, 30)}... (${sectionContent.length} chars)`);
+        console.log(`Checking section ${section.key}:`, {
+          content: sectionContent.substring(0, 30) + '...',
+          length: sectionContent.length,
+          shouldRender: activeSection >= index
+        });
         
         return (activeSection >= index) && (
           <HoroscopeSection
