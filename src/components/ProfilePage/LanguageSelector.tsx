@@ -21,14 +21,14 @@ export const LanguageSelector: React.FC = () => {
   };
   
   return (
-    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6">
-      <div className="flex items-center gap-3 mb-3">
-        <Globe size={18} className="text-cosmic-accent" />
-        <span className="text-white text-sm">{t.userProfile?.languageLabel || "App language"}</span>
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <Globe size={20} className="text-cosmic-accent" />
+        <span className="text-white text-base font-sans">{t.userProfile?.languageLabel || "App language"}</span>
       </div>
       
       <Select value={language} onValueChange={handleLanguageChange}>
-        <SelectTrigger className="bg-cosmic-dark/60 border-cosmic-accent/30 text-white">
+        <SelectTrigger className="bg-cosmic-dark/60 border-cosmic-accent/30 text-white font-sans">
           <SelectValue>
             {language === 'en' ? 'English 🇬🇧' : 
              language === 'es' ? 'Español 🇪🇸' : 
@@ -36,19 +36,19 @@ export const LanguageSelector: React.FC = () => {
           </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-cosmic-dark border-cosmic-accent/30">
-          <SelectItem value="en" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer">
+          <SelectItem value="en" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer font-sans">
             <div className="flex items-center gap-2">
               <span>🇬🇧</span>
               <span>English</span>
             </div>
           </SelectItem>
-          <SelectItem value="es" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer">
+          <SelectItem value="es" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer font-sans">
             <div className="flex items-center gap-2">
               <span>🇪🇸</span>
               <span>Español</span>
             </div>
           </SelectItem>
-          <SelectItem value="ru" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer">
+          <SelectItem value="ru" className="text-white hover:bg-cosmic-accent/20 focus:bg-cosmic-accent/20 cursor-pointer font-sans">
             <div className="flex items-center gap-2">
               <span>🇷🇺</span>
               <span>Русский</span>

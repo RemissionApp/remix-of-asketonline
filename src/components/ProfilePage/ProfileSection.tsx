@@ -11,18 +11,18 @@ export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
   
   return (
-    <div className="mb-6 w-full">
-      <h1 className="text-2xl text-white font-serif mb-4">
+    <div className="w-full">
+      <h1 className="text-3xl text-white font-serif mb-6">
         {t.main?.profile || "Профиль"}
       </h1>
       
       <UserProfileForm />
       
-      <div className="mt-8">
-        <h2 className="text-xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "App language"}</h2>
+      <div className="mt-10 space-y-6">
+        <h2 className="text-2xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "Язык приложения"}</h2>
         <LanguageSelector />
         
-        <h2 className="text-xl text-white font-serif mb-4">Подписка</h2>
+        <h2 className="text-2xl text-white font-serif mb-4">Подписка</h2>
         <SubscriptionManager />
         
         <LegalDocuments />

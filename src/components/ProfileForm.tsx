@@ -62,23 +62,23 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem className="text-left">
-              <FormLabel className="text-cosmic-secondary text-sm">
+              <FormLabel className="text-cosmic-secondary text-sm font-sans">
                 {t.userProfile?.nameLabel || "Как тебя зовут"}
               </FormLabel>
               <FormControl>
                 <Input 
-                  className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white"
+                  className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white font-sans"
                   placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
                   {...field} 
                 />
               </FormControl>
-              <FormMessage className="text-red-400" />
+              <FormMessage className="text-red-400 font-sans" />
             </FormItem>
           )}
         />
@@ -88,7 +88,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           name="birthDate"
           render={({ field }) => (
             <FormItem className="text-left">
-              <FormLabel className="text-cosmic-secondary text-sm">
+              <FormLabel className="text-cosmic-secondary text-sm font-sans">
                 {t.userProfile?.birthDateLabel || "Дата рождения"}
               </FormLabel>
               <Popover>
@@ -97,7 +97,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-normal text-white",
+                        "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-sans text-white",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -124,14 +124,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                   />
                 </PopoverContent>
               </Popover>
-              <FormMessage className="text-red-400" />
+              <FormMessage className="text-red-400 font-sans" />
             </FormItem>
           )}
         />
         
         <div className="pt-4">
           <Button 
-            className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30"
+            className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30 font-sans"
             type="submit"
             disabled={isSaving}
           >

@@ -23,14 +23,14 @@ export const SubscriptionManager: React.FC = () => {
   return (
     <>
       {/* Developer Mode Subscription Toggle */}
-      <div className="bg-cosmic-accent/10 border border-red-500/30 rounded-lg p-4 mb-6">
+      <div className="bg-cosmic-accent/10 border border-red-500/30 rounded-lg p-5 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-white font-medium">Режим разработчика</span>
-            <span className="text-cosmic-secondary text-sm">Быстрое переключение подписки</span>
+            <span className="text-white font-medium font-sans">Режим разработчика</span>
+            <span className="text-cosmic-secondary text-sm font-sans">Быстрое переключение подписки</span>
           </div>
           <div className="flex items-center gap-2">
-            <Label htmlFor="pro-mode" className={userProfile.isPro ? "text-cosmic-gold" : "text-cosmic-secondary"}>
+            <Label htmlFor="pro-mode" className={userProfile.isPro ? "text-cosmic-gold font-sans" : "text-cosmic-secondary font-sans"}>
               {userProfile.isPro ? "PRO" : "Бесплатно"}
             </Label>
             <Switch
@@ -43,18 +43,18 @@ export const SubscriptionManager: React.FC = () => {
       </div>
       
       {userProfile.isPro ? (
-        <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-cosmic-accent/10 border border-cosmic-gold/30 rounded-lg p-5 mb-8">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-white font-medium flex items-center">
-                <SparklesIcon size={16} className="text-cosmic-gold mr-2" />
+              <h3 className="text-white font-medium flex items-center font-sans">
+                <SparklesIcon size={18} className="text-cosmic-gold mr-2" />
                 ASKET PRO
               </h3>
-              <p className="text-sm text-cosmic-secondary">Active subscription</p>
+              <p className="text-sm text-cosmic-secondary font-sans">Active subscription</p>
             </div>
             <ProBadge />
           </div>
-          <CosmicButton variant="outline" className="w-full" onClick={handleManageSubscription}>
+          <CosmicButton variant="outline" className="w-full font-sans" onClick={handleManageSubscription}>
             Manage Subscription
           </CosmicButton>
         </div>
