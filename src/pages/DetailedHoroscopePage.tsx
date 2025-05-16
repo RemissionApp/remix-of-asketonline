@@ -32,7 +32,7 @@ const DetailedHoroscopePage: React.FC = () => {
   console.log("Zodiac sign:", zodiacSign);
   console.log("Zodiac info:", zodiacInfo);
   
-  // Check if user has a birth date set
+  // Check if user has a birth date set, but only show toast without auto-redirect
   useEffect(() => {
     if (!userProfile?.birthDate) {
       console.log("No birth date set in profile");
@@ -41,15 +41,12 @@ const DetailedHoroscopePage: React.FC = () => {
         description: language === 'ru' 
           ? 'Чтобы увидеть свой гороскоп, установите дату рождения в профиле.' 
           : 'To view your horoscope, please set your birth date in your profile.',
-        variant: 'destructive',
+        variant: 'warning',
       });
       
-      // Redirect to profile page after a short delay
-      setTimeout(() => {
-        navigate('/profile');
-      }, 3000);
+      // No automatic redirect, allow user to manually navigate if they want
     }
-  }, [userProfile?.birthDate, language, toast, navigate]);
+  }, [userProfile?.birthDate, language, toast]);
   
   // Fetch horoscope data
   const { horoscope, loading, zodiacSign: fetchedZodiacSign } = useHoroscopeData({

@@ -7,6 +7,8 @@ import { HoroscopeContent } from './sections/HoroscopeContent';
 import { HoroscopeStats } from './sections/HoroscopeStats';
 import { HoroscopeLoading } from './HoroscopeLoading';
 import { HoroscopeProOverlay } from './HoroscopeProOverlay';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -25,11 +27,14 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   translations,
   language
 }) => {
+  const navigate = useNavigate();
+  
   console.log("DetailedHoroscopeContent rendering with:", { 
     hasHoroscope: !!horoscope, 
     loading, 
     isPro: !!userProfile?.isPro,
-    zodiacInfo 
+    zodiacInfo,
+    birthDate: userProfile?.birthDate
   });
 
   // No zodiac info means we probably don't have a birth date
@@ -45,11 +50,20 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
           />
         </CardHeader>
         <CardContent>
-          <p className="text-cosmic-accent text-center py-8">
-            {language === 'ru' 
-              ? 'Пожалуйста, укажите дату рождения в профиле, чтобы увидеть свой гороскоп.'
-              : 'Please set your birth date in your profile to see your horoscope.'}
-          </p>
+          <div className="text-center py-8 space-y-4">
+            <p className="text-cosmic-accent">
+              {language === 'ru' 
+                ? 'Пожалуйста, укажите дату рождения в профиле, чтобы увидеть свой гороскоп.'
+                : 'Please set your birth date in your profile to see your horoscope.'}
+            </p>
+            <Button 
+              variant="outline" 
+              className="border-cosmic-accent text-cosmic-accent hover:bg-cosmic-accent/20"
+              onClick={() => navigate('/profile')}
+            >
+              {language === 'ru' ? 'Перейти в профиль' : 'Go to profile'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
