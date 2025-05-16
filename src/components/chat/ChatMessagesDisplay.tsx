@@ -17,8 +17,11 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   
+  console.log('ChatMessagesDisplay rendering with messages:', messages.length, messages);
+  
   // Scroll to bottom of messages when new messages arrive
   useEffect(() => {
+    console.log('Scrolling to bottom due to messages update');
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
@@ -38,7 +41,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   return (
     <div 
       ref={chatContainerRef}
-      className="h-full overflow-y-auto pr-2"
+      className="h-full overflow-y-auto pr-2 pb-4"
     >
       {messages.map((message) => (
         <ChatMessage key={message.id} message={message} />

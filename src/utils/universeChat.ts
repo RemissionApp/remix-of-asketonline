@@ -113,7 +113,7 @@ export const sendMessageToUniverse = async (
     console.log('User message saved:', userMessagePayload);
 
     // Generate the universe's response
-    console.log('Generating universe answer...');
+    console.log('Generating universe answer through GPT...');
     const universeResponse = await generateUniverseAnswer(message);
     console.log('Generated answer:', universeResponse);
     
