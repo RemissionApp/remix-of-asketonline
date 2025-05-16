@@ -36,10 +36,10 @@ export async function handleRequest(req: Request): Promise<Response> {
     console.log(horoscopeText);
     console.log("---END OF TEXT---");
     
-    const workFinance = extractSections(horoscopeText, "работа", "финанс", "work", "finance", "💼");
-    const loveRelationships = extractSections(horoscopeText, "любовь", "отношения", "love", "relation", "❤️");
-    const healthWellbeing = extractSections(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🧘‍♂️");
-    const dailyAdvice = extractSections(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨");
+    const workFinance = extractSections(horoscopeText, "работа", "финанс", "work", "finance", "work_finance");
+    const loveRelationships = extractSections(horoscopeText, "любовь", "отношения", "love", "relation", "love_relationships");
+    const healthWellbeing = extractSections(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "health_wellbeing");
+    const dailyAdvice = extractSections(horoscopeText, "совет", "рекомендация", "advice", "tip", "daily_advice");
     
     console.log("Extracted sections results:");
     console.log({

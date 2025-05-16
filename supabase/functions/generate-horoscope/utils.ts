@@ -2,52 +2,46 @@
 // Helper functions for processing horoscopes
 
 // Extract specific section from the horoscope text
-export function extractSections(text: string, ru1: string, ru2: string, en1: string, en2: string, emoji: string): string {
+export function extractSections(text: string, ru1: string, ru2: string, en1: string, en2: string, sectionType: string): string {
   // Log the input text for debugging
-  console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
+  console.log(`Extracting ${sectionType} section, text length: ${text.length}`);
   
-  // Try to find the section using various patterns, starting with emoji which is most reliable
+  // Try to find the section using various patterns
   const patterns = [
-    // First try to find sections by emoji, which is most reliable
-    new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n${emoji}|$)`, 'i'),
-    new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    // Try to match by section titles in different languages
+    new RegExp(`(?:^|\\n)(?:${ru1}|${en1})[^\\n]*:(?:\\n|.)*?(?=\\n\\n(?:${ru1}|${ru2}|${en1}|${en2})|$)`, 'i'),
+    new RegExp(`(?:^|\\n)(?:${ru2}|${en2})[^\\n]*:(?:\\n|.)*?(?=\\n\\n(?:${ru1}|${ru2}|${en1}|${en2})|$)`, 'i'),
     
-    // Then try other patterns if emoji matching fails
-    new RegExp(`[^\\n]*${ru1}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
-    new RegExp(`[^\\n]*${ru2}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
-    new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
-    new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n\\n|\\n\\n[\\p{Emoji}]|$)`, 'iu'),
-    
-    // Finally fallback to basic section extraction
-    new RegExp(`[^\\n]*${ru1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
-    new RegExp(`[^\\n]*${ru2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
-    new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
-    new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i')
+    // More generic patterns as fallback
+    new RegExp(`(?:^|\\n)[^\\n]*${ru1}[^\\n]*:(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`(?:^|\\n)[^\\n]*${ru2}[^\\n]*:(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`(?:^|\\n)[^\\n]*${en1}[^\\n]*:(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`(?:^|\\n)[^\\n]*${en2}[^\\n]*:(?:\\n|.)*?(?=\\n\\n|$)`, 'i')
   ];
   
   for (const pattern of patterns) {
     const match = text.match(pattern);
     if (match) {
-      console.log(`Found match with pattern: ${pattern.source}`);
+      console.log(`Found match for section ${sectionType}`);
       console.log(`Match result: ${match[0].substring(0, 50)}...`);
       return match[0].trim();
     }
   }
   
-  console.log(`No match found for section ${emoji} ${ru1}/${en1}, using fallback`);
+  console.log(`No match found for section ${sectionType}, using fallback`);
   
-  // If no match found, create a default response based on section indicators
-  if (ru1 === "работа" || en1 === "work") {
-    return `${emoji} Сегодня благоприятный день для профессиональных начинаний. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах. Возможны новые деловые предложения или финансовые поступления.`;
-  } else if (ru1 === "любовь" || en1 === "love") {
-    return `${emoji} В личной жизни возможны приятные сюрпризы. Открытое общение поможет укрепить существующие отношения. Если вы одиноки, сегодня подходящий день для новых знакомств.`;
-  } else if (ru1 === "здоровье" || en1 === "health") {
-    return `${emoji} Уделите внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе поможет восстановить силы. Сегодня хороший день для начала новой программы упражнений.`;
-  } else if (ru1 === "совет" || en1 === "advice") {
-    return `${emoji} Слушайте свою интуицию, она укажет верное направление. Не торопитесь с принятием важных решений, но и не откладывайте их на неопределенный срок.`;
+  // If no match found, create a default response based on section type
+  if (sectionType === "work_finance") {
+    return `Работа и финансы: Сегодня благоприятный день для профессиональных начинаний. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах. Возможны новые деловые предложения или финансовые поступления. Избегайте рискованных инвестиций и необдуманных трат. Доверяйте своей интуиции в деловых решениях.`;
+  } else if (sectionType === "love_relationships") {
+    return `Любовь и отношения: В личной жизни возможны приятные сюрпризы. Открытое общение поможет укрепить существующие отношения. Если вы одиноки, сегодня подходящий день для новых знакомств. Проявите внимание к близким людям и не держите обиды. Звезды советуют больше доверять партнеру.`;
+  } else if (sectionType === "health_wellbeing") {
+    return `Здоровье и самочувствие: Уделите внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе поможет восстановить силы. Сегодня хороший день для начала новой программы упражнений. Следите за питанием и избегайте переутомления. Медитация поможет снять стресс и восстановить энергетический баланс.`;
+  } else if (sectionType === "daily_advice") {
+    return `Совет дня: Слушайте свою интуицию, она укажет верное направление. Не торопитесь с принятием важных решений, но и не откладывайте их на неопределенный срок. Сегодня подходящий день для планирования будущих проектов. Обратите внимание на знаки, которые посылает вам Вселенная. Помните, что каждое действие имеет последствия.`;
   }
   
-  return `${emoji} Информация временно недоступна.`;
+  return `Информация временно недоступна. Пожалуйста, попробуйте обновить страницу или повторите попытку позже.`;
 }
 
 // Helper function to get random color based on language

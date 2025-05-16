@@ -59,25 +59,21 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     );
   }
 
-  // Define the sections with correct emojis
+  // Define the sections with titles
   const sectionConfig = [
     {
-      emoji: '💼',
       key: 'work_finance',
       title: translations.workFinance[language] || translations.workFinance.en
     },
     {
-      emoji: '❤️',
       key: 'love_relationships',
       title: translations.loveRelationships[language] || translations.loveRelationships.en
     },
     {
-      emoji: '🧘‍♂️',
       key: 'health_wellbeing',
       title: translations.healthWellbeing[language] || translations.healthWellbeing.en
     },
     {
-      emoji: '✨',
       key: 'daily_advice',
       title: translations.dailyAdvice[language] || translations.dailyAdvice.en
     }
@@ -101,7 +97,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
         return (activeSection >= index) && (
           <HoroscopeSection
             key={section.key}
-            title={`${section.emoji} ${section.title}`}
+            title={section.title}
             content={sectionContent}
             onComplete={activeSection === index ? handleSectionComplete : undefined}
             className="bg-cosmic-dark/40 border-cosmic-accent/20 backdrop-blur-sm"
