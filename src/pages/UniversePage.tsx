@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -130,9 +130,9 @@ const UniversePage: React.FC = () => {
             <CosmicButton 
               onClick={handleAskUniverse}
               className="w-full"
+              variant="outline"
               disabled={question.length < 3}
             >
-              <Send size={18} className="mr-2" />
               {t.universe.askButton}
             </CosmicButton>
             
