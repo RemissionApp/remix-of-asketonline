@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -88,20 +87,13 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
         return;
       }
 
-      // Find the first incomplete day for this pact
-      const incompleteDays = activePact.days.filter(day => !day.completed);
-      
-      if (incompleteDays.length === 0) {
-        // If all days are completed, set all values to 0
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-        return;
-      }
-      
-      // Get the end date of the pact based on incomplete days
+      // Calculate end date based on creation date and duration
       const now = new Date();
-      const endDate = new Date(activePact.createdAt);
-      endDate.setDate(endDate.getDate() + activePact.duration);
+      const createdAtDate = new Date(activePact.created_at);
+      const endDate = new Date(createdAtDate);
+      endDate.setDate(createdAtDate.getDate() + activePact.duration);
       
+      // Calculate time difference
       const difference = endDate.getTime() - now.getTime();
       
       if (difference > 0) {
