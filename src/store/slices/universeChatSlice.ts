@@ -39,6 +39,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     try {
       set({ isLoadingChat: true });
       const sessions = await loadChatSessionsUtil(user.id);
+      console.log('Loaded chat sessions:', sessions);
       set({ chatSessions: sessions, isLoadingChat: false });
     } catch (error) {
       console.error("Error loading chat sessions:", error);
@@ -52,9 +53,11 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     if (!user) return null;
     
     try {
+      console.log('Creating chat session with title:', title);
       const sessionId = await createChatSessionUtil(user.id, title);
       
       if (sessionId) {
+        console.log('Created session ID:', sessionId);
         // Reload sessions after creating a new one
         await get().loadChatSessions();
         // Set the new session as current
@@ -69,6 +72,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
   },
   
   setCurrentChatSession: (sessionId: string | null) => {
+    console.log('Setting current chat session:', sessionId);
     set({ currentChatSession: sessionId });
     
     if (sessionId) {

@@ -24,6 +24,7 @@ const UniverseChatPage = () => {
     createChatSession,
     setCurrentChatSession,
     sendChatMessage,
+    loadChatMessages,
   } = useAppStore();
   
   const { t } = useTranslations();
@@ -38,19 +39,32 @@ const UniverseChatPage = () => {
   useEffect(() => {
     if (currentChatSession) {
       setActiveTab('chat');
+      // Make sure messages are loaded when session changes
+      loadChatMessages(currentChatSession);
     }
-  }, [currentChatSession]);
+  }, [currentChatSession, loadChatMessages]);
+
+  // Log chat messages for debugging
+  useEffect(() => {
+    console.log('Current chat messages in state:', chatMessages);
+  }, [chatMessages]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
+    
+    console.log('Sending message:', message);
     
     if (!currentChatSession) {
       // If no session exists, create one with the message as title
       try {
         const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
+        console.log('Creating new chat session with title:', title);
         const sessionId = await createChatSession(title);
         if (sessionId) {
           // Now send the message
+          console.log('Session created, sending message to session:', sessionId);
+          setCurrentChatSession(sessionId);
+          // Small timeout to ensure session is set
           setTimeout(() => {
             sendChatMessage(message);
           }, 100);
@@ -61,11 +75,13 @@ const UniverseChatPage = () => {
       }
     } else {
       // Session exists, send message
+      console.log('Sending message to existing session:', currentChatSession);
       sendChatMessage(message);
     }
   };
   
   const handleSelectSession = (sessionId: string) => {
+    console.log('Selecting session:', sessionId);
     setCurrentChatSession(sessionId);
     setActiveTab('chat');
   };
@@ -74,7 +90,7 @@ const UniverseChatPage = () => {
     return chatSessions.find(session => session.id === currentChatSession);
   };
   
-  const chatContent = (
+  return (
     <div className="min-h-screen flex flex-col bg-cosmic">
       <StarField starCount={50} />
       
@@ -115,12 +131,6 @@ const UniverseChatPage = () => {
         isDisabled={isSendingMessage}
       />
     </div>
-  );
-  
-  return (
-    <UniverseChatProWrapper isPro={!!userProfile?.isPro}>
-      {chatContent}
-    </UniverseChatProWrapper>
   );
 };
 

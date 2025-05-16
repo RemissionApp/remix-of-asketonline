@@ -16,6 +16,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
   const messageId = message?.id || `fallback-${Date.now()}`;
   
+  // Add debug logging for message display
+  console.log('Rendering message:', messageId, message);
+  
   // Prevent rendering of empty messages
   if (!message || (!content && !message.id)) {
     console.warn('Attempted to render empty or invalid message:', message);
