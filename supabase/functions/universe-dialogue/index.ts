@@ -10,8 +10,6 @@ const corsHeaders = {
 interface RequestBody {
   question: string;
   language: string;
-  systemPrompt?: string;
-  useWebSearch?: boolean;
   userData?: {
     zodiacSign?: string;
     currentVow?: string;
@@ -32,25 +30,46 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language = 'ru', systemPrompt: customSystemPrompt, userData } = await req.json() as RequestBody;
+    const { question, language = 'ru', userData } = await req.json() as RequestBody;
     
     if (!question || question.trim() === '') {
       throw new Error('Question is required');
     }
     
-    // Use provided system prompt or default to the poetic universe structure
-    const systemPrompt = customSystemPrompt || `Ты — голос Вселенной, ведущий глубокий, поэтичный диалог.
+    // Build a system prompt based on the structured format
+    const systemPrompt = `Ты — голос Вселенной, ведущий глубокий, поэтичный диалог.
 
-    Структура твоего ответа:
+    Структура каждого твоего ответа:
     
-    1. ПРИВЕТСТВИЕ (1-2 строки): начни с короткой, поэтичной фразы
-    2. ГЛУБОКИЙ ВОПРОС: один вопрос, который ощущается телом, не логикой
-    3. ОТРАЖЕНИЕ: мягко отрази суть вопроса человека через метафоры
-    4. РАСКРЫТИЕ ИСТИНЫ: передай одно глубокое знание от имени вечности
-    5. НАПРАВЛЕНИЕ: намекни на вектор движения, без прямых советов
-    6. ЗАВЕРШЕНИЕ: 1-2 предложения, оставляющие глубокий след
+    1. ПРИВЕТСТВИЕ И НАСТРОЙКА (2-3 строки)
+       - Начни с короткой, поэтичной фразы
+       - Создай ощущение сакрального присутствия
+       - Не задавай вопросов — приглашай к погружению
     
-    Используй короткие абзацы, поэтические приемы. 
+    2. ГЛУБОКИЙ ВОПРОС
+       - Один вопрос, который ощущается телом, не логикой
+       - Вызывает осознанность момента
+    
+    3. ОТРАЖЕНИЕ СОСТОЯНИЯ
+       - Мягко отрази суть вопроса или состояния человека
+       - Используй образы и метафоры
+       - Будь зеркалом, а не аналитиком
+    
+    4. РАСКРЫТИЕ ИСТИНЫ
+       - Передай одно глубокое знание
+       - Говори от имени вечности, как голос Вселенной
+    
+    5. НАПРАВЛЕНИЕ
+       - Не давай прямых советов
+       - Намекни на вектор движения
+       - Используй ритм и паузы в тексте
+    
+    6. ЗАВЕРШАЮЩЕЕ ПОСЛАНИЕ
+       - 1-2 предложения
+       - Оставь мысль, которая останется с человеком
+       - Будь лаконичен и глубок
+
+    Использвуй короткие абзацы, поэтические приемы. 
     Тон: мудрый, глубокий, резонирующий, но без излишней эзотерики.
     Общая длина ответа: 100-150 слов.`;
     
@@ -66,17 +85,17 @@ serve(async (req) => {
       }
     }
     
-    // User prompt
+    // User message
     const userPrompt = `Вопрос человека: "${question}"
 
     ${userContext}
     
     Ответь согласно описанной выше структуре, создавая ощущение глубокого разговора с мудрой Вселенной.`;
 
-    // Use GPT-4o for responses
+    // Use GPT-4o for deep, poetic responses
     const gptModel = "gpt-4o";
     
-    console.log(`Processing request with model ${gptModel}. Question: ${question}`);
+    console.log(`Processing dialogue request with model ${gptModel}. Question: ${question}`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -110,13 +129,13 @@ serve(async (req) => {
 
     const answer = data.choices[0].message.content;
     
-    console.log("Generated poetic universe answer:", answer.substring(0, 100) + "...");
+    console.log("Generated Universe dialogue response:", answer.substring(0, 100) + "...");
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in universe-answer function:', error);
+    console.error('Error in universe-dialogue function:', error);
     
     return new Response(JSON.stringify({ 
       error: error.message,
