@@ -21,9 +21,8 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
   const { user } = useAppStore(); // Get user from app store
   
   // Get zodiac sign info - fixing the issue by properly converting birthDate string to Date object
-  const zodiacSign = userProfile?.birthDate 
-    ? getZodiacSign(new Date(userProfile.birthDate)) 
-    : null;
+  const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
+  const zodiacSign = birthDate ? getZodiacSign(birthDate) : null;
   
   useEffect(() => {
     const fetchDetailedHoroscope = async () => {
@@ -32,7 +31,11 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
         
         // Check if user has birth date to determine zodiac sign
         if (!userProfile?.birthDate || !zodiacSign) {
-          console.log("No birth date or zodiac sign found:", { birthDate: userProfile?.birthDate, zodiacSign });
+          console.log("No birth date or zodiac sign found:", { 
+            birthDate: userProfile?.birthDate, 
+            zodiacSign,
+            userProfile 
+          });
           setLoading(false);
           return;
         }
@@ -86,13 +89,20 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
           }
         }
         
-        console.log("Calling edge function to generate detailed horoscope");
+        console.log("Calling edge function to generate detailed horoscope", {
+          sign: zodiacSign,
+          language,
+          detailed: true,
+          birthDate: userProfile.birthDate
+        });
+        
         // If not in database, call our edge function to generate a detailed horoscope
         const { data, error } = await supabase.functions.invoke('generate-horoscope', {
           body: { 
             sign: zodiacSign,
             language,
-            detailed: true
+            detailed: true,
+            birthDate: userProfile.birthDate
           }
         });
         

@@ -16,6 +16,8 @@ export const HoroscopeProOverlay: React.FC<HoroscopeProOverlayProps> = ({
   language,
   zodiacInfo
 }) => {
+  console.log("Rendering ProOverlay for zodiacInfo:", zodiacInfo);
+  
   return (
     <ProFeatureOverlay
       title={translations.proTitle[language] || translations.proTitle.en}
@@ -23,13 +25,15 @@ export const HoroscopeProOverlay: React.FC<HoroscopeProOverlayProps> = ({
     >
       <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
         <CardHeader>
-          <CardHeader className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Star className="text-cosmic-gold" size={20} />
-            {translations.title[language] || translations.title.en}
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
-          </CardContent>
+            <h3 className="text-lg font-medium">
+              {translations.title[language] || translations.title.en}
+            </h3>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {zodiacInfo?.symbol} {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <Skeleton className="h-32 bg-cosmic-accent/10 rounded-md" />

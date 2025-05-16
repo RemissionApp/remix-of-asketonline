@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -22,35 +22,50 @@ const DetailedHoroscopePage: React.FC = () => {
   const translations = getHoroscopeTranslations(language, userProfile?.name);
   
   // Get zodiac sign info - ensure we're properly converting birthDate string to Date
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
+  const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
+  const zodiacSign = birthDate ? getZodiacSign(birthDate) : null;
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
   // Log user profile and zodiac info for debugging
   console.log("User profile:", userProfile);
+  console.log("Birth date:", birthDate);
   console.log("Zodiac sign:", zodiacSign);
   console.log("Zodiac info:", zodiacInfo);
   
   // Check if user has a birth date set
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userProfile?.birthDate) {
       console.log("No birth date set in profile");
       toast({
         title: language === 'ru' ? 'Требуется дата рождения' : 'Birth Date Required',
-        description: translations.title[language] === 'ru' 
+        description: language === 'ru' 
           ? 'Чтобы увидеть свой гороскоп, установите дату рождения в профиле.' 
           : 'To view your horoscope, please set your birth date in your profile.',
         variant: 'destructive',
       });
+      
+      // Redirect to profile page after a short delay
+      setTimeout(() => {
+        navigate('/profile');
+      }, 3000);
     }
-  }, [userProfile?.birthDate, language, toast, translations.title]);
+  }, [userProfile?.birthDate, language, toast, navigate]);
   
   // Fetch horoscope data
-  const { horoscope, loading } = useHoroscopeData({
+  const { horoscope, loading, zodiacSign: fetchedZodiacSign } = useHoroscopeData({
     userProfile, 
     language, 
     translations,
     isPro: !!userProfile?.isPro
   });
+
+  // Additional debug logging
+  useEffect(() => {
+    console.log("Horoscope loading:", loading);
+    console.log("Horoscope data:", horoscope);
+    console.log("Is user pro:", !!userProfile?.isPro);
+    console.log("Fetched zodiac sign:", fetchedZodiacSign);
+  }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign]);
 
   return (
     <div className="min-h-screen flex flex-col relative pb-16">

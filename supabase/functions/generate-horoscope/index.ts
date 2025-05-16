@@ -63,6 +63,7 @@ serve(async (req) => {
     const userPrompt = getUserPrompt(sign, language, detailed, birthDate);
 
     console.log(`User prompt: ${userPrompt}`);
+    console.log(`System prompt: ${systemPrompt}`);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -88,26 +89,40 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    console.log("OpenAI response:", JSON.stringify(data).substring(0, 200) + "...");
+    console.log("OpenAI API status:", response.status);
+    console.log("OpenAI response:", JSON.stringify(data).substring(0, 500) + "...");
     
     if (data.error) {
+      console.error("OpenAI API error:", data.error);
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
     const horoscopeText = data.choices[0].message.content;
-    console.log(`Generated horoscope: ${horoscopeText.substring(0, 100)}...`);
+    console.log(`Generated horoscope: ${horoscopeText.substring(0, 200)}...`);
 
     // For detailed horoscopes, parse sections from the response
     let horoscopeResponse: HoroscopeResponse = { success: true };
     
     if (detailed) {
+      const workFinance = extractSection(horoscopeText, "работа", "финанс", "work", "finance", "💼");
+      const loveRelationships = extractSection(horoscopeText, "любовь", "отношения", "love", "relation", "❤️");
+      const healthWellbeing = extractSection(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🌿");
+      const dailyAdvice = extractSection(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨");
+      
+      console.log("Extracted sections:", {
+        workFinance: workFinance.substring(0, 50) + "...",
+        loveRelationships: loveRelationships.substring(0, 50) + "...",
+        healthWellbeing: healthWellbeing.substring(0, 50) + "...", 
+        dailyAdvice: dailyAdvice.substring(0, 50) + "..."
+      });
+      
       horoscopeResponse.data = {
         description: horoscopeText,
         sections: {
-          work_finance: extractSection(horoscopeText, "работа", "финанс", "work", "finance", "💼"),
-          love_relationships: extractSection(horoscopeText, "любовь", "отношения", "love", "relation", "❤️"),
-          health_wellbeing: extractSection(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🌿"),
-          daily_advice: extractSection(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨")
+          work_finance: workFinance,
+          love_relationships: loveRelationships,
+          health_wellbeing: healthWellbeing,
+          daily_advice: dailyAdvice
         },
         lucky_number: Math.floor(Math.random() * 100).toString(),
         lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
@@ -148,10 +163,18 @@ function extractSection(text: string, ru1: string, ru2: string, en1: string, en2
     new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i')
   ];
   
+  // Log the input text for debugging
+  console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
+  
   for (const pattern of patterns) {
     const match = text.match(pattern);
-    if (match) return match[0].trim();
+    if (match) {
+      console.log(`Found match with pattern: ${pattern}`);
+      return match[0].trim();
+    }
   }
+  
+  console.log(`No match found for section ${emoji} ${ru1}/${en1}, using fallback`);
   
   // If no match found, create a default response based on section indicators
   if (ru1 === "работа" || en1 === "work") {

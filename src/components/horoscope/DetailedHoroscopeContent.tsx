@@ -25,6 +25,37 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   translations,
   language
 }) => {
+  console.log("DetailedHoroscopeContent rendering with:", { 
+    hasHoroscope: !!horoscope, 
+    loading, 
+    isPro: !!userProfile?.isPro,
+    zodiacInfo 
+  });
+
+  // No zodiac info means we probably don't have a birth date
+  if (!zodiacInfo) {
+    return (
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+        <CardHeader>
+          <HoroscopeHeader 
+            zodiacInfo={null}
+            translations={translations}
+            language={language}
+            userName={userProfile?.name}
+          />
+        </CardHeader>
+        <CardContent>
+          <p className="text-cosmic-accent text-center py-8">
+            {language === 'ru' 
+              ? 'Пожалуйста, укажите дату рождения в профиле, чтобы увидеть свой гороскоп.'
+              : 'Please set your birth date in your profile to see your horoscope.'}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Check if user is PRO
   if (!userProfile?.isPro) {
     return (
       <HoroscopeProOverlay
@@ -55,7 +86,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
           zodiacInfo={zodiacInfo}
           translations={translations}
           language={language}
-          userName={userProfile.name}
+          userName={userProfile?.name}
         />
       </CardHeader>
       <CardContent className="space-y-6">
