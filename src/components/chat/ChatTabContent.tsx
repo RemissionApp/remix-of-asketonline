@@ -18,7 +18,7 @@ export const ChatTabContent: React.FC<ChatTabContentProps> = ({
   }, [chatMessages]);
   
   return (
-    <div className="px-4 h-[calc(100vh-220px)]">
+    <div className="px-4 pb-16 h-[calc(100vh-250px)]">
       <ChatMessagesDisplay 
         isLoading={isLoadingChat} 
         messages={chatMessages} 

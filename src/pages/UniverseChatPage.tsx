@@ -96,7 +96,7 @@ const UniverseChatPage = () => {
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'chat' | 'sessions')}
-        className="w-full max-w-2xl mx-auto mt-16 mb-20"
+        className="w-full max-w-2xl mx-auto mt-16 mb-24"
       >
         <TabsList className="w-full bg-cosmic-dark/50 backdrop-blur-md mb-4">
           <TabsTrigger value="sessions" className="w-1/2">
