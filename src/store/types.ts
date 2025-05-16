@@ -14,7 +14,7 @@ export interface AppState {
   loading: boolean;
   emailConfirmed: boolean;
   
-  addPact: (pact: Omit<Pact, 'id' | 'createdAt' | 'days'>) => Promise<void>;
+  addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
   askUniverse: (question: string) => Promise<UniverseQuestion>;
   setActiveScreen: (screen: ActiveScreen) => void;

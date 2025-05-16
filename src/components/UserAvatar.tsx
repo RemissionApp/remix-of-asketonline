@@ -23,14 +23,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const { userProfile, user } = useAppStore();
   
-  // Определяем размер аватара
+  // Define size classes
   const sizeClasses = {
     sm: 'h-10 w-10',
     md: 'h-16 w-16',
     lg: 'h-24 w-24'
   };
   
-  // Определяем цвет обводки в зависимости от ранга
+  // Define border color based on rank
   const rankBorderColor = {
     'seeker': 'border-amber-400',
     'pilgrim': 'border-emerald-400',
@@ -49,10 +49,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     
     // If no custom avatar, use rank-based default avatar
     console.log("Using default avatar based on rank:", userProfile?.rank);
-    return getAvatarImagePath(userProfile.rank);
+    return getAvatarImagePath(userProfile.rank as SpiritualRank);
   };
   
-  // Получаем путь к изображению аватара в зависимости от ранга
+  // Get path to avatar image based on rank
   const getAvatarImagePath = (rank: SpiritualRank): string => {
     switch (rank) {
       case 'seeker':
@@ -71,7 +71,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
   
   const borderClass = showRankBorder 
-    ? `border-2 ${rankBorderColor[userProfile.rank]}` 
+    ? `border-2 ${rankBorderColor[userProfile.rank as keyof typeof rankBorderColor] || 'border-amber-400'}` 
     : '';
 
   const hasZodiac = !!userProfile?.birthDate;

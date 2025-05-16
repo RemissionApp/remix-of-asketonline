@@ -48,11 +48,11 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
         </div>
       </div>
       
-      {achievement.unlocked && achievement.unlockedAt && (
+      {achievement.unlocked && achievement.unlockedDate && (
         <div className="mt-2 text-right">
           <span className="text-xs text-cosmic-secondary">
             {language === 'ru' ? 'Получено: ' : language === 'es' ? 'Recibido: ' : 'Received: '}
-            {formatDateLong(achievement.unlockedAt, language)}
+            {formatDateLong(achievement.unlockedDate, language)}
           </span>
         </div>
       )}

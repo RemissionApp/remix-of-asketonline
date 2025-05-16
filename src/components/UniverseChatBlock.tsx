@@ -24,7 +24,7 @@ export const UniverseChatBlock: React.FC = () => {
         setIsLoading(true);
         try {
           // Get zodiac sign
-          const sign = getZodiacSign(new Date(userProfile.birthDate));
+          const sign = getZodiacSign(new Date(userProfile.birthDate!));
           if (!sign) {
             throw new Error("Could not determine zodiac sign");
           }

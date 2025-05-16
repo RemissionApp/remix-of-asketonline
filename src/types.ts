@@ -1,3 +1,4 @@
+
 export interface UserProfile {
   id?: string;
   name: string;
@@ -7,6 +8,8 @@ export interface UserProfile {
   energyPoints: number;
   zodiacSign: string;
   isPro: boolean;
+  birthDate?: Date | null;
+  avatar_url?: string | null;
 }
 
 export interface User {
@@ -47,6 +50,12 @@ export interface Pact {
   status: 'active' | 'completed' | 'failed' | 'planned';
   type?: string;
   targetDate?: string;
+  duration: number;
+  days: Array<{
+    id: string;
+    date: string;
+    completed: boolean;
+  }>;
 }
 
 export interface UniverseQuestion {
@@ -97,3 +106,5 @@ export interface Meditation {
   locked?: boolean;
   requiresPro?: boolean;
 }
+
+export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
