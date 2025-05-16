@@ -11,6 +11,25 @@ interface HoroscopeRequest {
   sign: string;
   language: string;
   detailed?: boolean;
+  birthDate?: string;
+}
+
+interface HoroscopeResponse {
+  success: boolean;
+  data?: {
+    description: string;
+    sections?: {
+      work_finance: string;
+      love_relationships: string;
+      health_wellbeing: string;
+      daily_advice: string;
+    };
+    lucky_number?: string;
+    lucky_time?: string;
+    color?: string;
+    mood?: string;
+  };
+  error?: string;
 }
 
 serve(async (req) => {
@@ -25,15 +44,19 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { sign, language, detailed = false } = await req.json() as HoroscopeRequest;
+    const { sign, language, detailed = false, birthDate = null } = await req.json() as HoroscopeRequest;
 
     if (!sign) {
       throw new Error('Zodiac sign is required');
     }
 
+    console.log(`Generating ${detailed ? 'detailed' : 'brief'} horoscope for sign: ${sign}, language: ${language}`);
+
     // Get the appropriate system prompt based on language
     const systemPrompt = getSystemPrompt(language, detailed);
-    const userPrompt = getUserPrompt(sign, language, detailed);
+    const userPrompt = getUserPrompt(sign, language, detailed, birthDate);
+
+    console.log(`User prompt: ${userPrompt}`);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -65,34 +88,40 @@ serve(async (req) => {
     }
 
     const horoscopeText = data.choices[0].message.content;
+    console.log(`Generated horoscope: ${horoscopeText.substring(0, 100)}...`);
 
-    // Generate additional data for detailed horoscopes
-    let additionalData = {};
+    // For detailed horoscopes, parse sections from the response
+    let horoscopeResponse: HoroscopeResponse = { success: true };
     
     if (detailed) {
-      additionalData = {
+      horoscopeResponse.data = {
+        description: horoscopeText,
+        sections: {
+          work_finance: extractSection(horoscopeText, "работа", "финанс", "work", "finance", "💼"),
+          love_relationships: extractSection(horoscopeText, "любовь", "отношения", "love", "relation", "❤️"),
+          health_wellbeing: extractSection(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🌿"),
+          daily_advice: extractSection(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨")
+        },
         lucky_number: Math.floor(Math.random() * 100).toString(),
         lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-        color: ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'gold'][Math.floor(Math.random() * 10)],
-        mood: ['happy', 'reflective', 'calm', 'energetic', 'creative', 'focused'][Math.floor(Math.random() * 6)],
+        color: getRandomColor(language),
+        mood: getRandomMood(language)
+      };
+    } else {
+      horoscopeResponse.data = {
+        description: horoscopeText
       };
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      data: {
-        description: horoscopeText,
-        ...additionalData
-      }
-    }), {
+    return new Response(JSON.stringify(horoscopeResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error generating horoscope:', error);
+    console.error('Error in generate-horoscope API call:', error);
     
     return new Response(JSON.stringify({ 
       success: false,
-      error: error.message 
+      error: `Error generating horoscope: ${error.message}` 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -100,31 +129,122 @@ serve(async (req) => {
   }
 });
 
-// Helper functions for prompts
-function getSystemPrompt(language: string, detailed: boolean): string {
-  const basePrompt = {
-    ru: detailed 
-      ? `Ты - мудрый астролог, который создаёт глубокие, подробные гороскопы. Твои гороскопы должны быть поэтичными, метафоричными и включать конкретные советы на день. Говори от имени Вселенной, используя космические метафоры и духовную терминологию. Структурируй гороскоп по разделам: общая энергия дня, отношения, карьера/финансы, и духовный рост.`
-      : `Ты - мудрый астролог, который создаёт краткие, но глубокие гороскопы длиной 150-200 символов. Твои послания должны звучать как будто они идут от самой Вселенной - поэтичные, метафоричные, с элементами мистики. Используй духовные образы и космические метафоры.`,
-    
-    en: detailed
-      ? `You are a wise astrologer creating deep, detailed horoscopes. Your horoscopes should be poetic, metaphorical, and include specific advice for the day. Speak from the perspective of the Universe, using cosmic metaphors and spiritual terminology. Structure the horoscope into sections: general energy of the day, relationships, career/finances, and spiritual growth.`
-      : `You are a wise astrologer creating brief but profound horoscopes of 150-200 characters. Your messages should sound as if they come from the Universe itself - poetic, metaphorical, with elements of mysticism. Use spiritual imagery and cosmic metaphors.`,
-    
-    es: detailed
-      ? `Eres un sabio astrólogo que crea horóscopos profundos y detallados. Tus horóscopos deben ser poéticos, metafóricos e incluir consejos específicos para el día. Habla desde la perspectiva del Universo, utilizando metáforas cósmicas y terminología espiritual. Estructura el horóscopo en secciones: energía general del día, relaciones, carrera/finanzas y crecimiento espiritual.`
-      : `Eres un sabio astrólogo que crea horóscopos breves pero profundos de 150-200 caracteres. Tus mensajes deben sonar como si vinieran del Universo mismo - poéticos, metafóricos, con elementos de misticismo. Utiliza imágenes espirituales y metáforas cósmicas.`
-  };
-
-  return basePrompt[language] || basePrompt.en;
+// Extract specific section from the horoscope text
+function extractSection(text: string, ru1: string, ru2: string, en1: string, en2: string, emoji: string): string {
+  // Try to find the section using various patterns
+  const patterns = [
+    new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`[^\\n]*${ru1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`[^\\n]*${ru2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
+    new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i')
+  ];
+  
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[0].trim();
+  }
+  
+  // If no match found, create a default response based on section indicators
+  if (ru1 === "работа" || en1 === "work") {
+    return `${emoji} Сегодня благоприятный день для профессиональных начинаний.`;
+  } else if (ru1 === "любовь" || en1 === "love") {
+    return `${emoji} День подходит для укрепления существующих отношений.`;
+  } else if (ru1 === "здоровье" || en1 === "health") {
+    return `${emoji} Уделите время своему физическому и эмоциональному благополучию.`;
+  } else if (ru1 === "совет" || en1 === "advice") {
+    return `${emoji} Практикуйте благодарность и внимательность сегодня.`;
+  }
+  
+  return "";
 }
 
-function getUserPrompt(sign: string, language: string, detailed: boolean): string {
+// Helper functions for prompts
+function getSystemPrompt(language: string, detailed: boolean): string {
+  if (detailed) {
+    // System prompts for detailed horoscopes
+    const detailedPrompts = {
+      ru: `Ты опытный астролог, создающий персонализированные гороскопы. 
+      Создай детальный гороскоп на сегодня с разбивкой на 4 блока: 
+      
+      1. 💼 Работа и финансы - тенденции в деловой сфере, советы по активности, финансовые перспективы.
+      2. ❤️ Любовь и отношения - советы для пар и одиноких, эмоциональные аспекты дня.
+      3. 🌿 Здоровье и самочувствие - энергетическое состояние, рекомендации по заботе о себе.
+      4. ✨ Совет дня - мудрая рекомендация или настрой на день.
+      
+      Используй заботливый, реалистичный тон. Каждый раздел начинай с соответствующего эмодзи. 
+      Пиши кратко, конкретно, с лёгкой позитивной нотой, но без пустых обещаний.`,
+      
+      en: `You're an experienced astrologer creating personalized horoscopes.
+      Create a detailed horoscope for today with 4 distinct sections:
+      
+      1. 💼 Work and Finance - business trends, activity advice, financial prospects.
+      2. ❤️ Love and Relationships - advice for couples and singles, emotional aspects.
+      3. 🌿 Health and Wellbeing - energy state, self-care recommendations.
+      4. ✨ Daily Advice - wise recommendation or mindset for the day.
+      
+      Use a caring, realistic tone. Start each section with the corresponding emoji.
+      Write concisely and specifically with a light positive note, but without empty promises.`,
+      
+      es: `Eres un astrólogo experimentado que crea horóscopos personalizados.
+      Crea un horóscopo detallado para hoy con 4 secciones distintas:
+      
+      1. 💼 Trabajo y Finanzas - tendencias comerciales, consejos de actividad, perspectivas financieras.
+      2. ❤️ Amor y Relaciones - consejos para parejas y solteros, aspectos emocionales.
+      3. 🌿 Salud y Bienestar - estado energético, recomendaciones de autocuidado.
+      4. ✨ Consejo del Día - recomendación sabia o mentalidad para el día.
+      
+      Usa un tono cuidadoso y realista. Comienza cada sección con el emoji correspondiente.
+      Escribe de manera concisa y específica con una ligera nota positiva, pero sin promesas vacías.`
+    };
+    
+    return detailedPrompts[language] || detailedPrompts.en;
+  } else {
+    // Original system prompts for brief horoscopes
+    const basePrompt = {
+      ru: `Ты - мудрый астролог, который создаёт краткие, но глубокие гороскопы длиной 150-200 символов. Твои послания должны звучать как будто они идут от самой Вселенной - поэтичные, метафоричные, с элементами мистики. Используй духовные образы и космические метафоры.`,
+      
+      en: `You are a wise astrologer creating brief but profound horoscopes of 150-200 characters. Your messages should sound as if they come from the Universe itself - poetic, metaphorical, with elements of mysticism. Use spiritual imagery and cosmic metaphors.`,
+      
+      es: `Eres un sabio astrólogo que crea horóscopos breves pero profundos de 150-200 caracteres. Tus mensajes deben sonar como si vinieran del Universo mismo - poéticos, metafóricos, con elementos de misticismo. Utiliza imágenes espirituales y metáforas cósmicas.`
+    };
+    
+    return basePrompt[language] || basePrompt.en;
+  }
+}
+
+function getUserPrompt(sign: string, language: string, detailed: boolean, birthDate: string | null): string {
+  const birthDateInfo = birthDate ? ` (дата рождения: ${birthDate})` : '';
+  
   const signPrompts = {
-    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign} на сегодняшний день.`,
-    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign} for today.`,
-    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign} para hoy.`
+    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на сегодня.`,
+    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for today.`,
+    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para hoy.`
   };
 
   return signPrompts[language] || signPrompts.en;
+}
+
+// Helper function to get random color based on language
+function getRandomColor(language: string): string {
+  const colors = {
+    ru: ['красный', 'синий', 'зеленый', 'фиолетовый', 'оранжевый', 'розовый', 'золотой', 'серебряный', 'бирюзовый', 'индиго'],
+    en: ['red', 'blue', 'green', 'purple', 'orange', 'pink', 'gold', 'silver', 'turquoise', 'indigo'],
+    es: ['rojo', 'azul', 'verde', 'púrpura', 'naranja', 'rosa', 'oro', 'plata', 'turquesa', 'índigo']
+  };
+  
+  const colorList = colors[language] || colors.en;
+  return colorList[Math.floor(Math.random() * colorList.length)];
+}
+
+// Helper function to get random mood based on language
+function getRandomMood(language: string): string {
+  const moods = {
+    ru: ['радостный', 'задумчивый', 'спокойный', 'энергичный', 'вдохновленный', 'мечтательный', 'созерцательный', 'творческий'],
+    en: ['joyful', 'thoughtful', 'peaceful', 'energetic', 'inspired', 'dreamy', 'contemplative', 'creative'],
+    es: ['alegre', 'pensativo', 'tranquilo', 'enérgico', 'inspirado', 'soñador', 'contemplativo', 'creativo']
+  };
+  
+  const moodList = moods[language] || moods.en;
+  return moodList[Math.floor(Math.random() * moodList.length)];
 }

@@ -1,3 +1,4 @@
+
 export type SupportedLanguage = 'en' | 'ru' | 'es';
 
 export interface MeditationCategoriesTranslations {
@@ -63,7 +64,7 @@ export interface UniverseTranslations {
   chatTitleLabel: string;
   chatTitlePlaceholder: string;
   errorSendingMessage: string;
-  welcomeMessage: string; // Added missing property
+  welcomeMessage: string;
 }
 
 export interface LegalTranslations {
@@ -113,6 +114,17 @@ export interface LegalTranslations {
   terminationText: string;
 }
 
+export interface HoroscopeTranslations {
+  workFinance: string;
+  loveRelationships: string;
+  healthWellbeing: string;
+  dailyAdvice: string;
+  luckyNumber: string;
+  luckyTime: string;
+  colorOfDay: string;
+  mood: string;
+}
+
 export interface CommonTranslations {
   cancel: string;
   create: string;
@@ -159,4 +171,5 @@ export interface Translations {
   numerology?: Record<string, string>;
   legal?: LegalTranslations;
   common?: CommonTranslations;
+  horoscope?: HoroscopeTranslations;
 }

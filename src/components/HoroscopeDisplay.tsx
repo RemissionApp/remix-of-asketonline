@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -17,9 +17,12 @@ interface BriefHoroscope {
 export const HoroscopeDisplay: React.FC = () => {
   const [horoscope, setHoroscope] = useState<BriefHoroscope | null>(null);
   const [loading, setLoading] = useState(true);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const { userProfile, language, user } = useAppStore();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const typingSpeedRef = useRef(30); // milliseconds per character
   
   // Translations for the button text
   const seeMoreText = {
@@ -42,6 +45,39 @@ export const HoroscopeDisplay: React.FC = () => {
   
   // Check if user is PRO
   const isPro = userProfile?.isPro || false;
+
+  // Typing effect
+  useEffect(() => {
+    if (horoscope && !isTyping) {
+      setIsTyping(true);
+      setDisplayedText('');
+      
+      const text = horoscope.description;
+      let index = 0;
+      
+      const typingInterval = setInterval(() => {
+        if (index < text.length) {
+          setDisplayedText(prev => prev + text.charAt(index));
+          index++;
+        } else {
+          clearInterval(typingInterval);
+          setIsTyping(false);
+        }
+      }, typingSpeedRef.current);
+      
+      return () => clearInterval(typingInterval);
+    }
+  }, [horoscope]);
+  
+  // Create a helper function to get today's date as a string
+  const getTodayDateString = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+  
+  // Check if the horoscope is from today
+  const isHoroscopeFromToday = (storedDate: string) => {
+    return storedDate === getTodayDateString();
+  };
   
   useEffect(() => {
     const fetchHoroscope = async () => {
@@ -62,11 +98,15 @@ export const HoroscopeDisplay: React.FC = () => {
         }
         
         // Try to get cached horoscope for today
-        const today = new Date().toISOString().split('T')[0];
-        const cachedHoroscope = localStorage.getItem(`horoscope_${sign}_${today}_brief`);
+        const today = getTodayDateString();
+        const cachedHoroscopeKey = `horoscope_${sign}_${today}_brief`;
+        const cachedHoroscopeData = localStorage.getItem(cachedHoroscopeKey);
+        const cachedHoroscopeDateKey = `horoscope_${sign}_date_brief`;
+        const cachedHoroscopeDate = localStorage.getItem(cachedHoroscopeDateKey);
         
-        if (cachedHoroscope) {
-          setHoroscope(JSON.parse(cachedHoroscope));
+        // Use cached horoscope if it exists and is from today
+        if (cachedHoroscopeData && cachedHoroscopeDate && isHoroscopeFromToday(cachedHoroscopeDate)) {
+          setHoroscope(JSON.parse(cachedHoroscopeData));
           setLoading(false);
           return;
         }
@@ -91,7 +131,10 @@ export const HoroscopeDisplay: React.FC = () => {
         // Set the horoscope with just the description
         const briefHoroscope = { description: data.data.description };
         setHoroscope(briefHoroscope);
-        localStorage.setItem(`horoscope_${sign}_${today}_brief`, JSON.stringify(briefHoroscope));
+        
+        // Cache the horoscope with today's date
+        localStorage.setItem(cachedHoroscopeKey, JSON.stringify(briefHoroscope));
+        localStorage.setItem(cachedHoroscopeDateKey, today);
       } catch (error) {
         console.error('Error fetching horoscope:', error);
         setHoroscope({ description: getDefaultMessage(language) });
@@ -124,8 +167,9 @@ export const HoroscopeDisplay: React.FC = () => {
         </>
       ) : (
         <>
-          <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed">
-            {horoscope?.description || getDefaultMessage(language)}
+          <p className="cosmic-gradient-text text-lg italic font-serif leading-relaxed min-h-[5rem]">
+            {isTyping || displayedText ? displayedText : horoscope?.description || getDefaultMessage(language)}
+            {isTyping && <span className="typing-cursor">|</span>}
           </p>
           <p className="mt-2 text-sm text-cosmic-accent/80">{signature}</p>
           <Button 
