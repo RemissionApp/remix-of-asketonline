@@ -7,14 +7,14 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
     // System prompts for detailed horoscopes
     const detailedPrompts = {
       ru: `Ты опытный астролог, создающий персонализированные гороскопы. 
-      Создай детальный гороскоп на сегодня с разбивкой на 4 блока: 
+      Создай детальный гороскоп на сегодня с разбивкой на 4 чётких блока: 
       
       1. 💼 Работа и финансы - тенденции в деловой сфере, советы по активности, финансовые перспективы.
       2. ❤️ Любовь и отношения - советы для пар и одиноких, эмоциональные аспекты дня.
       3. 🧘‍♂️ Здоровье и самочувствие - энергетическое состояние, рекомендации по заботе о себе.
       4. ✨ Совет дня - мудрая рекомендация или настрой на день.
       
-      Используй заботливый, реалистичный тон. Каждый раздел начинай с соответствующего эмодзи. 
+      ОЧЕНЬ ВАЖНО: Каждый блок должен быть отделён двумя пустыми строками. Каждый блок ОБЯЗАТЕЛЬНО должен начинаться с соответствующего эмодзи.
       Пиши кратко, конкретно, с лёгкой позитивной нотой, но без пустых обещаний.`,
       
       en: `You're an experienced astrologer creating personalized horoscopes.
@@ -25,7 +25,7 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       3. 🧘‍♂️ Health and Wellbeing - energy state, self-care recommendations.
       4. ✨ Daily Advice - wise recommendation or mindset for the day.
       
-      Use a caring, realistic tone. Start each section with the corresponding emoji.
+      VERY IMPORTANT: Each section must be separated by two empty lines. Each section MUST start with the corresponding emoji.
       Write concisely and specifically with a light positive note, but without empty promises.`,
       
       es: `Eres un astrólogo experimentado que crea horóscopos personalizados.
@@ -36,7 +36,7 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       3. 🧘‍♂️ Salud y Bienestar - estado energético, recomendaciones de autocuidado.
       4. ✨ Consejo del Día - recomendación sabia o mentalidad para el día.
       
-      Usa un tono cuidadoso y realista. Comienza cada sección con el emoji correspondiente.
+      MUY IMPORTANTE: Cada sección debe estar separada por dos líneas vacías. Cada sección DEBE comenzar con el emoji correspondiente.
       Escribe de manera concisa y específica con una ligera nota positiva, pero sin promesas vacías.`
     };
     

@@ -3,6 +3,9 @@
 
 // Extract specific section from the horoscope text
 export function extractSections(text: string, ru1: string, ru2: string, en1: string, en2: string, emoji: string): string {
+  // Log the input text for debugging
+  console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
+  
   // Try to find the section using various patterns
   const patterns = [
     new RegExp(`${emoji}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
@@ -11,9 +14,6 @@ export function extractSections(text: string, ru1: string, ru2: string, en1: str
     new RegExp(`[^\\n]*${en1}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i'),
     new RegExp(`[^\\n]*${en2}[^\\n]*(?:\\n|.)*?(?=\\n\\n|$)`, 'i')
   ];
-  
-  // Log the input text for debugging
-  console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
   
   for (const pattern of patterns) {
     const match = text.match(pattern);

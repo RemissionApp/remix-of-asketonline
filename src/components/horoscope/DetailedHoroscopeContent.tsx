@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
 import { HoroscopeProOverlay } from './HoroscopeProOverlay';
@@ -28,6 +28,15 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   onGenerateHoroscope
 }) => {
   const [showGenerateButton, setShowGenerateButton] = useState(true);
+  
+  useEffect(() => {
+    // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
+    if (userProfile?.isPro && zodiacInfo && onGenerateHoroscope && !horoscope && !loading) {
+      console.log("Auto-generating horoscope on page load");
+      setShowGenerateButton(false);
+      onGenerateHoroscope();
+    }
+  }, [userProfile?.isPro, zodiacInfo, onGenerateHoroscope, horoscope, loading]);
   
   console.log("DetailedHoroscopeContent rendering with:", { 
     hasHoroscope: !!horoscope, 

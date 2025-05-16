@@ -91,7 +91,7 @@ export const useHoroscopeData = ({
           birthDate: userProfile.birthDate
         });
         
-        // Call our edge function to generate a detailed horoscope
+        // Force a new call to the edge function (do not attempt to retrieve from database first)
         const { data, error } = await supabase.functions.invoke('generate-horoscope', {
           body: { 
             sign: zodiacSign,
