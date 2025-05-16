@@ -22,8 +22,8 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
   type = 'button',
 }) => {
   const variantClasses = {
-    default: 'bg-gradient-to-r from-cosmic-accent/90 to-cosmic-indigo/90 hover:from-cosmic-accent hover:to-cosmic-indigo text-white shadow-sm',
-    outline: 'border border-cosmic-accent bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20',
+    default: 'bg-gradient-to-r from-cosmic-accent to-cosmic-indigo hover:from-purple-500 hover:to-blue-500 text-white shadow-md',
+    outline: 'border border-cosmic-accent bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 shadow-sm',
     subtle: 'bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20',
     destructive: 'bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30'
   };
