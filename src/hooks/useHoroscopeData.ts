@@ -19,16 +19,10 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
   const { toast } = useToast();
   
   // Get zodiac sign info
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
+  const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
   
   useEffect(() => {
     const fetchDetailedHoroscope = async () => {
-      if (!isPro) {
-        // For non-PRO users, just set loading to false without fetching
-        setLoading(false);
-        return;
-      }
-      
       try {
         setLoading(true);
         
@@ -65,9 +59,11 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
           throw new Error(error.message || 'Failed to fetch detailed horoscope');
         }
         
-        if (!data.success) {
+        if (!data || !data.success) {
           throw new Error('Invalid response from fetch-horoscope function');
         }
+        
+        console.log("Detailed horoscope data:", data);
         
         // Set the horoscope data
         setHoroscope(data.data);
@@ -91,8 +87,10 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
       }
     };
     
+    // Always fetch horoscope when component mounts, regardless of PRO status
+    // This way it will work for all users while showing a PRO overlay for non-PRO users
     fetchDetailedHoroscope();
-  }, [userProfile?.birthDate, isPro, zodiacSign, language, toast, translations]);
+  }, [userProfile?.birthDate, zodiacSign, language, toast, translations]);
 
   return {
     horoscope,

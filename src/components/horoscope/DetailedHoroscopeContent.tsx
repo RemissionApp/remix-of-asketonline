@@ -93,6 +93,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     );
   }
 
+  // If we have the horoscope data, display it
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
       <CardHeader>
@@ -103,44 +104,62 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
         <CardDescription>
           {zodiacInfo?.symbol} {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
         </CardDescription>
+        {/* User Greeting */}
+        <h2 className="text-cosmic-gold font-serif text-lg mt-2">
+          {language === 'ru' 
+            ? `Приветствую тебя, ${userProfile.name || 'Искатель'}!` 
+            : language === 'es'
+              ? `¡Te saludo, ${userProfile.name || 'Buscador'}!`
+              : `Greetings, ${userProfile.name || 'Seeker'}!`}
+        </h2>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Sectioned horoscope with typing effect */}
         <div className="space-y-4">
-          {horoscope.sections && (
+          {horoscope.sections ? (
             <>
-              {activeSection >= 0 && (
-                <div className="cosmic-section p-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/30">
-                  <TypingEffect 
-                    text={horoscope.sections.work_finance}
-                    className="cosmic-gradient-text font-serif"
-                    onComplete={handleSectionComplete}
-                  />
-                </div>
-              )}
+              <div className="cosmic-section p-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/30">
+                <h3 className="text-cosmic-accent font-medium mb-1">
+                  {translations.workFinance[language] || translations.workFinance.en}
+                </h3>
+                <TypingEffect 
+                  text={horoscope.sections.work_finance}
+                  className="cosmic-gradient-text font-serif"
+                  onComplete={activeSection === 0 ? handleSectionComplete : undefined}
+                />
+              </div>
               
               {activeSection >= 1 && (
                 <div className="cosmic-section p-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/30">
+                  <h3 className="text-cosmic-accent font-medium mb-1">
+                    {translations.loveRelationships[language] || translations.loveRelationships.en}
+                  </h3>
                   <TypingEffect 
                     text={horoscope.sections.love_relationships}
                     className="cosmic-gradient-text font-serif"
-                    onComplete={handleSectionComplete}
+                    onComplete={activeSection === 1 ? handleSectionComplete : undefined}
                   />
                 </div>
               )}
               
               {activeSection >= 2 && (
                 <div className="cosmic-section p-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/30">
+                  <h3 className="text-cosmic-accent font-medium mb-1">
+                    {translations.healthWellbeing[language] || translations.healthWellbeing.en}
+                  </h3>
                   <TypingEffect 
                     text={horoscope.sections.health_wellbeing}
                     className="cosmic-gradient-text font-serif"
-                    onComplete={handleSectionComplete}
+                    onComplete={activeSection === 2 ? handleSectionComplete : undefined}
                   />
                 </div>
               )}
               
               {activeSection >= 3 && (
                 <div className="cosmic-section p-3 border border-cosmic-accent/20 rounded-lg bg-cosmic-dark/30">
+                  <h3 className="text-cosmic-accent font-medium mb-1">
+                    {translations.dailyAdvice[language] || translations.dailyAdvice.en}
+                  </h3>
                   <TypingEffect 
                     text={horoscope.sections.daily_advice}
                     className="cosmic-gradient-text font-serif"
@@ -148,9 +167,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
                 </div>
               )}
             </>
-          )}
-          
-          {!horoscope.sections && (
+          ) : (
             <div className="cosmic-gradient-text text-base font-serif leading-relaxed whitespace-pre-wrap">
               <TypingEffect text={horoscope.description} />
             </div>

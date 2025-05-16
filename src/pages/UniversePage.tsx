@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
+import { TypingEffect } from '@/components/TypingEffect';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, setActiveScreen, userProfile } = useAppStore();
@@ -70,6 +71,19 @@ const UniversePage: React.FC = () => {
         </h1>
       </div>
       
+      {/* User Greeting */}
+      {userProfile?.name && (
+        <div className="relative z-10 text-center mb-4">
+          <h2 className="text-cosmic-gold font-serif text-xl">
+            {language === 'ru' 
+              ? `Приветствую тебя, ${userProfile.name}!` 
+              : language === 'es'
+                ? `¡Te saludo, ${userProfile.name}!`
+                : `Greetings, ${userProfile.name}!`}
+          </h2>
+        </div>
+      )}
+      
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-lg mx-auto w-full">
         {currentAnswer ? (
@@ -86,9 +100,9 @@ const UniversePage: React.FC = () => {
                 {t.universe.universeAnswer}
               </h2>
               
-              <QuoteDisplay 
-                quote={currentAnswer.answer} 
-                className="mb-8"
+              <TypingEffect 
+                text={currentAnswer.answer} 
+                className="text-white font-serif leading-relaxed"
               />
               
               <div className="mt-8 flex justify-center">
