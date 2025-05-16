@@ -8,6 +8,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
@@ -49,7 +50,7 @@ const UniversePage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={150} />
       
       {/* Header */}
@@ -157,6 +158,9 @@ const UniversePage: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Add BottomNavigation component */}
+      <BottomNavigation />
     </div>
   );
 };
