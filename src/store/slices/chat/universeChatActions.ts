@@ -40,24 +40,24 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     }
     
     try {
-      set({ isLoadingChat: true });
+      set({ isLoadingChat: true } as unknown as Partial<T>);
       const sessions = await loadChatSessionsUtil(user.id);
       console.log('Loaded chat sessions:', sessions.length);
       
       set({ 
         chatSessions: sessions, 
         isLoadingChat: false 
-      });
+      } as unknown as Partial<T>);
       
       // Auto-select most recent session if none is selected
       if (!get().currentChatSession && sessions.length > 0) {
-        set({ currentChatSession: sessions[0].id });
+        set({ currentChatSession: sessions[0].id } as unknown as Partial<T>);
         await get().loadChatMessages(sessions[0].id);
       }
     } catch (error) {
       console.error("Error loading chat sessions:", error);
       toast.error('Не удалось загрузить беседы');
-      set({ isLoadingChat: false });
+      set({ isLoadingChat: false } as unknown as Partial<T>);
     }
   },
   
@@ -101,13 +101,13 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     console.log('Setting current chat session:', sessionId);
     
     // Important: Set the session ID first before loading messages
-    set({ currentChatSession: sessionId });
+    set({ currentChatSession: sessionId } as unknown as Partial<T>);
     
     if (sessionId) {
       // Then load messages for the selected session
       await get().loadChatMessages(sessionId);
     } else {
-      set({ chatMessages: [] });
+      set({ chatMessages: [] } as unknown as Partial<T>);
     }
   },
   
@@ -128,13 +128,13 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       console.log('Loading chat messages for session:', sessionId);
       
       // Clear messages and set loading state
-      set({ isLoadingChat: true, chatMessages: [] }); 
+      set({ isLoadingChat: true, chatMessages: [] } as unknown as Partial<T>); 
       
       const messages = await loadSessionMessages(sessionId);
       console.log('Loaded messages count:', messages.length);
       
       // Update state with loaded messages
-      set({ chatMessages: messages, isLoadingChat: false });
+      set({ chatMessages: messages, isLoadingChat: false } as unknown as Partial<T>);
       
       // Set up subscription to real-time updates
       const subscription = subscribeToSessionMessages(
@@ -146,14 +146,14 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
             // Check if message already exists to avoid duplicates
             if (state.chatMessages.some(msg => msg.id === newMessage.id)) {
               console.log('Message already exists, not adding duplicate');
-              return { isSendingMessage: false };
+              return { isSendingMessage: false } as unknown as Partial<T>;
             }
             
             console.log('Adding new message to state');
             return {
               chatMessages: [...state.chatMessages, newMessage],
               isSendingMessage: false
-            };
+            } as unknown as Partial<T>;
           });
         }
       );
@@ -163,7 +163,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     } catch (error) {
       console.error("Error loading chat messages:", error);
       toast.error('Не удалось загрузить сообщения');
-      set({ isLoadingChat: false });
+      set({ isLoadingChat: false } as unknown as Partial<T>);
     }
   },
   
@@ -197,7 +197,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     }
     
     try {
-      set({ isSendingMessage: true });
+      set({ isSendingMessage: true } as unknown as Partial<T>);
       
       // Add temporary message to state immediately
       const tempUserMsg: UniverseChatMessage = {
@@ -210,7 +210,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       
       set(state => ({
         chatMessages: [...state.chatMessages, tempUserMsg]
-      }));
+      } as unknown as Partial<T>));
       
       console.log('Sending chat message:', message);
       
@@ -222,11 +222,11 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       set({ 
         chatMessages: updatedMessages,
         isSendingMessage: false
-      });
+      } as unknown as Partial<T>);
     } catch (error) {
       console.error("Error sending chat message:", error);
       toast.error('Не удалось отправить сообщение');
-      set({ isSendingMessage: false });
+      set({ isSendingMessage: false } as unknown as Partial<T>);
     }
   }
 });
