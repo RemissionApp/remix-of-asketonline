@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Send, Mic } from 'lucide-react';
+import { Send, Mic, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ChatInputProps {
@@ -11,12 +11,22 @@ interface ChatInputProps {
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled = false }) => {
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   
   const handleSendMessage = () => {
-    if (!inputText.trim() || isDisabled) return;
+    if (!inputText.trim() || isDisabled || isSending) return;
     
-    onSendMessage(inputText);
-    setInputText('');
+    setIsSending(true);
+    
+    try {
+      onSendMessage(inputText);
+      setInputText('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      // Add a small delay for better UX feedback
+      setTimeout(() => setIsSending(false), 500);
+    }
   };
   
   const toggleRecording = () => {
@@ -54,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
           placeholder="Напишите сообщение..."
           className="flex-1 bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-full px-4 py-2 text-white mx-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50"
           onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
-          disabled={isDisabled}
+          disabled={isDisabled || isSending}
         />
         
         <Button
@@ -62,9 +72,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
           size="icon"
           className={inputText.trim() ? "bg-cosmic-accent hover:bg-cosmic-accent/90" : "text-cosmic-secondary"}
           onClick={handleSendMessage}
-          disabled={!inputText.trim() || isDisabled}
+          disabled={!inputText.trim() || isDisabled || isSending}
         >
-          <Send size={20} />
+          {isSending ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
         </Button>
       </div>
     </div>

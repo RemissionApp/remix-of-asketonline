@@ -44,6 +44,9 @@ export const createChatSession = async (userId: string, title: string): Promise<
  */
 export const loadSessionMessages = async (sessionId: string): Promise<UniverseChatMessage[]> => {
   try {
+    // Add logging to verify messages are being loaded
+    console.log('Loading messages for session:', sessionId);
+    
     const { data, error } = await supabase
       .from('universe_chat_messages')
       .select('*')
@@ -51,6 +54,9 @@ export const loadSessionMessages = async (sessionId: string): Promise<UniverseCh
       .order('created_at', { ascending: true });
 
     if (error) throw error;
+    
+    // Log the loaded messages
+    console.log('Loaded messages:', data);
     return data as UniverseChatMessage[];
   } catch (error) {
     console.error('Error loading session messages:', error);
@@ -86,8 +92,12 @@ export const sendMessageToUniverse = async (
   message: string
 ): Promise<UniverseChatMessage[]> => {
   try {
+    console.log('Sending message to universe:', message);
+    
     // First, save the user message
+    const userMessageId = crypto.randomUUID();
     const userMessagePayload = {
+      id: userMessageId,
       user_id: userId,
       session_id: sessionId,
       content: message,
@@ -100,12 +110,17 @@ export const sendMessageToUniverse = async (
       .insert(userMessagePayload);
 
     if (userMsgError) throw userMsgError;
+    console.log('User message saved:', userMessagePayload);
 
     // Generate the universe's response
+    console.log('Generating universe answer...');
     const universeResponse = await generateUniverseAnswer(message);
+    console.log('Generated answer:', universeResponse);
     
     // Insert the universe's response
+    const universeMessageId = crypto.randomUUID();
     const universeMessagePayload = {
+      id: universeMessageId,
       user_id: userId,
       session_id: sessionId,
       content: universeResponse,
@@ -117,6 +132,7 @@ export const sendMessageToUniverse = async (
       .insert(universeMessagePayload);
 
     if (universeMsgError) throw universeMsgError;
+    console.log('Universe message saved:', universeMessagePayload);
 
     // Update the session last_message timestamp
     await supabase
@@ -139,6 +155,8 @@ export const subscribeToSessionMessages = (
   sessionId: string,
   onNewMessage: (message: UniverseChatMessage) => void
 ) => {
+  console.log('Setting up real-time subscription for session:', sessionId);
+  
   return supabase
     .channel(`session-${sessionId}`)
     .on(
@@ -150,6 +168,7 @@ export const subscribeToSessionMessages = (
         filter: `session_id=eq.${sessionId}`
       },
       (payload) => {
+        console.log('New message received via subscription:', payload);
         onNewMessage(payload.new as UniverseChatMessage);
       }
     )

@@ -198,17 +198,30 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
     if (!user) return;
     
     try {
+      console.log('Loading chat messages for session:', sessionId);
       set({ isLoadingChat: true });
       const messages = await loadSessionMessages(sessionId);
+      console.log('Loaded messages in slice:', messages);
+      
       set({ chatMessages: messages, isLoadingChat: false });
       
       // Set up subscription to real-time updates
       const subscription = subscribeToSessionMessages(
         sessionId,
         (newMessage) => {
-          set((state) => ({
-            chatMessages: [...state.chatMessages, newMessage]
-          }));
+          console.log('New message received in subscription handler:', newMessage);
+          set((state) => {
+            // Check if this message already exists in the state
+            if (state.chatMessages.some(msg => msg.id === newMessage.id)) {
+              console.log('Message already exists in state, not adding duplicate');
+              return state;
+            }
+            
+            console.log('Adding new message to state');
+            return {
+              chatMessages: [...state.chatMessages, newMessage]
+            };
+          });
         }
       );
       
@@ -228,9 +241,26 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
     
     try {
       set({ isSendingMessage: true });
-      await sendMessageToUniverse(user.id, sessionId, message);
-      // Messages will be updated via real-time subscription
-      set({ isSendingMessage: false });
+      
+      // Add message to state immediately for better UX
+      const tempUserMsg: UniverseChatMessage = {
+        id: `temp-${Date.now()}`,
+        content: message,
+        sender: 'user',
+        created_at: new Date().toISOString(),
+        session_id: sessionId
+      };
+      
+      set(state => ({
+        chatMessages: [...state.chatMessages, tempUserMsg]
+      }));
+      
+      console.log('Sending chat message:', message);
+      const updatedMessages = await sendMessageToUniverse(user.id, sessionId, message);
+      console.log('Updated messages after sending:', updatedMessages);
+      
+      // Update all messages to ensure consistent state
+      set({ chatMessages: updatedMessages, isSendingMessage: false });
     } catch (error) {
       console.error("Error sending chat message:", error);
       set({ isSendingMessage: false });

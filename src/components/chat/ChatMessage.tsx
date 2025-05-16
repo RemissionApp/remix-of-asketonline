@@ -12,9 +12,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.sender === 'user';
   const timestamp = new Date(message.created_at);
   
+  // Add debug logging to help diagnose issues
+  console.log('Rendering message:', message);
+  
   return (
     <div 
       className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
+      data-message-id={message.id}
     >
       {!isUser && (
         <div className="flex-shrink-0 mr-3">
@@ -31,7 +35,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none'
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap">{message.content || '...'}</p>
         <div className={`text-xs mt-1 ${isUser ? 'text-cosmic-secondary' : 'text-cosmic-secondary/70'}`}>
           {formatRelativeTime(timestamp)}
         </div>
