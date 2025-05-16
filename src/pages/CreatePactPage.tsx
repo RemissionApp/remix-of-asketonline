@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -160,7 +159,9 @@ const CreatePactPage: React.FC = () => {
                 options={getRejectionOptions()}
                 value={selectedItems}
                 onChange={setSelectedItems}
-                placeholder={t.createPact?.placeholders?.rejection || "Select or enter what you're giving up"}
+                placeholder={language === 'ru' ? "Выберите или введите Ваш отказ" : 
+                            language === 'es' ? "Seleccione o ingrese a qué renuncia" : 
+                            "Select or enter what you're giving up"}
                 inputPlaceholder={language === 'ru' ? "Введите свой вариант..." : 
                                  language === 'es' ? "Ingrese su opción..." : 
                                  "Enter your option..."}
@@ -298,7 +299,7 @@ const CreatePactPage: React.FC = () => {
   const showStandardLayout = step < 3;
   
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       
       {showStandardLayout && (
@@ -322,7 +323,7 @@ const CreatePactPage: React.FC = () => {
           </div>
           
           {/* Bottom */}
-          <div className="relative z-10 p-4 max-w-lg mx-auto w-full text-center">
+          <div className="relative z-10 p-4 max-w-lg mx-auto w-full text-center mb-4">
             <div className="flex justify-between items-center mb-6">
               {[0, 1, 2, 3].map((i) => (
                 <div
