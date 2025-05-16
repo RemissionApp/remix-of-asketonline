@@ -13,7 +13,7 @@ import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPrevie
 import { TypingEffect } from '@/components/TypingEffect';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen, userProfile } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
