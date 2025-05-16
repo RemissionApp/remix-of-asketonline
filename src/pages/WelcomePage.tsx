@@ -84,7 +84,7 @@ const WelcomePage: React.FC = () => {
           {subtitles[currentLang]}
         </p>
         
-        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out">
+        <CosmicButton onClick={handleContinue} size="lg" className="transition-all duration-300 ease-in-out bg-transparent">
           {buttonTexts[currentLang]}
         </CosmicButton>
       </div>
