@@ -8,17 +8,24 @@ interface ChatMessageProps {
   message: UniverseChatMessage;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
-  const isUser = message.sender === 'user';
-  const timestamp = new Date(message.created_at);
+// Use React.memo to prevent unnecessary re-renders when parent components update
+export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) => {
+  // Extract message properties with default fallbacks for error handling
+  const isUser = message?.sender === 'user';
+  const content = message?.content || '';
+  const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
+  const messageId = message?.id || `fallback-${Date.now()}`;
   
-  // Add debug logging to help diagnose issues
-  console.log('Rendering message:', message);
+  // Prevent rendering of empty messages
+  if (!message || (!content && !message.id)) {
+    console.warn('Attempted to render empty or invalid message:', message);
+    return null;
+  }
   
   return (
     <div 
       className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
-      data-message-id={message.id}
+      data-message-id={messageId}
     >
       {!isUser && (
         <div className="flex-shrink-0 mr-3">
@@ -35,7 +42,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none'
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content || '...'}</p>
+        <p className="whitespace-pre-wrap">{content}</p>
         <div className={`text-xs mt-1 ${isUser ? 'text-cosmic-secondary' : 'text-cosmic-secondary/70'}`}>
           {formatRelativeTime(timestamp)}
         </div>
@@ -48,4 +55,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       )}
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  // Only re-render if the message ID or content has changed
+  return (
+    prevProps.message.id === nextProps.message.id &&
+    prevProps.message.content === nextProps.message.content
+  );
+});
+
+// Display name for debugging
+ChatMessage.displayName = 'ChatMessage';
