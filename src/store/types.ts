@@ -1,5 +1,6 @@
 
 import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
+import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat';
 
 export type AppLanguage = 'ru' | 'en' | 'es';
 
@@ -51,4 +52,16 @@ export interface AppState {
   
   // Additional methods needed
   saveUniverseQuestion: (question: UniverseQuestion) => Promise<void>;
+  
+  // Chat related state and methods
+  chatSessions: UniverseChatSession[];
+  currentChatSession: string | null;
+  chatMessages: UniverseChatMessage[];
+  loadChatSessions: () => Promise<void>;
+  createChatSession: (title: string) => Promise<string | null>;
+  setCurrentChatSession: (sessionId: string | null) => void;
+  loadChatMessages: (sessionId: string) => Promise<void>;
+  sendChatMessage: (message: string) => Promise<void>;
+  isLoadingChat: boolean;
+  isSendingMessage: boolean;
 }

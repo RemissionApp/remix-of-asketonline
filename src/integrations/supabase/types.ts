@@ -242,6 +242,65 @@ export type Database = {
         }
         Relationships: []
       }
+      universe_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "universe_chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "universe_chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      universe_chat_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_message: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       universe_questions: {
         Row: {
           answer: string
