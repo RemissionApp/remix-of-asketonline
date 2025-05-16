@@ -66,7 +66,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       
       {isUser && (
         <div className="flex-shrink-0 ml-3 self-end">
-          <UserAvatar size="sm" />
+          <div className="w-10 h-10 rounded-full overflow-hidden">
+            <img 
+              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       )}
     </div>
