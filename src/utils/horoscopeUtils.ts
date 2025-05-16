@@ -12,6 +12,17 @@ export function isHoroscopeFromToday(storedDate: string): boolean {
   return storedDate === getTodayDateString();
 }
 
+// Get default message when horoscope is not available
+export function getDefaultMessage(language: string): string {
+  const defaultMessages = {
+    ru: 'Для получения вашего персонального гороскопа, пожалуйста, укажите дату рождения в профиле.',
+    en: 'To receive your personalized horoscope, please set your birth date in your profile.',
+    es: 'Para recibir tu horóscopo personalizado, por favor configura tu fecha de nacimiento en tu perfil.'
+  };
+  
+  return defaultMessages[language] || defaultMessages.en;
+}
+
 // Generate fallback horoscope data when the API call fails
 export function generateFallbackHoroscope(sign: string, language: string, translations: any): DetailedHoroscope {
   // Default messages based on language
