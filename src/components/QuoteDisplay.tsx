@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
+import { formatDateLong } from '@/utils/dateFormatUtils';
 
 interface QuoteDisplayProps {
   quote: string;
@@ -30,36 +30,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
   // Format current date based on user language
   useEffect(() => {
     const now = new Date();
-    let formattedDate = "";
-    
-    try {
-      switch (language) {
-        case 'ru':
-          formattedDate = now.toLocaleDateString('ru-RU', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-          });
-          break;
-        case 'es':
-          formattedDate = now.toLocaleDateString('es-ES', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-          });
-          break;
-        default:
-          formattedDate = now.toLocaleDateString('en-US', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-          });
-      }
-    } catch (e) {
-      // Fallback formatting if localization fails
-      formattedDate = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
-    }
-    
+    const formattedDate = formatDateLong(now, language);
     setCurrentDate(formattedDate);
   }, [language]);
   
@@ -192,7 +163,7 @@ function getRandomHoroscopeText(language: string = 'en'): string {
       'Звезды благоволят смелым решениям. Прислушайтесь к интуиции, она ведет вас по верному пути.',
       'Сегодня благоприятный день для начинаний. Вселенная открывает перед вами новые горизонты.',
       'Время перемен наступило. Отпустите старое, чтобы освободить место для нового.',
-      'Космические энергии поддерживают вас. Двигайтесь вперед с уверенностью и благодарностью.',
+      'Космические энергии поддерживают вас. Двигайтесь вперед с уверенностью и благода��ностью.',
       'Внутренний голос подскажет решение. Найдите тихий момент для глубокого размышления.'
     ],
     en: [

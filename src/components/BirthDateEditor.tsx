@@ -5,10 +5,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useTranslations } from '@/hooks/useTranslations';
 import { CosmicButton } from '@/components/CosmicButton';
-import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
+import { formatDate, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 
 interface BirthDateEditorProps {
   open: boolean;
@@ -17,7 +17,7 @@ interface BirthDateEditorProps {
 
 const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange }) => {
   const { t } = useTranslations();
-  const { userProfile, updateUserProfile, user } = useAppStore();
+  const { userProfile, updateUserProfile, user, language } = useAppStore();
   const [tempBirthDate, setTempBirthDate] = useState<Date | null>(userProfile?.birthDate || null);
   
   // Save the new birth date
@@ -29,7 +29,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
     
     try {
       // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = format(tempBirthDate, 'yyyy-MM-dd');
+      const formattedBirthDate = formatDate(tempBirthDate, 'en', false).split('/').reverse().join('-');
       
       // Update directly in Supabase
       const { error } = await supabase
@@ -87,6 +87,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
             }
             initialFocus
             className="mx-auto pointer-events-auto"
+            locale={getLocaleByLanguage(language)}
           />
         </div>
         

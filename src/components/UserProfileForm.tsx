@@ -1,12 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
-import { Edit2Icon } from 'lucide-react';
-import { format, differenceInYears } from 'date-fns';
+import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import { UserAvatar } from '@/components/UserAvatar';
+import { formatDate } from '@/utils/dateFormatUtils';
 import AvatarUpload from './AvatarUpload';
 import ZodiacInfo from './ZodiacInfo';
 import BirthDateEditor from './BirthDateEditor';
@@ -36,7 +34,7 @@ const UserProfileForm: React.FC = () => {
         
         const { data: profileData, error } = await supabase
           .from('profiles')
-          .select('name, birth_date, avatar_url') // Added avatar_url field
+          .select('name, birth_date, avatar_url')
           .eq('id', user.id)
           .single();
         
@@ -60,7 +58,7 @@ const UserProfileForm: React.FC = () => {
           updateUserProfile({
             name: profileData.name,
             birthDate: birthDate,
-            avatar_url: profileData.avatar_url // Add avatar_url to update
+            avatar_url: profileData.avatar_url
           });
           
           // Calculate and set age
@@ -103,7 +101,7 @@ const UserProfileForm: React.FC = () => {
       console.log("Saving profile data to Supabase:", values);
       
       // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = format(values.birthDate, 'yyyy-MM-dd');
+      const formattedBirthDate = formatDate(values.birthDate, 'en', false).split('/').reverse().join('-');
       
       // Update directly in Supabase
       const { error } = await supabase

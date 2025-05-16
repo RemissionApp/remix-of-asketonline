@@ -3,18 +3,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { CosmicButton } from '@/components/CosmicButton';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/useTranslations';
-import { ru, es, enUS } from 'date-fns/locale';
 import { useAppStore } from '@/store/useAppStore';
+import { formatDateLong, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 
 interface ProfileFormProps {
   onSubmit: (values: z.infer<any>) => Promise<void>;
@@ -24,18 +22,6 @@ interface ProfileFormProps {
 const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
-  
-  // Get locale based on selected language
-  const getLocale = () => {
-    switch (language) {
-      case 'ru':
-        return ru;
-      case 'es':
-        return es;
-      default:
-        return enUS;
-    }
-  };
   
   // Create form schema based on language
   const formSchema = z.object({
@@ -98,7 +84,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP", { locale: getLocale() })
+                        formatDateLong(field.value, language)
                       ) : (
                         <span>{t.userProfile?.birthDatePlaceholder || "Выберите дату рождения"}</span>
                       )}
@@ -116,6 +102,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
                     }
                     initialFocus
                     className="pointer-events-auto"
+                    locale={getLocaleByLanguage(language)}
                   />
                 </PopoverContent>
               </Popover>

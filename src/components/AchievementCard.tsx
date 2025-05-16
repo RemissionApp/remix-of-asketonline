@@ -3,9 +3,8 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Circle, Award, Calendar, MessageSquare, ScrollText } from 'lucide-react';
 import { Achievement } from '@/types';
-import { format } from 'date-fns';
-import { ru, es, enUS } from 'date-fns/locale';
 import { useAppStore } from '@/store/useAppStore';
+import { formatDateLong } from '@/utils/dateFormatUtils';
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -18,14 +17,6 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
 }) => {
   const { language } = useAppStore();
   
-  const getLocale = () => {
-    switch(language) {
-      case 'ru': return ru;
-      case 'es': return es;
-      default: return enUS;
-    }
-  };
-  
   const getIcon = () => {
     switch(achievement.icon) {
       case 'award': return <Award className="w-5 h-5" />;
@@ -34,11 +25,6 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
       case 'scroll': return <ScrollText className="w-5 h-5" />;
       default: return <Circle className="w-5 h-5" />;
     }
-  };
-  
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    return format(new Date(dateString), 'PP', { locale: getLocale() });
   };
   
   return (
@@ -66,7 +52,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
         <div className="mt-2 text-right">
           <span className="text-xs text-cosmic-secondary">
             {language === 'ru' ? 'Получено: ' : language === 'es' ? 'Recibido: ' : 'Received: '}
-            {formatDate(achievement.unlockedAt)}
+            {formatDateLong(achievement.unlockedAt, language)}
           </span>
         </div>
       )}

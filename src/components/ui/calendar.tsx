@@ -3,14 +3,11 @@ import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { Slider } from "@/components/ui/slider";
-
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { useTranslations } from "@/hooks/useTranslations";
 import { useAppStore } from "@/store/useAppStore";
-
-// Import localization from date-fns
-import { ru, es, enUS } from 'date-fns/locale';
+import { getLocaleByLanguage } from "@/utils/dateFormatUtils";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -21,24 +18,15 @@ function Calendar({
   ...props
 }: CalendarProps) {
   const { t } = useTranslations();
-  const { language } = useAppStore(); // Get current language from store
+  const { language } = useAppStore(); 
   const [month, setMonth] = React.useState<Date>(props.defaultMonth || new Date());
   const currentYear = new Date().getFullYear();
   const yearRange = 50; // 50 years before and after current year
   const minYear = currentYear - yearRange;
   const maxYear = currentYear + yearRange;
 
-  // Set locale based on selected language
-  const getLocale = () => {
-    switch (language) {
-      case 'ru':
-        return ru;
-      case 'es':
-        return es;
-      default:
-        return enUS;
-    }
-  };
+  // Get locale based on selected language
+  const locale = getLocaleByLanguage(language);
 
   // Handle year slider change
   const handleYearChange = (values: number[]) => {
@@ -152,7 +140,7 @@ function Calendar({
         }}
         month={month}
         onMonthChange={setMonth}
-        locale={getLocale()}
+        locale={locale}
         {...props}
       />
     </div>
@@ -161,4 +149,3 @@ function Calendar({
 Calendar.displayName = "Calendar";
 
 export { Calendar };
-
