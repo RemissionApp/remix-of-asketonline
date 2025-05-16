@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -112,6 +111,7 @@ const App = () => {
             <Route path="/meditation" element={<MeditationPage />} />
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
             {/* New routes for PRO features */}
+            <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
