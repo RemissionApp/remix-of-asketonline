@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CosmicButton } from './CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -34,6 +35,7 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) =
       <CosmicButton 
         onClick={handleCreatePact}
         className="mt-4"
+        variant="outline"
       >
         {language === 'ru' ? 'Заключить договор' : 
          language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
