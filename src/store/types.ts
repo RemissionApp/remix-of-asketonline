@@ -1,10 +1,9 @@
-
 import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
 import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat';
 
 export type AppLanguage = 'ru' | 'en' | 'es';
 
-export type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup';
+export type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat';
 
 export interface AppState {
   pacts: Pact[];
