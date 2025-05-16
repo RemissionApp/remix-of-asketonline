@@ -2,15 +2,16 @@
 export interface DetailedHoroscope {
   description: string;
   sections?: {
+    general_atmosphere: string;
     work_finance: string;
     love_relationships: string;
     health_wellbeing: string;
     daily_advice: string;
   };
-  lucky_number: string;
-  lucky_time: string;
-  color: string;
-  mood: string;
+  lucky_number?: string;
+  lucky_time?: string;
+  color?: string;
+  mood?: string;
 }
 
 export interface HoroscopeTranslations {

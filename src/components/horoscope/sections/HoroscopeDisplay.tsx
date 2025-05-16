@@ -4,7 +4,6 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { HoroscopeHeader } from './HoroscopeHeader';
 import { HoroscopeContent } from './HoroscopeContent';
-import { HoroscopeStats } from './HoroscopeStats';
 
 interface HoroscopeDisplayProps {
   horoscope: DetailedHoroscope;
@@ -33,12 +32,6 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
       </CardHeader>
       <CardContent className="space-y-6 pb-6">
         <HoroscopeContent 
-          horoscope={horoscope}
-          translations={translations}
-          language={language}
-        />
-        
-        <HoroscopeStats 
           horoscope={horoscope}
           translations={translations}
           language={language}

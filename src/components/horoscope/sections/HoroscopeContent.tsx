@@ -33,7 +33,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   }, [horoscope]);
 
   const handleSectionComplete = () => {
-    if (activeSection < 3) {
+    if (activeSection < 4) {
       console.log(`Section ${activeSection} complete, advancing to section ${activeSection + 1}`);
       setTimeout(() => {
         setActiveSection(activeSection + 1);
@@ -62,20 +62,24 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   // Define the sections with titles
   const sectionConfig = [
     {
+      key: 'general_atmosphere',
+      title: language === 'ru' ? 'Общая атмосфера дня' : 'General Day Atmosphere'
+    },
+    {
       key: 'work_finance',
-      title: translations.workFinance[language] || translations.workFinance.en
+      title: language === 'ru' ? 'Советы по работе и финансам' : 'Work & Finance Advice'
     },
     {
       key: 'love_relationships',
-      title: translations.loveRelationships[language] || translations.loveRelationships.en
+      title: language === 'ru' ? 'Рекомендации по отношениям и любви' : 'Love & Relationship Recommendations'
     },
     {
       key: 'health_wellbeing',
-      title: translations.healthWellbeing[language] || translations.healthWellbeing.en
+      title: language === 'ru' ? 'Состояние здоровья и эмоционального баланса' : 'Health & Emotional Balance'
     },
     {
       key: 'daily_advice',
-      title: translations.dailyAdvice[language] || translations.dailyAdvice.en
+      title: language === 'ru' ? 'Практичный совет дня' : 'Practical Daily Advice'
     }
   ];
 

@@ -2,7 +2,7 @@
 import { corsHeaders } from "./config.ts";
 import { HoroscopeRequest, HoroscopeResponse } from "./types.ts";
 import { generateHoroscope } from "./horoscopeGenerator.ts";
-import { extractSections, getRandomColor, getRandomMood } from "./utils.ts";
+import { extractSections } from "./utils.ts";
 
 export async function handleRequest(req: Request): Promise<Response> {
   // Log request for debugging
@@ -36,13 +36,15 @@ export async function handleRequest(req: Request): Promise<Response> {
     console.log(horoscopeText);
     console.log("---END OF TEXT---");
     
-    const workFinance = extractSections(horoscopeText, "работа", "финанс", "work", "finance", "work_finance");
-    const loveRelationships = extractSections(horoscopeText, "любовь", "отношения", "love", "relation", "love_relationships");
-    const healthWellbeing = extractSections(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "health_wellbeing");
-    const dailyAdvice = extractSections(horoscopeText, "совет", "рекомендация", "advice", "tip", "daily_advice");
+    const generalAtmosphere = extractSections(horoscopeText, "general_atmosphere");
+    const workFinance = extractSections(horoscopeText, "work_finance");
+    const loveRelationships = extractSections(horoscopeText, "love_relationships");
+    const healthWellbeing = extractSections(horoscopeText, "health_wellbeing");
+    const dailyAdvice = extractSections(horoscopeText, "daily_advice");
     
     console.log("Extracted sections results:");
     console.log({
+      generalAtmosphere: `${generalAtmosphere.substring(0, 50)}... (${generalAtmosphere.length} chars)`,
       workFinance: `${workFinance.substring(0, 50)}... (${workFinance.length} chars)`,
       loveRelationships: `${loveRelationships.substring(0, 50)}... (${loveRelationships.length} chars)`, 
       healthWellbeing: `${healthWellbeing.substring(0, 50)}... (${healthWellbeing.length} chars)`,
@@ -52,15 +54,12 @@ export async function handleRequest(req: Request): Promise<Response> {
     horoscopeResponse.data = {
       description: horoscopeText,
       sections: {
+        general_atmosphere: generalAtmosphere,
         work_finance: workFinance,
         love_relationships: loveRelationships,
         health_wellbeing: healthWellbeing,
         daily_advice: dailyAdvice
-      },
-      lucky_number: Math.floor(Math.random() * 100).toString(),
-      lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-      color: getRandomColor(language),
-      mood: getRandomMood(language)
+      }
     };
     
     // Verify the final structure
@@ -69,6 +68,7 @@ export async function handleRequest(req: Request): Promise<Response> {
       sections: Object.keys(horoscopeResponse.data?.sections || {}),
       hasSections: !!horoscopeResponse.data?.sections,
       sectionLengths: {
+        general_atmosphere: horoscopeResponse.data?.sections?.general_atmosphere?.length || 0,
         work_finance: horoscopeResponse.data?.sections?.work_finance?.length || 0,
         love_relationships: horoscopeResponse.data?.sections?.love_relationships?.length || 0,
         health_wellbeing: horoscopeResponse.data?.sections?.health_wellbeing?.length || 0,
