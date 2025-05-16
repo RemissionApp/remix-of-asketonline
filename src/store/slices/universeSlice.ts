@@ -8,8 +8,8 @@ import { createUniverseChatSlice, UniverseChatSlice } from './universeChatSlice'
 export interface UniverseSlice extends UniverseQuestionSlice, UniverseChatSlice {}
 
 // Create the combined universe slice
-export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> = (set, get) => ({
+export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> = (set, get, api) => ({
   // Merge the question and chat slices
-  ...createUniverseQuestionSlice(set, get),
-  ...createUniverseChatSlice(set, get)
+  ...createUniverseQuestionSlice(set, get, api),
+  ...createUniverseChatSlice(set, get, api)
 });
