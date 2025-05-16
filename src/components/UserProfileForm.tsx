@@ -141,10 +141,7 @@ const UserProfileForm: React.FC = () => {
         description: "Ваши данные успешно сохранены"
       });
     
-      // Navigate based on the current path
-      if (location.pathname === '/profile-setup') {
-        navigate('/main');
-      }
+      // We'll let the ProfileForm handle navigation now
     } catch (error: any) {
       console.error("Error saving profile:", error);
       toast({
@@ -156,6 +153,9 @@ const UserProfileForm: React.FC = () => {
       setIsSaving(false);
     }
   };
+
+  // Determine if we should navigate to main after saving
+  const shouldNavigateToMain = location.pathname === '/profile-setup';
 
   return (
     <div className="w-full max-w-md mx-auto text-center">
@@ -183,11 +183,16 @@ const UserProfileForm: React.FC = () => {
             name: userProfile.name !== 'Искатель' ? userProfile.name : '',
             birthDate: userProfile.birthDate || new Date()
           }}
+          navigateToMain={shouldNavigateToMain}
         />
       )}
       
-      {/* Zodiac section */}
-      {userProfile?.birthDate && <ZodiacInfo />}
+      {userProfile?.birthDate && (
+        <div className="mt-8">
+          <h3 className="text-xl font-serif text-white mb-4">Знак зодиака</h3>
+          <ZodiacInfo />
+        </div>
+      )}
       
       {/* Birth Date Edit Dialog */}
       <BirthDateEditor 

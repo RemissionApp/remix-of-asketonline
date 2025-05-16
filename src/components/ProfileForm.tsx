@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { formatDateLong, getLocaleByLanguage } from '@/utils/dateFormatUtils';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileFormProps {
   onSubmit: (values: z.infer<any>) => Promise<void>;
@@ -21,15 +22,18 @@ interface ProfileFormProps {
     name: string;
     birthDate: Date;
   };
+  navigateToMain?: boolean;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ 
   onSubmit, 
   isSaving, 
-  defaultValues = { name: '', birthDate: new Date() } 
+  defaultValues = { name: '', birthDate: new Date() },
+  navigateToMain = false
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
+  const navigate = useNavigate();
   
   // Create form schema based on language
   const formSchema = z.object({
@@ -60,9 +64,17 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     }
   }, [defaultValues, form]);
   
+  // Handle form submission with navigation
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
+    if (navigateToMain) {
+      navigate('/main');
+    }
+  };
+  
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
