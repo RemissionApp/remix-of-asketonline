@@ -27,11 +27,18 @@ const DetailedHoroscopePage: React.FC = () => {
   const zodiacSign = birthDate ? getZodiacSign(birthDate) : null;
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
-  // Log user profile and zodiac info for debugging
-  console.log("DetailedHoroscopePage - User profile:", userProfile);
-  console.log("DetailedHoroscopePage - Birth date:", birthDate);
-  console.log("DetailedHoroscopePage - Zodiac sign:", zodiacSign);
-  console.log("DetailedHoroscopePage - Zodiac info:", zodiacInfo);
+  console.log("DetailedHoroscopePage INIT:", {
+    userProfile: userProfile ? JSON.stringify({
+      name: userProfile.name,
+      birthDate: userProfile.birthDate,
+      isPro: userProfile.isPro
+    }) : null,
+    birthDate: birthDate?.toISOString(),
+    zodiacSign,
+    zodiacInfo: zodiacInfo ? zodiacInfo.name.en : null,
+    language,
+    shouldFetchHoroscope
+  });
   
   // Check if user has a birth date set, but only show toast without auto-redirect
   useEffect(() => {
@@ -44,8 +51,16 @@ const DetailedHoroscopePage: React.FC = () => {
           : 'To view your horoscope, please set your birth date in your profile.',
         variant: 'warning',
       });
+    } else {
+      console.log("Birth date is set:", userProfile.birthDate);
+      
+      // Auto-generate for Pro users on mount
+      if (userProfile?.isPro && zodiacSign) {
+        console.log("Auto-triggering horoscope generation for PRO user");
+        setShouldFetchHoroscope(true);
+      }
     }
-  }, [userProfile?.birthDate, language, toast]);
+  }, [userProfile?.birthDate, userProfile?.isPro, language, toast, zodiacSign]);
   
   // Handle manually triggering horoscope generation
   const handleGenerateHoroscope = () => {
@@ -64,11 +79,16 @@ const DetailedHoroscopePage: React.FC = () => {
 
   // Additional debug logging
   useEffect(() => {
-    console.log("DetailedHoroscopePage - Horoscope loading:", loading);
-    console.log("DetailedHoroscopePage - Horoscope data:", horoscope);
-    console.log("DetailedHoroscopePage - Is user pro:", !!userProfile?.isPro);
-    console.log("DetailedHoroscopePage - Fetched zodiac sign:", fetchedZodiacSign);
-    console.log("DetailedHoroscopePage - Should fetch horoscope:", shouldFetchHoroscope);
+    console.log("DetailedHoroscopePage STATE UPDATE:", {
+      horoscope: horoscope ? {
+        hasSections: !!horoscope.sections,
+        sectionKeys: horoscope.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections'
+      } : null,
+      loading,
+      isPro: !!userProfile?.isPro,
+      fetchedZodiacSign,
+      shouldFetchHoroscope
+    });
   }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign, shouldFetchHoroscope]);
 
   return (

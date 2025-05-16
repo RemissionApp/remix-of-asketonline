@@ -14,7 +14,12 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       3. 🧘‍♂️ Здоровье и самочувствие - энергетическое состояние, рекомендации по заботе о себе.
       4. ✨ Совет дня - мудрая рекомендация или настрой на день.
       
-      ОЧЕНЬ ВАЖНО: Каждый блок должен быть отделён двумя пустыми строками. Каждый блок ОБЯЗАТЕЛЬНО должен начинаться с соответствующего эмодзи.
+      ОЧЕНЬ ВАЖНО:
+      - Каждый блок должен начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨)
+      - После блока должна быть пустая строка
+      - Блоки должны быть четко разделены двумя пустыми строками
+      - ОБЯЗАТЕЛЬНО используй точное форматирование с эмодзи в начале каждого блока
+      
       Пиши кратко, конкретно, с лёгкой позитивной нотой, но без пустых обещаний.`,
       
       en: `You're an experienced astrologer creating personalized horoscopes.
@@ -25,7 +30,12 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       3. 🧘‍♂️ Health and Wellbeing - energy state, self-care recommendations.
       4. ✨ Daily Advice - wise recommendation or mindset for the day.
       
-      VERY IMPORTANT: Each section must be separated by two empty lines. Each section MUST start with the corresponding emoji.
+      VERY IMPORTANT:
+      - Each section MUST start with its corresponding emoji (💼, ❤️, 🧘‍♂️, ✨)
+      - After each section, add a blank line
+      - Sections should be clearly separated by two blank lines
+      - YOU MUST use the exact formatting with emojis at the beginning of each section
+      
       Write concisely and specifically with a light positive note, but without empty promises.`,
       
       es: `Eres un astrólogo experimentado que crea horóscopos personalizados.
@@ -36,7 +46,12 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
       3. 🧘‍♂️ Salud y Bienestar - estado energético, recomendaciones de autocuidado.
       4. ✨ Consejo del Día - recomendación sabia o mentalidad para el día.
       
-      MUY IMPORTANTE: Cada sección debe estar separada por dos líneas vacías. Cada sección DEBE comenzar con el emoji correspondiente.
+      MUY IMPORTANTE:
+      - Cada sección DEBE comenzar con su emoji correspondiente (💼, ❤️, 🧘‍♂️, ✨)
+      - Después de cada sección, agrega una línea en blanco
+      - Las secciones deben estar claramente separadas por dos líneas en blanco
+      - DEBES usar el formato exacto con emojis al principio de cada sección
+      
       Escribe de manera concisa y específica con una ligera nota positiva, pero sin promesas vacías.`
     };
     
@@ -60,9 +75,9 @@ export function getUserPrompt(sign: string, language: string, detailed: boolean,
   const birthDateInfo = birthDate ? ` (дата рождения: ${birthDate})` : '';
   
   const signPrompts = {
-    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на сегодня.`,
-    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for today.`,
-    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para hoy.`
+    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на сегодня. ${detailed ? 'ВАЖНО: Каждая секция ДОЛЖНА начинаться с соответствующего эмодзи (💼, ❤️, 🧘‍♂️, ✨) и иметь две пустые строки между секциями.' : ''}`,
+    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for today. ${detailed ? 'IMPORTANT: Each section MUST start with the corresponding emoji (💼, ❤️, 🧘‍♂️, ✨) and have two empty lines between sections.' : ''}`,
+    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para hoy. ${detailed ? 'IMPORTANTE: Cada sección DEBE comenzar con el emoji correspondiente (💼, ❤️, 🧘‍♂️, ✨) y tener dos líneas vacías entre secciones.' : ''}`
   };
 
   return signPrompts[language] || signPrompts.en;

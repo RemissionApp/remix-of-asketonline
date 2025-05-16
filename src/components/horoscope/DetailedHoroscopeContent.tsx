@@ -33,18 +33,22 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
     if (userProfile?.isPro && zodiacInfo && onGenerateHoroscope && !horoscope && !loading) {
       console.log("Auto-generating horoscope on page load");
+      console.log("User profile:", JSON.stringify(userProfile));
+      console.log("Zodiac info:", JSON.stringify(zodiacInfo));
       setShowGenerateButton(false);
       onGenerateHoroscope();
     }
   }, [userProfile?.isPro, zodiacInfo, onGenerateHoroscope, horoscope, loading]);
   
-  console.log("DetailedHoroscopeContent rendering with:", { 
+  console.log("DetailedHoroscopeContent RENDER:", { 
     hasHoroscope: !!horoscope, 
     loading, 
     isPro: !!userProfile?.isPro,
-    zodiacInfo,
+    zodiacInfo: zodiacInfo ? JSON.stringify(zodiacInfo).substring(0, 100) + '...' : null,
     birthDate: userProfile?.birthDate,
-    horoscopeData: horoscope
+    horoscopeData: horoscope ? 'Available' : 'Not available',
+    horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
+    showGenerateButton
   });
 
   const handleGenerateClick = () => {
@@ -57,6 +61,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
+    console.log("No zodiac info available, showing message");
     return (
       <NoZodiacInfoMessage 
         translations={translations}
@@ -68,6 +73,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // Check if user is PRO
   if (!userProfile?.isPro) {
+    console.log("User is not PRO, showing overlay");
     return (
       <HoroscopeProOverlay
         translations={translations}
@@ -79,6 +85,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // Show the generate button if there's no horoscope and we're not loading
   if (!loading && !horoscope && showGenerateButton) {
+    console.log("Showing generate button");
     return (
       <GenerateButton
         translations={translations}
@@ -91,6 +98,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   }
 
   if (loading) {
+    console.log("Showing loading state");
     return (
       <LoadingHoroscope
         translations={translations}
@@ -103,6 +111,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // If horoscope is null, return an error message
   if (!horoscope) {
+    console.log("No horoscope data, showing error message");
     return (
       <ErrorMessage
         translations={translations}
@@ -115,6 +124,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   }
 
   // If we have the horoscope data, display it
+  console.log("Displaying horoscope with sections:", Object.keys(horoscope.sections || {}).join(', '));
   return (
     <HoroscopeDisplay
       horoscope={horoscope}

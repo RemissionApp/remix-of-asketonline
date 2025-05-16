@@ -5,6 +5,7 @@
 export function extractSections(text: string, ru1: string, ru2: string, en1: string, en2: string, emoji: string): string {
   // Log the input text for debugging
   console.log(`Extracting section for ${emoji} ${ru1}/${en1}, text length: ${text.length}`);
+  console.log(`First 100 chars of text: ${text.substring(0, 100)}...`);
   
   // Try to find the section using various patterns
   const patterns = [
@@ -18,7 +19,8 @@ export function extractSections(text: string, ru1: string, ru2: string, en1: str
   for (const pattern of patterns) {
     const match = text.match(pattern);
     if (match) {
-      console.log(`Found match with pattern: ${pattern}`);
+      console.log(`Found match with pattern: ${pattern.source}`);
+      console.log(`Match result: ${match[0].substring(0, 50)}...`);
       return match[0].trim();
     }
   }

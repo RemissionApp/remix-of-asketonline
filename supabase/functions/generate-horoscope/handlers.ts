@@ -21,22 +21,32 @@ export async function handleRequest(req: Request): Promise<Response> {
 
   // Generate horoscope text using OpenAI
   const horoscopeText = await generateHoroscope(sign, language, detailed, birthDate);
-  console.log(`Generated horoscope: ${horoscopeText.substring(0, 200)}...`);
+  console.log(`Generated horoscope text length: ${horoscopeText.length}`);
+  console.log(`Generated horoscope preview: ${horoscopeText.substring(0, 200)}...`);
 
   // Prepare response based on whether detailed or brief horoscope was requested
   let horoscopeResponse: HoroscopeResponse = { success: true };
   
   if (detailed) {
+    console.log("Processing detailed horoscope and extracting sections");
+    
+    // Log the full text for debugging
+    console.log("Full horoscope text:");
+    console.log("---START OF TEXT---");
+    console.log(horoscopeText);
+    console.log("---END OF TEXT---");
+    
     const workFinance = extractSections(horoscopeText, "работа", "финанс", "work", "finance", "💼");
     const loveRelationships = extractSections(horoscopeText, "любовь", "отношения", "love", "relation", "❤️");
     const healthWellbeing = extractSections(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🧘‍♂️");
     const dailyAdvice = extractSections(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨");
     
-    console.log("Extracted sections:", {
-      workFinance: workFinance.substring(0, 50) + "...",
-      loveRelationships: loveRelationships.substring(0, 50) + "...",
-      healthWellbeing: healthWellbeing.substring(0, 50) + "...", 
-      dailyAdvice: dailyAdvice.substring(0, 50) + "..."
+    console.log("Extracted sections results:");
+    console.log({
+      workFinance: `${workFinance.substring(0, 50)}... (${workFinance.length} chars)`,
+      loveRelationships: `${loveRelationships.substring(0, 50)}... (${loveRelationships.length} chars)`, 
+      healthWellbeing: `${healthWellbeing.substring(0, 50)}... (${healthWellbeing.length} chars)`,
+      dailyAdvice: `${dailyAdvice.substring(0, 50)}... (${dailyAdvice.length} chars)`
     });
     
     horoscopeResponse.data = {
@@ -52,13 +62,26 @@ export async function handleRequest(req: Request): Promise<Response> {
       color: getRandomColor(language),
       mood: getRandomMood(language)
     };
+    
+    // Verify the final structure
+    console.log("Final horoscope response structure:", {
+      success: horoscopeResponse.success,
+      sections: Object.keys(horoscopeResponse.data?.sections || {}),
+      hasSections: !!horoscopeResponse.data?.sections,
+      sectionLengths: {
+        work_finance: horoscopeResponse.data?.sections?.work_finance?.length || 0,
+        love_relationships: horoscopeResponse.data?.sections?.love_relationships?.length || 0,
+        health_wellbeing: horoscopeResponse.data?.sections?.health_wellbeing?.length || 0,
+        daily_advice: horoscopeResponse.data?.sections?.daily_advice?.length || 0
+      }
+    });
   } else {
     horoscopeResponse.data = {
       description: horoscopeText
     };
   }
 
-  console.log("Returning horoscope response:", JSON.stringify(horoscopeResponse).substring(0, 200) + "...");
+  console.log("Returning horoscope response with success:", horoscopeResponse.success);
   return new Response(JSON.stringify(horoscopeResponse), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
