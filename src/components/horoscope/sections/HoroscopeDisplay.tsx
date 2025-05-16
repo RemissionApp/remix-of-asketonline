@@ -31,7 +31,7 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
           userName={userName}
         />
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pb-6">
         <HoroscopeContent 
           horoscope={horoscope}
           translations={translations}

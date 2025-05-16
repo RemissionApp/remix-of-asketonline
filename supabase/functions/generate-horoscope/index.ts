@@ -106,7 +106,7 @@ serve(async (req) => {
     if (detailed) {
       const workFinance = extractSection(horoscopeText, "работа", "финанс", "work", "finance", "💼");
       const loveRelationships = extractSection(horoscopeText, "любовь", "отношения", "love", "relation", "❤️");
-      const healthWellbeing = extractSection(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🌿");
+      const healthWellbeing = extractSection(horoscopeText, "здоровье", "самочувствие", "health", "wellbeing", "🧘‍♂️");
       const dailyAdvice = extractSection(horoscopeText, "совет", "рекомендация", "advice", "tip", "✨");
       
       console.log("Extracted sections:", {
@@ -178,16 +178,16 @@ function extractSection(text: string, ru1: string, ru2: string, en1: string, en2
   
   // If no match found, create a default response based on section indicators
   if (ru1 === "работа" || en1 === "work") {
-    return `${emoji} Сегодня благоприятный день для профессиональных начинаний.`;
+    return `${emoji} Сегодня благоприятный день для профессиональных начинаний. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах. Возможны новые деловые предложения или финансовые поступления.`;
   } else if (ru1 === "любовь" || en1 === "love") {
-    return `${emoji} День подходит для укрепления существующих отношений.`;
+    return `${emoji} В личной жизни возможны приятные сюрпризы. Открытое общение поможет укрепить существующие отношения. Если вы одиноки, сегодня подходящий день для новых знакомств.`;
   } else if (ru1 === "здоровье" || en1 === "health") {
-    return `${emoji} Уделите время своему физическому и эмоциональному благополучию.`;
+    return `${emoji} Уделите внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе поможет восстановить силы. Сегодня хороший день для начала новой программы упражнений.`;
   } else if (ru1 === "совет" || en1 === "advice") {
-    return `${emoji} Практикуйте благодарность и внимательность сегодня.`;
+    return `${emoji} Слушайте свою интуицию, она укажет верное направление. Не торопитесь с принятием важных решений, но и не откладывайте их на неопределенный срок.`;
   }
   
-  return "";
+  return `${emoji} Информация временно недоступна.`;
 }
 
 // Helper functions for prompts
@@ -200,7 +200,7 @@ function getSystemPrompt(language: string, detailed: boolean): string {
       
       1. 💼 Работа и финансы - тенденции в деловой сфере, советы по активности, финансовые перспективы.
       2. ❤️ Любовь и отношения - советы для пар и одиноких, эмоциональные аспекты дня.
-      3. 🌿 Здоровье и самочувствие - энергетическое состояние, рекомендации по заботе о себе.
+      3. 🧘‍♂️ Здоровье и самочувствие - энергетическое состояние, рекомендации по заботе о себе.
       4. ✨ Совет дня - мудрая рекомендация или настрой на день.
       
       Используй заботливый, реалистичный тон. Каждый раздел начинай с соответствующего эмодзи. 
@@ -211,7 +211,7 @@ function getSystemPrompt(language: string, detailed: boolean): string {
       
       1. 💼 Work and Finance - business trends, activity advice, financial prospects.
       2. ❤️ Love and Relationships - advice for couples and singles, emotional aspects.
-      3. 🌿 Health and Wellbeing - energy state, self-care recommendations.
+      3. 🧘‍♂️ Health and Wellbeing - energy state, self-care recommendations.
       4. ✨ Daily Advice - wise recommendation or mindset for the day.
       
       Use a caring, realistic tone. Start each section with the corresponding emoji.
@@ -222,7 +222,7 @@ function getSystemPrompt(language: string, detailed: boolean): string {
       
       1. 💼 Trabajo y Finanzas - tendencias comerciales, consejos de actividad, perspectivas financieras.
       2. ❤️ Amor y Relaciones - consejos para parejas y solteros, aspectos emocionales.
-      3. 🌿 Salud y Bienestar - estado energético, recomendaciones de autocuidado.
+      3. 🧘‍♂️ Salud y Bienestar - estado energético, recomendaciones de autocuidado.
       4. ✨ Consejo del Día - recomendación sabia o mentalidad para el día.
       
       Usa un tono cuidadoso y realista. Comienza cada sección con el emoji correspondiente.

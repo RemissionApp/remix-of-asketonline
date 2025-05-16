@@ -52,7 +52,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
       title: translations.loveRelationships[language] || translations.loveRelationships.en
     },
     {
-      emoji: '🌿',
+      emoji: '🧘‍♂️',
       key: 'health_wellbeing',
       title: translations.healthWellbeing[language] || translations.healthWellbeing.en
     },

@@ -93,7 +93,7 @@ export const useHoroscopeData = ({
             .eq('user_id', user.id)
             .eq('zodiac_sign', zodiacSign)
             .eq('date', today)
-            .single();
+            .maybeSingle();
             
           if (!dbError && dbHoroscope) {
             console.log("Found horoscope in database:", dbHoroscope);

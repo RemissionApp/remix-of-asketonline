@@ -49,12 +49,12 @@ export const HoroscopeStats: React.FC<HoroscopeStatsProps> = ({
       {statsConfig.map(stat => (
         <div 
           key={stat.key} 
-          className="bg-cosmic-dark/40 border border-cosmic-accent/30 p-3 rounded-lg flex items-center backdrop-blur-sm shadow-md transition-all duration-300 hover:border-cosmic-accent/50"
+          className="bg-cosmic-dark/40 border border-cosmic-accent/30 p-4 rounded-lg flex items-center backdrop-blur-sm shadow-md transition-all duration-300 hover:border-cosmic-accent/50"
         >
-          <span className="text-xl mr-3">{stat.icon}</span>
+          <span className="text-2xl mr-3">{stat.icon}</span>
           <div>
-            <p className="text-xs text-cosmic-secondary">{stat.title}</p>
-            <p className="text-cosmic-accent font-medium">{stat.value}</p>
+            <p className="text-sm text-cosmic-secondary">{stat.title}</p>
+            <p className="text-cosmic-accent font-medium text-xl">{stat.value}</p>
           </div>
         </div>
       ))}

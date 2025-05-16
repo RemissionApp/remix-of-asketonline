@@ -28,22 +28,22 @@ export function generateFallbackHoroscope(sign: string, language: string, transl
   // Default messages based on language
   const defaultMessages = {
     ru: {
-      work: '💼 Сегодня благоприятный день для профессиональных начинаний. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах.',
-      love: '❤️ В личной жизни возможны приятные сюрпризы. Открытое общение поможет укрепить существующие отношения.',
-      health: '🌿 Уделите внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе поможет восстановить силы.',
-      advice: '✨ Совет дня: слушайте свою интуицию, она укажет верное направление.'
+      work: '💼 Сегодня благоприятный день для профессиональных начинаний. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах. Возможны новые деловые предложения или финансовые поступления, которые положительно повлияют на ваше будущее.',
+      love: '❤️ В личной жизни возможны приятные сюрпризы. Открытое общение поможет укрепить существующие отношения. Если вы одиноки, сегодня подходящий день для новых знакомств. Доверяйте своей интуиции при общении с людьми.',
+      health: '🧘‍♂️ Уделите внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе поможет восстановить силы. Сегодня хороший день для начала новой программы упражнений или изменения режима питания.',
+      advice: '✨ Совет дня: слушайте свою интуицию, она укажет верное направление. Не торопитесь с принятием важных решений, но и не откладывайте их на неопределенный срок. Золотая середина поможет вам достичь гармонии.'
     },
     en: {
-      work: '💼 Today is a favorable day for professional endeavors. Your productivity will be high if you focus on priority tasks.',
-      love: '❤️ In your personal life, pleasant surprises are possible. Open communication will help strengthen existing relationships.',
-      health: '🌿 Pay attention to your physical and emotional health. A short walk in fresh air will help restore your energy.',
-      advice: '✨ Daily advice: listen to your intuition, it will point you in the right direction.'
+      work: '💼 Today is a favorable day for professional endeavors. Your productivity will be high if you focus on priority tasks. New business offers or financial inflows may positively impact your future.',
+      love: '❤️ In your personal life, pleasant surprises are possible. Open communication will help strengthen existing relationships. If you are single, today is a suitable day for new acquaintances. Trust your intuition when interacting with people.',
+      health: '🧘‍♂️ Pay attention to your physical and emotional health. A short walk in fresh air will help restore your energy. Today is a good day to start a new exercise program or change your diet.',
+      advice: '✨ Daily advice: listen to your intuition, it will point you in the right direction. Don\'t rush important decisions, but don\'t postpone them indefinitely either. The golden middle will help you achieve harmony.'
     },
     es: {
-      work: '💼 Hoy es un día favorable para los esfuerzos profesionales. Tu productividad será alta si te concentras en tareas prioritarias.',
-      love: '❤️ En tu vida personal, son posibles sorpresas agradables. La comunicación abierta ayudará a fortalecer las relaciones existentes.',
-      health: '🌿 Presta atención a tu salud física y emocional. Un breve paseo al aire libre te ayudará a restaurar tu energía.',
-      advice: '✨ Consejo del día: escucha tu intuición, te señalará la dirección correcta.'
+      work: '💼 Hoy es un día favorable para los esfuerzos profesionales. Tu productividad será alta si te concentras en tareas prioritarias. Nuevas ofertas comerciales o entradas financieras pueden impactar positivamente tu futuro.',
+      love: '❤️ En tu vida personal, son posibles sorpresas agradables. La comunicación abierta ayudará a fortalecer las relaciones existentes. Si estás soltero, hoy es un día adecuado para nuevos conocidos. Confía en tu intuición al interactuar con personas.',
+      health: '🧘‍♂️ Presta atención a tu salud física y emocional. Un breve paseo al aire libre te ayudará a restaurar tu energía. Hoy es un buen día para comenzar un nuevo programa de ejercicios o cambiar tu dieta.',
+      advice: '✨ Consejo del día: escucha tu intuición, te señalará la dirección correcta. No apresures decisiones importantes, pero tampoco las pospongas indefinidamente. El punto medio dorado te ayudará a lograr la armonía.'
     }
   };
 
@@ -60,8 +60,8 @@ export function generateFallbackHoroscope(sign: string, language: string, transl
     },
     lucky_number: Math.floor(Math.random() * 100).toString(),
     lucky_time: `${Math.floor(Math.random() * 12) + 1}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
-    color: language === 'ru' ? 'синий' : language === 'es' ? 'azul' : 'blue',
-    mood: language === 'ru' ? 'спокойный' : language === 'es' ? 'tranquilo' : 'peaceful'
+    color: language === 'ru' ? 'бирюзовый' : language === 'es' ? 'turquesa' : 'turquoise',
+    mood: language === 'ru' ? 'задумчивый' : language === 'es' ? 'pensativo' : 'thoughtful'
   };
 }
 
