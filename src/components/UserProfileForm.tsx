@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -16,22 +17,30 @@ import * as z from 'zod';
 const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete, user } = useAppStore();
+  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete, user, loadUserProfile } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingBirthDate, setEditingBirthDate] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    birthDate: new Date()
+  });
 
-  // Fetch profile data from Supabase when component mounts
+  // Load user profile data when component mounts
   useEffect(() => {
-    const fetchProfileFromSupabase = async () => {
+    const loadProfile = async () => {
       if (!user) return;
       
       setIsLoading(true);
       try {
-        console.log("Fetching profile data from Supabase for user:", user.id);
+        // First, try to load from the store
+        await loadUserProfile();
         
+        console.log("Profile loaded from store:", userProfile);
+        
+        // Then fetch the latest data from Supabase
         const { data: profileData, error } = await supabase
           .from('profiles')
           .select('name, birth_date, avatar_url')
@@ -40,11 +49,6 @@ const UserProfileForm: React.FC = () => {
         
         if (error) {
           console.error("Error fetching profile:", error);
-          toast({
-            title: "Ошибка загрузки профиля",
-            description: error.message,
-            variant: "destructive"
-          });
           return;
         }
         
@@ -52,18 +56,25 @@ const UserProfileForm: React.FC = () => {
         
         if (profileData) {
           // Convert birth_date string from Supabase to a Date object
-          const birthDate = profileData.birth_date ? new Date(profileData.birth_date) : new Date();
+          const birthDate = profileData.birth_date ? new Date(profileData.birth_date) : null;
           
-          // Update the store
-          updateUserProfile({
-            name: profileData.name,
-            birthDate: birthDate,
-            avatar_url: profileData.avatar_url
+          // Update the store and local form data
+          await updateUserProfile({
+            name: profileData.name || userProfile.name,
+            birthDate: birthDate || userProfile.birthDate,
+            avatar_url: profileData.avatar_url || userProfile.avatar_url
+          });
+          
+          setFormData({
+            name: profileData.name || userProfile.name || '',
+            birthDate: birthDate || userProfile.birthDate || new Date()
           });
           
           // Calculate and set age
-          const calculatedAge = differenceInYears(new Date(), birthDate);
-          setAge(calculatedAge);
+          if (birthDate) {
+            const calculatedAge = differenceInYears(new Date(), birthDate);
+            setAge(calculatedAge);
+          }
         }
       } catch (err) {
         console.error("Exception fetching profile:", err);
@@ -72,17 +83,10 @@ const UserProfileForm: React.FC = () => {
       }
     };
     
-    // Only fetch profile if user is available and we're not in the initial setup flow
-    if (user && location.pathname === '/profile') {
-      fetchProfileFromSupabase();
-    } else if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-      // For the initial setup, use data from store if available
-      
-      // Calculate and set age
-      const calculatedAge = differenceInYears(new Date(), userProfile.birthDate);
-      setAge(calculatedAge);
+    if (user) {
+      loadProfile();
     }
-  }, [user, location.pathname, updateUserProfile]);
+  }, [user, userProfile.avatar_url, loadUserProfile, updateUserProfile]);
   
   // Handle form submission
   const onSubmit = async (values: z.infer<any>) => {
@@ -98,7 +102,7 @@ const UserProfileForm: React.FC = () => {
     setIsSaving(true);
     
     try {
-      console.log("Saving profile data to Supabase:", values);
+      console.log("Saving profile data:", values);
       
       // Format birthDate to YYYY-MM-DD for Supabase
       const formattedBirthDate = formatDate(values.birthDate, 'en', false).split('/').reverse().join('-');
@@ -122,6 +126,12 @@ const UserProfileForm: React.FC = () => {
         birthDate: values.birthDate
       });
       
+      // Update local form data
+      setFormData({
+        name: values.name,
+        birthDate: values.birthDate
+      });
+      
       // Calculate and set age
       const calculatedAge = differenceInYears(new Date(), values.birthDate);
       setAge(calculatedAge);
@@ -131,8 +141,10 @@ const UserProfileForm: React.FC = () => {
         description: "Ваши данные успешно сохранены"
       });
     
-      // Always navigate to main regardless of previous location
-      navigate('/main');
+      // Navigate based on the current path
+      if (location.pathname === '/profile-setup') {
+        navigate('/main');
+      }
     } catch (error: any) {
       console.error("Error saving profile:", error);
       toast({
@@ -143,11 +155,6 @@ const UserProfileForm: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  // Handle birth date edit button click
-  const handleEditBirthDate = () => {
-    setEditingBirthDate(true);
   };
 
   return (
@@ -171,7 +178,11 @@ const UserProfileForm: React.FC = () => {
       ) : (
         <ProfileForm 
           onSubmit={onSubmit} 
-          isSaving={isSaving} 
+          isSaving={isSaving}
+          defaultValues={{
+            name: userProfile.name !== 'Искатель' ? userProfile.name : '',
+            birthDate: userProfile.birthDate || new Date()
+          }}
         />
       )}
       

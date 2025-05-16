@@ -119,7 +119,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       });
     } catch (error: any) {
       toast({
-        title: "Ошибка выхода",
+        title: "Ошибка в��хода",
         description: error.message || "Не удалось выйти из системы",
         variant: "destructive"
       });
@@ -300,24 +300,26 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         completed: false
       } : undefined;
       
-      // Update local state
+      // Update local state with complete profile data
       set({
         userProfile: {
           name: data.name || 'Искатель',
           email: user.email || '',
-          age: null,
+          age: data.birth_date ? calculateAge(new Date(data.birth_date)) : null,
           birthDate: data.birth_date ? new Date(data.birth_date) : null,
-          totalDays: data.total_days,
-          energyPoints: data.energy_points,
+          totalDays: data.total_days || 0,
+          energyPoints: data.energy_points || 0,
           goal: data.goal || 'Познать свою истинную силу',
-          isPro: isPro,
-          rank: data.rank,
+          isPro: isPro || false,
+          rank: data.rank || 'seeker',
           avatar_url: data.avatar_url,
-          zodiacSign: '',
+          zodiacSign: data.birth_date ? getZodiacSign(new Date(data.birth_date)) || '' : '',
           achievements: mappedAchievements,
           activeMission
         }
       });
+      
+      console.log("User profile loaded successfully");
       
       // After profile is loaded, prefetch horoscope data if birthdate exists
       if (data.birth_date) {
@@ -345,6 +347,18 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     }
   }
 });
+
+// Helper function to calculate age
+function calculateAge(birthDate: Date): number | null {
+  if (!birthDate) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
 
 // Helper function to get zodiac sign (simplified version just for the prefetch)
 function getZodiacSign(birthDate: Date): string | null {

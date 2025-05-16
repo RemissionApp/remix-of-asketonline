@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,9 +17,17 @@ import { formatDateLong, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 interface ProfileFormProps {
   onSubmit: (values: z.infer<any>) => Promise<void>;
   isSaving: boolean;
+  defaultValues?: {
+    name: string;
+    birthDate: Date;
+  };
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
+const ProfileForm: React.FC<ProfileFormProps> = ({ 
+  onSubmit, 
+  isSaving, 
+  defaultValues = { name: '', birthDate: new Date() } 
+}) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
   
@@ -33,14 +41,24 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSaving }) => {
     }),
   });
 
-  // Initialize form with placeholder values
+  // Initialize form with provided values
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      birthDate: new Date(),
+      name: defaultValues.name,
+      birthDate: defaultValues.birthDate || new Date(),
     },
   });
+  
+  // Update form values when defaultValues changes
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: defaultValues.name,
+        birthDate: defaultValues.birthDate || new Date(),
+      });
+    }
+  }, [defaultValues, form]);
   
   return (
     <Form {...form}>
