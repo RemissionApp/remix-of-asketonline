@@ -84,6 +84,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
             onKeyDown={handleKeyDown}
             disabled={isDisabled || isSending}
             rows={1}
+            autoFocus
           />
         </div>
         

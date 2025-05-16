@@ -2,42 +2,29 @@
 import React from 'react';
 import { UniverseChatSession } from '@/utils/universeChat';
 import { Card } from '@/components/ui/card';
-import { MessageSquare, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/CosmicButton';
+import { MessageSquare } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { formatRelativeTime } from '@/utils/dateFormatUtils';
 
 interface ChatSessionsListProps {
   sessions: UniverseChatSession[];
   onSelectSession: (sessionId: string) => void;
-  onNewChat: () => void;
   currentSessionId: string | null;
 }
 
 export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
   sessions,
   onSelectSession,
-  onNewChat,
   currentSessionId
 }) => {
   const { t } = useTranslations();
   
   return (
     <div className="py-4 px-2">
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4">
         <h2 className="text-lg font-medium text-white font-serif">
           {t.universe?.yourConversations || 'Ваши диалоги'}
         </h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-cosmic-accent"
-          onClick={onNewChat}
-        >
-          <Plus size={20} className="mr-1" />
-          {t.universe?.newChat || 'Новый диалог'}
-        </Button>
       </div>
       
       {sessions.length === 0 ? (
@@ -48,10 +35,9 @@ export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
           <p className="text-cosmic-secondary mb-4">
             {t.universe?.noChatsYet || 'У вас пока нет диалогов со Вселенной'}
           </p>
-          <CosmicButton onClick={onNewChat} variant="outline" size="sm">
-            <Plus size={16} className="mr-2" />
-            {t.universe?.startNewChat || 'Начать новый диалог'}
-          </CosmicButton>
+          <p className="text-sm text-cosmic-accent">
+            {t.universe?.startConversation || 'Начните диалог с вопроса'}
+          </p>
         </div>
       ) : (
         <div className="space-y-2">

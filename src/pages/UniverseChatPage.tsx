@@ -9,7 +9,6 @@ import { ChatInput } from '@/components/chat/ChatInput';
 import { ChatSessionsList } from '@/components/chat/ChatSessionsList';
 import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
-import { NewChatDialog } from '@/components/chat/NewChatDialog';
 import { toast } from 'sonner';
 import { UniverseChatSession } from '@/utils/universeChat';
 
@@ -28,7 +27,6 @@ const UniverseChatPage = () => {
   } = useAppStore();
   
   const { t } = useTranslations();
-  const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'sessions'>('sessions');
   
   // Load chat sessions on initial render
@@ -67,15 +65,6 @@ const UniverseChatPage = () => {
     }
   };
   
-  const handleCreateNewChat = async (title: string) => {
-    const sessionId = await createChatSession(title);
-    if (sessionId) {
-      setActiveTab('chat');
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error('Failed to create chat'));
-  };
-  
   const handleSelectSession = (sessionId: string) => {
     setCurrentChatSession(sessionId);
     setActiveTab('chat');
@@ -109,7 +98,6 @@ const UniverseChatPage = () => {
           <ChatSessionsList 
             sessions={chatSessions}
             onSelectSession={handleSelectSession}
-            onNewChat={() => setNewChatDialogOpen(true)}
             currentSessionId={currentChatSession}
           />
         </TabsContent>
@@ -124,13 +112,7 @@ const UniverseChatPage = () => {
       
       <ChatInput 
         onSendMessage={handleSendMessage} 
-        isDisabled={isSendingMessage || (activeTab === 'sessions')}
-      />
-      
-      <NewChatDialog
-        open={newChatDialogOpen}
-        onOpenChange={setNewChatDialogOpen}
-        onCreateChat={handleCreateNewChat}
+        isDisabled={isSendingMessage}
       />
     </div>
   );
