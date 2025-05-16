@@ -34,8 +34,8 @@ export const BottomNavigation: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-20">
       <div className="flex justify-center">
-        <div className="max-w-xs w-full mx-auto bg-cosmic-dark/60 backdrop-blur-md border-t border-cosmic-accent/15 rounded-t-xl px-2">
-          <div className="flex justify-around items-center py-1">
+        <div className="w-full bg-cosmic-dark/40 backdrop-blur-md border-t border-cosmic-accent/15 px-2">
+          <div className="flex justify-around items-center py-1 max-w-3xl mx-auto">
             <button 
               className={`flex flex-col items-center p-1 ${isActive('/main') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
               onClick={() => handleNavigation('main', '/main')}
