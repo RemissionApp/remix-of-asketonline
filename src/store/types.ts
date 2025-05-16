@@ -14,7 +14,7 @@ export interface AppState {
   loading: boolean;
   emailConfirmed: boolean;
   
-  addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days'>) => Promise<void>;
+  addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
   askUniverse: (question: string) => Promise<UniverseQuestion>;
   setActiveScreen: (screen: ActiveScreen) => void;
@@ -48,4 +48,7 @@ export interface AppState {
   // PRO features functions
   upgradeToPro: () => Promise<void>;
   cancelProSubscription: () => Promise<void>;
+  
+  // Additional methods needed
+  saveUniverseQuestion: (question: UniverseQuestion) => Promise<void>;
 }

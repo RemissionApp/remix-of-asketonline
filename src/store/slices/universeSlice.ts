@@ -35,7 +35,8 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
         id,
         question,
         answer,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        date: new Date().toISOString()
       };
 
       // Add question to store
@@ -104,7 +105,8 @@ export const createUniverseSlice: StateCreator<AppState, [], [], UniverseSlice> 
         id: q.id,
         question: q.question,
         answer: q.answer,
-        created_at: q.created_at
+        created_at: q.created_at,
+        date: q.created_at // Add date field same as created_at
       }));
       
       // Update local state

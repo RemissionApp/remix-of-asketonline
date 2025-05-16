@@ -134,7 +134,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     if (currentVow) {
       systemPrompt += `
         Он воздерживается от: ${currentVow.title || 'вредных привычек'}.
-        Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as Pact).reward || 'духовный рост'}.
+        Его цель: ${isCustomPact(currentVow) ? currentVow.purpose : (currentVow as any).reward || 'духовный рост'}.
         Он находится на ${getCurrentDay(currentVow.days)} дне ${currentVow.duration}-дневного пути.`;
     }
     

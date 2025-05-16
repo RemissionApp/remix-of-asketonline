@@ -18,11 +18,14 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   dailyQuote: quotes[Math.floor(Math.random() * quotes.length)],
   userProfile: {
     name: 'Искатель',
-    totalDays: 0,
+    email: '',
+    age: null,
     energyPoints: 0,
     goal: 'Познать свою истинную силу',
     isPro: false,
     rank: 'seeker',
+    zodiacSign: '',
+    totalDays: 0,
     achievements: [...defaultAchievements]
   },
   user: null,

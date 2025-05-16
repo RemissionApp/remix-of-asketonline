@@ -88,7 +88,10 @@ const CreatePactPage: React.FC = () => {
         title: selectedItems.length > 0 ? selectedItems.join(', ') : title,
         duration,
         reward,
-        status: 'active'
+        status: 'active',
+        rejection: selectedItems.length > 0 ? selectedItems.join(', ') : title,
+        days_total: duration,
+        days_completed: 0
       });
       setActiveScreen('main');
       navigate('/main');

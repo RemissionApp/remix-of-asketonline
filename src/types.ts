@@ -10,6 +10,10 @@ export interface UserProfile {
   isPro: boolean;
   birthDate?: Date | null;
   avatar_url?: string | null;
+  goal?: string;
+  totalDays?: number;
+  achievements?: Achievement[];
+  activeMission?: Mission;
 }
 
 export interface User {
@@ -51,6 +55,7 @@ export interface Pact {
   type?: string;
   targetDate?: string;
   duration: number;
+  reward?: string;
   days: Array<{
     id: string;
     date: string;
@@ -64,6 +69,7 @@ export interface UniverseQuestion {
   created_at: string;
   answer?: string;
   answered_at?: string;
+  date?: string;
 }
 
 export interface Achievement {
