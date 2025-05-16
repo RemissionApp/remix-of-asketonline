@@ -10,6 +10,7 @@ import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { ProBadge } from '@/components/ProBadge';
 import { useNavigate } from 'react-router-dom';
 import { MeditationSlider } from '@/components/MeditationSlider';
+import { MeditationCard } from '@/components/MeditationCard';
 import { Meditation } from '@/types';
 
 const MeditationPage: React.FC = () => {
