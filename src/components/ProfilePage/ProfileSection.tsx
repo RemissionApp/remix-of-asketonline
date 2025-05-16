@@ -13,16 +13,16 @@ export const ProfileSection: React.FC = () => {
   return (
     <div className="w-full">
       <h1 className="text-3xl text-white font-serif mb-6">
-        {t.main?.profile || "Профиль"}
+        {t.main?.profile || "Profile"}
       </h1>
       
       <UserProfileForm />
       
       <div className="mt-10 space-y-6">
-        <h2 className="text-2xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "Язык приложения"}</h2>
+        <h2 className="text-2xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "Application Language"}</h2>
         <LanguageSelector />
         
-        <h2 className="text-2xl text-white font-serif mb-4">Подписка</h2>
+        <h2 className="text-2xl text-white font-serif mb-4">{t.subscription?.title || "Subscription"}</h2>
         <SubscriptionManager />
         
         <LegalDocuments />

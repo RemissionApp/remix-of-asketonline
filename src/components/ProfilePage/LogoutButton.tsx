@@ -4,10 +4,12 @@ import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export const LogoutButton: React.FC = () => {
   const { signOut } = useAppStore();
   const navigate = useNavigate();
+  const { t } = useTranslations();
   
   const handleLogout = async () => {
     await signOut();
@@ -21,7 +23,7 @@ export const LogoutButton: React.FC = () => {
       onClick={handleLogout}
     >
       <LogOut className="mr-2 h-5 w-5" />
-      <span>Выйти</span>
+      <span>{t.userProfile?.logout || "Logout"}</span>
     </Button>
   );
 };

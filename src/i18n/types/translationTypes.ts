@@ -64,6 +64,53 @@ export interface UniverseTranslations {
   chatTitlePlaceholder: string;
 }
 
+export interface LegalTranslations {
+  title: string;
+  privacyPolicy: string;
+  termsOfUse: string;
+  lastUpdated: string;
+  may: string;
+  introduction: string;
+  introText: string;
+  dataCollected: string;
+  dataCollectedText: string;
+  profileInfo: string;
+  usageData: string;
+  technicalData: string;
+  dataUse: string;
+  dataUseText: string;
+  provideServices: string;
+  personalizeExperience: string;
+  communication: string;
+  analytics: string;
+  dataSecurity: string;
+  dataSecurityText: string;
+  policyChanges: string;
+  policyChangesText: string;
+  contact: string;
+  contactText: string;
+  acceptance: string;
+  acceptanceText: string;
+  serviceDescription: string;
+  serviceDescriptionText: string;
+  userAccounts: string;
+  userAccountsText: string;
+  userContent: string;
+  userContentText: string;
+  prohibitedBehavior: string;
+  prohibitedBehaviorText: string;
+  violatesLaws: string;
+  threatening: string;
+  maliciousCode: string;
+  interferes: string;
+  disclaimers: string;
+  disclaimersText: string;
+  termsChanges: string;
+  termsChangesText: string;
+  termination: string;
+  terminationText: string;
+}
+
 export interface CommonTranslations {
   cancel: string;
   create: string;
@@ -108,5 +155,6 @@ export interface Translations {
   userProfile?: Record<string, string>;
   zodiac?: Record<string, string>;
   numerology?: Record<string, string>;
+  legal?: LegalTranslations;
   common?: CommonTranslations;
 }
