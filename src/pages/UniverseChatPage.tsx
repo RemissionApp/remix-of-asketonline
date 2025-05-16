@@ -2,21 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from '@/hooks/useTranslations';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatInput } from '@/components/chat/ChatInput';
-import { ChatSessionsList } from '@/components/chat/ChatSessionsList';
 import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
 import { toast } from 'sonner';
-import { UniverseChatSession } from '@/utils/universeChat';
 import { BottomNavigation } from '@/components/BottomNavigation';
 
 const UniverseChatPage = () => {
   const { 
     userProfile, 
-    chatSessions, 
     currentChatSession, 
     chatMessages,
     isLoadingChat,
@@ -29,27 +25,43 @@ const UniverseChatPage = () => {
   } = useAppStore();
   
   const { t } = useTranslations();
-  const [activeTab, setActiveTab] = useState<'chat' | 'sessions'>('sessions');
   
-  // Загружаем сессии чата при первом рендеринге
+  // Load chat sessions on first render
   useEffect(() => {
     loadChatSessions();
   }, [loadChatSessions]);
   
-  // Когда выбрана сессия, переключаемся на вкладку чата и загружаем сообщения
+  // Ensure we have a current session and load messages
   useEffect(() => {
-    if (currentChatSession) {
-      setActiveTab('chat');
-      loadChatMessages(currentChatSession);
-    }
-  }, [currentChatSession, loadChatMessages]);
+    const initializeChat = async () => {
+      // If there's no active session, create one
+      if (!currentChatSession) {
+        try {
+          const defaultTitle = t.universe?.defaultChatTitle || 'Диалог со Вселенной';
+          const sessionId = await createChatSession(defaultTitle);
+          
+          if (sessionId) {
+            console.log('Created new default session:', sessionId);
+            await setCurrentChatSession(sessionId);
+          }
+        } catch (error) {
+          console.error('Error creating default chat session:', error);
+        }
+      } else {
+        // If we already have a session, load its messages
+        loadChatMessages(currentChatSession);
+      }
+    };
+    
+    initializeChat();
+  }, [currentChatSession, createChatSession, loadChatMessages, setCurrentChatSession, t.universe]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
     
     try {
       if (!currentChatSession) {
-        // Создаем новую сессию с сообщением в качестве названия
+        // Create a new session with the message as title
         const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
         console.log('Creating new chat session with title:', title);
         
@@ -57,18 +69,15 @@ const UniverseChatPage = () => {
         
         if (sessionId) {
           console.log('Session created with ID:', sessionId);
-          // Устанавливаем текущую сессию и переключаемся на вкладку чата
           await setCurrentChatSession(sessionId);
-          setActiveTab('chat');
           
-          // Ждем немного, чтобы состояние обновилось, прежде чем отправлять
+          // Wait a bit for state to update before sending
           setTimeout(() => {
             sendChatMessage(message);
           }, 200);
         }
       } else {
-        // Сессия существует, убеждаемся, что мы на вкладке чата, и отправляем сообщение
-        setActiveTab('chat');
+        // Session exists, send message
         await sendChatMessage(message);
       }
     } catch (error) {
@@ -77,51 +86,21 @@ const UniverseChatPage = () => {
     }
   };
   
-  const handleSelectSession = (sessionId: string) => {
-    console.log('Selecting session:', sessionId);
-    setCurrentChatSession(sessionId);
-  };
-  
-  const getCurrentSession = (): UniverseChatSession | undefined => {
-    return chatSessions.find(session => session.id === currentChatSession);
-  };
-  
-  // Оборачиваем контент проверкой PRO
+  // Wrap content with PRO check
   const content = (
     <div className="min-h-screen flex flex-col bg-cosmic">
       <StarField starCount={100} />
       
-      <ChatHeader title={getCurrentSession()?.title || t.universe?.chatTitle || 'Диалог со Вселенной'} />
+      <ChatHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
       
-      <Tabs 
-        value={activeTab} 
-        onValueChange={(value) => setActiveTab(value as 'chat' | 'sessions')}
-        className="w-full max-w-2xl mx-auto mt-20"
-      >
-        <TabsList className="w-full bg-cosmic-dark/50 backdrop-blur-md mb-4 border border-cosmic-accent/20 rounded-lg overflow-hidden">
-          <TabsTrigger value="sessions" className="w-1/2 data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white">
-            {t.universe?.conversations || 'Беседы'}
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="w-1/2 data-[state=active]:bg-cosmic-accent/20 data-[state=active]:text-white" disabled={!currentChatSession}>
-            {t.universe?.currentChat || 'Текущий разговор'}
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="sessions" className="px-4 mb-24">
-          <ChatSessionsList 
-            sessions={chatSessions}
-            onSelectSession={handleSelectSession}
-            currentSessionId={currentChatSession}
-          />
-        </TabsContent>
-        
-        <TabsContent value="chat" className="mb-24">
+      <div className="w-full max-w-2xl mx-auto mt-20">
+        <div className="px-4 mb-24">
           <ChatTabContent 
-            isLoadingChat={isLoadingChat}
+            isLoading={isLoadingChat}
             chatMessages={chatMessages}
           />
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
       
       <ChatInput 
         onSendMessage={handleSendMessage} 

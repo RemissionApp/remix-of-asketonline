@@ -44,7 +44,17 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       set({ isLoadingChat: true });
       const sessions = await loadChatSessionsUtil(user.id);
       console.log('Loaded chat sessions:', sessions.length);
-      set({ chatSessions: sessions, isLoadingChat: false });
+      
+      set({ 
+        chatSessions: sessions, 
+        isLoadingChat: false 
+      });
+      
+      // Auto-select most recent session if none is selected
+      if (!get().currentChatSession && sessions.length > 0) {
+        set({ currentChatSession: sessions[0].id });
+        await get().loadChatMessages(sessions[0].id);
+      }
     } catch (error) {
       console.error("Error loading chat sessions:", error);
       toast.error('Не удалось загрузить беседы');
@@ -168,7 +178,17 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     }
     
     if (!sessionId) {
-      toast.error('Выберите или создайте беседу');
+      // Create a new session instead of showing an error
+      const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
+      const newSessionId = await get().createChatSession(title);
+      if (!newSessionId) {
+        toast.error('Не удалось создать новую беседу');
+        return;
+      }
+      
+      // Set current session and try again
+      await get().setCurrentChatSession(newSessionId);
+      await get().sendChatMessage(message);
       return;
     }
     
