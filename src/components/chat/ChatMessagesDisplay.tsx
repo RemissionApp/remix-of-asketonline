@@ -1,9 +1,10 @@
 
 import React, { useRef, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Stars } from 'lucide-react';
 import { ChatMessage } from '@/components/chat/ChatMessage';
 import { UniverseChatMessage } from '@/utils/universeChat';
 import { EmptyChatState } from '@/components/chat/EmptyChatState';
+import { Progress } from "@/components/ui/progress"
 
 interface ChatMessagesDisplayProps {
   isLoading: boolean;
@@ -16,15 +17,27 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [loadingProgress, setLoadingProgress] = React.useState(0);
   
-  // Log messages for debugging
+  // Simulate loading progress for better UX
   useEffect(() => {
-    console.log('ChatMessagesDisplay: Rendering with messages:', messages.length);
-    if (messages.length > 0) {
-      console.log('First message:', messages[0]?.content?.substring(0, 30));
-      console.log('Last message:', messages[messages.length - 1]?.content?.substring(0, 30));
+    if (isLoading) {
+      setLoadingProgress(0);
+      const interval = setInterval(() => {
+        setLoadingProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            return 90;
+          }
+          return prev + Math.random() * 15;
+        });
+      }, 500);
+      
+      return () => clearInterval(interval);
+    } else {
+      setLoadingProgress(100);
     }
-  }, [messages]);
+  }, [isLoading]);
   
   // Scroll to bottom of messages when new messages arrive or when loading completes
   useEffect(() => {
@@ -33,12 +46,18 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
     }
   }, [messages, isLoading]);
   
-  // Handle empty state with loader
+  // Handle empty state with styled loader
   if (isLoading && messages.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-cosmic-accent animate-spin" />
-        <span className="ml-2 text-cosmic-secondary">Загрузка сообщений...</span>
+      <div className="h-full flex flex-col items-center justify-center p-4">
+        <div className="w-20 h-20 rounded-full bg-cosmic-dark border border-cosmic-accent/20 flex items-center justify-center mb-4 relative overflow-hidden">
+          <Stars className="absolute inset-0 h-full w-full text-cosmic-accent/10 animate-spin" style={{animationDuration: '15s'}} />
+          <Loader2 className="h-8 w-8 text-cosmic-accent animate-spin relative z-10" />
+        </div>
+        <span className="text-cosmic-secondary text-center font-serif mt-2">Вселенная обдумывает ваш вопрос...</span>
+        <div className="w-full max-w-xs mt-4">
+          <Progress value={loadingProgress} className="h-1 bg-cosmic-dark/50" />
+        </div>
       </div>
     );
   }
@@ -61,8 +80,14 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
       ))}
       
       {isLoading && (
-        <div className="flex items-center justify-center py-4">
-          <Loader2 className="h-6 w-6 text-cosmic-accent animate-spin" />
+        <div className="flex items-center justify-center py-6">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-cosmic-dark border border-cosmic-accent/20 flex items-center justify-center relative overflow-hidden">
+              <Stars className="absolute inset-0 h-full w-full text-cosmic-accent/10 animate-spin" style={{animationDuration: '15s'}} />
+              <Loader2 className="h-5 w-5 text-cosmic-accent animate-spin relative z-10" />
+            </div>
+            <div className="absolute inset-0 animate-ping bg-cosmic-accent/5 rounded-full"></div>
+          </div>
         </div>
       )}
       

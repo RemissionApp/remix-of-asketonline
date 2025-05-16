@@ -16,9 +16,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
   const messageId = message?.id || `fallback-${Date.now()}-${Math.random()}`;
   
-  // Log for debugging
-  console.log(`Rendering message: ${messageId.substring(0, 10)}... | Sender: ${message?.sender} | Content: ${content.substring(0, 20)}...`);
-  
   // Skip rendering empty messages
   if (!content) {
     console.warn('Empty message content detected:', message);
@@ -27,26 +24,40 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   
   return (
     <div 
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`}
       data-message-id={messageId}
     >
       {!isUser && (
-        <div className="flex-shrink-0 mr-3">
-          <div className="w-10 h-10 rounded-full bg-cosmic-accent flex items-center justify-center">
+        <div className="flex-shrink-0 mr-3 relative">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 flex items-center justify-center shadow-lg shadow-cosmic-accent/10">
             <span className="text-white text-xl">✧</span>
+            {/* Cosmic effect */}
+            <div className="absolute inset-0 rounded-full overflow-hidden">
+              <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
+              <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
+              <div className="absolute animate-pulse delay-150 left-0 top-1/2 w-1 h-5 bg-white/30 rounded transform -translate-y-1/2 blur-sm"></div>
+              <div className="absolute animate-pulse delay-150 right-0 top-1/2 w-1 h-5 bg-white/30 rounded transform -translate-y-1/2 blur-sm"></div>
+            </div>
           </div>
         </div>
       )}
       
       <div 
-        className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-3 ${
+        className={`max-w-xs md:max-w-md lg:max-w-lg rounded-2xl p-4 relative ${
           isUser 
-            ? 'bg-cosmic-accent/30 text-white rounded-tr-none' 
-            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none'
+            ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm' 
+            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md'
         }`}
       >
-        <p className="whitespace-pre-wrap">{content}</p>
-        <div className={`text-xs mt-1 ${isUser ? 'text-cosmic-secondary' : 'text-cosmic-secondary/70'}`}>
+        {!isUser && (
+          <div className="absolute inset-0 overflow-hidden rounded-2xl rounded-tl-none pointer-events-none">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-cosmic-accent/10 rounded-full filter blur-xl transform -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-20 h-20 bg-cosmic-accent/5 rounded-full filter blur-xl transform translate-y-1/2 -translate-x-1/2"></div>
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cosmic-accent/30 to-transparent"></div>
+          </div>
+        )}
+        <p className="whitespace-pre-wrap relative z-10">{content}</p>
+        <div className={`text-xs mt-2 ${isUser ? 'text-cosmic-secondary' : 'text-cosmic-secondary/70'}`}>
           {formatRelativeTime(timestamp)}
         </div>
       </div>
