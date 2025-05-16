@@ -20,8 +20,10 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
   const { toast } = useToast();
   const { user } = useAppStore(); // Get user from app store
   
-  // Get zodiac sign info
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
+  // Get zodiac sign info - fixing the issue by properly converting birthDate string to Date object
+  const zodiacSign = userProfile?.birthDate 
+    ? getZodiacSign(new Date(userProfile.birthDate)) 
+    : null;
   
   useEffect(() => {
     const fetchDetailedHoroscope = async () => {
@@ -30,6 +32,7 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
         
         // Check if user has birth date to determine zodiac sign
         if (!userProfile?.birthDate || !zodiacSign) {
+          console.log("No birth date or zodiac sign found:", { birthDate: userProfile?.birthDate, zodiacSign });
           setLoading(false);
           return;
         }
@@ -41,8 +44,17 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
         const cachedHoroscopeData = localStorage.getItem(cachedHoroscopeKey);
         const cachedHoroscopeDate = localStorage.getItem(cachedHoroscopeDateKey);
         
+        console.log("Checking cached horoscope:", { 
+          zodiacSign, 
+          today, 
+          hasCachedData: !!cachedHoroscopeData,
+          cachedDate: cachedHoroscopeDate,
+          isFromToday: cachedHoroscopeDate && isHoroscopeFromToday(cachedHoroscopeDate) 
+        });
+        
         // Use cached horoscope if it exists and is from today
         if (cachedHoroscopeData && cachedHoroscopeDate && isHoroscopeFromToday(cachedHoroscopeDate)) {
+          console.log("Using cached horoscope data");
           setHoroscope(JSON.parse(cachedHoroscopeData));
           setLoading(false);
           return;
@@ -50,6 +62,7 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
         
         // First try to fetch from the database
         if (user) {
+          console.log("Fetching horoscope from database for user:", user.id);
           const { data: dbHoroscope, error: dbError } = await supabase
             .from('detailed_horoscopes')
             .select('content')
@@ -59,6 +72,7 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
             .single();
             
           if (!dbError && dbHoroscope) {
+            console.log("Found horoscope in database:", dbHoroscope);
             setHoroscope(dbHoroscope.content);
             
             // Also cache the horoscope locally
@@ -67,11 +81,14 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
             
             setLoading(false);
             return;
+          } else if (dbError) {
+            console.log("Database error:", dbError);
           }
         }
         
+        console.log("Calling edge function to generate detailed horoscope");
         // If not in database, call our edge function to generate a detailed horoscope
-        const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
+        const { data, error } = await supabase.functions.invoke('generate-horoscope', {
           body: { 
             sign: zodiacSign,
             language,
@@ -80,14 +97,16 @@ export const useHoroscopeData = ({ userProfile, language, translations, isPro }:
         });
         
         if (error) {
+          console.error("Edge function error:", error);
           throw new Error(error.message || 'Failed to fetch detailed horoscope');
         }
         
         if (!data || !data.success) {
+          console.error("Invalid response from edge function:", data);
           throw new Error('Invalid response from fetch-horoscope function');
         }
         
-        console.log("Detailed horoscope data:", data);
+        console.log("Detailed horoscope data received:", data);
         
         // Set the horoscope data
         setHoroscope(data.data);

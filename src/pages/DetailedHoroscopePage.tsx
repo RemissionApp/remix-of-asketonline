@@ -11,17 +11,38 @@ import { useNavigate } from 'react-router-dom';
 import { DetailedHoroscopeContent } from '@/components/horoscope/DetailedHoroscopeContent';
 import { useHoroscopeData } from '@/hooks/useHoroscopeData';
 import { getHoroscopeTranslations } from '@/utils/horoscopeUtils';
+import { useToast } from '@/hooks/use-toast';
 
 const DetailedHoroscopePage: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   // Get translations
   const translations = getHoroscopeTranslations(language, userProfile?.name);
   
-  // Get zodiac sign info
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
+  // Get zodiac sign info - ensure we're properly converting birthDate string to Date
+  const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
+  
+  // Log user profile and zodiac info for debugging
+  console.log("User profile:", userProfile);
+  console.log("Zodiac sign:", zodiacSign);
+  console.log("Zodiac info:", zodiacInfo);
+  
+  // Check if user has a birth date set
+  React.useEffect(() => {
+    if (!userProfile?.birthDate) {
+      console.log("No birth date set in profile");
+      toast({
+        title: language === 'ru' ? 'Требуется дата рождения' : 'Birth Date Required',
+        description: translations.title[language] === 'ru' 
+          ? 'Чтобы увидеть свой гороскоп, установите дату рождения в профиле.' 
+          : 'To view your horoscope, please set your birth date in your profile.',
+        variant: 'destructive',
+      });
+    }
+  }, [userProfile?.birthDate, language, toast, translations.title]);
   
   // Fetch horoscope data
   const { horoscope, loading } = useHoroscopeData({

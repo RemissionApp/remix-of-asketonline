@@ -44,7 +44,13 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { sign, language, detailed = false, birthDate = null } = await req.json() as HoroscopeRequest;
+    // Log request for debugging
+    console.log("Received request:", req.url);
+    
+    const requestBody = await req.json() as HoroscopeRequest;
+    console.log("Request body:", JSON.stringify(requestBody));
+    
+    const { sign, language, detailed = false, birthDate = null } = requestBody;
 
     if (!sign) {
       throw new Error('Zodiac sign is required');
@@ -82,6 +88,7 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log("OpenAI response:", JSON.stringify(data).substring(0, 200) + "...");
     
     if (data.error) {
       throw new Error(data.error.message || 'Error from OpenAI API');
@@ -113,6 +120,7 @@ serve(async (req) => {
       };
     }
 
+    console.log("Returning horoscope response:", JSON.stringify(horoscopeResponse).substring(0, 200) + "...");
     return new Response(JSON.stringify(horoscopeResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
