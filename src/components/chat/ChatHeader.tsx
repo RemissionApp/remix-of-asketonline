@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '@/hooks/useTranslations';
+import { Avatar } from '@/components/ui/avatar';
+import { AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface ChatHeaderProps {
   title?: string;
@@ -29,11 +31,15 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
       
       <div className="flex items-center flex-1">
         <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3 border-2 border-cosmic-gold">
-          <img 
-            src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
-            alt="Вселенная"
-            className="object-cover w-full h-full"
-          />
+          <Avatar className="h-full w-full">
+            <AvatarImage 
+              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+              alt="Вселенная"
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">ВС</AvatarFallback>
+          </Avatar>
+          
           <div className="absolute inset-0 bg-gradient-to-b from-cosmic-accent/20 to-transparent"></div>
           <div className="absolute inset-0 rounded-full overflow-hidden z-0">
             <div className="absolute animate-pulse top-0 left-1/2 w-4 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>

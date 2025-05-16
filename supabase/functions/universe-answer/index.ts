@@ -14,6 +14,17 @@ interface RequestBody {
   useWebSearch?: boolean;
 }
 
+interface OpenAIResponse {
+  choices: Array<{
+    message: {
+      content: string;
+    };
+  }>;
+  error?: {
+    message: string;
+  };
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -75,7 +86,7 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json() as OpenAIResponse;
     
     if (data.error) {
       console.error('OpenAI API error:', data.error);

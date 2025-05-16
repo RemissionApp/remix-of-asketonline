@@ -5,6 +5,8 @@ import { ChatMessage } from '@/components/chat/ChatMessage';
 import { UniverseChatMessage } from '@/utils/universeChat';
 import { EmptyChatState } from '@/components/chat/EmptyChatState';
 import { Progress } from "@/components/ui/progress";
+import { Avatar } from '@/components/ui/avatar';
+import { AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface ChatMessagesDisplayProps {
   isLoading: boolean;
@@ -52,11 +54,14 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
       <div className="h-full flex flex-col items-center justify-center p-4">
         <div className="w-20 h-20 rounded-full bg-cosmic-dark border-2 border-cosmic-gold flex items-center justify-center mb-4 relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <img 
-              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
-              alt="Вселенная"
-              className="object-cover w-full h-full opacity-40"
-            />
+            <Avatar className="h-full w-full">
+              <AvatarImage 
+                src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+                alt="Вселенная"
+                className="object-cover opacity-40"
+              />
+              <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">ВС</AvatarFallback>
+            </Avatar>
           </div>
           <Star className="h-8 w-8 text-cosmic-accent animate-spin relative z-10" />
           <div className="absolute inset-0 rounded-full overflow-hidden z-0">
@@ -96,11 +101,14 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
           <div className="flex items-center justify-center py-6">
             <div className="relative">
               <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center relative border-2 border-cosmic-gold">
-                <img 
-                  src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
-                  alt="Вселенная"
-                  className="object-cover w-full h-full opacity-70"
-                />
+                <Avatar className="h-full w-full">
+                  <AvatarImage 
+                    src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+                    alt="Вселенная"
+                    className="object-cover opacity-70"
+                  />
+                  <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">ВС</AvatarFallback>
+                </Avatar>
                 <Loader2 className="h-5 w-5 text-white animate-spin absolute z-10" />
                 <div className="absolute inset-0 rounded-full overflow-hidden z-0">
                   <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>

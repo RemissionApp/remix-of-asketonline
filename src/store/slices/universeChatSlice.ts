@@ -10,6 +10,7 @@ import {
   sendMessageToUniverse,
   subscribeToSessionMessages
 } from '@/utils/universeChat';
+import { toast } from 'sonner';
 
 export interface UniverseChatSlice {
   chatSessions: UniverseChatSession[];
@@ -34,7 +35,10 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
   loadChatSessions: async () => {
     const { user } = get();
     
-    if (!user) return;
+    if (!user) {
+      console.warn('Cannot load chat sessions: User is not authenticated');
+      return;
+    }
     
     try {
       set({ isLoadingChat: true });
@@ -43,6 +47,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       set({ chatSessions: sessions, isLoadingChat: false });
     } catch (error) {
       console.error("Error loading chat sessions:", error);
+      toast.error('Не удалось загрузить беседы');
       set({ isLoadingChat: false });
     }
   },
@@ -50,7 +55,16 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
   createChatSession: async (title: string) => {
     const { user } = get();
     
-    if (!user) return null;
+    if (!user) {
+      console.warn('Cannot create chat session: User is not authenticated');
+      toast.error('Требуется авторизация');
+      return null;
+    }
+    
+    if (!title || title.trim() === '') {
+      console.warn('Cannot create chat session: Title is required');
+      return null;
+    }
     
     try {
       console.log('Creating chat session with title:', title);
@@ -69,6 +83,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       return null;
     } catch (error) {
       console.error("Error creating chat session:", error);
+      toast.error('Не удалось создать беседу');
       return null;
     }
   },
@@ -90,7 +105,15 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
   loadChatMessages: async (sessionId: string) => {
     const { user } = get();
     
-    if (!user) return;
+    if (!user) {
+      console.warn('Cannot load chat messages: User is not authenticated');
+      return;
+    }
+    
+    if (!sessionId) {
+      console.warn('Cannot load chat messages: Session ID is required');
+      return;
+    }
     
     try {
       console.log('Loading chat messages for session:', sessionId);
@@ -130,6 +153,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       // set({ currentSubscription: subscription });
     } catch (error) {
       console.error("Error loading chat messages:", error);
+      toast.error('Не удалось загрузить сообщения');
       set({ isLoadingChat: false });
     }
   },
@@ -138,7 +162,20 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     const { user } = get();
     const sessionId = get().currentChatSession;
     
-    if (!user || !sessionId) return;
+    if (!user) {
+      toast.error('Требуется авторизация');
+      return;
+    }
+    
+    if (!sessionId) {
+      toast.error('Выберите или создайте беседу');
+      return;
+    }
+    
+    if (!message || message.trim() === '') {
+      console.warn('Cannot send empty message');
+      return;
+    }
     
     try {
       set({ isSendingMessage: true });
@@ -169,6 +206,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       });
     } catch (error) {
       console.error("Error sending chat message:", error);
+      toast.error('Не удалось отправить сообщение');
       set({ isSendingMessage: false });
     }
   }

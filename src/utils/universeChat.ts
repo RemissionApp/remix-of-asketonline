@@ -8,6 +8,7 @@ export interface UniverseChatMessage {
   sender: 'user' | 'universe';
   created_at: string;
   session_id?: string;
+  user_id?: string;
 }
 
 export interface UniverseChatSession {
@@ -15,6 +16,7 @@ export interface UniverseChatSession {
   title: string;
   last_message: string;
   created_at: string;
+  user_id?: string;
 }
 
 /**
@@ -43,6 +45,11 @@ export const createChatSession = async (userId: string, title: string): Promise<
  * Loads messages for a specific session
  */
 export const loadSessionMessages = async (sessionId: string): Promise<UniverseChatMessage[]> => {
+  if (!sessionId) {
+    console.error('Session ID is required to load messages');
+    return [];
+  }
+
   try {
     console.log('Loading messages for session:', sessionId);
     
@@ -66,6 +73,11 @@ export const loadSessionMessages = async (sessionId: string): Promise<UniverseCh
  * Loads all chat sessions for the user
  */
 export const loadChatSessions = async (userId: string): Promise<UniverseChatSession[]> => {
+  if (!userId) {
+    console.error('User ID is required to load chat sessions');
+    return [];
+  }
+
   try {
     const { data, error } = await supabase
       .from('universe_chat_sessions')
@@ -90,6 +102,10 @@ export const sendMessageToUniverse = async (
   sessionId: string,
   message: string
 ): Promise<UniverseChatMessage[]> => {
+  if (!userId || !sessionId || !message) {
+    throw new Error('Missing required parameters to send message');
+  }
+
   try {
     // Create a unique ID for the user message
     const userMessageId = crypto.randomUUID();
@@ -159,6 +175,13 @@ export const subscribeToSessionMessages = (
   sessionId: string,
   onNewMessage: (message: UniverseChatMessage) => void
 ) => {
+  if (!sessionId) {
+    console.error('Session ID is required for subscription');
+    return {
+      unsubscribe: () => {}
+    };
+  }
+
   console.log('Setting up real-time subscription for session:', sessionId);
   
   return supabase

@@ -3,20 +3,21 @@ import React from 'react';
 import { UniverseChatMessage } from '@/utils/universeChat';
 import { UserAvatar } from '@/components/UserAvatar';
 import { formatRelativeTime } from '@/utils/dateFormatUtils';
+import { Avatar } from '@/components/ui/avatar';
+import { AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface ChatMessageProps {
   message: UniverseChatMessage;
 }
 
-// Используем React.memo для предотвращения ненужных ререндеров
 export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) => {
-  // Извлекаем свойства сообщения с запасными значениями
+  // Extract message properties with fallback values
   const isUser = message?.sender === 'user';
   const content = message?.content || '';
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
   const messageId = message?.id || `fallback-${Date.now()}-${Math.random()}`;
   
-  // Пропускаем рендеринг пустых сообщений
+  // Skip rendering empty messages
   if (!content) {
     return null;
   }
@@ -29,11 +30,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       {!isUser && (
         <div className="flex-shrink-0 mr-3 self-end">
           <div className="w-10 h-10 rounded-full overflow-hidden relative flex items-center justify-center bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 shadow-lg shadow-cosmic-accent/10 border-2 border-cosmic-gold">
-            <img 
-              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
-              alt="Вселенная"
-              className="object-cover w-full h-full z-10"
-            />
+            <Avatar className="h-full w-full">
+              <AvatarImage 
+                src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+                alt="Вселенная"
+                className="object-cover z-10"
+              />
+              <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">ВС</AvatarFallback>
+            </Avatar>
             <div className="absolute inset-0 rounded-full overflow-hidden z-0">
               <div className="absolute animate-pulse top-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
               <div className="absolute animate-pulse delay-300 bottom-0 left-1/2 w-5 h-1 bg-white/30 rounded transform -translate-x-1/2 blur-sm"></div>
@@ -72,13 +76,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Пользовательская функция сравнения для React.memo
-  // Повторный рендеринг только в случае изменения ID или содержимого сообщения
+  // Custom comparison function for React.memo
+  // Only re-render if message ID or content changes
   return (
     prevProps.message.id === nextProps.message.id &&
     prevProps.message.content === nextProps.message.content
   );
 });
 
-// Отображаемое имя для отладки
+// Display name for debugging
 ChatMessage.displayName = 'ChatMessage';
