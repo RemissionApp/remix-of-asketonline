@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'en' | 'ru' | 'es';
 
 export interface MeditationCategoriesTranslations {
@@ -27,6 +26,7 @@ export interface MainNavTranslations {
   path: string;
   ascesis: string;
   universe: string;
+  universeChat: string; // Added for PRO users
   profile: string;
 }
 
@@ -62,7 +62,7 @@ export interface UniverseTranslations {
   newChatTitle: string;
   chatTitleLabel: string;
   chatTitlePlaceholder: string;
-  errorSendingMessage: string; // Added missing key
+  errorSendingMessage: string;
 }
 
 export interface LegalTranslations {

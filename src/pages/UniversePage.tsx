@@ -9,9 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { QuoteDisplay } from '@/components/QuoteDisplay';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, setActiveScreen } = useAppStore();
+  const { askUniverse, activeQuestions, setActiveScreen, userProfile } = useAppStore();
   const { t } = useTranslations();
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
@@ -41,13 +42,16 @@ const UniversePage: React.FC = () => {
         });
       } catch (error) {
         console.error("Error asking universe:", error);
-        toast.error(typeof error === 'string' ? error : "Вселенная молчит. Попробуйте позже.");
+        toast.error(typeof error === 'string' ? error : "The Universe is silent. Try again later.");
       } finally {
         setQuestion('');
         setIsAsking(false);
       }
     }, 2000); // Delay for effect
   };
+  
+  // Determine if user has PRO access
+  const isPro = userProfile?.isPro || false;
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -136,6 +140,13 @@ const UniversePage: React.FC = () => {
               {t.universe.askButton}
             </CosmicButton>
             
+            {/* Only show Chat Preview for PRO users */}
+            {isPro && (
+              <div className="mt-10">
+                <UniverseChatPreview />
+              </div>
+            )}
+            
             {activeQuestions.length > 0 && (
               <div className="mt-12">
                 <h3 className="text-lg font-serif text-cosmic-secondary mb-4">
@@ -159,7 +170,7 @@ const UniversePage: React.FC = () => {
         )}
       </div>
       
-      {/* Add BottomNavigation component */}
+      {/* Bottom Navigation */}
       <BottomNavigation />
     </div>
   );

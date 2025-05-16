@@ -6,17 +6,18 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup'> = {
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat'> = {
   '/main': 'main',
   '/create-pact': 'create-pact',
   '/universe': 'universe',
+  '/universe-chat': 'universe-chat',
   '/profile': 'profile',
   '/comparison': 'comparison',
   '/meditation': 'meditation'
 };
 
 export const BottomNavigation: React.FC = () => {
-  const { setActiveScreen, activeScreen } = useAppStore();
+  const { setActiveScreen, activeScreen, userProfile } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,12 +25,15 @@ export const BottomNavigation: React.FC = () => {
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;
   
-  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup', path: string) => {
+  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
     navigate(path);
   };
+  
+  // Check if user has PRO subscription
+  const isPro = userProfile?.isPro || false;
   
   return (
     <div className="fixed bottom-0 left-0 right-0 z-20">
@@ -41,7 +45,7 @@ export const BottomNavigation: React.FC = () => {
               onClick={() => handleNavigation('main', '/main')}
             >
               <Home size={18} />
-              <span className="text-xs">{t.main.path || 'Путь'}</span>
+              <span className="text-xs">{t.main.nav.path || 'Path'}</span>
             </button>
             
             <button 
@@ -49,23 +53,47 @@ export const BottomNavigation: React.FC = () => {
               onClick={() => handleNavigation('create-pact', '/create-pact')}
             >
               <Sparkles size={18} />
-              <span className="text-xs">{t.main.ascesis || 'Аскеза'}</span>
+              <span className="text-xs">{t.main.nav.ascesis || 'Ascesis'}</span>
             </button>
             
-            <button 
-              className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-              onClick={() => handleNavigation('universe', '/universe')}
-            >
-              <MessageSquare size={18} />
-              <span className="text-xs">{t.universe?.title || t.main.universe || 'Вселенная'}</span>
-            </button>
+            {/* Show different Universe/Chat buttons based on PRO status */}
+            {isPro ? (
+              <>
+                {/* Universe Question button for PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('universe', '/universe')}
+                >
+                  <MessageSquare size={18} />
+                  <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
+                </button>
+                
+                {/* Universe Chat button for PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/universe-chat') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('universe-chat', '/universe-chat')}
+                >
+                  <MessageSquare size={18} />
+                  <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
+                </button>
+              </>
+            ) : (
+              /* Only Universe Question button for non-PRO users */
+              <button 
+                className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                onClick={() => handleNavigation('universe', '/universe')}
+              >
+                <MessageSquare size={18} />
+                <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
+              </button>
+            )}
             
             <button 
               className={`flex flex-col items-center p-1 ${isActive('/profile') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
               onClick={() => handleNavigation('profile', '/profile')}
             >
               <UserRound size={18} />
-              <span className="text-xs">{t.profile?.title || t.main.profile || 'Профиль'}</span>
+              <span className="text-xs">{t.main.nav.profile || 'Profile'}</span>
             </button>
           </div>
         </div>

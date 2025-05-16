@@ -62,6 +62,7 @@ export const enTranslations: Translations = {
       path: "Path",
       ascesis: "Ascesis",
       universe: "Universe",
+      universeChat: "Chat",
       profile: "Profile"
     }
   },

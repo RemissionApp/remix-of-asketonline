@@ -11,6 +11,7 @@ import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
 import { toast } from 'sonner';
 import { UniverseChatSession } from '@/utils/universeChat';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const UniverseChatPage = () => {
   const { 
@@ -72,7 +73,7 @@ const UniverseChatPage = () => {
       }
     } catch (error) {
       console.error('Error in send message flow:', error);
-      toast.error(t.universe?.errorSendingMessage || 'Не удалось отправить сообщение');
+      toast.error(t.universe?.errorSendingMessage || 'Failed to send message');
     }
   };
   
@@ -85,11 +86,12 @@ const UniverseChatPage = () => {
     return chatSessions.find(session => session.id === currentChatSession);
   };
   
-  return (
+  // Wrap content with PRO check
+  const content = (
     <div className="min-h-screen flex flex-col bg-cosmic">
       <StarField starCount={50} />
       
-      <ChatHeader title={getCurrentSession()?.title || t.universe?.chatTitle || 'Диалог со Вселенной'} />
+      <ChatHeader title={getCurrentSession()?.title || t.universe?.chatTitle || 'Dialog with the Universe'} />
       
       <Tabs 
         value={activeTab} 
@@ -98,10 +100,10 @@ const UniverseChatPage = () => {
       >
         <TabsList className="w-full bg-cosmic-dark/50 backdrop-blur-md mb-4">
           <TabsTrigger value="sessions" className="w-1/2">
-            {t.universe?.conversations || 'Диалоги'}
+            {t.universe?.conversations || 'Conversations'}
           </TabsTrigger>
           <TabsTrigger value="chat" className="w-1/2" disabled={!currentChatSession}>
-            {t.universe?.currentChat || 'Текущий чат'}
+            {t.universe?.currentChat || 'Current Chat'}
           </TabsTrigger>
         </TabsList>
         
@@ -125,7 +127,15 @@ const UniverseChatPage = () => {
         onSendMessage={handleSendMessage} 
         isDisabled={isSendingMessage}
       />
+      
+      <BottomNavigation />
     </div>
+  );
+  
+  return (
+    <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
+      {content}
+    </UniverseChatProWrapper>
   );
 };
 
