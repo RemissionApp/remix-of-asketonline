@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { UniverseChatMessage } from '@/utils/universeChat';
 
@@ -12,8 +12,10 @@ export const ChatTabContent: React.FC<ChatTabContentProps> = ({
   isLoadingChat,
   chatMessages
 }) => {
-  // Add debug logging to verify messages are coming through
-  console.log('ChatTabContent received messages:', chatMessages);
+  // Debug log messages when they change
+  useEffect(() => {
+    console.log('ChatTabContent: messages updated:', chatMessages.length);
+  }, [chatMessages]);
   
   return (
     <div className="px-4 h-[calc(100vh-220px)]">

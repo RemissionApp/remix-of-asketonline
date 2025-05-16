@@ -44,7 +44,6 @@ export const createChatSession = async (userId: string, title: string): Promise<
  */
 export const loadSessionMessages = async (sessionId: string): Promise<UniverseChatMessage[]> => {
   try {
-    // Add logging to verify messages are being loaded
     console.log('Loading messages for session:', sessionId);
     
     const { data, error } = await supabase
@@ -55,8 +54,7 @@ export const loadSessionMessages = async (sessionId: string): Promise<UniverseCh
 
     if (error) throw error;
     
-    // Log the loaded messages
-    console.log('Loaded messages:', data);
+    console.log(`Loaded ${data?.length || 0} messages for session ${sessionId}`);
     return data as UniverseChatMessage[];
   } catch (error) {
     console.error('Error loading session messages:', error);
@@ -76,6 +74,7 @@ export const loadChatSessions = async (userId: string): Promise<UniverseChatSess
       .order('last_message', { ascending: false });
       
     if (error) throw error;
+    console.log(`Loaded ${data?.length || 0} chat sessions for user ${userId}`);
     return data as UniverseChatSession[];
   } catch (error) {
     console.error('Error loading chat sessions:', error);
@@ -92,16 +91,19 @@ export const sendMessageToUniverse = async (
   message: string
 ): Promise<UniverseChatMessage[]> => {
   try {
-    console.log('Sending message to universe:', message);
+    // Create a unique ID for the user message
+    const userMessageId = crypto.randomUUID();
+    
+    console.log(`Sending message to universe (session ${sessionId}):`, message);
     
     // First, save the user message
-    const userMessageId = crypto.randomUUID();
     const userMessagePayload = {
       id: userMessageId,
       user_id: userId,
       session_id: sessionId,
       content: message,
-      sender: 'user' as const
+      sender: 'user' as const,
+      created_at: new Date().toISOString()
     };
     
     // Insert the user message
@@ -110,12 +112,19 @@ export const sendMessageToUniverse = async (
       .insert(userMessagePayload);
 
     if (userMsgError) throw userMsgError;
-    console.log('User message saved:', userMessagePayload);
+    
+    console.log('User message saved with ID:', userMessageId);
+
+    // Update the session last_message timestamp
+    await supabase
+      .from('universe_chat_sessions')
+      .update({ last_message: new Date().toISOString() })
+      .eq('id', sessionId);
 
     // Generate the universe's response
     console.log('Generating universe answer through GPT...');
     const universeResponse = await generateUniverseAnswer(message);
-    console.log('Generated answer:', universeResponse);
+    console.log('Generated answer:', universeResponse.substring(0, 50) + '...');
     
     // Insert the universe's response
     const universeMessageId = crypto.randomUUID();
@@ -124,7 +133,8 @@ export const sendMessageToUniverse = async (
       user_id: userId,
       session_id: sessionId,
       content: universeResponse,
-      sender: 'universe' as const
+      sender: 'universe' as const,
+      created_at: new Date().toISOString()
     };
     
     const { error: universeMsgError } = await supabase
@@ -132,18 +142,12 @@ export const sendMessageToUniverse = async (
       .insert(universeMessagePayload);
 
     if (universeMsgError) throw universeMsgError;
-    console.log('Universe message saved:', universeMessagePayload);
-
-    // Update the session last_message timestamp
-    await supabase
-      .from('universe_chat_sessions')
-      .update({ last_message: new Date().toISOString() })
-      .eq('id', sessionId);
+    console.log('Universe response saved with ID:', universeMessageId);
 
     // Return the updated messages
     return await loadSessionMessages(sessionId);
   } catch (error) {
-    console.error('Error sending message to universe:', error);
+    console.error('Error in sendMessageToUniverse:', error);
     throw error;
   }
 };
@@ -168,7 +172,7 @@ export const subscribeToSessionMessages = (
         filter: `session_id=eq.${sessionId}`
       },
       (payload) => {
-        console.log('New message received via subscription:', payload);
+        console.log('New message received via subscription:', payload.new);
         onNewMessage(payload.new as UniverseChatMessage);
       }
     )

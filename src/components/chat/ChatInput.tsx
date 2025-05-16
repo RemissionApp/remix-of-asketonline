@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, Mic, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,44 +12,41 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled = false }) => {
   const [inputText, setInputText] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { t } = useTranslations();
   
-  const handleSendMessage = () => {
+  // Focus input on mount
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }, []);
+  
+  const handleSendMessage = async () => {
     if (!inputText.trim() || isDisabled || isSending) return;
     
+    const messageToSend = inputText.trim();
     setIsSending(true);
     
     try {
-      onSendMessage(inputText);
+      // Clear input immediately for better UX
       setInputText('');
       
-      // Make sure to focus back on input after sending
+      // Send message
+      await onSendMessage(messageToSend);
+      
+      // Focus back on input
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 0);
+      }, 100);
     } catch (error) {
       console.error('Error sending message:', error);
+      // If error, restore the text
+      setInputText(messageToSend);
     } finally {
-      // Add a small delay for better UX feedback
-      setTimeout(() => setIsSending(false), 500);
-    }
-  };
-  
-  const toggleRecording = () => {
-    if (isDisabled) return;
-    setIsRecording(!isRecording);
-    
-    // This is just a mock for the voice recording functionality
-    if (!isRecording) {
-      // Start recording logic would go here
-      console.log('Started recording');
-    } else {
-      // Stop recording and process voice message
-      console.log('Stopped recording');
-      // For now, we'll just log this. In the future, we can implement actual voice recording
+      // Delay resetting sending state for UX
+      setTimeout(() => setIsSending(false), 300);
     }
   };
   
@@ -61,37 +58,36 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled 
     }
   };
   
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(e.target.value);
+    
+    // Auto-resize textarea (limited by max-h in CSS)
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    }
+  };
+  
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 z-20 bg-cosmic-dark/80 backdrop-blur-md">
-      <div className="flex items-center max-w-2xl mx-auto">
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`text-cosmic-secondary ${isRecording ? 'text-red-500' : ''}`}
-          onClick={toggleRecording}
-          disabled={isDisabled}
-        >
-          <Mic size={24} />
-        </Button>
-        
+      <div className="flex items-end max-w-2xl mx-auto">
         <div className="flex-1 mx-2 relative">
           <Textarea
             ref={inputRef}
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={handleTextareaChange}
             placeholder={t.universe?.questionPlaceholder || "Напишите сообщение..."}
             className="resize-none bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50 min-h-[50px] max-h-[120px]"
             onKeyDown={handleKeyDown}
             disabled={isDisabled || isSending}
             rows={1}
-            autoFocus
           />
         </div>
         
         <Button
           variant={inputText.trim() ? "default" : "ghost"}
           size="icon"
-          className={inputText.trim() ? "bg-cosmic-accent hover:bg-cosmic-accent/90" : "text-cosmic-secondary"}
+          className={`mb-1 ${inputText.trim() ? "bg-cosmic-accent hover:bg-cosmic-accent/90" : "text-cosmic-secondary"}`}
           onClick={handleSendMessage}
           disabled={!inputText.trim() || isDisabled || isSending}
         >

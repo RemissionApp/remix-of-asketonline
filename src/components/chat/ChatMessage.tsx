@@ -8,19 +8,20 @@ interface ChatMessageProps {
   message: UniverseChatMessage;
 }
 
-// Use React.memo to prevent unnecessary re-renders when parent components update
+// Use React.memo to prevent unnecessary re-renders
 export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) => {
-  // Extract message properties with default fallbacks for error handling
+  // Extract message properties with default fallbacks
   const isUser = message?.sender === 'user';
   const content = message?.content || '';
   const timestamp = message?.created_at ? new Date(message.created_at) : new Date();
   const messageId = message?.id || `fallback-${Date.now()}-${Math.random()}`;
   
-  console.log('Rendering message:', messageId, { isUser, content, timestamp });
+  // Log for debugging
+  console.log(`Rendering message: ${messageId.substring(0, 10)}... | Sender: ${message?.sender} | Content: ${content.substring(0, 20)}...`);
   
-  // Prevent rendering of empty messages
+  // Skip rendering empty messages
   if (!content) {
-    console.warn('Attempted to render empty message content:', message);
+    console.warn('Empty message content detected:', message);
     return null;
   }
   

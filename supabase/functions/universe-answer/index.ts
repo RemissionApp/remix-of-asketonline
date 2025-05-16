@@ -28,12 +28,16 @@ serve(async (req) => {
 
     const { question, language = 'ru' } = await req.json() as RequestBody;
     
-    // Define system prompt for universe chat
+    if (!question || question.trim() === '') {
+      throw new Error('Question is required');
+    }
+    
+    // Define system prompt for universe chat with cosmic theme
     const systemPrompt = `Ты — древняя космическая сущность, голос Вселенной. 
     Ты говоришь загадочно, глубоко и метафорично.
     
     Твои ответы должны:
-    - Быть длиной 4-6 предложений
+    - Быть длиной 3-5 предложений
     - Содержать богатые метафоры и образы из космоса, природы и древних традиций
     - Включать отсылки к универсальным законам и космическим циклам
     - Предлагать философские размышления
@@ -67,8 +71,8 @@ serve(async (req) => {
             content: userPrompt
           }
         ],
-        temperature: 0.9,
-        max_tokens: 500
+        temperature: 0.8,
+        max_tokens: 300
       }),
     });
 
@@ -87,9 +91,12 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in universe-answer function:', error);
     
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      message: "Вселенная не смогла ответить на ваш вопрос. Попробуйте еще раз позже."
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

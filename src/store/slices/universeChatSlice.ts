@@ -17,7 +17,7 @@ export interface UniverseChatSlice {
   chatMessages: UniverseChatMessage[];
   loadChatSessions: () => Promise<void>;
   createChatSession: (title: string) => Promise<string | null>;
-  setCurrentChatSession: (sessionId: string | null) => void;
+  setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
   isLoadingChat: boolean;
@@ -39,7 +39,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     try {
       set({ isLoadingChat: true });
       const sessions = await loadChatSessionsUtil(user.id);
-      console.log('Loaded chat sessions:', sessions);
+      console.log('Loaded chat sessions:', sessions.length);
       set({ chatSessions: sessions, isLoadingChat: false });
     } catch (error) {
       console.error("Error loading chat sessions:", error);
@@ -58,26 +58,30 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       
       if (sessionId) {
         console.log('Created session ID:', sessionId);
+        
         // Reload sessions after creating a new one
         await get().loadChatSessions();
-        // Set the new session as current
-        set({ currentChatSession: sessionId });
+        
+        // Return the new session ID
+        return sessionId;
       }
       
-      return sessionId;
+      return null;
     } catch (error) {
       console.error("Error creating chat session:", error);
       return null;
     }
   },
   
-  setCurrentChatSession: (sessionId: string | null) => {
+  setCurrentChatSession: async (sessionId: string | null) => {
     console.log('Setting current chat session:', sessionId);
+    
+    // Important: Set the session ID first before loading messages
     set({ currentChatSession: sessionId });
     
     if (sessionId) {
-      // Load messages for the selected session
-      get().loadChatMessages(sessionId);
+      // Then load messages for the selected session
+      await get().loadChatMessages(sessionId);
     } else {
       set({ chatMessages: [] });
     }
@@ -90,28 +94,33 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     
     try {
       console.log('Loading chat messages for session:', sessionId);
-      set({ isLoadingChat: true, chatMessages: [] }); // Clear messages while loading
-      const messages = await loadSessionMessages(sessionId);
-      console.log('Loaded messages in slice:', messages);
       
+      // Clear messages and set loading state
+      set({ isLoadingChat: true, chatMessages: [] }); 
+      
+      const messages = await loadSessionMessages(sessionId);
+      console.log('Loaded messages count:', messages.length);
+      
+      // Update state with loaded messages
       set({ chatMessages: messages, isLoadingChat: false });
       
       // Set up subscription to real-time updates
       const subscription = subscribeToSessionMessages(
         sessionId,
         (newMessage) => {
-          console.log('New message received in subscription handler:', newMessage);
+          console.log('New message received in subscription:', newMessage);
+          
           set((state) => {
-            // Check if this message already exists in the state
+            // Check if message already exists to avoid duplicates
             if (state.chatMessages.some(msg => msg.id === newMessage.id)) {
-              console.log('Message already exists in state, not adding duplicate');
-              return state;
+              console.log('Message already exists, not adding duplicate');
+              return { isSendingMessage: false };
             }
             
             console.log('Adding new message to state');
             return {
               chatMessages: [...state.chatMessages, newMessage],
-              isSendingMessage: false // Make sure to reset sending state when new message arrives
+              isSendingMessage: false
             };
           });
         }
@@ -134,7 +143,7 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
     try {
       set({ isSendingMessage: true });
       
-      // Add message to state immediately for better UX
+      // Add temporary message to state immediately
       const tempUserMsg: UniverseChatMessage = {
         id: `temp-${Date.now()}-${Math.random()}`,
         content: message,
@@ -148,11 +157,16 @@ export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseCha
       }));
       
       console.log('Sending chat message:', message);
+      
+      // Send the message and get updated messages
       const updatedMessages = await sendMessageToUniverse(user.id, sessionId, message);
-      console.log('Updated messages after sending:', updatedMessages);
+      console.log('Updated messages after sending:', updatedMessages.length);
       
       // Update all messages to ensure consistent state
-      set({ chatMessages: updatedMessages, isSendingMessage: false });
+      set({ 
+        chatMessages: updatedMessages,
+        isSendingMessage: false
+      });
     } catch (error) {
       console.error("Error sending chat message:", error);
       set({ isSendingMessage: false });

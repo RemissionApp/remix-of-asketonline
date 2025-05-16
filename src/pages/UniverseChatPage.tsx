@@ -35,58 +35,50 @@ const UniverseChatPage = () => {
     loadChatSessions();
   }, [loadChatSessions]);
   
-  // When a session is selected, switch to chat tab
+  // When a session is selected, switch to chat tab and load messages
   useEffect(() => {
     if (currentChatSession) {
       setActiveTab('chat');
-      // Make sure messages are loaded when session changes
       loadChatMessages(currentChatSession);
     }
   }, [currentChatSession, loadChatMessages]);
-
-  // Log chat messages for debugging
-  useEffect(() => {
-    console.log('Current chat messages in state:', chatMessages);
-  }, [chatMessages]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
     
-    console.log('Sending message:', message);
-    
-    if (!currentChatSession) {
-      // If no session exists, create one with the message as title
-      try {
+    try {
+      if (!currentChatSession) {
+        // Create a new session with the message as title
         const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
         console.log('Creating new chat session with title:', title);
+        
         const sessionId = await createChatSession(title);
+        
         if (sessionId) {
-          // Now send the message
-          console.log('Session created, sending message to session:', sessionId);
+          console.log('Session created with ID:', sessionId);
+          // Set current session and switch to chat tab
           await setCurrentChatSession(sessionId);
-          // Make sure to switch to chat tab
           setActiveTab('chat');
-          // Small timeout to ensure session is set
+          
+          // Wait a moment for state to update before sending
           setTimeout(() => {
             sendChatMessage(message);
-          }, 100);
+          }, 200);
         }
-      } catch (error) {
-        console.error('Error creating chat session:', error);
-        toast.error('Не удалось создать новый диалог');
+      } else {
+        // Session exists, make sure we're on chat tab and send message
+        setActiveTab('chat');
+        await sendChatMessage(message);
       }
-    } else {
-      // Session exists, send message
-      console.log('Sending message to existing session:', currentChatSession);
-      setActiveTab('chat'); // Make sure we're on the chat tab
-      sendChatMessage(message);
+    } catch (error) {
+      console.error('Error in send message flow:', error);
+      toast.error(t.universe?.errorSendingMessage || 'Не удалось отправить сообщение');
     }
   };
   
   const handleSelectSession = (sessionId: string) => {
     console.log('Selecting session:', sessionId);
     setCurrentChatSession(sessionId);
-    setActiveTab('chat');
   };
   
   const getCurrentSession = (): UniverseChatSession | undefined => {
