@@ -1,6 +1,7 @@
 
 import { StateCreator } from 'zustand';
-import { AppState } from '../types';
+import { AppState } from '../../types';
+import { toast } from 'sonner';
 import { 
   UniverseChatMessage, 
   UniverseChatSession,
@@ -10,28 +11,26 @@ import {
   sendMessageToUniverse,
   subscribeToSessionMessages
 } from '@/utils/universeChat';
-import { toast } from 'sonner';
+import { UniverseChatState } from './universeChatTypes';
 
-export interface UniverseChatSlice {
-  chatSessions: UniverseChatSession[];
-  currentChatSession: string | null;
-  chatMessages: UniverseChatMessage[];
+/**
+ * Actions for universe chat functionality
+ */
+export interface UniverseChatActions {
   loadChatSessions: () => Promise<void>;
   createChatSession: (title: string) => Promise<string | null>;
   setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
-  isLoadingChat: boolean;
-  isSendingMessage: boolean;
 }
 
-export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseChatSlice> = (set, get) => ({
-  chatSessions: [],
-  currentChatSession: null,
-  chatMessages: [],
-  isLoadingChat: false,
-  isSendingMessage: false,
-  
+/**
+ * Creates universe chat actions
+ */
+export const createUniverseChatActions = <T extends AppState & UniverseChatState>(
+  set: StateCreator<T>['setState'],
+  get: () => T
+): UniverseChatActions => ({
   loadChatSessions: async () => {
     const { user } = get();
     
