@@ -67,4 +67,5 @@ export interface UniverseQuestion {
   question: string;
   answer: string;
   createdAt?: string;
+  date?: string; // Adding this field to fix TypeScript errors
 }
