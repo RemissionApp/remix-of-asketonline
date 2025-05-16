@@ -1,6 +1,35 @@
 
 export type SupportedLanguage = 'en' | 'ru' | 'es';
 
+export interface MeditationCategoriesTranslations {
+  all: string;
+  basic: string;
+  sleep: string;
+  focus: string;
+  advanced: string;
+  morning: string;
+  evening: string;
+  stress: string;
+  mantra: string;
+  visual: string;
+}
+
+export interface MeditationTypeTranslations {
+  title: string;
+  description: string;
+  title1: string;
+  desc1: string;
+  title2?: string;
+  desc2?: string;
+}
+
+export interface MainNavTranslations {
+  path: string;
+  ascesis: string;
+  universe: string;
+  profile: string;
+}
+
 export interface UniverseTranslations {
   title: string;
   question: string;
@@ -22,7 +51,7 @@ export interface UniverseTranslations {
   enterChat: string;
   chatProTitle: string;
   chatProMessage: string;
-  // Add new chat translations
+  // Chat translations
   yourConversations: string;
   newChat: string;
   noChatsYet: string;
@@ -46,14 +75,29 @@ export interface CommonTranslations {
   submit: string;
 }
 
+export interface MeditationTranslations {
+  title: string;
+  description: string;
+  startButton: string;
+  play: string;
+  unlock: string;
+  pageTitle: string;
+  categories: MeditationCategoriesTranslations;
+  morning: MeditationTypeTranslations;
+  evening: MeditationTypeTranslations;
+  stress: MeditationTypeTranslations;
+  mantra: MeditationTypeTranslations;
+  visualization: MeditationTypeTranslations;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
   auth?: Record<string, string>;
-  main?: Record<string, string>;
+  main?: Record<string, any>;
   universe?: UniverseTranslations;
   profile?: Record<string, string>;
-  meditation?: Record<string, string>;
+  meditation?: MeditationTranslations;
   createPact?: Record<string, any>;
   pactOath?: Record<string, string>;
   onboarding?: Record<string, any>;

@@ -48,8 +48,8 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
   return [
     {
       id: 'morning-pro-1',
-      title: t.meditation.morning.title,
-      description: t.meditation.morning.description,
+      title: t.meditation.morning.title1,
+      description: t.meditation.morning.desc1,
       duration: '10 мин',
       category: 'morning',
       image: '/meditation/morning2.jpg',
@@ -59,8 +59,8 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
     },
     {
       id: 'morning-pro-2',
-      title: 'Утренняя энергия',
-      description: 'Зарядитесь энергией на весь день',
+      title: t.meditation.morning.title2 || 'Утренняя энергия',
+      description: t.meditation.morning.desc2 || 'Зарядитесь энергией на весь день',
       duration: '15 мин',
       category: 'morning',
       image: '/meditation/morning3.jpg',
@@ -70,8 +70,8 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
     },
     {
       id: 'evening-pro-1',
-      title: t.meditation.evening.title,
-      description: t.meditation.evening.description,
+      title: t.meditation.evening.title1,
+      description: t.meditation.evening.desc1,
       duration: '12 мин',
       category: 'evening',
       image: '/meditation/evening2.jpg',
@@ -81,8 +81,8 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
     },
     {
       id: 'stress-pro-1',
-      title: t.meditation.stress.title,
-      description: t.meditation.stress.description,
+      title: t.meditation.stress.title1,
+      description: t.meditation.stress.desc1,
       duration: '8 мин',
       category: 'stress',
       image: '/meditation/stress2.jpg',
@@ -92,8 +92,8 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
     },
     {
       id: 'visualization-pro-1',
-      title: t.meditation.visualization.title,
-      description: t.meditation.visualization.description,
+      title: t.meditation.visualization.title1,
+      description: t.meditation.visualization.desc1,
       duration: '15 мин',
       category: 'visualization',
       image: '/meditation/visualization1.jpg',
