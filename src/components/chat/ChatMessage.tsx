@@ -30,7 +30,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
         <div className="flex-shrink-0 mr-3 self-end">
           <div className="w-10 h-10 rounded-full overflow-hidden relative flex items-center justify-center bg-gradient-to-br from-cosmic-accent/60 to-cosmic-accent/20 shadow-lg shadow-cosmic-accent/10">
             <img 
-              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg" 
+              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
               alt="Вселенная"
               className="object-cover w-full h-full z-10"
             />

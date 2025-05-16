@@ -28,12 +28,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
       </Button>
       
       <div className="flex items-center flex-1">
-        <div className="w-10 h-10 rounded-full bg-cosmic-accent flex items-center justify-center mr-3">
-          <span className="text-white text-xl">✧</span>
+        <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3">
+          <img 
+            src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+            alt="Вселенная"
+            className="object-cover w-full h-full"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-cosmic-accent/20 to-transparent"></div>
         </div>
         <div>
           <h2 className="text-cosmic-accent font-serif">
-            {title || t.universe?.chatTitle || 'Диалог со Вселенной'}
+            {title || t.universe?.chatTitle || 'Вселенная'}
           </h2>
           <div className="flex items-center">
             <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
