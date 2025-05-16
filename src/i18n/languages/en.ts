@@ -176,7 +176,8 @@ export const enTranslations: Translations = {
     newChatTitle: "New conversation",
     chatTitleLabel: "Conversation title",
     chatTitlePlaceholder: "Enter conversation title...",
-    errorSendingMessage: "Failed to send message"
+    errorSendingMessage: "Failed to send message",
+    welcomeMessage: "The silence of stars surrounds you. In this space, answers are born to questions you have not yet asked."
   },
   
   profile: {

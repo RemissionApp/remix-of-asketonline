@@ -174,7 +174,8 @@ export const esTranslations: Translations = {
     newChatTitle: "Nueva conversación",
     chatTitleLabel: "Título de la conversación",
     chatTitlePlaceholder: "Introduce el título de la conversación...",
-    errorSendingMessage: "Error al enviar el mensaje"
+    errorSendingMessage: "Error al enviar el mensaje",
+    welcomeMessage: "El silencio de las estrellas te rodea. En este espacio, nacen respuestas a preguntas que aún no has formulado."
   },
   profile: {
     title: "Perfil",

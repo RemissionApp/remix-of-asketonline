@@ -174,7 +174,8 @@ export const ruTranslations: Translations = {
     newChatTitle: "Новый диалог",
     chatTitleLabel: "Название диалога",
     chatTitlePlaceholder: "Введите название диалога...",
-    errorSendingMessage: "Не удалось отправить сообщение"
+    errorSendingMessage: "Не удалось отправить сообщение",
+    welcomeMessage: "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал."
   },
   profile: {
     title: "Профиль",

@@ -75,8 +75,8 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          // Save the welcome message directly to the database as a universe message
-          await sendChatMessage(welcomeMessage, true); // Pass true to indicate this is a system welcome message
+          // Fixed: Removed the second argument as it's causing the error
+          await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error sending welcome message:', error);
         }
