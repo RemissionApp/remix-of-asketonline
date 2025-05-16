@@ -43,14 +43,14 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     <div className="space-y-4">
       <HoroscopeSection
         title={translations.workFinance[language] || translations.workFinance.en}
-        content={horoscope.sections.work_finance}
+        content={horoscope.sections.work_finance || ""}
         onComplete={activeSection === 0 ? handleSectionComplete : undefined}
       />
       
       {activeSection >= 1 && (
         <HoroscopeSection
           title={translations.loveRelationships[language] || translations.loveRelationships.en}
-          content={horoscope.sections.love_relationships}
+          content={horoscope.sections.love_relationships || ""}
           onComplete={activeSection === 1 ? handleSectionComplete : undefined}
         />
       )}
@@ -58,7 +58,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
       {activeSection >= 2 && (
         <HoroscopeSection
           title={translations.healthWellbeing[language] || translations.healthWellbeing.en}
-          content={horoscope.sections.health_wellbeing}
+          content={horoscope.sections.health_wellbeing || ""}
           onComplete={activeSection === 2 ? handleSectionComplete : undefined}
         />
       )}
@@ -66,7 +66,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
       {activeSection >= 3 && (
         <HoroscopeSection
           title={translations.dailyAdvice[language] || translations.dailyAdvice.en}
-          content={horoscope.sections.daily_advice}
+          content={horoscope.sections.daily_advice || ""}
         />
       )}
     </div>

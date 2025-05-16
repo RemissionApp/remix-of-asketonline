@@ -43,6 +43,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   });
 
   const handleGenerateClick = () => {
+    console.log("Generate horoscope button clicked");
     setShowGenerateButton(false);
     if (onGenerateHoroscope) {
       onGenerateHoroscope();
@@ -145,6 +146,36 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
             translations={translations}
             language={language}
           />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // If horoscope is null, return a message
+  if (!horoscope) {
+    return (
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/50">
+        <CardHeader>
+          <HoroscopeHeader 
+            zodiacInfo={zodiacInfo}
+            translations={translations}
+            language={language}
+            userName={userProfile?.name}
+          />
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <p className="text-cosmic-accent text-center">
+            {language === 'ru' 
+              ? 'Не удалось получить данные гороскопа. Пожалуйста, попробуйте еще раз.'
+              : 'Failed to retrieve horoscope data. Please try again.'}
+          </p>
+          <Button 
+            variant="outline" 
+            className="mt-4 border-cosmic-accent text-cosmic-accent hover:bg-cosmic-accent/20"
+            onClick={handleGenerateClick}
+          >
+            {language === 'ru' ? 'Попробовать снова' : 'Try again'}
+          </Button>
         </CardContent>
       </Card>
     );

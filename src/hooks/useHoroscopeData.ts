@@ -25,7 +25,7 @@ export const useHoroscopeData = ({
   const [horoscope, setHoroscope] = useState<DetailedHoroscope | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const { user } = useAppStore(); // Get user from app store
+  const { user } = useAppStore();
   
   // Get zodiac sign info - fixing the issue by properly converting birthDate string to Date object
   const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
@@ -37,6 +37,8 @@ export const useHoroscopeData = ({
       console.log("Not fetching horoscope data - waiting for user to request it");
       return;
     }
+    
+    console.log("Fetching horoscope data with:", { zodiacSign, shouldFetchHoroscope });
     
     const fetchDetailedHoroscope = async () => {
       try {
@@ -137,6 +139,11 @@ export const useHoroscopeData = ({
         
         console.log("Detailed horoscope data received:", data);
         
+        // Safety check to ensure data.data exists and has the expected structure
+        if (!data.data || typeof data.data !== 'object') {
+          throw new Error('Invalid horoscope data format received');
+        }
+        
         // Set the horoscope data
         setHoroscope(data.data);
         
@@ -152,8 +159,10 @@ export const useHoroscopeData = ({
         });
         
         // Generate fallback data in case of error
-        const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language, translations);
-        setHoroscope(fallbackHoroscope);
+        if (zodiacSign) {
+          const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language, translations);
+          setHoroscope(fallbackHoroscope);
+        }
       } finally {
         setLoading(false);
       }

@@ -28,10 +28,10 @@ const DetailedHoroscopePage: React.FC = () => {
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
   // Log user profile and zodiac info for debugging
-  console.log("User profile:", userProfile);
-  console.log("Birth date:", birthDate);
-  console.log("Zodiac sign:", zodiacSign);
-  console.log("Zodiac info:", zodiacInfo);
+  console.log("DetailedHoroscopePage - User profile:", userProfile);
+  console.log("DetailedHoroscopePage - Birth date:", birthDate);
+  console.log("DetailedHoroscopePage - Zodiac sign:", zodiacSign);
+  console.log("DetailedHoroscopePage - Zodiac info:", zodiacInfo);
   
   // Check if user has a birth date set, but only show toast without auto-redirect
   useEffect(() => {
@@ -64,11 +64,11 @@ const DetailedHoroscopePage: React.FC = () => {
 
   // Additional debug logging
   useEffect(() => {
-    console.log("Horoscope loading:", loading);
-    console.log("Horoscope data:", horoscope);
-    console.log("Is user pro:", !!userProfile?.isPro);
-    console.log("Fetched zodiac sign:", fetchedZodiacSign);
-    console.log("Should fetch horoscope:", shouldFetchHoroscope);
+    console.log("DetailedHoroscopePage - Horoscope loading:", loading);
+    console.log("DetailedHoroscopePage - Horoscope data:", horoscope);
+    console.log("DetailedHoroscopePage - Is user pro:", !!userProfile?.isPro);
+    console.log("DetailedHoroscopePage - Fetched zodiac sign:", fetchedZodiacSign);
+    console.log("DetailedHoroscopePage - Should fetch horoscope:", shouldFetchHoroscope);
   }, [horoscope, loading, userProfile?.isPro, fetchedZodiacSign, shouldFetchHoroscope]);
 
   return (
