@@ -5,14 +5,11 @@ import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
-import { TypingEffect } from './TypingEffect';
-import { getDateString } from '@/store/utils/dateUtils';
 
 export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [typingComplete, setTypingComplete] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
 
   // Update the current time every second
@@ -29,12 +26,11 @@ export const DailyAdviceDisplay: React.FC = () => {
       setIsLoading(true);
       try {
         // Check if we have cached advice for today
-        const today = getDateString(new Date());
+        const today = new Date().toISOString().split('T')[0];
         const cachedAdviceKey = `daily_advice_${today}_${language}`;
         const cachedAdvice = localStorage.getItem(cachedAdviceKey);
         
         if (cachedAdvice) {
-          console.log('Using cached daily advice');
           setDailyAdvice(cachedAdvice);
           setIsLoading(false);
           return;
@@ -45,11 +41,11 @@ export const DailyAdviceDisplay: React.FC = () => {
         let prompt = '';
         
         if (language === 'ru') {
-          prompt = `Дай короткий персональный прогноз дня для ${name} в стиле гороскопа. Совет должен быть конкретным, практичным (2-3 предложения), содержать указание на возможные события дня и полезную рекомендацию. Не упоминай имя в ответе. Не используй общие фразы вроде "помни" или "не забывай". Пиши как будто ты точно знаешь, что произойдет сегодня.`;
+          prompt = `Дай один практичный и вдохновляющий совет дня для ${name}. Совет должен быть коротким (не более 2-3 предложений), мотивирующим и содержать элемент духовности или самопознания. Не упоминай имя в ответе. Не называй это "советом дня".`;
         } else if (language === 'es') {
-          prompt = `Da un pronóstico personal breve para el día de hoy para ${name} en estilo de horóscopo. El consejo debe ser concreto, práctico (2-3 oraciones), contener una indicación de posibles eventos del día y una recomendación útil. No menciones el nombre en la respuesta. No uses frases generales como "recuerda" o "no olvides". Escribe como si supieras exactamente qué sucederá hoy.`;
+          prompt = `Da un consejo práctico e inspirador para ${name} hoy. El consejo debe ser breve (no más de 2-3 oraciones), motivador y contener un elemento de espiritualidad o autoconocimiento. No menciones el nombre en la respuesta. No lo llames "consejo del día".`;
         } else {
-          prompt = `Give a short personal forecast for ${name}'s day in horoscope style. The advice should be specific, practical (2-3 sentences), contain an indication of possible events of the day and a useful recommendation. Don't mention the name in the response. Don't use general phrases like "remember" or "don't forget". Write as if you know exactly what will happen today.`;
+          prompt = `Give one practical and inspiring daily advice for ${name}. The advice should be short (no more than 2-3 sentences), motivating and contain an element of spirituality or self-discovery. Don't mention the name in the response. Don't call it a "daily advice".`;
         }
 
         // Call universe-answer function to generate advice
@@ -78,10 +74,10 @@ export const DailyAdviceDisplay: React.FC = () => {
         console.error("Error:", error);
         // Fallback advice
         const fallbackAdvice = language === 'ru' 
-          ? 'Сегодня день благоприятен для новых начинаний. Вечером возможна неожиданная встреча, которая изменит ваши планы. Обратите внимание на детали — в них кроется решение.' 
+          ? 'Сегодня хороший день, чтобы сделать шаг к своей цели. Даже маленький прогресс — это всё равно прогресс.' 
           : language === 'es'
-            ? 'Hoy es un día favorable para nuevos comienzos. Por la tarde puede haber un encuentro inesperado que cambiará tus planes. Presta atención a los detalles, en ellos se esconde la solución.'
-            : 'Today is favorable for new beginnings. In the evening, an unexpected encounter may change your plans. Pay attention to details — the solution lies within them.';
+            ? 'Hoy es un buen día para dar un paso hacia tu meta. Incluso un pequeño progreso sigue siendo progreso.'
+            : 'Today is a good day to take a step towards your goal. Even small progress is still progress.';
         setDailyAdvice(fallbackAdvice);
       } finally {
         setIsLoading(false);
@@ -111,20 +107,6 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
-
-  // Get the signature based on language
-  const getSignature = () => {
-    return language === 'ru'
-      ? '— Вселенная'
-      : language === 'es'
-        ? '— El Universo'
-        : '— Universe';
-  };
-
-  // Handle typing completion
-  const handleTypingComplete = () => {
-    setTypingComplete(true);
-  };
 
   return (
     <div className="w-full max-w-lg mx-auto">
@@ -160,18 +142,10 @@ export const DailyAdviceDisplay: React.FC = () => {
           {isLoading ? (
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
-            <div className="px-1 py-2 text-center">
-              <TypingEffect 
-                text={dailyAdvice || ''} 
-                speed={30} 
-                className="text-white text-base font-normal leading-relaxed"
-                onComplete={handleTypingComplete}
-              />
-              {typingComplete && (
-                <p className="text-right text-sm text-cosmic-accent/80 mt-2 font-serif italic">
-                  {getSignature()}
-                </p>
-              )}
+            <div className="px-1 py-2">
+              <p className="text-white text-base font-sans leading-relaxed">
+                {dailyAdvice}
+              </p>
             </div>
           )}
         </div>

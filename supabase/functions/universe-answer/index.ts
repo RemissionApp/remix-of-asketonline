@@ -8,8 +8,8 @@ const corsHeaders = {
 };
 
 interface RequestBody {
-  question?: string;
-  language?: string;
+  question: string;
+  language: string;
   systemPrompt?: string;
   useWebSearch?: boolean;
   userData?: {
@@ -32,13 +32,9 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const requestBody = await req.json() as RequestBody;
-    const { question, language = 'ru', systemPrompt: customSystemPrompt, userData } = requestBody;
+    const { question, language = 'ru', systemPrompt: customSystemPrompt, userData } = await req.json() as RequestBody;
     
-    // Allow either question or prompt for better API flexibility
-    const userInput = question || requestBody.prompt;
-    
-    if (!userInput || userInput.trim() === '') {
+    if (!question || question.trim() === '') {
       throw new Error('Question is required');
     }
     
@@ -70,44 +66,17 @@ serve(async (req) => {
       }
     }
     
-    // Updated prompt for more concrete daily advice
-    let promptTemplate;
-    
-    if (language === 'ru') {
-      promptTemplate = `Дай очень конкретный, практический и материальный совет дня в стиле гороскопа для человека. Сосредоточься на следующем:
-
-1. Конкретное предсказание: Укажи 1-2 конкретные ситуации, которые могут произойти сегодня (встреча с важным человеком, финансовая возможность, неожиданная новость)
-2. Практическая рекомендация: Дай точный совет как действовать в определенной ситуации (не общий вроде "будь внимателен", а конкретный как "обрати внимание на сообщение, пришедшее во второй половине дня")
-3. Материальный аспект: Упомяни что-то связанное с материальным миром (деньги, вещи, документы, транспорт)
-
-Совет должен выглядеть как настоящее предсказание, а не общая фраза. Пиши максимум 3-4 предложения. Не используй фразы вроде "возможно" или "может быть" - пиши уверенно, как будто точно знаешь, что произойдет.`;
-    } else if (language === 'es') {
-      promptTemplate = `Da un consejo del día muy concreto, práctico y material en estilo de horóscopo para una persona. Concéntrate en lo siguiente:
-
-1. Predicción concreta: Indica 1-2 situaciones específicas que pueden ocurrir hoy (encuentro con una persona importante, oportunidad financiera, noticia inesperada)
-2. Recomendación práctica: Da un consejo exacto sobre cómo actuar en una situación determinada (no general como "sé cuidadoso", sino específico como "presta atención al mensaje que llegará por la tarde")
-3. Aspecto material: Menciona algo relacionado con el mundo material (dinero, objetos, documentos, transporte)
-
-El consejo debe parecer una predicción real, no una frase general. Escribe máximo 3-4 oraciones. No uses frases como "posiblemente" o "tal vez" - escribe con confianza, como si supieras exactamente lo que va a suceder.`;
-    } else {
-      promptTemplate = `Give a very specific, practical, and material daily advice in horoscope style for a person. Focus on the following:
-
-1. Concrete prediction: Indicate 1-2 specific situations that might happen today (meeting with an important person, financial opportunity, unexpected news)
-2. Practical recommendation: Give exact advice on how to act in a certain situation (not general like "be careful" but specific like "pay attention to the message that will arrive in the afternoon")
-3. Material aspect: Mention something related to the material world (money, objects, documents, transport)
-
-The advice should look like a real prediction, not a general phrase. Write maximum 3-4 sentences. Don't use phrases like "possibly" or "maybe" - write confidently as if you know exactly what will happen.`;
-    }
-    
     // User prompt
-    const userPrompt = `${promptTemplate}
+    const userPrompt = `Вопрос человека: "${question}"
 
-    ${userContext}`;
+    ${userContext}
+    
+    Ответь согласно описанной выше структуре, создавая ощущение глубокого разговора с мудрой Вселенной.`;
 
     // Use GPT-4o for responses
     const gptModel = "gpt-4o";
     
-    console.log(`Processing request with model ${gptModel}. Question: ${userInput}`);
+    console.log(`Processing request with model ${gptModel}. Question: ${question}`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
