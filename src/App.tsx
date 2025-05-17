@@ -37,6 +37,26 @@ const AppInitializer = () => {
   useEffect(() => {
     // Check onboarding status on app load
     checkOnboardingStatus();
+    
+    // Set up auth listener to detect session changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session?.user?.id);
+      
+      if (event === 'SIGNED_IN') {
+        console.log("User signed in, session:", session);
+      } else if (event === 'SIGNED_OUT') {
+        console.log("User signed out");
+      } else if (event === 'USER_UPDATED') {
+        console.log("User updated:", session?.user);
+      } else if (event === 'PASSWORD_RECOVERY') {
+        console.log("Password recovery event");
+      }
+    });
+    
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [checkOnboardingStatus]);
   
   return null;
@@ -46,31 +66,28 @@ const AppInitializer = () => {
 const AuthCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateUserProfile, user, loadUserProfile } = useAppStore();
+  const { updateUserProfile, user, loadUserProfile, handleAuthCallback } = useAppStore();
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      // Get the auth data from the URL
-      const hashParams = new URLSearchParams(location.hash.substring(1));
-      const queryParams = new URLSearchParams(location.search);
+    const processAuthCallback = async () => {
+      const hash = location.hash;
+      const searchParams = new URLSearchParams(location.search);
       
       // Check if this is an auth callback
-      if (hashParams.get('access_token') || queryParams.get('code')) {
+      if (hash || searchParams.get('access_token') || searchParams.get('code') || searchParams.get('email_confirmed')) {
         try {
-          // Handle the redirect internally
-          const { data, error } = await supabase.auth.getSession();
+          // Clean up auth state first
+          cleanupAuthState();
           
-          if (error) throw error;
+          // Handle the auth callback
+          const success = await handleAuthCallback(hash);
           
-          if (data?.session?.user) {
-            // Clean up auth state to prevent issues
-            cleanupAuthState();
-            
-            // Load user profile data
-            await loadUserProfile();
-            
-            // Navigate to profile setup or main
+          if (success) {
+            // Navigate to profile setup or main page
             navigate('/profile-setup');
+          } else {
+            // If not successful, redirect to login
+            navigate('/login');
           }
         } catch (error) {
           console.error('Auth callback error:', error);
@@ -82,8 +99,8 @@ const AuthCallback = () => {
       }
     };
 
-    handleAuthCallback();
-  }, [location, navigate, updateUserProfile, user, loadUserProfile]);
+    processAuthCallback();
+  }, [location, navigate, updateUserProfile, user, loadUserProfile, handleAuthCallback]);
 
   return (
     <div className="flex items-center justify-center h-screen">

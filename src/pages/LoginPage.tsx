@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,13 +9,14 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase, cleanupAuthState } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { supabase, cleanupAuthState, resendVerificationEmail } from '@/lib/supabase';
+import { Eye, EyeOff, Lock, Mail, User, RefreshCw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signIn, signUp, loading, user, userProfile, checkEmailConfirmation, emailConfirmed } = useAppStore();
   const { t } = useTranslations();
   
@@ -24,6 +25,22 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
   const [emailSent, setEmailSent] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  
+  // Check for email verification success from URL
+  useEffect(() => {
+    const verificationSuccess = searchParams.get('email_confirmed') === 'true';
+    if (verificationSuccess) {
+      toast({
+        title: "Email подтвержден",
+        description: "Вы успешно подтвердили свой email адрес.",
+        variant: "default"
+      });
+      
+      // Attempt to check if user is already logged in
+      checkEmailConfirmation();
+    }
+  }, [searchParams, checkEmailConfirmation]);
   
   // Effect to check if user is already logged in
   useEffect(() => {
@@ -107,6 +124,27 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleResendVerificationEmail = async () => {
+    if (!email) {
+      toast({
+        title: "Введите email",
+        description: "Пожалуйста, введите email для отправки письма с подтверждением",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setResendingEmail(true);
+    const { success, message } = await resendVerificationEmail(email);
+    setResendingEmail(false);
+
+    toast({
+      title: success ? "Email отправлен" : "Ошибка отправки",
+      description: message,
+      variant: success ? "default" : "destructive"
+    });
+  };
+
   const handleForgotPassword = async () => {
     if (!email) {
       toast({
@@ -178,13 +216,33 @@ const LoginPage: React.FC = () => {
                 На ваш email отправлено письмо с подтверждением. 
                 Пожалуйста, проверьте почту и перейдите по ссылке в письме для активации аккаунта.
               </p>
-              <Button 
-                variant="outline" 
-                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
-                onClick={() => setEmailSent(false)}
-              >
-                Вернуться к форме входа
-              </Button>
+              <div className="flex flex-col space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 w-full"
+                  onClick={handleResendVerificationEmail}
+                  disabled={resendingEmail}
+                >
+                  {resendingEmail ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Отправка...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Отправить письмо повторно
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                  onClick={() => setEmailSent(false)}
+                >
+                  Вернуться к форме входа
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (
@@ -237,7 +295,16 @@ const LoginPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="flex justify-end">
+                    <div className="flex justify-between items-center">
+                      <button 
+                        type="button" 
+                        onClick={handleResendVerificationEmail}
+                        className="text-cosmic-accent hover:text-cosmic-accent/80 text-sm transition-colors flex items-center"
+                      >
+                        <RefreshCw className="mr-1 h-3 w-3" />
+                        Отправить письмо
+                      </button>
+                      
                       <button 
                         type="button" 
                         onClick={handleForgotPassword}
