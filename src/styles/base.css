@@ -50,7 +50,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans;
+    @apply font-sans text-white;
   }
   
   p, span, div, button {
@@ -58,7 +58,7 @@
   }
   
   :lang(ru) h1, :lang(ru) h2, :lang(ru) h3, :lang(ru) h4, :lang(ru) h5, :lang(ru) h6 {
-    @apply font-sans;
+    @apply font-sans text-white;
   }
 }
 

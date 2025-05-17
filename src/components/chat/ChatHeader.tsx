@@ -49,7 +49,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
           </div>
         </div>
         <div>
-          <h2 className="text-cosmic-accent font-serif">
+          <h2 className="font-serif">
             {title || t.universe?.chatTitle || 'Вселенная'}
           </h2>
           <div className="flex items-center">
