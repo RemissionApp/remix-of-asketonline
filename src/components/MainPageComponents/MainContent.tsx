@@ -41,10 +41,7 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      {/* 1. User Greeting - Always First */}
-      <UserGreetingSection />
-      
-      {/* 2. PactDisplay or NoPactsView - Second */}
+      {/* 1. PactDisplay - First */}
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
           <PactDisplay
@@ -62,30 +59,30 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
       
-      {/* 3. Daily Advice - Third */}
+      {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 4. Universe Chat Block */}
+      {/* 3. Universe Chat Block - Moved right after Daily Advice */}
       <div className="w-full max-w-lg mx-auto">
         <UniverseMessageBlock />
       </div>
       
-      {/* 5. Zodiac Badge Display */}
+      {/* 4. Zodiac Badge Display */}
       <div className="w-full max-w-lg mx-auto">
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 6. Meditation Block */}
+      {/* 5. Meditation Block - Moved to appear after Zodiac Badge */}
       <div className="w-full max-w-lg mx-auto">
         <MeditationBlock />
       </div>
       
-      {/* 7. Numerology Display */}
+      {/* 6. Numerology Display */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
       </div>
       
-      {/* 8. Affirmations Block */}
+      {/* 7. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
       </div>
