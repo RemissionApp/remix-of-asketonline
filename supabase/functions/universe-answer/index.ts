@@ -8,8 +8,8 @@ const corsHeaders = {
 };
 
 interface RequestBody {
-  question: string;
-  language: string;
+  question?: string;
+  language?: string;
   systemPrompt?: string;
   useWebSearch?: boolean;
   userData?: {
@@ -32,9 +32,13 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language = 'ru', systemPrompt: customSystemPrompt, userData } = await req.json() as RequestBody;
+    const requestBody = await req.json() as RequestBody;
+    const { question, language = 'ru', systemPrompt: customSystemPrompt, userData } = requestBody;
     
-    if (!question || question.trim() === '') {
+    // Allow either question or prompt for better API flexibility
+    const userInput = question || requestBody.prompt;
+    
+    if (!userInput || userInput.trim() === '') {
       throw new Error('Question is required');
     }
     
@@ -67,7 +71,7 @@ serve(async (req) => {
     }
     
     // User prompt
-    const userPrompt = `Вопрос человека: "${question}"
+    const userPrompt = `${userInput}
 
     ${userContext}
     
@@ -76,7 +80,7 @@ serve(async (req) => {
     // Use GPT-4o for responses
     const gptModel = "gpt-4o";
     
-    console.log(`Processing request with model ${gptModel}. Question: ${question}`);
+    console.log(`Processing request with model ${gptModel}. Question: ${userInput}`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

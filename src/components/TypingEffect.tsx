@@ -19,7 +19,7 @@ export const TypingEffect: React.FC<TypingProps> = ({
   const [hasRun, setHasRun] = useState(false);
   
   useEffect(() => {
-    if (!text || hasRun) return;
+    if (!text || hasRun || text.length === 0) return;
     
     setIsTyping(true);
     setDisplayedText('');

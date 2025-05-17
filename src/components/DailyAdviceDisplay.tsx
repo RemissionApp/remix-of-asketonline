@@ -5,11 +5,15 @@ import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
+import { TypingEffect } from './TypingEffect';
+import { getDateString } from '@/store/utils/dateUtils';
 
 export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingComplete, setTypingComplete] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
 
   // Update the current time every second
@@ -26,12 +30,14 @@ export const DailyAdviceDisplay: React.FC = () => {
       setIsLoading(true);
       try {
         // Check if we have cached advice for today
-        const today = new Date().toISOString().split('T')[0];
+        const today = getDateString(new Date());
         const cachedAdviceKey = `daily_advice_${today}_${language}`;
         const cachedAdvice = localStorage.getItem(cachedAdviceKey);
         
         if (cachedAdvice) {
+          console.log('Using cached daily advice');
           setDailyAdvice(cachedAdvice);
+          setIsTyping(true);
           setIsLoading(false);
           return;
         }
@@ -70,6 +76,7 @@ export const DailyAdviceDisplay: React.FC = () => {
         // Save to local storage
         localStorage.setItem(cachedAdviceKey, generatedAdvice);
         setDailyAdvice(generatedAdvice);
+        setIsTyping(true);
       } catch (error) {
         console.error("Error:", error);
         // Fallback advice
@@ -79,6 +86,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             ? 'Hoy es un buen día para dar un paso hacia tu meta. Incluso un pequeño progreso sigue siendo progreso.'
             : 'Today is a good day to take a step towards your goal. Even small progress is still progress.';
         setDailyAdvice(fallbackAdvice);
+        setIsTyping(true);
       } finally {
         setIsLoading(false);
       }
@@ -107,6 +115,29 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
+
+  // Get the typing indicator text based on language
+  const getTypingIndicator = () => {
+    return language === 'ru' 
+      ? 'Вселенная печатает...' 
+      : language === 'es'
+        ? 'El Universo está escribiendo...'
+        : 'Universe is typing...';
+  };
+
+  // Get the signature based on language
+  const getSignature = () => {
+    return language === 'ru'
+      ? '— Вселенная'
+      : language === 'es'
+        ? '— El Universo'
+        : '— Universe';
+  };
+
+  // Handle typing completion
+  const handleTypingComplete = () => {
+    setTypingComplete(true);
+  };
 
   return (
     <div className="w-full max-w-lg mx-auto">
@@ -143,9 +174,30 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              <p className="text-white text-base font-sans leading-relaxed">
-                {dailyAdvice}
-              </p>
+              {!isTyping && dailyAdvice ? (
+                <p className="text-white text-base font-sans leading-relaxed">
+                  {dailyAdvice}
+                </p>
+              ) : (
+                <>
+                  <TypingEffect 
+                    text={dailyAdvice || ''} 
+                    speed={30} 
+                    className="text-white text-base font-sans leading-relaxed"
+                    onComplete={handleTypingComplete}
+                  />
+                  {!typingComplete && (
+                    <p className="text-xs text-cosmic-accent/60 mt-1 font-sans italic">
+                      {getTypingIndicator()}
+                    </p>
+                  )}
+                  {typingComplete && (
+                    <p className="text-right text-sm text-cosmic-accent/80 mt-2 font-serif italic">
+                      {getSignature()}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>
