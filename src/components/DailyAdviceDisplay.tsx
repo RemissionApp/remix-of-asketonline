@@ -82,7 +82,7 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Приветствие пользователя без прямоугольного фона */}
+      {/* Приветствие пользователя без фона и блоков */}
       <div className="mb-3 text-center">
         <h2 className="text-cosmic-gold font-cormorant text-2xl animate-glow-pulse">
           {language === 'ru' 
