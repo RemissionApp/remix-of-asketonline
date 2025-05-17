@@ -82,14 +82,19 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Приветствие пользователя над карточкой совета дня */}
-      <h2 className="text-cosmic-gold font-serif text-xl mb-2 text-center animate-glow-pulse">
-        {language === 'ru' 
-          ? `Приветствую тебя, ${userName}!` 
-          : language === 'es'
-            ? `¡Te saludo, ${userName}!`
-            : `Greetings, ${userName}!`}
-      </h2>
+      {/* Приветствие пользователя над карточкой совета дня - обновлено на две строки */}
+      <div className="mb-3 text-center">
+        <h2 className="text-cosmic-gold font-cormorant text-2xl animate-glow-pulse">
+          {language === 'ru' 
+            ? "Приветствую тебя!" 
+            : language === 'es'
+              ? "¡Te saludo!"
+              : "Greetings!"}
+        </h2>
+        <h3 className="text-cosmic-gold font-cormorant text-xl mt-1 animate-glow-pulse">
+          {userName}
+        </h3>
+      </div>
       
       <Card className="border-cosmic-accent/20 bg-cosmic-dark/70 backdrop-blur-sm mb-6 overflow-hidden">
         <CardContent className="p-4">
@@ -106,7 +111,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              <p className="text-cosmic-secondary text-base font-serif italic leading-relaxed">
+              <p className="text-cosmic-secondary text-base font-cormorant italic leading-relaxed">
                 {dailyAdvice}
               </p>
               <div className="flex items-center justify-end mt-3">
