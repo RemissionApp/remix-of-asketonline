@@ -1,5 +1,5 @@
 
-import { openAiModel, openAiTemperature } from "../generate-horoscope/config.ts";
+import { openAiModel, openAiTemperature } from "./config.ts";
 
 interface FullHoroscopeData {
   personalityAnalysis: string;
