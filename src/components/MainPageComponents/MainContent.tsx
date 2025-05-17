@@ -38,7 +38,7 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      {/* Pact or No-Pacts View - First */}
+      {/* 1. PactDisplay - First */}
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
           <PactDisplay
@@ -56,17 +56,18 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
       
-      {/* Daily Advice Display - Second */}
+      {/* 2. Greeting is inside DailyAdviceDisplay component - Second */}
+      {/* 3. Daily Advice - Third */}
       <DailyAdviceDisplay />
       
-      {/* Universe Chat Block - Third */}
+      {/* 4. Zodiac Badge Display - Fourth */}
+      <ZodiacBadgeDisplay />
+      
+      {/* 5. Universe Chat Block (Messages from Universe) - Fifth */}
       <UniverseChatBlock />
       
-      {/* Numerology Display - Fourth */}
+      {/* Numerology Display was moved lower in priority */}
       <NumerologyDisplay />
-      
-      {/* Zodiac Badge Display - Fifth */}
-      <ZodiacBadgeDisplay />
       
       {/* Action Buttons - Remains at the bottom */}
       <div className="mt-auto">
