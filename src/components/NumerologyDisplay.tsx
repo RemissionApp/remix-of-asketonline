@@ -223,7 +223,9 @@ export const NumerologyDisplay: React.FC = () => {
           </div>
           <div>
             <h3 className="text-xl font-semibold text-cosmic-accent">{language === 'ru' ? 'Нумерология' : language === 'es' ? 'Numerología' : 'Numerology'}</h3>
-            <p className="text-sm text-cosmic-secondary">{t.lifePath || 'Life Path'}: {lifePathNumber}</p>
+            <p className="text-sm text-cosmic-secondary">
+              {language === 'ru' ? 'Путь жизни' : language === 'es' ? 'Sendero de vida' : 'Life Path'}: {lifePathNumber}
+            </p>
           </div>
         </div>
         
@@ -268,3 +270,4 @@ export const NumerologyDisplay: React.FC = () => {
   
   return numerologyContent;
 };
+

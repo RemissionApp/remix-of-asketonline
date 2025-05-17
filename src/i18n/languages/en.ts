@@ -313,7 +313,8 @@ export const enTranslations: Translations = {
     description: "Discover your numerological profile and gain a deep understanding of your personality",
     learnMore: "Learn more",
     proTitle: "Numerological Analysis",
-    proMessage: "Unlock PRO to get a complete numerological analysis"
+    proMessage: "Unlock PRO to get a complete numerological analysis",
+    lifePath: "Life Path"
   },
   common: {
     cancel: "Cancel",
