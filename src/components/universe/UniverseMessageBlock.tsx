@@ -29,7 +29,7 @@ export const UniverseMessageBlock: React.FC = () => {
       <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
         <div className="flex items-center mb-4">
           <Avatar className="h-14 w-14 mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
-            <AvatarImage src="/avatars/universe.png" alt="Universe Avatar" />
+            <AvatarImage src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" alt="Universe Avatar" />
             <AvatarFallback className="bg-cosmic-accent/20 text-cosmic-accent">
               <MessageSquare size={24} />
             </AvatarFallback>
