@@ -5,7 +5,7 @@ import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { DetailedHoroscopeContent } from '@/components/horoscope/DetailedHoroscopeContent';

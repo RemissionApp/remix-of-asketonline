@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
@@ -7,6 +6,9 @@ import { GenerateButton } from './sections/GenerateButton';
 import { LoadingHoroscope } from './sections/LoadingHoroscope';
 import { ErrorMessage } from './sections/ErrorMessage';
 import { HoroscopeDisplay } from './sections/HoroscopeDisplay';
+import { DeveloperSwitch } from '../DeveloperSwitch';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
 
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -28,6 +30,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   onGenerateHoroscope
 }) => {
   const [showGenerateButton, setShowGenerateButton] = useState(true);
+  const [showDevTools, setShowDevTools] = useState(false);
   
   useEffect(() => {
     // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
@@ -59,6 +62,11 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     }
   };
 
+  // Developer tools toggle
+  const toggleDevTools = () => {
+    setShowDevTools(!showDevTools);
+  };
+
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
     console.log("No zodiac info available, showing message");
@@ -71,67 +79,87 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     );
   }
 
-  // Check if user is PRO
-  if (!userProfile?.isPro) {
-    console.log("User is not PRO, showing overlay");
-    return (
-      <HoroscopeProOverlay
-        translations={translations}
-        language={language}
-        zodiacInfo={zodiacInfo}
-      />
-    );
-  }
-
-  // Show the generate button if there's no horoscope and we're not loading
-  if (!loading && !horoscope && showGenerateButton) {
-    console.log("Showing generate button");
-    return (
-      <GenerateButton
-        translations={translations}
-        language={language}
-        zodiacInfo={zodiacInfo}
-        userName={userProfile?.name}
-        onGenerate={handleGenerateClick}
-      />
-    );
-  }
-
-  if (loading) {
-    console.log("Showing loading state");
-    return (
-      <LoadingHoroscope
-        translations={translations}
-        language={language}
-        zodiacInfo={zodiacInfo}
-        userName={userProfile?.name}
-      />
-    );
-  }
-
-  // If horoscope is null, return an error message
-  if (!horoscope) {
-    console.log("No horoscope data, showing error message");
-    return (
-      <ErrorMessage
-        translations={translations}
-        language={language}
-        zodiacInfo={zodiacInfo}
-        userName={userProfile?.name}
-        onRetry={handleGenerateClick}
-      />
-    );
-  }
-
-  // If we have the horoscope data, display it
-  console.log("Displaying horoscope with sections:", Object.keys(horoscope.sections || {}).join(', '));
   return (
-    <HoroscopeDisplay
-      horoscope={horoscope}
-      translations={translations}
-      language={language}
-      zodiacInfo={zodiacInfo}
-      userName={userProfile?.name}
-    />
+    <>
+      {/* Developer tools toggle button */}
+      <div className="mb-4 text-right">
+        <Button 
+          onClick={toggleDevTools}
+          variant="ghost"
+          size="sm"
+          className="text-cosmic-secondary hover:text-cosmic-accent"
+        >
+          {showDevTools ? 
+            (language === 'ru' ? '🔒 Скрыть инструменты' : '🔒 Hide Dev Tools') : 
+            (language === 'ru' ? '🛠️ Инструменты разработчика' : '🛠️ Dev Tools')}
+        </Button>
+      </div>
+      
+      {/* Developer tools section */}
+      {showDevTools && (
+        <div className="mb-4 p-3 border border-cosmic-accent/20 bg-cosmic-dark/80 rounded-lg">
+          <h3 className="text-cosmic-accent mb-2">Developer Tools</h3>
+          <div className="space-y-3">
+            <DeveloperSwitch />
+            
+            {userProfile?.isPro && (
+              <div className="flex justify-end mt-2">
+                <Button 
+                  onClick={onGenerateHoroscope} 
+                  variant="outline"
+                  size="sm"
+                  className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                  disabled={loading}
+                >
+                  <RefreshCw size={16} className="mr-1" />
+                  {language === 'ru' ? 'Сгенерировать новый гороскоп' : 'Generate New Horoscope'}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Check if user is PRO */}
+      {!userProfile?.isPro ? (
+        <HoroscopeProOverlay
+          translations={translations}
+          language={language}
+          zodiacInfo={zodiacInfo}
+        />
+      ) : loading ? (
+        <LoadingHoroscope
+          translations={translations}
+          language={language}
+          zodiacInfo={zodiacInfo}
+          userName={userProfile?.name}
+        />
+      ) : !horoscope && showGenerateButton ? (
+        <GenerateButton
+          translations={translations}
+          language={language}
+          zodiacInfo={zodiacInfo}
+          userName={userProfile?.name}
+          onGenerate={handleGenerateClick}
+        />
+      ) : !horoscope ? (
+        <ErrorMessage
+          translations={translations}
+          language={language}
+          zodiacInfo={zodiacInfo}
+          userName={userProfile?.name}
+          onRetry={handleGenerateClick}
+        />
+      ) : (
+        <HoroscopeDisplay
+          horoscope={horoscope}
+          translations={translations}
+          language={language}
+          zodiacInfo={zodiacInfo}
+          userName={userProfile?.name}
+          onRegenerate={onGenerateHoroscope}
+        />
+      )}
+    </>
   );
 };

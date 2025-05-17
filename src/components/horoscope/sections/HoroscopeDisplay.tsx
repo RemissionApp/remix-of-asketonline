@@ -4,6 +4,8 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { HoroscopeHeader } from './HoroscopeHeader';
 import { HoroscopeContent } from './HoroscopeContent';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
 
 interface HoroscopeDisplayProps {
   horoscope: DetailedHoroscope;
@@ -11,6 +13,7 @@ interface HoroscopeDisplayProps {
   language: string;
   zodiacInfo: any;
   userName?: string;
+  onRegenerate?: () => void;
 }
 
 export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
@@ -18,7 +21,8 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   translations,
   language,
   zodiacInfo,
-  userName
+  userName,
+  onRegenerate
 }) => {
   // Добавляем дополнительную отладочную информацию
   console.log("HoroscopeDisplay rendering with:", {
@@ -37,6 +41,21 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
           language={language}
           userName={userName}
         />
+        
+        {/* Developer regenerate button */}
+        {onRegenerate && (
+          <div className="mt-2 flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onRegenerate}
+              className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+            >
+              <RefreshCw size={16} className="mr-1" />
+              {language === 'ru' ? 'Пересоздать' : 'Regenerate'}
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-6 pb-6">
         <HoroscopeContent 
