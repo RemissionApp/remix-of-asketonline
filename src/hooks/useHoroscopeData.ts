@@ -36,7 +36,10 @@ export const useHoroscopeData = ({
     birthDate: birthDate?.toISOString(),
     shouldFetchHoroscope, 
     isPro,
-    language
+    language,
+    currentHoroscopeState: horoscope ? 
+      `sections: ${Object.keys(horoscope.sections || {}).join(', ')}` : 
+      'No current horoscope'
   });
   
   useEffect(() => {
@@ -46,7 +49,11 @@ export const useHoroscopeData = ({
       return;
     }
     
-    console.log("Starting horoscope fetch with:", { zodiacSign, shouldFetchHoroscope });
+    console.log("Starting horoscope fetch with:", { 
+      zodiacSign, 
+      shouldFetchHoroscope,
+      currentLoadingState: loading 
+    });
     
     const fetchDetailedHoroscope = async () => {
       try {
@@ -85,6 +92,13 @@ export const useHoroscopeData = ({
           try {
             const parsedData = JSON.parse(cachedHoroscopeData);
             console.log("Cached data parsed successfully, sections:", Object.keys(parsedData.sections || {}).join(', '));
+            
+            // Validate that the parsed data has the required structure
+            if (!parsedData.sections || !parsedData.sections.general_atmosphere) {
+              console.log("Cached data is missing required sections, will fetch new data");
+              throw new Error("Invalid cached data structure");
+            }
+            
             setHoroscope(parsedData);
             setLoading(false);
             return;
@@ -135,6 +149,39 @@ export const useHoroscopeData = ({
           throw new Error('Invalid horoscope data format received');
         }
         
+        // Verify that all required sections are present
+        if (!data.data.sections || !data.data.sections.general_atmosphere) {
+          console.error("Missing required sections in horoscope data:", data.data);
+          
+          // Try to fix missing sections
+          if (!data.data.sections) {
+            data.data.sections = {};
+          }
+          
+          const requiredSections = [
+            'general_atmosphere', 
+            'work_finance', 
+            'love_relationships', 
+            'health_wellbeing', 
+            'daily_advice'
+          ];
+          
+          let missingAnySection = false;
+          
+          requiredSections.forEach(section => {
+            if (!data.data.sections[section]) {
+              console.log(`Missing ${section} section, adding fallback content`);
+              const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language, translations);
+              data.data.sections[section] = fallbackHoroscope.sections[section];
+              missingAnySection = true;
+            }
+          });
+          
+          if (missingAnySection) {
+            console.log("Fixed missing sections:", Object.keys(data.data.sections).join(', '));
+          }
+        }
+        
         // Store the horoscope in the database if user is logged in
         if (user) {
           try {
@@ -162,6 +209,17 @@ export const useHoroscopeData = ({
         console.log("Setting horoscope state with data:", 
           data.data?.sections ? Object.keys(data.data.sections).join(', ') : 'No sections'
         );
+
+        // Deep verify the structure before setting
+        console.log("Final data structure to be set:", {
+          description: data.data.description ? data.data.description.substring(0, 30) + "..." : "Missing",
+          sections: data.data.sections ? 
+            Object.entries(data.data.sections).map(([key, value]) => 
+              `${key}: ${value ? "present" : "missing"}`
+            ) :
+            "Missing sections object"
+        });
+        
         setHoroscope(data.data);
         
         // Cache the horoscope with today's date
@@ -181,6 +239,7 @@ export const useHoroscopeData = ({
         if (zodiacSign) {
           console.log("Generating fallback horoscope for:", zodiacSign);
           const fallbackHoroscope = generateFallbackHoroscope(zodiacSign, language, translations);
+          console.log("Fallback horoscope sections:", Object.keys(fallbackHoroscope.sections || {}).join(', '));
           setHoroscope(fallbackHoroscope);
         }
       } finally {
@@ -197,6 +256,11 @@ export const useHoroscopeData = ({
     console.log("useHoroscopeData current state:", {
       horoscopeAvailable: !!horoscope,
       horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
+      sectionsContent: horoscope?.sections ? 
+        Object.entries(horoscope.sections).map(([key, value]) => 
+          `${key}: ${value ? "present" : "missing"}`
+        ) : 
+        [],
       loading,
       zodiacSign,
       shouldFetchHoroscope

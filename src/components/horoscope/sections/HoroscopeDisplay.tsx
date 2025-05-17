@@ -24,13 +24,27 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   userName,
   onRegenerate
 }) => {
-  // Добавляем дополнительную отладочную информацию
+  // Enhanced debugging logs
   console.log("HoroscopeDisplay rendering with:", {
+    horoscopeExists: !!horoscope,
     sections: horoscope?.sections ? Object.keys(horoscope.sections) : [],
-    hasGeneralAtmosphere: horoscope?.sections?.general_atmosphere ? 
+    sectionValues: horoscope?.sections ? Object.entries(horoscope.sections).map(([key, value]) => 
+      `${key}: ${value ? value.substring(0, 30) + '...' : 'missing'}`
+    ) : [],
+    generalAtmosphere: horoscope?.sections?.general_atmosphere ? 
       horoscope.sections.general_atmosphere.substring(0, 30) + "..." : 
       "No general_atmosphere"
   });
+
+  const handleRegenerate = () => {
+    console.log("Regenerate button clicked in HoroscopeDisplay");
+    if (onRegenerate) {
+      console.log("Calling onRegenerate function");
+      onRegenerate();
+    } else {
+      console.log("No onRegenerate function provided to HoroscopeDisplay");
+    }
+  };
 
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
@@ -42,13 +56,13 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
           userName={userName}
         />
         
-        {/* Developer regenerate button */}
+        {/* Developer regenerate button with enhanced click handler */}
         {onRegenerate && (
           <div className="mt-2 flex justify-end">
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={onRegenerate}
+              onClick={handleRegenerate}
               className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
             >
               <RefreshCw size={16} className="mr-1" />

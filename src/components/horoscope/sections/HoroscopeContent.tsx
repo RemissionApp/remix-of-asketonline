@@ -21,6 +21,11 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     hasHoroscope: !!horoscope,
     horoscopeDescription: horoscope?.description ? horoscope.description.substring(0, 50) + '...' : 'No description',
     horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
+    sectionValues: horoscope?.sections ? 
+      Object.entries(horoscope.sections).map(([key, value]) => 
+        `${key}: ${value ? (value.substring(0, 20) + '...') : 'missing'}`
+      ) : 
+      [],
     activeSection
   });
 
@@ -85,7 +90,10 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
 
   console.log("Rendering sections:", {
     config: sectionConfig.map(s => s.key),
-    availableSections: Object.keys(horoscope.sections || {})
+    availableSections: Object.keys(horoscope.sections || {}),
+    sectionContents: Object.entries(horoscope.sections || {}).map(([key, value]) => 
+      `${key}: ${value ? 'present' : 'missing'}`
+    )
   });
 
   return (
@@ -98,8 +106,11 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
           shouldRender: activeSection >= index
         });
         
-        // Только отображаем секцию, если у нас есть контент
-        if (!sectionContent) return null;
+        // Only display the section if we have content
+        if (!sectionContent) {
+          console.log(`Skipping section ${section.key} because content is empty`);
+          return null;
+        }
         
         return (activeSection >= index) && (
           <HoroscopeSection
@@ -111,6 +122,16 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
           />
         );
       })}
+      
+      {/* Debug section to show raw content */}
+      {Object.keys(horoscope.sections || {}).length === 0 && (
+        <div className="p-4 bg-red-900/20 border border-red-500/40 rounded-md">
+          <h3 className="text-red-400 font-bold mb-2">Debug: No horoscope sections found</h3>
+          <pre className="text-xs overflow-auto max-h-40 p-2 bg-black/30 rounded">
+            {JSON.stringify(horoscope, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };

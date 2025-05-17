@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
@@ -32,6 +33,16 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   const [showGenerateButton, setShowGenerateButton] = useState(true);
   const [showDevTools, setShowDevTools] = useState(false);
   
+  // Add debugging for props
+  console.log("DetailedHoroscopeContent PROPS:", {
+    horoscopeNull: horoscope === null,
+    horoscopeUndefined: horoscope === undefined,
+    horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
+    loading,
+    isPro: !!userProfile?.isPro,
+    onGenerateHoroscopeExists: !!onGenerateHoroscope
+  });
+  
   useEffect(() => {
     // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
     if (userProfile?.isPro && zodiacInfo && onGenerateHoroscope && !horoscope && !loading) {
@@ -58,7 +69,20 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     console.log("Generate horoscope button clicked");
     setShowGenerateButton(false);
     if (onGenerateHoroscope) {
+      console.log("Calling onGenerateHoroscope function");
       onGenerateHoroscope();
+    } else {
+      console.log("No onGenerateHoroscope function provided");
+    }
+  };
+
+  // Handle regenerate horoscope - dedicated function with logging
+  const handleRegenerateHoroscope = () => {
+    console.log("Regenerating horoscope via developer tools");
+    if (onGenerateHoroscope) {
+      onGenerateHoroscope();
+    } else {
+      console.log("ERROR: No onGenerateHoroscope function available for regeneration");
     }
   };
 
@@ -102,20 +126,18 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
           <div className="space-y-3">
             <DeveloperSwitch />
             
-            {userProfile?.isPro && (
-              <div className="flex justify-end mt-2">
-                <Button 
-                  onClick={onGenerateHoroscope} 
-                  variant="outline"
-                  size="sm"
-                  className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
-                  disabled={loading}
-                >
-                  <RefreshCw size={16} className="mr-1" />
-                  {language === 'ru' ? 'Сгенерировать новый гороскоп' : 'Generate New Horoscope'}
-                </Button>
-              </div>
-            )}
+            <div className="flex justify-end mt-2">
+              <Button 
+                onClick={handleRegenerateHoroscope} 
+                variant="outline"
+                size="sm"
+                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                disabled={loading}
+              >
+                <RefreshCw size={16} className="mr-1" />
+                {language === 'ru' ? 'Сгенерировать новый гороскоп' : 'Generate New Horoscope'}
+              </Button>
+            </div>
           </div>
         </div>
       )}

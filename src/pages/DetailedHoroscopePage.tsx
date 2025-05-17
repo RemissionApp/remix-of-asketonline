@@ -5,7 +5,7 @@ import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { DetailedHoroscopeContent } from '@/components/horoscope/DetailedHoroscopeContent';
@@ -62,10 +62,23 @@ const DetailedHoroscopePage: React.FC = () => {
     }
   }, [userProfile?.birthDate, userProfile?.isPro, language, toast, zodiacSign]);
   
-  // Handle manually triggering horoscope generation
+  // Handle manually triggering horoscope generation with improved logging
   const handleGenerateHoroscope = () => {
     console.log("Manually triggering horoscope generation");
-    setShouldFetchHoroscope(true);
+    console.log("Current shouldFetchHoroscope state:", shouldFetchHoroscope);
+    setShouldFetchHoroscope(prevState => {
+      console.log("Setting shouldFetchHoroscope from", prevState, "to true");
+      return true;
+    });
+    // Force refresh by setting to false then back to true in the next tick
+    if (shouldFetchHoroscope) {
+      console.log("shouldFetchHoroscope is already true, forcing refresh");
+      setShouldFetchHoroscope(false);
+      setTimeout(() => {
+        console.log("Setting shouldFetchHoroscope back to true after timeout");
+        setShouldFetchHoroscope(true);
+      }, 100);
+    }
   };
   
   // Fetch horoscope data only when shouldFetchHoroscope is true
