@@ -3,7 +3,7 @@ import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
-import { calculateLifePathNumber, getNumerologyMeaning } from '@/utils/numerologyUtils';
+import { calculateLifePathNumber, getNumerologyMeaning, calculateExpressionNumber, calculatePersonalityNumber } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
 import { Calculator } from 'lucide-react';
 
@@ -17,8 +17,11 @@ export const NumerologyDisplay: React.FC = () => {
   }
   
   // Calculate the life path number using our utility function
-  // Make sure to pass birthDate as a string
   const lifePathNumber = calculateLifePathNumber(String(userProfile.birthDate));
+  
+  // Calculate additional numerology numbers
+  const expressionNumber = calculateExpressionNumber(userProfile.name || '');
+  const personalityNumber = calculatePersonalityNumber(userProfile.name || '');
   
   // Get the numerology meaning for the life path number
   const numerologyMeaning = getNumerologyMeaning(lifePathNumber, language);
@@ -30,6 +33,8 @@ export const NumerologyDisplay: React.FC = () => {
   // Get appropriate text for "Numerology" and "Life Path" based on language
   const numerologyText = language === 'ru' ? 'Нумерология' : language === 'es' ? 'Numerología' : 'Numerology';
   const lifePathText = language === 'ru' ? 'Путь жизни' : language === 'es' ? 'Sendero de vida' : 'Life Path';
+  const expressionText = language === 'ru' ? 'Число выражения' : language === 'es' ? 'Número de expresión' : 'Expression Number';
+  const personalityText = language === 'ru' ? 'Число личности' : language === 'es' ? 'Número de personalidad' : 'Personality Number';
   const moreDetailsText = language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : 'More details';
   
   // Create the numerology content component
@@ -48,8 +53,13 @@ export const NumerologyDisplay: React.FC = () => {
         </div>
         <NumerologyContent
           lifePathNumber={lifePathNumber}
+          expressionNumber={expressionNumber}
+          personalityNumber={personalityNumber}
           title={title}
           description={description}
+          lifePathText={lifePathText}
+          expressionText={expressionText}
+          personalityText={personalityText}
           moreDetailsText={moreDetailsText}
         />
       </div>
