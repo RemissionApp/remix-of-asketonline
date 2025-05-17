@@ -54,7 +54,7 @@ export const TypingEffect: React.FC<TypingProps> = ({
     }, speed);
     
     return () => clearInterval(typingInterval);
-  }, [text, speed, onComplete, onStart, runOnce]);
+  }, [text, speed, onComplete, onStart, runOnce, hasRun]);
   
   return (
     <div className={className}>
