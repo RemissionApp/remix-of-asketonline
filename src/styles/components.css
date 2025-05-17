@@ -37,4 +37,13 @@
   .cosmic-button-destructive {
     @apply px-6 py-3 bg-gradient-to-r from-red-500/40 to-red-600/40 text-white rounded-full font-medium transition-all backdrop-blur-sm border border-red-500/30 hover:from-red-500/60 hover:to-red-600/60 hover:shadow-lg hover:shadow-red-500/20 active:scale-95;
   }
+  
+  /* Standard block heading style */
+  .cosmic-block-heading {
+    @apply font-sans font-medium text-base flex items-center;
+  }
+  
+  .cosmic-block-icon-wrapper {
+    @apply bg-cosmic-accent/20 rounded-lg p-2 mr-3 flex items-center justify-center;
+  }
 }

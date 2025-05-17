@@ -16,7 +16,19 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   
   const zodiacContent = (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full max-w-lg mx-auto">
-      <ZodiacInfo />
+      <div className="p-4">
+        <div className="flex items-center mb-3">
+          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+            <div className="text-cosmic-accent">♈</div>
+          </div>
+          <div>
+            <h3 className="font-sans font-medium">
+              {t.zodiac?.title || "Гороскоп"}
+            </h3>
+          </div>
+        </div>
+        <ZodiacInfo />
+      </div>
     </div>
   );
   

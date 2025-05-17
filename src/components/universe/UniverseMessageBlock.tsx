@@ -85,8 +85,7 @@ export const UniverseMessageBlock: React.FC = () => {
             <MessageSquare size={20} className="text-cosmic-accent" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-cosmic-accent">{t.universe?.chatTitle || "Диалог со Вселенной"}</h3>
-            <p className="text-sm text-cosmic-secondary">{t.universe?.chatDescription || "Задайте вопрос Вселенной"}</p>
+            <h3 className="font-sans font-medium">{t.universe?.chatTitle || "Диалог со Вселенной"}</h3>
           </div>
         </div>
         

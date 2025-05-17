@@ -5,6 +5,7 @@ import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { calculateLifePathNumber, getNumerologyMeaning } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
+import { Calculator } from 'lucide-react';
 
 export const NumerologyDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
@@ -33,12 +34,24 @@ export const NumerologyDisplay: React.FC = () => {
   
   // Create the numerology content component
   const numerologyContent = (
-    <NumerologyContent
-      lifePathNumber={lifePathNumber}
-      title={title}
-      description={description}
-      moreDetailsText={moreDetailsText}
-    />
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full max-w-lg mx-auto">
+      <div className="p-4">
+        <div className="flex items-center mb-3">
+          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+            <Calculator size={20} className="text-cosmic-accent" />
+          </div>
+          <div>
+            <h3 className="font-sans font-medium">{numerologyText}</h3>
+          </div>
+        </div>
+        <NumerologyContent
+          lifePathNumber={lifePathNumber}
+          title={title}
+          description={description}
+          moreDetailsText={moreDetailsText}
+        />
+      </div>
+    </div>
   );
   
   // If user is not PRO, wrap with ProFeatureOverlay
