@@ -6,7 +6,7 @@ import { ActionButtonsSection } from './ActionButtonsSection';
 import { NoPactsView } from '@/components/NoPactsView';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
-import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
+import { DailyAdviceDisplay } from '@/components/DailyAdviceDisplay';
 import { Loader } from 'lucide-react';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
@@ -64,8 +64,8 @@ export const MainContent: React.FC<MainContentProps> = ({
             formatRejection={formatRejection}
           />
           
-          {/* Horoscope display */}
-          <HoroscopeDisplay />
+          {/* Daily Advice display (previously HoroscopeDisplay) */}
+          <DailyAdviceDisplay />
           
           {/* Numerology display */}
           <NumerologyDisplay />
