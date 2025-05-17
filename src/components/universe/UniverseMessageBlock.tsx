@@ -24,9 +24,23 @@ export const UniverseMessageBlock: React.FC = () => {
     navigate('/universe');
   };
   
+  // Determine title based on language
+  const titleText = language === 'ru' ? 'Диалог со Вселенной' : 
+                   language === 'es' ? 'Diálogo con el Universo' : 
+                   'Dialogue with the Universe';
+  
   const messageContent = (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
       <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
+        <div className="flex items-center mb-4">
+          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+            <MessageSquare size={20} className="text-cosmic-accent" />
+          </div>
+          <h3 className={language === 'en' ? "font-serif font-medium text-cosmic-accent" : "font-sans font-medium text-cosmic-accent"}>
+            {titleText}
+          </h3>
+        </div>
+        
         <div className="flex items-center mb-4">
           <Avatar className="h-14 w-14 mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
             <AvatarImage src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" alt="Universe Avatar" />
