@@ -7,7 +7,7 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
     // System prompts for detailed horoscopes
     const detailedPrompts = {
       ru: `Ты опытный астролог, создающий персонализированные гороскопы. 
-      Создай детальный гороскоп на завтра со следующей структурой: 
+      Создай детальный гороскоп на завтра со следующими ПЯТЬЮ разделами:
 
       Общая атмосфера дня: [5 предложений о общей энергетике дня]
 
@@ -19,15 +19,15 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
 
       Практичный совет дня: [5 предложений с практическими советами]
       
-      КРИТИЧЕСКИ ВАЖНО: 
-      - В каждом разделе должно быть примерно 5 предложений
-      - Каждый раздел ДОЛЖЕН начинаться с точного названия раздела, за которым следует двоеточие
-      - Между разделами ОБЯЗАТЕЛЬНО должна быть пустая строка
-      - Формат СТРОГО: "Название раздела: текст раздела"
-      - НЕ нумеруй разделы, НЕ используй маркеры списка`,
+      ОЧЕНЬ ВАЖНО: 
+      1. Начинай каждый раздел с ТОЧНОГО названия (например "Общая атмосфера дня:") 
+      2. После названия раздела сразу пиши текст (без пустых строк)
+      3. Между разделами оставляй РОВНО одну пустую строку
+      4. В каждом разделе должно быть ровно 5 предложений
+      5. НЕ используй нумерацию или маркеры списков`,
       
       en: `You're an experienced astrologer creating personalized horoscopes.
-      Create a detailed horoscope for tomorrow with the following structure:
+      Create a detailed horoscope for tomorrow with these FIVE exact sections:
 
       General Day Atmosphere: [5 sentences about the day's energy]
 
@@ -39,15 +39,15 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
 
       Practical Daily Advice: [5 sentences with practical advice]
       
-      CRITICALLY IMPORTANT:
-      - Each section should have approximately 5 sentences
-      - Each section MUST start with the exact section title followed by a colon
-      - There MUST be an empty line between sections
-      - Format STRICTLY: "Section name: section text"
-      - DO NOT number the sections, DO NOT use list markers`,
+      VERY IMPORTANT:
+      1. Start each section with the EXACT title (e.g. "General Day Atmosphere:")
+      2. Write the text immediately after the section title (no empty lines)
+      3. Leave EXACTLY one empty line between sections
+      4. Each section must have exactly 5 sentences
+      5. DO NOT use numbering or bullet points`,
       
       es: `Eres un astrólogo experimentado que crea horóscopos personalizados.
-      Crea un horóscopo detallado para mañana con la siguiente estructura:
+      Crea un horóscopo detallado para mañana con estas CINCO secciones exactas:
 
       Atmósfera general del día: [5 oraciones sobre la energía del día]
 
@@ -59,12 +59,12 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
 
       Consejo práctico del día: [5 oraciones con consejos prácticos]
       
-      CRÍTICAMENTE IMPORTANTE:
-      - Cada sección debe tener aproximadamente 5 oraciones
-      - Cada sección DEBE comenzar con el título exacto de la sección seguido de dos puntos
-      - DEBE haber una línea vacía entre secciones
-      - Formato ESTRICTAMENTE: "Nombre de la sección: texto de la sección"
-      - NO numeres las secciones, NO uses marcadores de lista`
+      MUY IMPORTANTE:
+      1. Comienza cada sección con el título EXACTO (ej. "Atmósfera general del día:")
+      2. Escribe el texto inmediatamente después del título de la sección (sin líneas vacías)
+      3. Deja EXACTAMENTE una línea vacía entre secciones
+      4. Cada sección debe tener exactamente 5 oraciones
+      5. NO uses numeración ni viñetas`
     };
     
     return detailedPrompts[language] || detailedPrompts.en;
@@ -88,49 +88,61 @@ export function getUserPrompt(sign: string, language: string, detailed: boolean,
   
   const signPrompts = {
     ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на завтра. ${detailed ? `
-      Гороскоп должен содержать следующие 5 разделов с ТОЧНЫМИ названиями:
-      - Общая атмосфера дня
-      - Советы по работе и финансам
-      - Рекомендации по отношениям и любви
-      - Состояние здоровья и эмоционального баланса
-      - Практичный совет дня
+      Гороскоп должен состоять из следующих 5 ТОЧНЫХ разделов:
       
-      КРИТИЧЕСКИ ВАЖНО: 
-      - Каждый раздел должен начинаться с ТОЧНОГО названия раздела и двоеточия (например, "Общая атмосфера дня: текст...")
-      - Между разделами ДОЛЖНА быть пустая строка
-      - В каждом разделе примерно 5 предложений
-      - НЕ используй нумерацию или маркеры списка
-      - НЕ добавляй дополнительных заголовков или разделов` : ''}`,
+      Общая атмосфера дня: [5 предложений]
+      
+      Советы по работе и финансам: [5 предложений]
+      
+      Рекомендации по отношениям и любви: [5 предложений]
+      
+      Состояние здоровья и эмоционального баланса: [5 предложений]
+      
+      Практичный совет дня: [5 предложений]
+      
+      ВАЖНО: 
+      1. Каждый раздел ДОЛЖЕН начинаться с ТОЧНОГО названия раздела
+      2. Текст идет сразу после названия раздела (без пустых строк)
+      3. Между разделами должна быть ТОЛЬКО ОДНА пустая строка
+      4. Не используй нумерацию или маркеры списка` : ''}`,
     
     en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for tomorrow. ${detailed ? `
-      The horoscope should contain the following 5 sections with EXACT titles:
-      - General Day Atmosphere
-      - Work & Finance Advice
-      - Love & Relationship Recommendations
-      - Health & Emotional Balance
-      - Practical Daily Advice
+      The horoscope must consist of these 5 EXACT sections:
       
-      CRITICALLY IMPORTANT:
-      - Each section must start with the EXACT section title and a colon (e.g., "General Day Atmosphere: text...")
-      - There MUST be an empty line between sections
-      - Each section should have approximately 5 sentences
-      - DO NOT use numbering or list markers
-      - DO NOT add additional headings or sections` : ''}`,
+      General Day Atmosphere: [5 sentences]
+      
+      Work & Finance Advice: [5 sentences]
+      
+      Love & Relationship Recommendations: [5 sentences]
+      
+      Health & Emotional Balance: [5 sentences]
+      
+      Practical Daily Advice: [5 sentences]
+      
+      IMPORTANT:
+      1. Each section MUST start with the EXACT section title
+      2. Text should follow immediately after section title (no empty lines)
+      3. There should be ONLY ONE empty line between sections
+      4. Do not use numbering or bullet points` : ''}`,
     
     es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para mañana. ${detailed ? `
-      El horóscopo debe contener las siguientes 5 secciones con títulos EXACTOS:
-      - Atmósfera general del día
-      - Consejos de trabajo y finanzas
-      - Recomendaciones de amor y relaciones
-      - Salud y equilibrio emocional
-      - Consejo práctico del día
+      El horóscopo debe constar de estas 5 secciones EXACTAS:
       
-      CRÍTICAMENTE IMPORTANTE:
-      - Cada sección debe comenzar con el título EXACTO de la sección y dos puntos (por ejemplo, "Atmósfera general del día: texto...")
-      - DEBE haber una línea vacía entre secciones
-      - Cada sección debe tener aproximadamente 5 oraciones
-      - NO uses numeración o marcadores de lista
-      - NO agregues encabezados o secciones adicionales` : ''}`
+      Atmósfera general del día: [5 oraciones]
+      
+      Consejos de trabajo y finanzas: [5 oraciones]
+      
+      Recomendaciones de amor y relaciones: [5 oraciones]
+      
+      Salud y equilibrio emocional: [5 oraciones]
+      
+      Consejo práctico del día: [5 oraciones]
+      
+      IMPORTANTE:
+      1. Cada sección DEBE comenzar con el título EXACTO de la sección
+      2. El texto debe seguir inmediatamente después del título (sin líneas vacías)
+      3. Debe haber SOLO UNA línea vacía entre secciones
+      4. No uses numeración ni viñetas` : ''}`
   };
 
   return signPrompts[language] || signPrompts.en;
