@@ -35,7 +35,7 @@ const ZodiacInfo: React.FC = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-2 gap-4 mt-4 text-center">
         <div className="space-y-1">
           <p className="text-sm text-cosmic-secondary">
             {language === 'ru' ? 'Стихия' : language === 'es' ? 'Elemento' : 'Element'}:
@@ -52,10 +52,10 @@ const ZodiacInfo: React.FC = () => {
       </div>
       
       <div className="mt-4">
-        <p className="text-sm text-cosmic-secondary mb-2">
+        <p className="text-sm text-cosmic-secondary mb-2 text-center">
           {language === 'ru' ? 'Характеристики' : language === 'es' ? 'Características' : 'Traits'}:
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 justify-center">
           {traits.map((trait, index) => (
             <span 
               key={index} 
