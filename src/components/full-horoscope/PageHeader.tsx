@@ -51,7 +51,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       <Button 
         variant="outline" 
         onClick={() => navigate(-1)}
-        className="border-amber-400 text-amber-400 hover:bg-amber-400/10"
+        className="border-amber-400/70 text-amber-400 hover:bg-amber-400/10 backdrop-blur-sm"
       >
         {uiText.backButton}
       </Button>

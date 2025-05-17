@@ -21,7 +21,7 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
   onGenerate
 }) => {
   return (
-    <Card className="p-6 mb-8 bg-slate-800 border-amber-500/30">
+    <Card className="p-6 mb-8 bg-slate-800/40 backdrop-blur-sm border-amber-500/30">
       <div className="flex items-center gap-4 mb-4">
         <ZodiacSignDisplay 
           zodiacSign={zodiacSign}
@@ -36,7 +36,7 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
       <p className="mb-6">{uiText.generateDescription}</p>
       <Button 
         onClick={onGenerate}
-        className="bg-amber-500 hover:bg-amber-600 text-black"
+        className="bg-amber-500/80 hover:bg-amber-600/90 text-black backdrop-blur-sm"
       >
         {uiText.generateButton}
       </Button>
