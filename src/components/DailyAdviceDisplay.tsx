@@ -99,9 +99,9 @@ export const DailyAdviceDisplay: React.FC = () => {
         <div className="p-4">
           <div className="flex items-center mb-3">
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
-              <LightbulbIcon size={20} className="text-cosmic-accent" />
+              <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
             </div>
-            <h3 className="text-cosmic-accent font-medium">
+            <h3 className="text-cosmic-gold font-medium">
               {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
             </h3>
           </div>

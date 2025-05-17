@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import { PactNavigation } from '@/components/PactNavigation';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -39,37 +39,14 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center">
-      {/* Pact navigation controls */}
+      {/* Use PactNavigation component instead of inline navigation */}
       {activePacts.length > 1 && (
-        <div className="mb-4 flex items-center justify-center">
-          <button 
-            onClick={handlePrevPact} 
-            className="text-cosmic-accent p-1 mr-2"
-            aria-label="Previous pact"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="flex space-x-1">
-            {activePacts.map((_, index) => (
-              <div 
-                key={index}
-                className={cn(
-                  "w-2 h-2 rounded-full",
-                  index === currentPactIndex 
-                    ? "bg-cosmic-accent" 
-                    : "bg-cosmic-accent/30"
-                )}
-              />
-            ))}
-          </div>
-          <button 
-            onClick={handleNextPact} 
-            className="text-cosmic-accent p-1 ml-2"
-            aria-label="Next pact"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        <PactNavigation 
+          currentIndex={currentPactIndex}
+          totalPacts={activePacts.length}
+          onPrevious={handlePrevPact}
+          onNext={handleNextPact}
+        />
       )}
       
       <h1 className="text-xl text-center uppercase font-serif text-white mb-1">
