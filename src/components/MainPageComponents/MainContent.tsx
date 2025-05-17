@@ -6,6 +6,8 @@ import { PactDisplay } from '@/components/MainPageComponents/PactDisplay';
 import { Pact } from '@/types';
 import { ActionButtonsSection } from '@/components/MainPageComponents/ActionButtonsSection';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
+import { NumerologyDisplay } from '@/components/NumerologyDisplay';
+import { UniverseChatBlock } from '@/components/UniverseChatBlock';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -36,7 +38,7 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      {/* Pact or No-Pacts View - Now first */}
+      {/* Pact or No-Pacts View - First */}
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
           <PactDisplay
@@ -54,10 +56,16 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
       
-      {/* Daily Advice Display - Now second */}
+      {/* Daily Advice Display - Second */}
       <DailyAdviceDisplay />
       
-      {/* Zodiac Badge Display - Now third */}
+      {/* Universe Chat Block - Third */}
+      <UniverseChatBlock />
+      
+      {/* Numerology Display - Fourth */}
+      <NumerologyDisplay />
+      
+      {/* Zodiac Badge Display - Fifth */}
       <ZodiacBadgeDisplay />
       
       {/* Action Buttons - Remains at the bottom */}
