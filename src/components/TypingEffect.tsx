@@ -21,29 +21,20 @@ export const TypingEffect: React.FC<TypingProps> = ({
   useEffect(() => {
     if (!text || hasRun || text.length === 0) return;
     
-    setIsTyping(true);
-    setDisplayedText('');
-    let index = 0;
+    // Instead of typing character by character, display the full text immediately
+    setDisplayedText(text);
+    setIsTyping(false);
+    setHasRun(true);
     
-    const typingInterval = setInterval(() => {
-      if (index < text.length) {
-        setDisplayedText(prev => prev + text.charAt(index));
-        index++;
-      } else {
-        clearInterval(typingInterval);
-        setIsTyping(false);
-        setHasRun(true);
-        if (onComplete) onComplete();
-      }
-    }, speed);
+    // Call onComplete callback if provided
+    if (onComplete) onComplete();
     
-    return () => clearInterval(typingInterval);
+    return () => {};
   }, [text, speed, onComplete, hasRun]);
   
   return (
     <div className={className}>
       {displayedText}
-      {isTyping && <span className="typing-cursor">|</span>}
     </div>
   );
 };

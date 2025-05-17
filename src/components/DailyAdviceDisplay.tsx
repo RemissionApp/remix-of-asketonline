@@ -12,7 +12,6 @@ export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const [typingComplete, setTypingComplete] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
 
@@ -37,7 +36,6 @@ export const DailyAdviceDisplay: React.FC = () => {
         if (cachedAdvice) {
           console.log('Using cached daily advice');
           setDailyAdvice(cachedAdvice);
-          setIsTyping(true);
           setIsLoading(false);
           return;
         }
@@ -76,7 +74,6 @@ export const DailyAdviceDisplay: React.FC = () => {
         // Save to local storage
         localStorage.setItem(cachedAdviceKey, generatedAdvice);
         setDailyAdvice(generatedAdvice);
-        setIsTyping(true);
       } catch (error) {
         console.error("Error:", error);
         // Fallback advice
@@ -86,7 +83,6 @@ export const DailyAdviceDisplay: React.FC = () => {
             ? 'Hoy es un buen día para dar un paso hacia tu meta. Incluso un pequeño progreso sigue siendo progreso.'
             : 'Today is a good day to take a step towards your goal. Even small progress is still progress.';
         setDailyAdvice(fallbackAdvice);
-        setIsTyping(true);
       } finally {
         setIsLoading(false);
       }
@@ -115,15 +111,6 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
-
-  // Get the typing indicator text based on language
-  const getTypingIndicator = () => {
-    return language === 'ru' 
-      ? 'Вселенная печатает...' 
-      : language === 'es'
-        ? 'El Universo está escribiendo...'
-        : 'Universe is typing...';
-  };
 
   // Get the signature based on language
   const getSignature = () => {
@@ -174,29 +161,16 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              {!isTyping && dailyAdvice ? (
-                <p className="text-white text-base font-sans leading-relaxed">
-                  {dailyAdvice}
+              <TypingEffect 
+                text={dailyAdvice || ''} 
+                speed={30} 
+                className="text-white text-base font-sans leading-relaxed"
+                onComplete={handleTypingComplete}
+              />
+              {typingComplete && (
+                <p className="text-right text-sm text-cosmic-accent/80 mt-2 font-serif italic">
+                  {getSignature()}
                 </p>
-              ) : (
-                <>
-                  <TypingEffect 
-                    text={dailyAdvice || ''} 
-                    speed={30} 
-                    className="text-white text-base font-sans leading-relaxed"
-                    onComplete={handleTypingComplete}
-                  />
-                  {!typingComplete && (
-                    <p className="text-xs text-cosmic-accent/60 mt-1 font-sans italic">
-                      {getTypingIndicator()}
-                    </p>
-                  )}
-                  {typingComplete && (
-                    <p className="text-right text-sm text-cosmic-accent/80 mt-2 font-serif italic">
-                      {getSignature()}
-                    </p>
-                  )}
-                </>
               )}
             </div>
           )}
