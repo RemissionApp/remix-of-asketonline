@@ -41,16 +41,16 @@ export const DailyAdviceDisplay: React.FC = () => {
         let prompt = '';
         
         if (language === 'ru') {
-          prompt = `Дай один практичный и вдохновляющий совет дня для ${name}. Совет должен быть коротким (не более 2-3 предложений), мотивирующим и содержать элемент духовности или самопознания. Не упоминай имя в ответе. Не называй это "советом дня".`;
+          prompt = `сгенерируй гороскоп пользователя на день из 3 предложений`;
         } else if (language === 'es') {
-          prompt = `Da un consejo práctico e inspirador para ${name} hoy. El consejo debe ser breve (no más de 2-3 oraciones), motivador y contener un elemento de espiritualidad o autoconocimiento. No menciones el nombre en la respuesta. No lo llames "consejo del día".`;
+          prompt = `genera un horóscopo de usuario para el día en 3 oraciones`;
         } else {
-          prompt = `Give one practical and inspiring daily advice for ${name}. The advice should be short (no more than 2-3 sentences), motivating and contain an element of spirituality or self-discovery. Don't mention the name in the response. Don't call it a "daily advice".`;
+          prompt = `generate a user's horoscope for today in 3 sentences`;
         }
 
         // Call universe-answer function to generate advice
         const { data, error } = await supabase.functions.invoke('universe-answer', {
-          body: { prompt, language }
+          body: { question: prompt, language }
         });
 
         if (error) {
@@ -143,7 +143,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              <p className="text-white text-base font-sans leading-relaxed">
+              <p className="text-white text-base font-sans leading-relaxed text-center">
                 {dailyAdvice}
               </p>
             </div>

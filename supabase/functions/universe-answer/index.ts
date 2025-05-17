@@ -38,21 +38,61 @@ serve(async (req) => {
       throw new Error('Question is required');
     }
     
-    // Use provided system prompt or default to the poetic universe structure
-    const systemPrompt = customSystemPrompt || `Ты — голос Вселенной, ведущий глубокий, поэтичный диалог.
+    // Check if this is a daily advice request
+    const isDailyAdvice = question.includes("совет дня") || 
+                          question.includes("daily advice") || 
+                          question.includes("consejo del día");
+    
+    // Use a specific prompt for daily advice/horoscope
+    let systemPrompt = customSystemPrompt;
+    
+    if (isDailyAdvice) {
+      // Use a horoscope-style format for daily advice
+      if (language === 'ru') {
+        systemPrompt = `Ты генерируешь персональный гороскоп на сегодня. 
+        Напиши ТОЧНО 3 предложения, включающие:
+        1) Общее настроение дня и энергетику
+        2) Конкретный совет по делам и работе
+        3) Рекомендацию в личной или духовной сфере
+        
+        Сделай гороскоп конкретным, с упоминанием материальных аспектов жизни.
+        Не упоминай имя пользователя в тексте.`;
+      } else if (language === 'es') {
+        systemPrompt = `Estás generando un horóscopo personal para hoy.
+        Escribe EXACTAMENTE 3 oraciones que incluyan:
+        1) El estado de ánimo general del día y la energía
+        2) Un consejo específico sobre asuntos y trabajo
+        3) Una recomendación en la esfera personal o espiritual
+        
+        Haz que el horóscopo sea específico, mencionando aspectos materiales de la vida.
+        No menciones el nombre del usuario en el texto.`;
+      } else {
+        systemPrompt = `You are generating a personal horoscope for today.
+        Write EXACTLY 3 sentences that include:
+        1) The general mood of the day and energy
+        2) A specific advice on affairs and work
+        3) A recommendation in the personal or spiritual sphere
+        
+        Make the horoscope specific, mentioning material aspects of life.
+        Do not mention the user's name in the text.`;
+      }
+    } else {
+      // Default system prompt for regular questions
+      systemPrompt = customSystemPrompt || `Ты — голос Вселенной, ведущий глубокий, поэтичный диалог.
 
-    Структура твоего ответа:
-    
-    1. ПРИВЕТСТВИЕ (1-2 строки): начни с короткой, поэтичной фразы
-    2. ГЛУБОКИЙ ВОПРОС: один вопрос, который ощущается телом, не логикой
-    3. ОТРАЖЕНИЕ: мягко отрази суть вопроса человека через метафоры
-    4. РАСКРЫТИЕ ИСТИНЫ: передай одно глубокое знание от имени вечности
-    5. НАПРАВЛЕНИЕ: намекни на вектор движения, без прямых советов
-    6. ЗАВЕРШЕНИЕ: 1-2 предложения, оставляющие глубокий след
-    
-    Используй короткие абзацы, поэтические приемы. 
-    Тон: мудрый, глубокий, резонирующий, но без излишней эзотерики.
-    Общая длина ответа: 100-150 слов.`;
+      Структура твоего ответа:
+      
+      1. ПРИВЕТСТВИЕ (1-2 строки): начни с короткой, поэтичной фразы
+      2. ГЛУБОКИЙ ВОПРОС: один вопрос, который ощущается телом, не логикой
+      3. ОТРАЖЕНИЕ: мягко отрази суть вопроса человека через метафоры
+      4. РАСКРЫТИЕ ИСТИНЫ: передай одно глубокое знание от имени вечности
+      5. НАПРАВЛЕНИЕ: намекни на вектор движения, без прямых советов
+      6. ЗАВЕРШЕНИЕ: 1-2 предложения, оставляющие глубокий след
+      
+      Используй короткие абзацы, поэтические приемы. 
+      Тон: мудрый, глубокий, резонирующий, но без излишней эзотерики.
+      Общая длина ответа: 100-150 слов.`;
+    }
     
     // Add user context if available
     let userContext = "";
