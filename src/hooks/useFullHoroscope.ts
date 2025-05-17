@@ -51,13 +51,12 @@ export function useFullHoroscope() {
 
       console.log("Checking for existing horoscope for user", user.id, "with zodiac sign", zodiacSign);
       
-      // Query the full_horoscopes table
+      // Query the full_horoscopes table - REMOVE language from the query
       const { data, error } = await supabase
         .from('full_horoscopes')
         .select('*')
         .eq('user_id', user.id)
         .eq('zodiac_sign', zodiacSign)
-        .eq('language', language)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();

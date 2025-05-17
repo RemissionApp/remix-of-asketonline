@@ -34,15 +34,14 @@ serve(async (req) => {
     // Generate comprehensive horoscope with language support
     const horoscopeData = await generateFullHoroscope(zodiacSign, birthDate, profileData, language);
     
-    // Store the generated horoscope in the database
+    // Store the generated horoscope in the database (without language field)
     try {
       const { error } = await supabase
         .from('full_horoscopes')
         .insert({
           user_id: userId,
           zodiac_sign: zodiacSign,
-          content: horoscopeData,
-          language: language
+          content: horoscopeData
         });
       
       if (error) {
