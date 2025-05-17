@@ -4,6 +4,7 @@ import { CosmicButton } from '../CosmicButton';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface NumerologyContentProps {
   lifePathNumber: number;
@@ -75,7 +76,7 @@ export const NumerologyContent: React.FC<NumerologyContentProps> = ({
             onClick={handleMoreDetails} 
             variant="outline" 
             size="sm"
-            className="mt-2 group"
+            className="mt-2 group flex items-center bg-cosmic-accent/20 hover:bg-cosmic-accent/30 border-cosmic-accent/30 text-cosmic-accent"
           >
             {moreDetailsText}
             <ArrowRight className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" />
