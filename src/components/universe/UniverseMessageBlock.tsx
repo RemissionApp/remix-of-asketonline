@@ -59,7 +59,7 @@ export const UniverseMessageBlock: React.FC = () => {
             onClick={handleQuestionClick} 
             size="md"
             variant="default"
-            className="flex-1 bg-gradient-to-r from-cosmic-gold/70 to-cosmic-gold/50 hover:from-cosmic-gold/90 hover:to-cosmic-gold/70 text-white backdrop-blur-md border border-white/10"
+            className="flex-1 bg-gradient-to-r from-cosmic-gold/40 to-cosmic-gold/30 hover:from-cosmic-gold/50 hover:to-cosmic-gold/40 text-white backdrop-blur-md border border-white/10"
           >
             {language === 'ru' ? 'Задать вопрос' : 
              language === 'es' ? 'Hacer pregunta' : 'Ask a question'}
@@ -69,7 +69,7 @@ export const UniverseMessageBlock: React.FC = () => {
             onClick={handleChatClick} 
             size="md" 
             variant="default"
-            className="flex-1 bg-gradient-to-r from-cosmic-accent/80 to-cosmic-indigo/80 hover:from-cosmic-accent hover:to-cosmic-indigo backdrop-blur-md border border-white/10"
+            className="flex-1 bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/10"
           >
             {language === 'ru' ? 'Перейти в чат' : 
              language === 'es' ? 'Ir al chat' : 'Enter chat'}

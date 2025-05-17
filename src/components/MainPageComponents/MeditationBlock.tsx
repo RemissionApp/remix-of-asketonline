@@ -45,7 +45,7 @@ export const MeditationBlock: React.FC = () => {
           onClick={handleMeditationClick} 
           size="md"
           variant="default"
-          className="w-full bg-gradient-to-r from-cosmic-accent/80 to-cosmic-indigo/80 hover:from-cosmic-accent hover:to-cosmic-indigo backdrop-blur-md border border-white/10"
+          className="w-full bg-gradient-to-r from-cosmic-accent/50 to-cosmic-indigo/40 hover:from-cosmic-accent/60 hover:to-cosmic-indigo/50 backdrop-blur-md border border-white/10"
         >
           {language === 'ru' ? 'Открыть медитации' : 
            language === 'es' ? 'Abrir meditaciones' : 'Open meditations'}
