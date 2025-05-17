@@ -39,7 +39,7 @@ export const ZodiacBadge: React.FC<ZodiacBadgeProps> = ({
   
   const badge = (
     <div 
-      className={`flex items-center justify-center ${getSizeClasses()} rounded-full bg-cosmic-dark/70 backdrop-blur-sm border border-cosmic-accent/30`}
+      className={`flex items-center justify-center ${getSizeClasses()} rounded-full bg-cosmic-accent/10 backdrop-blur-sm border border-cosmic-accent/30`}
       data-zodiac={zodiacSign}
     >
       <span className="text-cosmic-accent">{zodiacInfo.symbol}</span>
@@ -54,7 +54,7 @@ export const ZodiacBadge: React.FC<ZodiacBadgeProps> = ({
         <TooltipTrigger asChild>
           {badge}
         </TooltipTrigger>
-        <TooltipContent className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30 text-white">
+        <TooltipContent className="bg-cosmic-accent/10 backdrop-blur-sm border-cosmic-accent/30 text-white">
           <div className="text-center">
             <div className="text-cosmic-accent font-medium">{zodiacName}</div>
             <div className="text-xs text-cosmic-secondary">{zodiacInfo.element} • {zodiacInfo.dates}</div>
