@@ -17,8 +17,23 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ uiText }) => {
         <div className="animate-spin mb-4">
           <Loader className="h-12 w-12 text-amber-400" />
         </div>
-        <p className="text-amber-300 text-lg">{uiText.loadingTitle}</p>
+        <p className="text-amber-300 text-lg font-medium">{uiText.loadingTitle}</p>
         <p className="text-gray-400 mt-2">{uiText.loadingDescription}</p>
+        <div className="mt-4 flex justify-center space-x-2">
+          {[...Array(5)].map((_, i) => (
+            <span
+              key={i}
+              className="inline-block rounded-full animate-pulse"
+              style={{
+                width: `${6 + i * 2}px`,
+                height: `${6 + i * 2}px`,
+                backgroundColor: i % 2 === 0 ? '#f59e0b' : '#9d7cf6',
+                animationDelay: `${i * 0.2}s`,
+                animationDuration: '1.5s',
+              }}
+            ></span>
+          ))}
+        </div>
       </div>
     </Card>
   );
