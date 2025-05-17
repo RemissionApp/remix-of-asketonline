@@ -5,46 +5,67 @@
 export function extractSections(text: string, sectionType: string): string {
   // Log the input text for debugging
   console.log(`Extracting ${sectionType} section, text length: ${text.length}`);
+  console.log(`First 100 chars of text: ${text.substring(0, 100)}`);
   
-  // Улучшаем регулярные выражения для более точного поиска секций
+  // Improved regular expressions for more accurate section extraction
   const sectionPatterns = {
     general_atmosphere: [
-      /(?:^|\n)(?:Общая атмосфера дня|General Day Atmosphere|Общая атмосфера|general atmosphere)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:атмосфера дня|day atmosphere)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
+      // Significantly simplified patterns for more reliable matching
+      /Общая атмосфера дня[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /General Day Atmosphere[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      // Fallback patterns
+      /атмосфера дня[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /day atmosphere[^:]*:([\s\S]*?)(?=\n\n|$)/i,
     ],
     work_finance: [
-      /(?:^|\n)(?:Советы по работе и финансам|Work & Finance|работа|work|финансы|finance)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:работа и финансы|work and finance)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
+      /Советы по работе и финансам[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /Work & Finance[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      // Fallback patterns
+      /работа и финансы[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /work and finance[^:]*:([\s\S]*?)(?=\n\n|$)/i,
     ],
     love_relationships: [
-      /(?:^|\n)(?:Рекомендации по отношениям и любви|Love & Relationship|любовь|love|отношения|relationships)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:любовь и отношения|love and relationships)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
+      /Рекомендации по отношениям и любви[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /Love & Relationship[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      // Fallback patterns
+      /любовь и отношения[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /love and relationships[^:]*:([\s\S]*?)(?=\n\n|$)/i,
     ],
     health_wellbeing: [
-      /(?:^|\n)(?:Состояние здоровья и эмоционального баланса|Health & Emotional|здоровье|health|самочувствие|wellbeing)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:здоровье и самочувствие|health and wellbeing)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:эмоциональный баланс|emotional balance)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
+      /Состояние здоровья и эмоционального баланса[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /Health & Emotional[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      // Fallback patterns
+      /здоровье и самочувствие[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /health and wellbeing[^:]*:([\s\S]*?)(?=\n\n|$)/i,
     ],
     daily_advice: [
-      /(?:^|\n)(?:Практичный совет дня|Daily Advice|совет|advice)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
-      /(?:^|\n)(?:практичный совет|practical advice)[^:]*:(?:\n|.)*?(?=\n\n|\n(?:[А-Я]|[A-Z])|$)/i,
+      /Практичный совет дня[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /Daily Advice[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      // Fallback patterns
+      /совет дня[^:]*:([\s\S]*?)(?=\n\n|$)/i,
+      /advice[^:]*:([\s\S]*?)(?=\n\n|$)/i,
     ]
   };
   
   const patterns = sectionPatterns[sectionType] || [];
   
+  // More detailed logging for debugging
+  console.log(`Trying ${patterns.length} patterns for ${sectionType}`);
+  
   for (const pattern of patterns) {
     const match = text.match(pattern);
-    if (match) {
-      console.log(`Found match for section ${sectionType}`);
-      console.log(`Match result: ${match[0].substring(0, 50)}...`);
-      // Удаляем заголовок секции из ответа
-      const content = match[0].replace(/^.*?:\s*/s, '').trim();
+    if (match && match[1]) {
+      console.log(`MATCH FOUND for section ${sectionType} using pattern: ${pattern}`);
+      // For debugging, log the first part of the match
+      console.log(`Match result preview: ${match[1].substring(0, 50)}...`);
+      
+      // Clean the content (remove leading/trailing whitespace)
+      const content = match[1].trim();
       return content;
     }
   }
   
-  console.log(`No match found for section ${sectionType}, using fallback`);
+  console.log(`NO MATCH found for section ${sectionType}, using fallback`);
   
   // If no match found, create a default response based on section type
   const fallbackResponses = {

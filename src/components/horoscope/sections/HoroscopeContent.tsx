@@ -92,38 +92,36 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     config: sectionConfig.map(s => s.key),
     availableSections: Object.keys(horoscope.sections || {}),
     sectionContents: Object.entries(horoscope.sections || {}).map(([key, value]) => 
-      `${key}: ${value ? 'present' : 'missing'}`
+      `${key}: ${value ? (value.substring(0, 30) + '...') : 'missing'}`
     )
   });
 
   return (
     <div className="space-y-4">
       {sectionConfig.map((section, index) => {
+        // Use optional chaining to safely access section content
         const sectionContent = horoscope.sections?.[section.key] || "";
+        
         console.log(`Section ${section.key}:`, {
           content: sectionContent ? (sectionContent.substring(0, 30) + '...') : 'No content',
           length: sectionContent?.length || 0,
           shouldRender: activeSection >= index
         });
         
-        // Only display the section if we have content
-        if (!sectionContent) {
-          console.log(`Skipping section ${section.key} because content is empty`);
-          return null;
-        }
-        
+        // Always attempt to render each section even if content seems empty
+        // This helps identify issues with section extraction or content population
         return (activeSection >= index) && (
           <HoroscopeSection
             key={section.key}
             title={section.title}
-            content={sectionContent}
+            content={sectionContent || `[${language === 'ru' ? 'Раздел временно недоступен' : 'Section temporarily unavailable'}]`}
             onComplete={activeSection === index ? handleSectionComplete : undefined}
             className="bg-cosmic-dark/40 border-cosmic-accent/20 backdrop-blur-sm"
           />
         );
       })}
       
-      {/* Debug section to show raw content */}
+      {/* Debug section to show raw content when there are no sections */}
       {Object.keys(horoscope.sections || {}).length === 0 && (
         <div className="p-4 bg-red-900/20 border border-red-500/40 rounded-md">
           <h3 className="text-red-400 font-bold mb-2">Debug: No horoscope sections found</h3>

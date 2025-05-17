@@ -31,37 +31,51 @@ export async function handleRequest(req: Request): Promise<Response> {
     console.log("Processing detailed horoscope and extracting sections");
     
     // Log the full text for debugging
-    console.log("Full horoscope text:");
-    console.log("---START OF TEXT---");
+    console.log("FULL horoscope text for debugging:");
     console.log(horoscopeText);
-    console.log("---END OF TEXT---");
     
-    const generalAtmosphere = extractSections(horoscopeText, "general_atmosphere");
-    const workFinance = extractSections(horoscopeText, "work_finance");
-    const loveRelationships = extractSections(horoscopeText, "love_relationships");
-    const healthWellbeing = extractSections(horoscopeText, "health_wellbeing");
-    const dailyAdvice = extractSections(horoscopeText, "daily_advice");
-    
-    console.log("Extracted sections results:");
-    console.log({
-      generalAtmosphere: `${generalAtmosphere.substring(0, 50)}... (${generalAtmosphere.length} chars)`,
-      workFinance: `${workFinance.substring(0, 50)}... (${workFinance.length} chars)`,
-      loveRelationships: `${loveRelationships.substring(0, 50)}... (${loveRelationships.length} chars)`, 
-      healthWellbeing: `${healthWellbeing.substring(0, 50)}... (${healthWellbeing.length} chars)`,
-      dailyAdvice: `${dailyAdvice.substring(0, 50)}... (${dailyAdvice.length} chars)`
-    });
-    
-    // Обеспечим заполнение всех секций
-    horoscopeResponse.data = {
-      description: horoscopeText,
-      sections: {
-        general_atmosphere: generalAtmosphere || "Сегодня день будет наполнен возможностями для личностного роста.",
-        work_finance: workFinance || "В профессиональной сфере возможны интересные предложения.",
-        love_relationships: loveRelationships || "В личной жизни возможны приятные сюрпризы.",
-        health_wellbeing: healthWellbeing || "Уделите внимание своему физическому и эмоциональному здоровью.",
-        daily_advice: dailyAdvice || "Слушайте свою интуицию, она укажет верное направление."
-      }
-    };
+    // Extract sections with improved error handling
+    try {
+      const generalAtmosphere = extractSections(horoscopeText, "general_atmosphere");
+      const workFinance = extractSections(horoscopeText, "work_finance");
+      const loveRelationships = extractSections(horoscopeText, "love_relationships");
+      const healthWellbeing = extractSections(horoscopeText, "health_wellbeing");
+      const dailyAdvice = extractSections(horoscopeText, "daily_advice");
+      
+      console.log("Extracted sections results:");
+      console.log({
+        generalAtmosphere: `${generalAtmosphere.substring(0, 50)}... (${generalAtmosphere.length} chars)`,
+        workFinance: `${workFinance.substring(0, 50)}... (${workFinance.length} chars)`,
+        loveRelationships: `${loveRelationships.substring(0, 50)}... (${loveRelationships.length} chars)`, 
+        healthWellbeing: `${healthWellbeing.substring(0, 50)}... (${healthWellbeing.length} chars)`,
+        dailyAdvice: `${dailyAdvice.substring(0, 50)}... (${dailyAdvice.length} chars)`
+      });
+      
+      // Ensure all sections are filled
+      horoscopeResponse.data = {
+        description: horoscopeText,
+        sections: {
+          general_atmosphere: generalAtmosphere || "Сегодня день будет наполнен возможностями для личностного роста.",
+          work_finance: workFinance || "В профессиональной сфере возможны интересные предложения.",
+          love_relationships: loveRelationships || "В личной жизни возможны приятные сюрпризы.",
+          health_wellbeing: healthWellbeing || "Уделите внимание своему физическому и эмоциональному здоровью.",
+          daily_advice: dailyAdvice || "Слушайте свою интуицию, она укажет верное направление."
+        }
+      };
+    } catch (error) {
+      console.error("Error extracting horoscope sections:", error);
+      // Provide fallback sections
+      horoscopeResponse.data = {
+        description: horoscopeText,
+        sections: {
+          general_atmosphere: "Сегодня день будет наполнен возможностями для личностного роста.",
+          work_finance: "В профессиональной сфере возможны интересные предложения.",
+          love_relationships: "В личной жизни возможны приятные сюрпризы.",
+          health_wellbeing: "Уделите внимание своему физическому и эмоциональному здоровью.",
+          daily_advice: "Слушайте свою интуицию, она укажет верное направление."
+        }
+      };
+    }
     
     // Verify the final structure
     console.log("Final horoscope response structure:", {

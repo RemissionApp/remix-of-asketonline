@@ -7,58 +7,64 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
     // System prompts for detailed horoscopes
     const detailedPrompts = {
       ru: `Ты опытный астролог, создающий персонализированные гороскопы. 
-      Создай детальный гороскоп на завтра с разбивкой на 5 чётких разделов: 
+      Создай детальный гороскоп на завтра со следующей структурой: 
+
+      Общая атмосфера дня: [5 предложений о общей энергетике дня]
+
+      Советы по работе и финансам: [5 предложений о работе и финансах]
+
+      Рекомендации по отношениям и любви: [5 предложений о любви и отношениях]
+
+      Состояние здоровья и эмоционального баланса: [5 предложений о здоровье]
+
+      Практичный совет дня: [5 предложений с практическими советами]
       
-      1. Общая атмосфера дня - общее описание дня, настроение и энергетика.
-      2. Советы по работе и финансам - профессиональные и финансовые рекомендации.
-      3. Рекомендации по отношениям и любви - советы для личной жизни.
-      4. Состояние здоровья и эмоционального баланса - советы по самочувствию.
-      5. Практичный совет дня - конкретная рекомендация в духе коуча.
-      
-      ОЧЕНЬ ВАЖНО:
-      - В каждом разделе должно быть РОВНО 5 предложений
-      - НЕ используй эмодзи или другие символы в начале разделов
-      - Пиши каждый раздел с новой строки
-      - Разделы должны быть чётко разделены пустой строкой
-      - Каждый раздел должен начинаться с названия раздела (например, "Общая атмосфера дня:")
-      
-      Пиши в лёгком и дружелюбном стиле, как совет от хорошего друга. Избегай банальных фраз и клише.`,
+      КРИТИЧЕСКИ ВАЖНО: 
+      - В каждом разделе должно быть примерно 5 предложений
+      - Каждый раздел ДОЛЖЕН начинаться с точного названия раздела, за которым следует двоеточие
+      - Между разделами ОБЯЗАТЕЛЬНО должна быть пустая строка
+      - Формат СТРОГО: "Название раздела: текст раздела"
+      - НЕ нумеруй разделы, НЕ используй маркеры списка`,
       
       en: `You're an experienced astrologer creating personalized horoscopes.
-      Create a detailed horoscope for tomorrow with 5 distinct sections:
+      Create a detailed horoscope for tomorrow with the following structure:
+
+      General Day Atmosphere: [5 sentences about the day's energy]
+
+      Work & Finance Advice: [5 sentences about work and finance]
+
+      Love & Relationship Recommendations: [5 sentences about love and relationships]
+
+      Health & Emotional Balance: [5 sentences about health]
+
+      Practical Daily Advice: [5 sentences with practical advice]
       
-      1. General Day Atmosphere - overall description of the day, mood and energy.
-      2. Work & Finance Advice - professional and financial recommendations.
-      3. Love & Relationship Recommendations - advice for personal life.
-      4. Health & Emotional Balance - wellness suggestions.
-      5. Practical Daily Advice - specific coach-like recommendation.
-      
-      VERY IMPORTANT:
-      - Each section MUST contain EXACTLY 5 sentences
-      - DO NOT use emojis or other symbols at the beginning of sections
-      - Start each section on a new line
-      - Sections should be clearly separated by an empty line
-      - Each section should start with its title (e.g., "General Day Atmosphere:")
-      
-      Write in a light and friendly style, like advice from a good friend. Avoid clichés and banal phrases.`,
+      CRITICALLY IMPORTANT:
+      - Each section should have approximately 5 sentences
+      - Each section MUST start with the exact section title followed by a colon
+      - There MUST be an empty line between sections
+      - Format STRICTLY: "Section name: section text"
+      - DO NOT number the sections, DO NOT use list markers`,
       
       es: `Eres un astrólogo experimentado que crea horóscopos personalizados.
-      Crea un horóscopo detallado para mañana con 5 secciones distintas:
+      Crea un horóscopo detallado para mañana con la siguiente estructura:
+
+      Atmósfera general del día: [5 oraciones sobre la energía del día]
+
+      Consejos de trabajo y finanzas: [5 oraciones sobre trabajo y finanzas]
+
+      Recomendaciones de amor y relaciones: [5 oraciones sobre amor y relaciones]
+
+      Salud y equilibrio emocional: [5 oraciones sobre salud]
+
+      Consejo práctico del día: [5 oraciones con consejos prácticos]
       
-      1. Atmósfera general del día - descripción general del día, estado de ánimo y energía.
-      2. Consejos de trabajo y finanzas - recomendaciones profesionales y financieras.
-      3. Recomendaciones de amor y relaciones - consejos para la vida personal.
-      4. Salud y equilibrio emocional - sugerencias de bienestar.
-      5. Consejo práctico del día - recomendación específica de estilo coach.
-      
-      MUY IMPORTANTE:
-      - Cada sección DEBE contener EXACTAMENTE 5 oraciones
-      - NO uses emojis u otros símbolos al principio de las secciones
-      - Comienza cada sección en una nueva línea
-      - Las secciones deben estar claramente separadas por una línea vacía
-      - Cada sección debe comenzar con su título (por ejemplo, "Atmósfera General del Día:")
-      
-      Escribe en un estilo ligero y amigable, como un consejo de un buen amigo. Evita clichés y frases banales.`
+      CRÍTICAMENTE IMPORTANTE:
+      - Cada sección debe tener aproximadamente 5 oraciones
+      - Cada sección DEBE comenzar con el título exacto de la sección seguido de dos puntos
+      - DEBE haber una línea vacía entre secciones
+      - Formato ESTRICTAMENTE: "Nombre de la sección: texto de la sección"
+      - NO numeres las secciones, NO uses marcadores de lista`
     };
     
     return detailedPrompts[language] || detailedPrompts.en;
@@ -81,11 +87,50 @@ export function getUserPrompt(sign: string, language: string, detailed: boolean,
   const birthDateInfo = birthDate ? ` (дата рождения: ${birthDate})` : '';
   
   const signPrompts = {
-    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на завтра. ${detailed ? 'Гороскоп должен содержать 5 разделов: Общая атмосфера дня, Советы по работе и финансам, Рекомендации по отношениям и любви, Состояние здоровья и эмоционального баланса, Практичный совет дня. ВАЖНО: Каждый раздел должен содержать РОВНО 5 предложений и начинаться с названия раздела (например, "Общая атмосфера дня:"). НЕ используй эмодзи или другие символы в начале разделов.' : ''}`,
+    ru: `Создай ${detailed ? 'подробный' : 'краткий'} гороскоп для знака ${sign}${birthDateInfo} на завтра. ${detailed ? `
+      Гороскоп должен содержать следующие 5 разделов с ТОЧНЫМИ названиями:
+      - Общая атмосфера дня
+      - Советы по работе и финансам
+      - Рекомендации по отношениям и любви
+      - Состояние здоровья и эмоционального баланса
+      - Практичный совет дня
+      
+      КРИТИЧЕСКИ ВАЖНО: 
+      - Каждый раздел должен начинаться с ТОЧНОГО названия раздела и двоеточия (например, "Общая атмосфера дня: текст...")
+      - Между разделами ДОЛЖНА быть пустая строка
+      - В каждом разделе примерно 5 предложений
+      - НЕ используй нумерацию или маркеры списка
+      - НЕ добавляй дополнительных заголовков или разделов` : ''}`,
     
-    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for tomorrow. ${detailed ? 'The horoscope should contain 5 sections: General Day Atmosphere, Work & Finance Advice, Love & Relationship Recommendations, Health & Emotional Balance, Practical Daily Advice. IMPORTANT: Each section MUST contain EXACTLY 5 sentences and start with the section title (e.g., "General Day Atmosphere:"). DO NOT use emojis or other symbols at the beginning of sections.' : ''}`,
+    en: `Create a ${detailed ? 'detailed' : 'brief'} horoscope for ${sign}${birthDateInfo} for tomorrow. ${detailed ? `
+      The horoscope should contain the following 5 sections with EXACT titles:
+      - General Day Atmosphere
+      - Work & Finance Advice
+      - Love & Relationship Recommendations
+      - Health & Emotional Balance
+      - Practical Daily Advice
+      
+      CRITICALLY IMPORTANT:
+      - Each section must start with the EXACT section title and a colon (e.g., "General Day Atmosphere: text...")
+      - There MUST be an empty line between sections
+      - Each section should have approximately 5 sentences
+      - DO NOT use numbering or list markers
+      - DO NOT add additional headings or sections` : ''}`,
     
-    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para mañana. ${detailed ? 'El horóscopo debe contener 5 secciones: Atmósfera General del Día, Consejos de Trabajo y Finanzas, Recomendaciones de Amor y Relaciones, Salud y Equilibrio Emocional, Consejo Práctico del Día. IMPORTANTE: Cada sección DEBE contener EXACTAMENTE 5 oraciones y comenzar con el título de la sección (por ejemplo, "Atmósfera General del Día:"). NO uses emojis u otros símbolos al principio de las secciones.' : ''}`
+    es: `Crea un horóscopo ${detailed ? 'detallado' : 'breve'} para ${sign}${birthDateInfo} para mañana. ${detailed ? `
+      El horóscopo debe contener las siguientes 5 secciones con títulos EXACTOS:
+      - Atmósfera general del día
+      - Consejos de trabajo y finanzas
+      - Recomendaciones de amor y relaciones
+      - Salud y equilibrio emocional
+      - Consejo práctico del día
+      
+      CRÍTICAMENTE IMPORTANTE:
+      - Cada sección debe comenzar con el título EXACTO de la sección y dos puntos (por ejemplo, "Atmósfera general del día: texto...")
+      - DEBE haber una línea vacía entre secciones
+      - Cada sección debe tener aproximadamente 5 oraciones
+      - NO uses numeración o marcadores de lista
+      - NO agregues encabezados o secciones adicionales` : ''}`
   };
 
   return signPrompts[language] || signPrompts.en;
