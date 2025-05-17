@@ -1,0 +1,132 @@
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes star-shine {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes galaxy-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes circle-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse-slow 3s infinite;
+  }
+  
+  .animate-star-shine {
+    animation: star-shine 4s infinite;
+  }
+  
+  .animate-galaxy-rotate {
+    animation: galaxy-rotate 60s linear infinite;
+  }
+  
+  .animate-circle-expand {
+    animation: circle-expand 6s infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 1.5s ease forwards;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add typing effect cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Cosmic gradient text animation */
+.cosmic-gradient-text {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 215, 0, 0.8),
+    rgba(138, 43, 226, 0.8),
+    rgba(65, 105, 225, 0.8),
+    rgba(255, 215, 0, 0.8)
+  );
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: cosmic-gradient 15s ease infinite;
+}
+
+@keyframes cosmic-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Анимация свечения для текста приветствия */
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(245, 158, 11, 0.5), 0 0 10px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 0 15px rgba(245, 158, 11, 0.6);
+  }
+}
