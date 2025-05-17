@@ -27,8 +27,8 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) =
   };
   
   return (
-    <div className="text-center">
-      <h1 className="text-2xl font-serif text-white mb-4">
+    <div className="text-center py-8">
+      <h1 className="text-2xl font-serif text-white mb-8">
         {t.main.noPacts}
       </h1>
       
