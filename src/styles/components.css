@@ -51,5 +51,10 @@
   .cosmic-block-icon-wrapper {
     @apply bg-cosmic-accent/20 rounded-lg p-2 mr-3 flex items-center justify-center;
   }
+  
+  /* Text shadow for better readability on image backgrounds */
+  .text-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
 }
 

@@ -23,10 +23,19 @@ export const MeditationBlock: React.FC = () => {
                           language === 'es' ? 'Meditaciones' : 'Meditations';
   
   return (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
-      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
+      {/* Background image with brightness filter */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center brightness-110 opacity-50 z-0"
+        style={{ 
+          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation.png)`,
+          filter: 'brightness(1.4) contrast(1.1)'
+        }}
+      />
+      
+      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
         <div className="flex items-center mb-4">
-          <div className="cosmic-block-icon-wrapper">
+          <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
             <Headphones size={24} className="text-cosmic-accent" />
           </div>
           
@@ -35,7 +44,7 @@ export const MeditationBlock: React.FC = () => {
           </h3>
         </div>
         
-        <p className="text-cosmic-secondary mb-4">
+        <p className="text-white mb-4 text-shadow">
           {language === 'ru' ? 'Откройте для себя коллекцию медитаций, которые помогут вам в вашем пути.' : 
            language === 'es' ? 'Descubre una colección de meditaciones que te ayudarán en tu camino.' : 
            'Discover a collection of meditations to help you on your journey.'}
@@ -45,7 +54,7 @@ export const MeditationBlock: React.FC = () => {
           onClick={handleMeditationClick} 
           size="md"
           variant="default"
-          className="w-full bg-gradient-to-r from-cosmic-accent/50 to-cosmic-indigo/40 hover:from-cosmic-accent/60 hover:to-cosmic-indigo/50 backdrop-blur-md border border-white/10"
+          className="w-full bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20"
         >
           {language === 'ru' ? 'Открыть медитации' : 
            language === 'es' ? 'Abrir meditaciones' : 'Open meditations'}
