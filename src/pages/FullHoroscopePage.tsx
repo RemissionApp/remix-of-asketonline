@@ -42,6 +42,56 @@ export default function FullHoroscopePage() {
     }
   }, [userProfile?.birthDate]);
 
+  // Check for existing horoscope on component mount
+  useEffect(() => {
+    if (user && zodiacSign) {
+      fetchExistingHoroscope();
+    }
+  }, [user?.id, zodiacSign, language]);
+
+  // Fetch existing horoscope from Supabase
+  const fetchExistingHoroscope = async () => {
+    if (!user || !zodiacSign) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("Checking for existing horoscope for user", user.id, "with zodiac sign", zodiacSign);
+      
+      // Query the full_horoscopes table
+      const { data, error } = await supabase
+        .from('full_horoscopes')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('zodiac_sign', zodiacSign)
+        .eq('language', language)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No records found, generate new horoscope
+          console.log("No existing horoscope found, will generate a new one");
+          await generateFullHoroscope();
+        } else {
+          console.error("Error fetching horoscope:", error);
+          throw new Error(error.message || 'Failed to fetch existing horoscope');
+        }
+      } else if (data) {
+        // Existing horoscope found
+        console.log("Found existing horoscope:", data);
+        setHoroscope(data.content);
+        setLoading(false);
+      }
+    } catch (error: any) {
+      console.error("Error in fetchExistingHoroscope:", error);
+      setError(error.message || "An error occurred while retrieving your horoscope");
+      setLoading(false);
+    }
+  };
+
   const generateFullHoroscope = async () => {
     if (!user || !zodiacSign) {
       toast({
