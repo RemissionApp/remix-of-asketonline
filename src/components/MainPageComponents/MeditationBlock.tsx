@@ -45,7 +45,7 @@ export const MeditationBlock: React.FC = () => {
           </h3>
         </div>
         
-        <p className="text-white mb-4 text-shadow">
+        <p className="text-white mb-4 text-shadow text-center">
           {language === 'ru' ? 'Откройте для себя коллекцию медитаций, которые помогут вам в вашем пути.' : 
            language === 'es' ? 'Descubre una colección de meditaciones que te ayudarán en tu camino.' : 
            'Discover a collection of meditations to help you on your journey.'}
