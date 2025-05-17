@@ -146,15 +146,7 @@ export const DailyAdviceDisplay: React.FC = () => {
               <p className="text-cosmic-secondary text-base font-cormorant italic leading-relaxed">
                 {dailyAdvice}
               </p>
-              <div className="flex items-center justify-end mt-3">
-                <Calendar size={12} className="text-cosmic-gold/60 mr-1" />
-                <span className="text-cosmic-gold/60 text-xs">
-                  {new Date().toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US', { 
-                    day: 'numeric', 
-                    month: 'long' 
-                  })}
-                </span>
-              </div>
+              {/* The date at the bottom of the advice has been removed as requested */}
             </div>
           )}
         </div>
