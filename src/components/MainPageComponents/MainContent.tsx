@@ -8,6 +8,7 @@ import { ActionButtonsSection } from '@/components/MainPageComponents/ActionButt
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseChatBlock } from '@/components/UniverseChatBlock';
+import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -63,13 +64,16 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 4. Zodiac Badge Display - Fourth */}
       <ZodiacBadgeDisplay />
       
-      {/* 5. Numerology Display - Fifth (moved here as requested) */}
+      {/* 5. Numerology Display - Fifth */}
       <NumerologyDisplay />
       
-      {/* 6. Universe Chat Block (Messages from Universe) - Sixth */}
+      {/* 6. Meditation Block - Sixth (New) */}
+      <MeditationBlock />
+      
+      {/* 7. Universe Chat Block - Seventh */}
       <UniverseChatBlock />
       
-      {/* Action Buttons - Remains at the bottom */}
+      {/* Action Buttons - Remains at the bottom but now empty */}
       <div className="mt-auto">
         <ActionButtonsSection />
       </div>
