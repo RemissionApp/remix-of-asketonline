@@ -12,7 +12,7 @@ interface LoadingStateProps {
 
 export const LoadingState: React.FC<LoadingStateProps> = ({ uiText }) => {
   return (
-    <Card className="p-6 mb-8 bg-slate-800/40 backdrop-blur-sm border-amber-500/30">
+    <Card className="p-6 mb-8 bg-slate-800/20 backdrop-blur-sm border-amber-500/30">
       <div className="flex flex-col items-center justify-center py-12">
         <div className="animate-spin mb-4">
           <Loader className="h-12 w-12 text-amber-400" />
