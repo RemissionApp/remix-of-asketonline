@@ -43,7 +43,7 @@ export const UniverseMessageBlock: React.FC = () => {
           </Avatar>
           
           <div>
-            <h3 className={`text-lg ${headingFontClass} font-medium text-white`}>
+            <h3 className={`text-xl ${headingFontClass} font-medium text-white`}>
               {universeTitle}
             </h3>
             <div className="flex items-center text-xs text-cosmic-secondary">
