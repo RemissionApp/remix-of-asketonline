@@ -60,10 +60,18 @@ export async function generateFullHoroscope(
   }
 
   const generatedText = data.choices[0].message.content;
+  
+  // Log the full raw text for debugging
+  console.log("Raw generated text:", generatedText.substring(0, 200) + "...");
 
   // Parse the generated text into sections
   const sections = parseHoroscopeSections(generatedText, language);
   console.log("Parsed sections:", Object.keys(sections));
+  
+  // Log first part of each section for debugging
+  for (const [key, value] of Object.entries(sections)) {
+    console.log(`Section ${key}: ${value.substring(0, 50)}...`);
+  }
   
   return sections;
 }
@@ -88,6 +96,7 @@ function getSystemPrompt(zodiacSign: string, birthDate: string | null, language:
 
 Для каждого раздела напиши не менее 150 слов конкретного, персонализированного содержания.
 Форматируй свой ответ с четкими заголовками разделов, например: "1. Анализ личности:", "2. Прогноз на год:", и т.д.
+Используй звездочки для выделения номера и названия раздела, например: **1. Анализ личности:** или **2. Прогноз на год:**
 Избегай общих утверждений и банальностей. Используй космические метафоры и ссылки на положения планет, где это уместно.
 Тон должен быть проницательным, мудрым и познавательным, но также доступным и практичным.
 НЕ упоминай, что это контент, сгенерированный ИИ.`;
@@ -107,6 +116,7 @@ Tu análisis debe estar dividido en 6 secciones claras:
 
 Para cada sección, escribe al menos 150 palabras de contenido específico y personalizado.
 Formatea tu respuesta con encabezados de sección claros como "1. Análisis de Personalidad:", "2. Pronóstico del Año:", etc.
+Utiliza asteriscos para resaltar el número y nombre de la sección, por ejemplo: **1. Análisis de Personalidad:** o **2. Pronóstico del Año:**
 Evita declaraciones genéricas y lugares comunes. Utiliza metáforas cósmicas y referencias a posiciones planetarias cuando sea relevante.
 El tono debe ser perspicaz, sabio y educativo, pero también accesible y práctico.
 NO menciones que este es contenido generado por IA.`;
@@ -126,6 +136,7 @@ Your analysis should be divided into 6 clear sections:
 
 For each section, write at least 150 words of specific, personalized content.
 Format your response with clear section headers like "1. Personality Analysis:", "2. Year Ahead Forecast:", etc.
+Use asterisks to highlight the section number and title, for example: **1. Personality Analysis:** or **2. Year Ahead Forecast:**
 Avoid generic statements and platitudes. Use cosmic metaphors and reference planetary positions where relevant.
 The tone should be insightful, wise, and educational but also accessible and practical.
 DO NOT mention that this is AI-generated content.`;
@@ -140,89 +151,168 @@ function getUserPrompt(zodiacSign: string, birthDate: string | null, language: s
   switch (language) {
     case 'ru':
       return `Создай полный астрологический профиль для ${zodiacSign}${birthDate ? `, родившегося ${birthDate}` : ''}.
-Включи все шесть разделов: Анализ личности, Прогноз на год, Карьерный путь, Прогноз отношений, Здоровье и самочувствие, и Личностный рост.`;
+Включи все шесть разделов: Анализ личности, Прогноз на год, Карьерный путь, Прогноз отношений, Здоровье и самочувствие, и Личностный рост.
+Используй звездочки для выделения номера и названия каждого раздела, например: **1. Анализ личности:**`;
       
     case 'es':
       return `Crea un perfil astrológico completo para ${zodiacSign}${birthDate ? ` nacido el ${birthDate}` : ''}.
-Incluye las seis secciones: Análisis de Personalidad, Pronóstico del Año, Trayectoria Profesional, Pronóstico de Relaciones, Salud y Bienestar, y Crecimiento Personal.`;
+Incluye las seis secciones: Análisis de Personalidad, Pronóstico del Año, Trayectoria Profesional, Pronóstico de Relaciones, Salud y Bienestar, y Crecimiento Personal.
+Utiliza asteriscos para resaltar el número y nombre de cada sección, por ejemplo: **1. Análisis de Personalidad:**`;
       
     default: // English
       return `Please create a full astrological profile for a ${zodiacSign}${birthDate ? ` born on ${birthDate}` : ''}.
-Include all six sections: Personality Analysis, Year Ahead Forecast, Career Path, Relationship Forecast, Health & Wellbeing, and Personal Growth.`;
+Include all six sections: Personality Analysis, Year Ahead Forecast, Career Path, Relationship Forecast, Health & Wellbeing, and Personal Growth.
+Use asterisks to highlight the section number and title for each section, for example: **1. Personality Analysis:**`;
   }
 }
 
 function parseHoroscopeSections(text: string, language: string): FullHoroscopeData {
-  const sections: Partial<FullHoroscopeData> = {};
+  // Create a default structure to fill in
+  const sections: FullHoroscopeData = {
+    personalityAnalysis: "",
+    yearForecast: "",
+    careerPath: "",
+    relationshipForecast: "",
+    healthGuidance: "",
+    personalGrowth: ""
+  };
   
-  // Try to extract sections using regular expressions based on language
-  let personalityMatch, yearMatch, careerMatch, relationshipMatch, healthMatch, growthMatch;
+  // Define regex patterns for different languages
+  const patterns: { [key: string]: { [key: string]: RegExp } } = {
+    ru: {
+      personalityAnalysis: /\*\*(?:1\.?\s*)?Анализ личности:?\*\*([\s\S]*?)(?=\*\*(?:2\.?\s*)?Прогноз|$)/i,
+      yearForecast: /\*\*(?:2\.?\s*)?Прогноз на год:?\*\*([\s\S]*?)(?=\*\*(?:3\.?\s*)?Карьерный|$)/i,
+      careerPath: /\*\*(?:3\.?\s*)?Карьерный путь:?\*\*([\s\S]*?)(?=\*\*(?:4\.?\s*)?Прогноз отношений|$)/i,
+      relationshipForecast: /\*\*(?:4\.?\s*)?Прогноз отношений:?\*\*([\s\S]*?)(?=\*\*(?:5\.?\s*)?Здоровье|$)/i,
+      healthGuidance: /\*\*(?:5\.?\s*)?Здоровье и самочувствие:?\*\*([\s\S]*?)(?=\*\*(?:6\.?\s*)?Личностный|$)/i,
+      personalGrowth: /\*\*(?:6\.?\s*)?Личностный рост:?\*\*([\s\S]*?)(?=$|(?:\*\*))/i
+    },
+    es: {
+      personalityAnalysis: /\*\*(?:1\.?\s*)?Análisis de Personalidad:?\*\*([\s\S]*?)(?=\*\*(?:2\.?\s*)?Pronóstico|$)/i,
+      yearForecast: /\*\*(?:2\.?\s*)?Pronóstico del Año:?\*\*([\s\S]*?)(?=\*\*(?:3\.?\s*)?Trayectoria|$)/i,
+      careerPath: /\*\*(?:3\.?\s*)?Trayectoria Profesional:?\*\*([\s\S]*?)(?=\*\*(?:4\.?\s*)?Pronóstico de Relaciones|$)/i,
+      relationshipForecast: /\*\*(?:4\.?\s*)?Pronóstico de Relaciones:?\*\*([\s\S]*?)(?=\*\*(?:5\.?\s*)?Salud|$)/i,
+      healthGuidance: /\*\*(?:5\.?\s*)?Salud y Bienestar:?\*\*([\s\S]*?)(?=\*\*(?:6\.?\s*)?Crecimiento|$)/i,
+      personalGrowth: /\*\*(?:6\.?\s*)?Crecimiento Personal:?\*\*([\s\S]*?)(?=$|(?:\*\*))/i
+    },
+    en: {
+      personalityAnalysis: /\*\*(?:1\.?\s*)?Personality Analysis:?\*\*([\s\S]*?)(?=\*\*(?:2\.?\s*)?Year|$)/i,
+      yearForecast: /\*\*(?:2\.?\s*)?Year Ahead Forecast:?\*\*([\s\S]*?)(?=\*\*(?:3\.?\s*)?Career|$)/i,
+      careerPath: /\*\*(?:3\.?\s*)?Career Path:?\*\*([\s\S]*?)(?=\*\*(?:4\.?\s*)?Relationship|$)/i,
+      relationshipForecast: /\*\*(?:4\.?\s*)?Relationship Forecast:?\*\*([\s\S]*?)(?=\*\*(?:5\.?\s*)?Health|$)/i,
+      healthGuidance: /\*\*(?:5\.?\s*)?Health & Wellbeing:?\*\*([\s\S]*?)(?=\*\*(?:6\.?\s*)?Personal|$)/i,
+      personalGrowth: /\*\*(?:6\.?\s*)?Personal Growth:?\*\*([\s\S]*?)(?=$|(?:\*\*))/i
+    }
+  };
   
-  if (language === 'ru') {
-    personalityMatch = text.match(/(?:Анализ личности:?|1\.\s*Анализ личности:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Прогноз на год|2\.\s*Прогноз))/s);
-    yearMatch = text.match(/(?:Прогноз на год:?|2\.\s*Прогноз на год:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Карьерный путь|3\.\s*Карьерный))/s);
-    careerMatch = text.match(/(?:Карьерный путь:?|3\.\s*Карьерный путь:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Прогноз отношений|4\.\s*Прогноз отношений))/s);
-    relationshipMatch = text.match(/(?:Прогноз отношений:?|4\.\s*Прогноз отношений:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Здоровье|5\.\s*Здоровье))/s);
-    healthMatch = text.match(/(?:Здоровье и самочувствие:?|5\.\s*Здоровье и самочувствие:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Личностный рост|6\.\s*Личностный))/s);
-    growthMatch = text.match(/(?:Личностный рост:?|6\.\s*Личностный рост:?)(.*?)$/s);
-  } else if (language === 'es') {
-    personalityMatch = text.match(/(?:Análisis de Personalidad:?|1\.\s*Análisis de Personalidad:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Pronóstico del Año|2\.\s*Pronóstico))/s);
-    yearMatch = text.match(/(?:Pronóstico del Año:?|2\.\s*Pronóstico del Año:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Trayectoria Profesional|3\.\s*Trayectoria))/s);
-    careerMatch = text.match(/(?:Trayectoria Profesional:?|3\.\s*Trayectoria Profesional:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Pronóstico de Relaciones|4\.\s*Pronóstico de Relaciones))/s);
-    relationshipMatch = text.match(/(?:Pronóstico de Relaciones:?|4\.\s*Pronóstico de Relaciones:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Salud|5\.\s*Salud))/s);
-    healthMatch = text.match(/(?:Salud y Bienestar:?|5\.\s*Salud y Bienestar:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Crecimiento Personal|6\.\s*Crecimiento))/s);
-    growthMatch = text.match(/(?:Crecimiento Personal:?|6\.\s*Crecimiento Personal:?)(.*?)$/s);
-  } else {
-    // English patterns
-    personalityMatch = text.match(/(?:Personality Analysis:?|1\.\s*Personality Analysis:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Year Ahead|2\.\s*Year))/s);
-    yearMatch = text.match(/(?:Year Ahead Forecast:?|2\.\s*Year Ahead Forecast:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Career Path|3\.\s*Career))/s);
-    careerMatch = text.match(/(?:Career Path:?|3\.\s*Career Path:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Relationship|4\.\s*Relationship))/s);
-    relationshipMatch = text.match(/(?:Relationship Forecast:?|4\.\s*Relationship Forecast:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Health|5\.\s*Health))/s);
-    healthMatch = text.match(/(?:Health & Wellbeing:?|5\.\s*Health & Wellbeing:?)(.*?)(?=(?:\n\n|\r\n\r\n)(?:Personal Growth|6\.\s*Personal))/s);
-    growthMatch = text.match(/(?:Personal Growth:?|6\.\s*Personal Growth:?)(.*?)$/s);
+  // Alternate patterns as fallback
+  const altPatterns: { [key: string]: { [key: string]: RegExp } } = {
+    ru: {
+      personalityAnalysis: /(?:1\.?\s*)?Анализ личности:?([\s\S]*?)(?=(?:2\.?\s*)?Прогноз на год|$)/i,
+      yearForecast: /(?:2\.?\s*)?Прогноз на год:?([\s\S]*?)(?=(?:3\.?\s*)?Карьерный путь|$)/i,
+      careerPath: /(?:3\.?\s*)?Карьерный путь:?([\s\S]*?)(?=(?:4\.?\s*)?Прогноз отношений|$)/i,
+      relationshipForecast: /(?:4\.?\s*)?Прогноз отношений:?([\s\S]*?)(?=(?:5\.?\s*)?Здоровье|$)/i,
+      healthGuidance: /(?:5\.?\s*)?Здоровье и самочувствие:?([\s\S]*?)(?=(?:6\.?\s*)?Личностный рост|$)/i,
+      personalGrowth: /(?:6\.?\s*)?Личностный рост:?([\s\S]*?)$/i
+    },
+    es: {
+      personalityAnalysis: /(?:1\.?\s*)?Análisis de Personalidad:?([\s\S]*?)(?=(?:2\.?\s*)?Pronóstico|$)/i,
+      yearForecast: /(?:2\.?\s*)?Pronóstico del Año:?([\s\S]*?)(?=(?:3\.?\s*)?Trayectoria|$)/i,
+      careerPath: /(?:3\.?\s*)?Trayectoria Profesional:?([\s\S]*?)(?=(?:4\.?\s*)?Pronóstico de Relaciones|$)/i,
+      relationshipForecast: /(?:4\.?\s*)?Pronóstico de Relaciones:?([\s\S]*?)(?=(?:5\.?\s*)?Salud|$)/i,
+      healthGuidance: /(?:5\.?\s*)?Salud y Bienestar:?([\s\S]*?)(?=(?:6\.?\s*)?Crecimiento|$)/i,
+      personalGrowth: /(?:6\.?\s*)?Crecimiento Personal:?([\s\S]*?)$/i
+    },
+    en: {
+      personalityAnalysis: /(?:1\.?\s*)?Personality Analysis:?([\s\S]*?)(?=(?:2\.?\s*)?Year Ahead|$)/i,
+      yearForecast: /(?:2\.?\s*)?Year Ahead Forecast:?([\s\S]*?)(?=(?:3\.?\s*)?Career Path|$)/i,
+      careerPath: /(?:3\.?\s*)?Career Path:?([\s\S]*?)(?=(?:4\.?\s*)?Relationship|$)/i,
+      relationshipForecast: /(?:4\.?\s*)?Relationship Forecast:?([\s\S]*?)(?=(?:5\.?\s*)?Health|$)/i,
+      healthGuidance: /(?:5\.?\s*)?Health & Wellbeing:?([\s\S]*?)(?=(?:6\.?\s*)?Personal Growth|$)/i,
+      personalGrowth: /(?:6\.?\s*)?Personal Growth:?([\s\S]*?)$/i
+    }
+  };
+
+  // Select language patterns, default to English if not found
+  const langPatterns = patterns[language] || patterns.en;
+  const langAltPatterns = altPatterns[language] || altPatterns.en;
+  
+  // Try to extract each section with main patterns
+  let hasMatches = false;
+  Object.keys(sections).forEach((key) => {
+    const pattern = langPatterns[key];
+    if (pattern) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        hasMatches = true;
+        sections[key as keyof FullHoroscopeData] = match[1].trim();
+      }
+    }
+  });
+  
+  // If no matches with main patterns, try alternate patterns
+  if (!hasMatches) {
+    console.log("No matches with main patterns, trying alternate patterns");
+    Object.keys(sections).forEach((key) => {
+      const pattern = langAltPatterns[key];
+      if (pattern) {
+        const match = text.match(pattern);
+        if (match && match[1]) {
+          hasMatches = true;
+          sections[key as keyof FullHoroscopeData] = match[1].trim();
+        }
+      }
+    });
   }
   
-  sections.personalityAnalysis = personalityMatch ? personalityMatch[1].trim() : "";
-  sections.yearForecast = yearMatch ? yearMatch[1].trim() : "";
-  sections.careerPath = careerMatch ? careerMatch[1].trim() : "";
-  sections.relationshipForecast = relationshipMatch ? relationshipMatch[1].trim() : "";
-  sections.healthGuidance = healthMatch ? healthMatch[1].trim() : "";
-  sections.personalGrowth = growthMatch ? growthMatch[1].trim() : "";
-  
-  // If any section is missing, use a fallback approach - split by numbered sections
-  if (Object.values(sections).some(value => !value)) {
-    console.log("Some sections not found, using fallback parsing approach");
+  // If still no matches, try splitting by section number (1., 2., etc.)
+  if (!hasMatches) {
+    console.log("No matches with alternate patterns, trying to split by section numbers");
+    const sectionParts = text.split(/(?:\r?\n|\r)\s*(?:\*\*)?[1-6]\.\s/);
+    if (sectionParts.length >= 6) {
+      sections.personalityAnalysis = (sectionParts[1] || "").trim();
+      sections.yearForecast = (sectionParts[2] || "").trim();
+      sections.careerPath = (sectionParts[3] || "").trim();
+      sections.relationshipForecast = (sectionParts[4] || "").trim();
+      sections.healthGuidance = (sectionParts[5] || "").trim();
+      sections.personalGrowth = (sectionParts[6] || "").trim();
+      
+      hasMatches = Object.values(sections).some(value => value && value.length > 0);
+      if (hasMatches) console.log("Successfully parsed sections by number splitting");
+    }
+  }
+
+  // If we still have no matches, use a very simple approach - split the text into 6 roughly equal parts
+  if (!hasMatches) {
+    console.log("All parsing methods failed, falling back to simple text division");
+    const plainText = text.replace(/\*\*/g, '').replace(/^\d+\.\s*/gm, '');
+    const lines = plainText.split(/\r?\n/).filter(line => line.trim().length > 0);
     
-    const fallbackSections = text.split(/(?:\n\n|\r\n\r\n)(?:\d\.\s*|(?:Personality|Year|Career|Relationship|Health|Personal|Анализ|Прогноз|Карьерный|Здоровье|Личностный|Análisis|Pronóstico|Trayectoria|Salud|Crecimiento))/);
-    
-    if (fallbackSections.length >= 6) {
-      if (!sections.personalityAnalysis) sections.personalityAnalysis = fallbackSections[1].trim();
-      if (!sections.yearForecast) sections.yearForecast = fallbackSections[2].trim();
-      if (!sections.careerPath) sections.careerPath = fallbackSections[3].trim();
-      if (!sections.relationshipForecast) sections.relationshipForecast = fallbackSections[4].trim();
-      if (!sections.healthGuidance) sections.healthGuidance = fallbackSections[5].trim();
-      if (!sections.personalGrowth) sections.personalGrowth = fallbackSections[6].trim();
+    if (lines.length >= 6) {
+      const chunkSize = Math.floor(lines.length / 6);
+      sections.personalityAnalysis = lines.slice(0, chunkSize).join("\n").trim();
+      sections.yearForecast = lines.slice(chunkSize, chunkSize * 2).join("\n").trim();
+      sections.careerPath = lines.slice(chunkSize * 2, chunkSize * 3).join("\n").trim();
+      sections.relationshipForecast = lines.slice(chunkSize * 3, chunkSize * 4).join("\n").trim();
+      sections.healthGuidance = lines.slice(chunkSize * 4, chunkSize * 5).join("\n").trim();
+      sections.personalGrowth = lines.slice(chunkSize * 5).join("\n").trim();
+    } else {
+      // Last resort - just use the whole text as the first section
+      sections.personalityAnalysis = text;
     }
   }
   
-  // Get localized default text based on language
+  // Get localized default text for any missing sections
   const defaultText = getLocalizedDefaultText(language);
   
-  // If sections are still missing, use the entire text as a last resort
-  if (Object.values(sections).some(value => !value)) {
-    console.log("Fallback parsing failed, using entire text");
-    
-    return {
-      personalityAnalysis: sections.personalityAnalysis || text || defaultText,
-      yearForecast: sections.yearForecast || defaultText,
-      careerPath: sections.careerPath || defaultText,
-      relationshipForecast: sections.relationshipForecast || defaultText,
-      healthGuidance: sections.healthGuidance || defaultText,
-      personalGrowth: sections.personalGrowth || defaultText
-    };
-  }
+  // Make sure all sections have at least some content
+  Object.keys(sections).forEach((key) => {
+    if (!sections[key as keyof FullHoroscopeData] || sections[key as keyof FullHoroscopeData].length === 0) {
+      sections[key as keyof FullHoroscopeData] = defaultText;
+    }
+  });
   
-  return sections as FullHoroscopeData;
+  return sections;
 }
 
 // Get localized default text for missing sections

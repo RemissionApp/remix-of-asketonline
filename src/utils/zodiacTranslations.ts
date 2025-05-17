@@ -73,6 +73,12 @@ export const translateSection = (section: string, language: Language): string =>
       case 'relationshipForecast': return 'Прогноз отношений';
       case 'healthGuidance': return 'Здоровье и самочувствие';
       case 'personalGrowth': return 'Личностный рост';
+      // Brief horoscope sections
+      case 'general_atmosphere': return 'Общая атмосфера дня';
+      case 'work_finance': return 'Советы по работе и финансам';
+      case 'love_relationships': return 'Рекомендации по отношениям и любви';
+      case 'health_wellbeing': return 'Состояние здоровья и эмоционального баланса';
+      case 'daily_advice': return 'Практичный совет дня';
       default: return section;
     }
   } else if (language === 'es') {
@@ -83,6 +89,12 @@ export const translateSection = (section: string, language: Language): string =>
       case 'relationshipForecast': return 'Pronóstico de Relaciones';
       case 'healthGuidance': return 'Salud y Bienestar';
       case 'personalGrowth': return 'Crecimiento Personal';
+      // Brief horoscope sections
+      case 'general_atmosphere': return 'Atmósfera General del Día';
+      case 'work_finance': return 'Consejos de Trabajo y Finanzas';
+      case 'love_relationships': return 'Recomendaciones de Amor y Relaciones';
+      case 'health_wellbeing': return 'Estado de Salud y Bienestar Emocional';
+      case 'daily_advice': return 'Consejo Práctico del Día';
       default: return section;
     }
   }

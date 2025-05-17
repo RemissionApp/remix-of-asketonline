@@ -41,7 +41,8 @@ serve(async (req) => {
         .insert({
           user_id: userId,
           zodiac_sign: zodiacSign,
-          content: horoscopeData
+          content: horoscopeData,
+          language: language
         });
       
       if (error) {
