@@ -160,11 +160,11 @@ export const DailyAdviceDisplay: React.FC = () => {
           {isLoading ? (
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
-            <div className="px-1 py-2">
+            <div className="px-1 py-2 text-center">
               <TypingEffect 
                 text={dailyAdvice || ''} 
                 speed={30} 
-                className="text-white text-base font-sans leading-relaxed"
+                className="text-white text-base font-normal leading-relaxed"
                 onComplete={handleTypingComplete}
               />
               {typingComplete && (
