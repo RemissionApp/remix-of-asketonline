@@ -77,37 +77,51 @@ export const DailyAdviceDisplay: React.FC = () => {
     fetchDailyAdvice();
   }, [language, userProfile?.name]);
 
-  return (
-    <Card className="border-cosmic-accent/20 bg-cosmic-dark/70 backdrop-blur-sm mb-6 overflow-hidden w-full max-w-lg mx-auto">
-      <CardContent className="p-4">
-        <div className="flex items-center mb-3">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-cosmic-accent/20 mr-3">
-            <LightbulbIcon size={20} className="text-cosmic-accent" />
-          </div>
-          <h3 className="text-cosmic-accent font-medium">
-            {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
-          </h3>
-        </div>
+  // Определяем имя для приветствия
+  const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
 
-        {isLoading ? (
-          <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
-        ) : (
-          <div className="px-1 py-2">
-            <p className="text-cosmic-secondary text-base font-serif italic leading-relaxed">
-              {dailyAdvice}
-            </p>
-            <div className="flex items-center justify-end mt-3">
-              <Calendar size={12} className="text-cosmic-gold/60 mr-1" />
-              <span className="text-cosmic-gold/60 text-xs">
-                {new Date().toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US', { 
-                  day: 'numeric', 
-                  month: 'long' 
-                })}
-              </span>
+  return (
+    <div className="w-full max-w-lg mx-auto">
+      {/* Приветствие пользователя над карточкой совета дня */}
+      <h2 className="text-cosmic-gold font-serif text-xl mb-2 text-center animate-glow-pulse">
+        {language === 'ru' 
+          ? `Приветствую тебя, ${userName}!` 
+          : language === 'es'
+            ? `¡Te saludo, ${userName}!`
+            : `Greetings, ${userName}!`}
+      </h2>
+      
+      <Card className="border-cosmic-accent/20 bg-cosmic-dark/70 backdrop-blur-sm mb-6 overflow-hidden">
+        <CardContent className="p-4">
+          <div className="flex items-center mb-3">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-cosmic-accent/20 mr-3">
+              <LightbulbIcon size={20} className="text-cosmic-accent" />
             </div>
+            <h3 className="text-cosmic-accent font-medium">
+              {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
+            </h3>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          {isLoading ? (
+            <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
+          ) : (
+            <div className="px-1 py-2">
+              <p className="text-cosmic-secondary text-base font-serif italic leading-relaxed">
+                {dailyAdvice}
+              </p>
+              <div className="flex items-center justify-end mt-3">
+                <Calendar size={12} className="text-cosmic-gold/60 mr-1" />
+                <span className="text-cosmic-gold/60 text-xs">
+                  {new Date().toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US', { 
+                    day: 'numeric', 
+                    month: 'long' 
+                  })}
+                </span>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
