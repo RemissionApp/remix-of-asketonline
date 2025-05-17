@@ -9,6 +9,7 @@ import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseChatBlock } from '@/components/UniverseChatBlock';
 import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
+import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -67,10 +68,13 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 5. Numerology Display - Fifth */}
       <NumerologyDisplay />
       
-      {/* 6. Meditation Block - Sixth (New) */}
+      {/* 6. Affirmations Block - Sixth (New) */}
+      <AffirmationsBlock />
+      
+      {/* 7. Meditation Block - Seventh */}
       <MeditationBlock />
       
-      {/* 7. Universe Chat Block - Seventh */}
+      {/* 8. Universe Chat Block - Eighth */}
       <UniverseChatBlock />
       
       {/* Action Buttons - Remains at the bottom but now empty */}

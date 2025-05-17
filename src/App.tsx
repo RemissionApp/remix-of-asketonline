@@ -24,6 +24,7 @@ import FullHoroscopePage from "./pages/FullHoroscopePage";
 import UniverseChatPage from "./pages/UniverseChatPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
+import AffirmationsPage from "./pages/AffirmationsPage";
 import { supabase, cleanupAuthState } from "./lib/supabase";
 
 // Create a new QueryClient instance
@@ -114,6 +115,7 @@ const App = () => {
             <Route path="/meditation" element={<MeditationPage />} />
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
             <Route path="/full-horoscope" element={<FullHoroscopePage />} />
+            <Route path="/affirmations" element={<AffirmationsPage />} />
             {/* Pro features routes */}
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
