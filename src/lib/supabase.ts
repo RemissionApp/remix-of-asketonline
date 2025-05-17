@@ -9,7 +9,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true, // Enable automatic URL detection for auth callbacks
   },
 })
 
@@ -58,50 +57,6 @@ export const ensureAvatarBucketExists = async () => {
     return true;
   } catch (error) {
     console.error('Error ensuring avatar bucket exists:', error);
-    return false;
-  }
-};
-
-/**
- * Manually resend verification email for a user
- */
-export const resendVerificationEmail = async (email: string): Promise<{success: boolean; message: string}> => {
-  try {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: email
-    });
-    
-    if (error) throw error;
-    
-    return { 
-      success: true, 
-      message: 'Verification email resent successfully. Please check your inbox.'
-    };
-  } catch (error: any) {
-    console.error('Error resending verification email:', error);
-    return { 
-      success: false, 
-      message: error.message || 'Failed to resend verification email.'
-    };
-  }
-};
-
-/**
- * Check if an email verification link is valid
- */
-export const verifyEmailToken = async (token: string): Promise<boolean> => {
-  try {
-    // We don't actually need to do anything here as Supabase handles the verification
-    // This is just a utility function to check if verification was successful
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
-    if (error) throw error;
-    
-    // If we have a user and their email is confirmed, verification was successful
-    return !!user?.email_confirmed_at;
-  } catch (error) {
-    console.error('Error verifying email token:', error);
     return false;
   }
 };

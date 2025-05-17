@@ -1,7 +1,6 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
-import { supabase, cleanupAuthState } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 
@@ -14,7 +13,6 @@ export interface AuthSlice {
   loadUserProfile: () => Promise<void>;
   updateUserProfile: (profileData: Partial<import('@/types').UserProfile>) => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
-  handleAuthCallback: (hash: string) => Promise<boolean>;
 }
 
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
@@ -34,23 +32,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ user: data.user });
       
-      // Check email confirmation status
-      const isConfirmed = !!data.user?.email_confirmed_at;
-      set({ emailConfirmed: isConfirmed });
-      
-      if (!isConfirmed) {
-        toast({
-          title: "Email не подтвержден",
-          description: "Пожалуйста, проверьте почту и подтвердите свой email адрес.",
-          variant: "warning"
-        });
-        return false;
-      }
-      
       // Load user data
       await get().loadUserProfile();
       await get().loadPacts();
       await get().loadUniverseQuestions();
+      
+      const { userProfile } = get();
       
       toast({
         title: "Вход выполнен",
@@ -59,18 +46,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       return true; // Return true on success
     } catch (error: any) {
-      let errorMessage = error.message || "Не удалось войти в систему";
-      
-      // Check for common Supabase auth errors and provide more user-friendly messages
-      if (error.message?.includes('Email not confirmed')) {
-        errorMessage = "Email не подтвержден. Пожалуйста, проверьте почту и подтвердите свой email адрес.";
-      } else if (error.message?.includes('Invalid login credentials')) {
-        errorMessage = "Неверный email или пароль. Пожалуйста, проверьте введенные данные.";
-      }
-      
       toast({
         title: "Ошибка входа",
-        description: errorMessage,
+        description: error.message || "Не удалось войти в систему",
         variant: "destructive"
       });
       return false; // Return false on error
@@ -85,10 +63,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login?email_confirmed=true`
-        }
+        password
       });
       
       if (error) throw error;
@@ -98,7 +73,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       // Check if email confirmation is required
       if (data.session) {
         // Email confirmation is not required, user is signed in
-        set({ emailConfirmed: true });
         toast({
           title: "Регистрация выполнена",
           description: "Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль."
@@ -115,16 +89,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         });
       }
     } catch (error: any) {
-      let errorMessage = error.message || "Не удалось создать аккаунт";
-      
-      // Check for common signup errors
-      if (error.message?.includes('User already registered')) {
-        errorMessage = "Пользователь с таким email уже зарегистрирован. Попробуйте войти.";
-      }
-      
       toast({
         title: "Ошибка регистрации",
-        description: errorMessage,
+        description: error.message || "Не удалось создать аккаунт",
         variant: "destructive"
       });
     } finally {
@@ -136,9 +103,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Clean up auth state before signing out
-      cleanupAuthState();
-      
       await supabase.auth.signOut();
       
       set({ 
@@ -155,49 +119,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       });
     } catch (error: any) {
       toast({
-        title: "Ошибка выхода",
+        title: "Ошибка в��хода",
         description: error.message || "Не удалось выйти из системы",
         variant: "destructive"
       });
     } finally {
       set({ loading: false });
-    }
-  },
-  
-  // Handle redirect from email auth links
-  handleAuthCallback: async (hash: string) => {
-    try {
-      if (hash && hash.includes('access_token')) {
-        // Parse hash string to get auth data
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) throw error;
-        
-        if (data.session) {
-          set({ user: data.session.user, emailConfirmed: true });
-          
-          toast({
-            title: "Авторизация успешна",
-            description: "Вы успешно авторизовались!"
-          });
-          
-          // Load user profile and other data
-          await get().loadUserProfile();
-          await get().loadPacts();
-          await get().loadUniverseQuestions();
-          
-          return true;
-        }
-      }
-      return false;
-    } catch (error: any) {
-      console.error("Auth callback error:", error);
-      toast({
-        title: "Ошибка авторизации",
-        description: error.message || "Произошла ошибка при авторизации",
-        variant: "destructive"
-      });
-      return false;
     }
   },
   

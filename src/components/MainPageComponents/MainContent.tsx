@@ -41,56 +41,56 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      <div className="mt-4 mb-2">
-        {/* User greeting section moved down slightly */}
-        <UserGreetingSection />
-      </div>
-      
+      {/* 1. PactDisplay - First */}
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
-          <>
-            {/* When pacts exist, show the pact display */}
-            <PactDisplay
-              activePacts={activePacts}
-              currentPactIndex={currentPactIndex}
-              currentPact={currentPact}
-              handlePrevPact={handlePrevPact}
-              handleNextPact={handleNextPact}
-              handleBreakAscesis={handleBreakAscesis}
-              getAscesisPrefix={getAscesisPrefix}
-              formatRejection={formatRejection}
-            />
-            
-            {/* Also show these components only when pacts exist */}
-            <DailyAdviceDisplay />
-            <div className="w-full max-w-lg mx-auto">
-              <UniverseMessageBlock />
-            </div>
-            <div className="w-full max-w-lg mx-auto">
-              <ZodiacBadgeDisplay />
-            </div>
-            <div className="w-full max-w-lg mx-auto">
-              <MeditationBlock />
-            </div>
-            <div className="w-full max-w-lg mx-auto">
-              <NumerologyDisplay />
-            </div>
-            <div className="w-full max-w-lg mx-auto">
-              <AffirmationsBlock />
-            </div>
-          </>
+          <PactDisplay
+            activePacts={activePacts}
+            currentPactIndex={currentPactIndex}
+            currentPact={currentPact}
+            handlePrevPact={handlePrevPact}
+            handleNextPact={handleNextPact}
+            handleBreakAscesis={handleBreakAscesis}
+            getAscesisPrefix={getAscesisPrefix}
+            formatRejection={formatRejection}
+          />
         ) : !isLoading ? (
-          /* When no pacts exist, only show the NoPactsView */
           <NoPactsView />
         ) : null}
       </div>
       
-      {/* Action Buttons - Only show when pacts exist */}
-      {activePacts.length > 0 && (
-        <div className="mt-auto">
-          <ActionButtonsSection />
-        </div>
-      )}
+      {/* 2. Daily Advice with User Greeting */}
+      <DailyAdviceDisplay />
+      
+      {/* 3. Universe Chat Block - Moved right after Daily Advice */}
+      <div className="w-full max-w-lg mx-auto">
+        <UniverseMessageBlock />
+      </div>
+      
+      {/* 4. Zodiac Badge Display */}
+      <div className="w-full max-w-lg mx-auto">
+        <ZodiacBadgeDisplay />
+      </div>
+      
+      {/* 5. Meditation Block - Moved to appear after Zodiac Badge */}
+      <div className="w-full max-w-lg mx-auto">
+        <MeditationBlock />
+      </div>
+      
+      {/* 6. Numerology Display */}
+      <div className="w-full max-w-lg mx-auto">
+        <NumerologyDisplay />
+      </div>
+      
+      {/* 7. Affirmations Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <AffirmationsBlock />
+      </div>
+      
+      {/* Action Buttons - Remains at the bottom */}
+      <div className="mt-auto">
+        <ActionButtonsSection />
+      </div>
     </main>
   );
 };
