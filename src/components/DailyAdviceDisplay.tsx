@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Calendar, LightbulbIcon, Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -111,7 +112,7 @@ export const DailyAdviceDisplay: React.FC = () => {
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя */}
       <div className="mb-6 text-center p-4 relative z-10">
-        <h2 className="font-sans text-3xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+        <h2 className="font-sans text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
           {language === 'ru' 
             ? "Приветствую тебя!" 
             : language === 'es'
@@ -142,7 +143,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              <p className="text-cosmic-secondary text-base font-cormorant italic leading-relaxed">
+              <p className="text-white text-base font-sans leading-relaxed">
                 {dailyAdvice}
               </p>
             </div>
