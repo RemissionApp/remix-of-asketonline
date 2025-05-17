@@ -26,12 +26,14 @@ export const TypingEffect: React.FC<TypingProps> = ({
     // Skip if text is empty
     if (!text) return;
     
-    // Skip if already run and runOnce is true
+    // If runOnce is true and we've already run the animation,
+    // just set the full text without animation
     if (runOnce && hasRun) {
       setDisplayedText(text);
       return;
     }
     
+    // Reset and start typing
     setIsTyping(true);
     setDisplayedText('');
     
@@ -52,7 +54,7 @@ export const TypingEffect: React.FC<TypingProps> = ({
     }, speed);
     
     return () => clearInterval(typingInterval);
-  }, [text, speed, onComplete, onStart, runOnce, hasRun]);
+  }, [text, speed, onComplete, onStart, runOnce]);
   
   return (
     <div className={className}>
