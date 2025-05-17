@@ -10,6 +10,7 @@ import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
 import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
+import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -58,30 +59,35 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
       
-      {/* 2. Greeting is inside DailyAdviceDisplay component - Second */}
-      {/* 3. Daily Advice - Third */}
+      {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 4. Zodiac Badge Display - Fourth */}
+      {/* 4. Zodiac Badge Display */}
       <div className="w-full max-w-lg mx-auto">
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 5. Numerology Display - Fifth */}
+      {/* 5. Numerology Display */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
       </div>
       
-      {/* 6. Affirmations Block - Sixth */}
-      <AffirmationsBlock />
+      {/* 6. Affirmations Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <AffirmationsBlock />
+      </div>
       
-      {/* 7. Meditation Block - Seventh */}
-      <MeditationBlock />
+      {/* 7. Meditation Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <MeditationBlock />
+      </div>
       
-      {/* 8. Universe Chat Block - Eighth */}
-      <UniverseMessageBlock />
+      {/* 8. Universe Chat Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <UniverseMessageBlock />
+      </div>
       
-      {/* Action Buttons - Remains at the bottom but now empty */}
+      {/* Action Buttons - Remains at the bottom */}
       <div className="mt-auto">
         <ActionButtonsSection />
       </div>

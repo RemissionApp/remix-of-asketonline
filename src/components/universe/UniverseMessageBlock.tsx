@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageSquare, HelpCircle } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
@@ -94,7 +94,7 @@ export const UniverseMessageBlock: React.FC = () => {
       <ProFeatureOverlay 
         title={t.universe?.chatProTitle || "Диалог со Вселенной"}
         message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
-        className="mb-6 w-full max-w-lg mx-auto"
+        className="mb-6 w-full"
       >
         {messageContent}
       </ProFeatureOverlay>

@@ -99,6 +99,15 @@ const MainPage: React.FC = () => {
   // Empty string for dailyQuote since we're removing QuoteDisplay
   const dailyQuote = '';
   
+  // Log visibility information
+  console.log("MainPage rendering with visibility information:", {
+    hasUserProfile: !!userProfile,
+    hasBirthDate: !!userProfile?.birthDate,
+    isPro: userProfile?.isPro,
+    activePacts: activePacts.length,
+    isLoading
+  });
+  
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
