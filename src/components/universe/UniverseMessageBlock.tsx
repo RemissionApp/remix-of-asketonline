@@ -24,6 +24,10 @@ export const UniverseMessageBlock: React.FC = () => {
     navigate('/universe');
   };
   
+  // Translation for the title "Диалог со вселенной"
+  const universeTitle = language === 'ru' ? 'Диалог со вселенной' : 
+                         language === 'es' ? 'Diálogo con el Universo' : 'Dialogue with the Universe';
+  
   const messageContent = (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
       <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
@@ -36,12 +40,11 @@ export const UniverseMessageBlock: React.FC = () => {
           </Avatar>
           
           <div>
-            <h3 className="text-lg font-serif font-medium text-cosmic-accent">
-              {language === 'ru' ? 'Вселенная' : 
-               language === 'es' ? 'Universo' : 'Universe'}
+            <h3 className="text-lg font-serif font-medium text-white">
+              {universeTitle}
             </h3>
             <div className="flex items-center text-xs text-cosmic-secondary">
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5"></span>
+              <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse-slow"></span>
               {language === 'ru' ? 'онлайн' : 
                language === 'es' ? 'en línea' : 'online'}
             </div>
