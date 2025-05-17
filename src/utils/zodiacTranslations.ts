@@ -62,3 +62,29 @@ export const translateRuler = (ruler: string, language: Language): string => {
   }
   return ruler;
 };
+
+// Translate section titles
+export const translateSection = (section: string, language: Language): string => {
+  if (language === 'ru') {
+    switch (section) {
+      case 'personalityAnalysis': return 'Анализ личности';
+      case 'yearForecast': return 'Прогноз на год';
+      case 'careerPath': return 'Карьерный путь';
+      case 'relationshipForecast': return 'Прогноз отношений';
+      case 'healthGuidance': return 'Здоровье и самочувствие';
+      case 'personalGrowth': return 'Личностный рост';
+      default: return section;
+    }
+  } else if (language === 'es') {
+    switch (section) {
+      case 'personalityAnalysis': return 'Análisis de Personalidad';
+      case 'yearForecast': return 'Pronóstico del Año';
+      case 'careerPath': return 'Trayectoria Profesional';
+      case 'relationshipForecast': return 'Pronóstico de Relaciones';
+      case 'healthGuidance': return 'Salud y Bienestar';
+      case 'personalGrowth': return 'Crecimiento Personal';
+      default: return section;
+    }
+  }
+  return section;
+};

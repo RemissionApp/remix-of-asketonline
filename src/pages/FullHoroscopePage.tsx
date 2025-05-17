@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
 import { Loader, AlertCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { translateSection } from '@/utils/zodiacTranslations';
 
 interface FullHoroscopeData {
   personalityAnalysis: string;
@@ -20,7 +21,7 @@ interface FullHoroscopeData {
 }
 
 export default function FullHoroscopePage() {
-  const { user, userProfile } = useAppStore();
+  const { user, userProfile, language } = useAppStore();
   const [horoscope, setHoroscope] = useState<FullHoroscopeData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +56,8 @@ export default function FullHoroscopePage() {
       console.log("Calling generateFullHoroscope edge function with params:", { 
         userId: user.id,
         zodiacSign,
-        birthDate: userProfile?.birthDate || null
+        birthDate: userProfile?.birthDate || null,
+        language
       });
       
       // Call the edge function to generate the full horoscope
@@ -63,7 +65,8 @@ export default function FullHoroscopePage() {
         body: { 
           userId: user.id,
           zodiacSign,
-          birthDate: userProfile?.birthDate || null
+          birthDate: userProfile?.birthDate || null,
+          language // Pass current app language
         }
       });
 
@@ -93,29 +96,113 @@ export default function FullHoroscopePage() {
     }
   };
 
+  // Get section title based on language
+  const getSectionTitle = (sectionKey: string): string => {
+    switch (sectionKey) {
+      case 'personalityAnalysis':
+        return language === 'ru' ? 'Анализ личности' :
+               language === 'es' ? 'Análisis de Personalidad' :
+               'Personality Analysis';
+      case 'yearForecast':
+        return language === 'ru' ? 'Прогноз на год' :
+               language === 'es' ? 'Pronóstico del Año' :
+               'Year Ahead Forecast';
+      case 'careerPath':
+        return language === 'ru' ? 'Карьерный путь' :
+               language === 'es' ? 'Trayectoria Profesional' :
+               'Career Path';
+      case 'relationshipForecast':
+        return language === 'ru' ? 'Прогноз отношений' :
+               language === 'es' ? 'Pronóstico de Relaciones' :
+               'Relationship Forecast';
+      case 'healthGuidance':
+        return language === 'ru' ? 'Здоровье и самочувствие' :
+               language === 'es' ? 'Salud y Bienestar' :
+               'Health & Wellbeing';
+      case 'personalGrowth':
+        return language === 'ru' ? 'Личностный рост' :
+               language === 'es' ? 'Crecimiento Personal' :
+               'Personal Growth';
+      default:
+        return sectionKey;
+    }
+  };
+  
+  // Get translations for UI elements
+  const getUIText = () => {
+    if (language === 'ru') {
+      return {
+        pageTitle: 'Полный анализ гороскопа',
+        backButton: 'Назад',
+        setBirthDateTitle: 'Укажите дату рождения',
+        setBirthDateDescription: 'Чтобы сгенерировать полный анализ гороскопа, пожалуйста, добавьте дату рождения в вашем профиле.',
+        goToProfileButton: 'Перейти в профиль',
+        errorTitle: 'Ошибка',
+        tryAgainButton: 'Попробовать снова',
+        generateDescription: 'Сгенерируйте ваш полный космический профиль с анализом вашей личности, отношений, карьерного пути и многого другого, основанный на вашем знаке зодиака.',
+        generateButton: 'Сгенерировать полный гороскоп',
+        loadingTitle: 'Консультация со звездами и планетами для вашего полного космического профиля...',
+        loadingDescription: 'Это может занять некоторое время, пока мы анализируем ваши космические закономерности',
+        regenerateButton: 'Пересоздать гороскоп',
+      };
+    } else if (language === 'es') {
+      return {
+        pageTitle: 'Análisis completo del horóscopo',
+        backButton: 'Atrás',
+        setBirthDateTitle: 'Establece tu fecha de nacimiento',
+        setBirthDateDescription: 'Para generar tu análisis completo del horóscopo, por favor agrega tu fecha de nacimiento en tu perfil.',
+        goToProfileButton: 'Ir al perfil',
+        errorTitle: 'Error',
+        tryAgainButton: 'Intentar de nuevo',
+        generateDescription: 'Genera tu perfil cósmico completo con información sobre tu personalidad, relaciones, trayectoria profesional y más basado en tu signo zodiacal.',
+        generateButton: 'Generar horóscopo completo',
+        loadingTitle: 'Consultando a las estrellas y planetas para tu perfil cósmico completo...',
+        loadingDescription: 'Esto puede tardar un momento mientras analizamos tus patrones celestiales',
+        regenerateButton: 'Regenerar horóscopo',
+      };
+    } else {
+      return {
+        pageTitle: 'Full Horoscope Analysis',
+        backButton: 'Back',
+        setBirthDateTitle: 'Set Your Birth Date',
+        setBirthDateDescription: 'To generate your full horoscope analysis, please add your birth date in your profile.',
+        goToProfileButton: 'Go to Profile',
+        errorTitle: 'Error',
+        tryAgainButton: 'Try Again',
+        generateDescription: 'Generate your complete cosmic profile with insights into your personality, relationships, career path, and more based on your zodiac sign.',
+        generateButton: 'Generate Full Horoscope',
+        loadingTitle: 'Consulting the stars and planets for your complete cosmic profile...',
+        loadingDescription: 'This may take a moment as we analyze your celestial patterns',
+        regenerateButton: 'Regenerate Horoscope',
+      };
+    }
+  };
+
+  const uiText = getUIText();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-amber-400">Full Horoscope Analysis</h1>
+          <h1 className="text-3xl font-bold text-amber-400">{uiText.pageTitle}</h1>
           <Button 
             variant="outline" 
             onClick={() => navigate(-1)}
             className="border-amber-400 text-amber-400 hover:bg-amber-400/10"
           >
-            Back
+            {uiText.backButton}
           </Button>
         </div>
 
         {!zodiacSign && (
           <Card className="p-6 mb-8 bg-slate-800 border-amber-500/30">
-            <h2 className="text-xl font-semibold mb-4 text-amber-300">Set Your Birth Date</h2>
-            <p className="mb-4">To generate your full horoscope analysis, please add your birth date in your profile.</p>
+            <h2 className="text-xl font-semibold mb-4 text-amber-300">{uiText.setBirthDateTitle}</h2>
+            <p className="mb-4">{uiText.setBirthDateDescription}</p>
             <Button 
               onClick={() => navigate('/profile')}
               className="bg-amber-500 hover:bg-amber-600 text-black"
             >
-              Go to Profile
+              {uiText.goToProfileButton}
             </Button>
           </Card>
         )}
@@ -124,7 +211,7 @@ export default function FullHoroscopePage() {
           <Card className="p-6 mb-8 bg-slate-800 border-red-500/30">
             <div className="flex items-center gap-2 text-red-400 mb-4">
               <AlertCircle size={20} />
-              <h2 className="text-xl font-semibold">Error</h2>
+              <h2 className="text-xl font-semibold">{uiText.errorTitle}</h2>
             </div>
             <p className="mb-4">{error}</p>
             <Button 
@@ -134,7 +221,7 @@ export default function FullHoroscopePage() {
               }}
               className="bg-amber-500 hover:bg-amber-600 text-black"
             >
-              Try Again
+              {uiText.tryAgainButton}
             </Button>
           </Card>
         )}
@@ -144,17 +231,21 @@ export default function FullHoroscopePage() {
             <div className="flex items-center gap-4 mb-4">
               <span className="text-4xl">{zodiacData[zodiacSign].symbol}</span>
               <div>
-                <h2 className="text-xl font-semibold text-amber-300">{zodiacData[zodiacSign].name.en}</h2>
+                <h2 className="text-xl font-semibold text-amber-300">
+                  {language === 'ru' ? zodiacData[zodiacSign].name.ru :
+                   language === 'es' ? zodiacData[zodiacSign].name.es :
+                   zodiacData[zodiacSign].name.en}
+                </h2>
                 <p className="text-gray-400">{zodiacData[zodiacSign].dates}</p>
               </div>
             </div>
-            <p className="mb-6">Generate your complete cosmic profile with insights into your personality, relationships, career path, and more based on your zodiac sign.</p>
+            <p className="mb-6">{uiText.generateDescription}</p>
             <Button 
               onClick={generateFullHoroscope}
               className="bg-amber-500 hover:bg-amber-600 text-black"
               disabled={loading}
             >
-              Generate Full Horoscope
+              {uiText.generateButton}
             </Button>
           </Card>
         )}
@@ -164,64 +255,22 @@ export default function FullHoroscopePage() {
             <div className="animate-spin mb-4">
               <Loader className="h-12 w-12 text-amber-400" />
             </div>
-            <p className="text-amber-300 text-lg">Consulting the stars and planets for your complete cosmic profile...</p>
-            <p className="text-gray-400 mt-2">This may take a moment as we analyze your celestial patterns</p>
+            <p className="text-amber-300 text-lg">{uiText.loadingTitle}</p>
+            <p className="text-gray-400 mt-2">{uiText.loadingDescription}</p>
           </div>
         )}
 
         {horoscope && (
           <div className="space-y-8">
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Personality Analysis</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.personalityAnalysis}</p>
-              </Card>
-            </section>
-
-            <Separator className="bg-amber-500/30" />
-
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Year Ahead Forecast</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.yearForecast}</p>
-              </Card>
-            </section>
-
-            <Separator className="bg-amber-500/30" />
-
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Career Path</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.careerPath}</p>
-              </Card>
-            </section>
-
-            <Separator className="bg-amber-500/30" />
-
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Relationship Forecast</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.relationshipForecast}</p>
-              </Card>
-            </section>
-
-            <Separator className="bg-amber-500/30" />
-
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Health & Wellbeing</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.healthGuidance}</p>
-              </Card>
-            </section>
-
-            <Separator className="bg-amber-500/30" />
-
-            <section>
-              <h2 className="text-2xl font-bold mb-4 text-amber-400">Personal Growth</h2>
-              <Card className="p-6 bg-slate-800 border-amber-500/30">
-                <p className="whitespace-pre-line">{horoscope.personalGrowth}</p>
-              </Card>
-            </section>
+            {Object.entries(horoscope).map(([key, content]) => (
+              <section key={key}>
+                <h2 className="text-2xl font-bold mb-4 text-amber-400">{getSectionTitle(key)}</h2>
+                <Card className="p-6 bg-slate-800 border-amber-500/30">
+                  <p className="whitespace-pre-line">{content}</p>
+                </Card>
+                {key !== 'personalGrowth' && <Separator className="bg-amber-500/30 mt-8" />}
+              </section>
+            ))}
 
             <div className="flex justify-center pt-8 pb-12">
               <Button 
@@ -229,7 +278,7 @@ export default function FullHoroscopePage() {
                 className="bg-amber-500 hover:bg-amber-600 text-black"
                 disabled={loading}
               >
-                Regenerate Horoscope
+                {uiText.regenerateButton}
               </Button>
             </div>
           </div>

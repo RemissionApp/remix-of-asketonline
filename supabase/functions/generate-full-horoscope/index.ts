@@ -12,13 +12,13 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, zodiacSign, birthDate } = await req.json();
+    const { userId, zodiacSign, birthDate, language = 'en' } = await req.json();
 
     if (!userId || !zodiacSign) {
       throw new Error('User ID and zodiac sign are required');
     }
 
-    console.log(`Generating full horoscope for user: ${userId}, sign: ${zodiacSign}`);
+    console.log(`Generating full horoscope for user: ${userId}, sign: ${zodiacSign}, language: ${language}`);
     
     // Fetch additional user data from the database if needed
     const { data: profileData, error: profileError } = await supabase
@@ -31,8 +31,8 @@ serve(async (req) => {
       console.error("Error fetching user profile:", profileError);
     }
     
-    // Generate comprehensive horoscope
-    const horoscopeData = await generateFullHoroscope(zodiacSign, birthDate, profileData);
+    // Generate comprehensive horoscope with language support
+    const horoscopeData = await generateFullHoroscope(zodiacSign, birthDate, profileData, language);
     
     // Store the generated horoscope in the database
     try {
