@@ -25,7 +25,16 @@ export default function FullHoroscopePage() {
   const uiText = getFullHoroscopeUIText(language, currentYear);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white p-4 md:p-8">
+    <div 
+      className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white p-4 md:p-8" 
+      style={{
+        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="max-w-4xl mx-auto">
         <PageHeader 
           currentYear={currentYear}
