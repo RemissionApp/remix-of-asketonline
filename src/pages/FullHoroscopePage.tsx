@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Loader, AlertCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { translateSection } from '@/utils/zodiacTranslations';
+import { formatDateLong } from '@/utils/dateFormatUtils';
 
 interface FullHoroscopeData {
   personalityAnalysis: string;
@@ -28,6 +29,9 @@ export default function FullHoroscopePage() {
   const [zodiacSign, setZodiacSign] = useState<ZodiacSign | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Get current year for the header display
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     // Determine zodiac sign from birth date
@@ -96,43 +100,11 @@ export default function FullHoroscopePage() {
     }
   };
 
-  // Get section title based on language
-  const getSectionTitle = (sectionKey: string): string => {
-    switch (sectionKey) {
-      case 'personalityAnalysis':
-        return language === 'ru' ? 'Анализ личности' :
-               language === 'es' ? 'Análisis de Personalidad' :
-               'Personality Analysis';
-      case 'yearForecast':
-        return language === 'ru' ? 'Прогноз на год' :
-               language === 'es' ? 'Pronóstico del Año' :
-               'Year Ahead Forecast';
-      case 'careerPath':
-        return language === 'ru' ? 'Карьерный путь' :
-               language === 'es' ? 'Trayectoria Profesional' :
-               'Career Path';
-      case 'relationshipForecast':
-        return language === 'ru' ? 'Прогноз отношений' :
-               language === 'es' ? 'Pronóstico de Relaciones' :
-               'Relationship Forecast';
-      case 'healthGuidance':
-        return language === 'ru' ? 'Здоровье и самочувствие' :
-               language === 'es' ? 'Salud y Bienestar' :
-               'Health & Wellbeing';
-      case 'personalGrowth':
-        return language === 'ru' ? 'Личностный рост' :
-               language === 'es' ? 'Crecimiento Personal' :
-               'Personal Growth';
-      default:
-        return sectionKey;
-    }
-  };
-  
-  // Get translations for UI elements
+  // Get UI translations for different languages
   const getUIText = () => {
     if (language === 'ru') {
       return {
-        pageTitle: 'Полный анализ гороскопа',
+        pageTitle: `Полный анализ на ${currentYear} год`,
         backButton: 'Назад',
         setBirthDateTitle: 'Укажите дату рождения',
         setBirthDateDescription: 'Чтобы сгенерировать полный анализ гороскопа, пожалуйста, добавьте дату рождения в вашем профиле.',
@@ -144,10 +116,11 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Консультация со звездами и планетами для вашего полного космического профиля...',
         loadingDescription: 'Это может занять некоторое время, пока мы анализируем ваши космические закономерности',
         regenerateButton: 'Пересоздать гороскоп',
+        userInfoPrefix: 'Персональный гороскоп для:'
       };
     } else if (language === 'es') {
       return {
-        pageTitle: 'Análisis completo del horóscopo',
+        pageTitle: `Análisis completo para el año ${currentYear}`,
         backButton: 'Atrás',
         setBirthDateTitle: 'Establece tu fecha de nacimiento',
         setBirthDateDescription: 'Para generar tu análisis completo del horóscopo, por favor agrega tu fecha de nacimiento en tu perfil.',
@@ -159,10 +132,11 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Consultando a las estrellas y planetas para tu perfil cósmico completo...',
         loadingDescription: 'Esto puede tardar un momento mientras analizamos tus patrones celestiales',
         regenerateButton: 'Regenerar horóscopo',
+        userInfoPrefix: 'Horóscopo personal para:'
       };
     } else {
       return {
-        pageTitle: 'Full Horoscope Analysis',
+        pageTitle: `Full Analysis for ${currentYear}`,
         backButton: 'Back',
         setBirthDateTitle: 'Set Your Birth Date',
         setBirthDateDescription: 'To generate your full horoscope analysis, please add your birth date in your profile.',
@@ -174,17 +148,38 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Consulting the stars and planets for your complete cosmic profile...',
         loadingDescription: 'This may take a moment as we analyze your celestial patterns',
         regenerateButton: 'Regenerate Horoscope',
+        userInfoPrefix: 'Personal horoscope for:'
       };
     }
   };
 
   const uiText = getUIText();
 
+  // Format birthdate according to the selected language
+  const formattedBirthDate = userProfile?.birthDate 
+    ? formatDateLong(userProfile.birthDate, language as any) 
+    : '';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-amber-400">{uiText.pageTitle}</h1>
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-amber-400">{uiText.pageTitle}</h1>
+            {userProfile && zodiacSign && (
+              <p className="text-gray-300 mt-1">
+                {uiText.userInfoPrefix} {userProfile.name}, {formattedBirthDate}, 
+                <span className="ml-1 text-amber-300">
+                  {zodiacData[zodiacSign].symbol} {language === 'ru' 
+                    ? zodiacData[zodiacSign].name.ru 
+                    : language === 'es' 
+                      ? zodiacData[zodiacSign].name.es
+                      : zodiacData[zodiacSign].name.en
+                  }
+                </span>
+              </p>
+            )}
+          </div>
           <Button 
             variant="outline" 
             onClick={() => navigate(-1)}
@@ -264,7 +259,7 @@ export default function FullHoroscopePage() {
           <div className="space-y-8">
             {Object.entries(horoscope).map(([key, content]) => (
               <section key={key}>
-                <h2 className="text-2xl font-bold mb-4 text-amber-400">{getSectionTitle(key)}</h2>
+                <h2 className="text-2xl font-bold mb-4 text-amber-400">{translateSection(key, language as any)}</h2>
                 <Card className="p-6 bg-slate-800 border-amber-500/30">
                   <p className="whitespace-pre-line">{content}</p>
                 </Card>
