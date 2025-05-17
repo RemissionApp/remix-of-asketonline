@@ -9,6 +9,7 @@ import { ErrorCard } from '@/components/full-horoscope/ErrorCard';
 import { GenerateHoroscopeCard } from '@/components/full-horoscope/GenerateHoroscopeCard';
 import { LoadingState } from '@/components/full-horoscope/LoadingState';
 import { HoroscopeContent } from '@/components/full-horoscope/HoroscopeContent';
+import { MovingStarField } from '@/components/full-horoscope/MovingStarField';
 
 export default function FullHoroscopePage() {
   const { userProfile, language } = useAppStore();
@@ -26,7 +27,7 @@ export default function FullHoroscopePage() {
 
   return (
     <div 
-      className="min-h-screen text-white p-4 md:p-8" 
+      className="min-h-screen text-white p-4 md:p-8 relative" 
       style={{
         backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.3)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
         backgroundSize: 'cover',
@@ -35,7 +36,10 @@ export default function FullHoroscopePage() {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="max-w-4xl mx-auto">
+      {/* Add the moving star field overlay */}
+      <MovingStarField />
+      
+      <div className="max-w-4xl mx-auto relative z-10">
         <PageHeader 
           currentYear={currentYear}
           userName={userProfile?.name}
