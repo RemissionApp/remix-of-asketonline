@@ -1,14 +1,25 @@
 
 import React, { useEffect, useState } from 'react';
-import { Calendar, LightbulbIcon } from 'lucide-react';
+import { Calendar, LightbulbIcon, Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
+import { formatDate } from '@/utils/dateFormatUtils';
 
 export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
+
+  // Update the current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchDailyAdvice = async () => {
@@ -76,13 +87,31 @@ export const DailyAdviceDisplay: React.FC = () => {
     fetchDailyAdvice();
   }, [language, userProfile?.name]);
 
+  // Format the current date based on language
+  const getFormattedDate = () => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long',
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    };
+
+    return currentDateTime.toLocaleDateString(
+      language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US', 
+      options
+    );
+  };
+
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
 
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя без фона и блоков */}
-      <div className="mb-3 text-center">
+      <div className="mb-6 text-center">
         <h2 className="text-cosmic-gold font-cormorant text-2xl animate-glow-pulse">
           {language === 'ru' 
             ? "Приветствую тебя!" 
@@ -93,6 +122,10 @@ export const DailyAdviceDisplay: React.FC = () => {
         <h3 className="text-cosmic-gold font-cormorant text-xl mt-1 animate-glow-pulse">
           {userName}
         </h3>
+        <div className="flex items-center justify-center mt-2 text-cosmic-gold/80 text-sm">
+          <Clock size={14} className="mr-1" />
+          <span>{getFormattedDate()}</span>
+        </div>
       </div>
       
       <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">

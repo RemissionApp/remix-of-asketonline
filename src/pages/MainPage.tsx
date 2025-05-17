@@ -106,8 +106,12 @@ const MainPage: React.FC = () => {
       {/* Use the TopBar component */}
       <TopBar />
       
-      {/* Always show the countdown timer when there's an active pact */}
-      {activePacts.length > 0 && <CountdownTimer pactId={currentPact?.id} />}
+      {/* Always show the countdown timer when there's an active pact - fixed at top */}
+      {activePacts.length > 0 && 
+        <div className="sticky top-16 z-20 w-full bg-cosmic-dark/70 backdrop-blur-md shadow-md">
+          <CountdownTimer pactId={currentPact?.id} />
+        </div>
+      }
       
       {/* Developer Mode Switch */}
       <div className="absolute top-20 right-4 z-20">
