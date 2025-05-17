@@ -110,7 +110,7 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Приветствие пользователя - updated with a more subtle color and font */}
+      {/* Приветствие пользователя */}
       <div className="mb-6 text-center p-4 relative z-10">
         <h2 className="text-slate-100 font-sans text-3xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
           {language === 'ru' 
@@ -134,7 +134,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
             </div>
-            <h3 className="text-cosmic-gold font-medium">
+            <h3 className="text-cosmic-gold font-sans font-medium">
               {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
             </h3>
           </div>
@@ -154,3 +154,4 @@ export const DailyAdviceDisplay: React.FC = () => {
     </div>
   );
 };
+
