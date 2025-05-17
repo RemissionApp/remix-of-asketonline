@@ -28,8 +28,8 @@ export const MeditationBlock: React.FC = () => {
       <div 
         className="absolute inset-0 bg-cover bg-left opacity-60 z-0"
         style={{ 
-          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation.png)`,
-          filter: 'brightness(1.7) contrast(1.15)',
+          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation2.png)`,
+          filter: 'brightness(1.9) contrast(1.15)', // Increased brightness by 40% (from 1.7 to 1.9)
           transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
         }}
       />
