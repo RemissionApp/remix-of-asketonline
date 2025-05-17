@@ -6,7 +6,6 @@ import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { EnergyEffect } from '@/components/EnergyEffect';
 import { useNavigate } from 'react-router-dom';
-import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -121,11 +120,6 @@ const MainPage: React.FC = () => {
           <CountdownTimer pactId={currentPact?.id} />
         </div>
       }
-      
-      {/* Developer Mode Switch */}
-      <div className="absolute top-20 right-4 z-20">
-        <DeveloperSwitch />
-      </div>
       
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />

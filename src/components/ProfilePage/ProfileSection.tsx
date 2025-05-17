@@ -6,6 +6,7 @@ import { SubscriptionManager } from './SubscriptionManager';
 import { LegalDocuments } from './LegalDocuments';
 import { LogoutButton } from './LogoutButton';
 import UserProfileForm from '@/components/UserProfileForm';
+import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 
 export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
@@ -24,6 +25,10 @@ export const ProfileSection: React.FC = () => {
         
         <h2 className="text-2xl text-white font-serif mb-4">{t.subscription?.title || "Subscription"}</h2>
         <SubscriptionManager />
+        
+        {/* Add Developer Switch here to replace the one from MainPage */}
+        <h2 className="text-2xl text-white font-serif mb-4">Developer Mode</h2>
+        <DeveloperSwitch />
         
         <LegalDocuments />
         <LogoutButton />
