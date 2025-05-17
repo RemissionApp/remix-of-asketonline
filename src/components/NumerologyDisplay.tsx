@@ -11,8 +11,11 @@ export const NumerologyDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   
+  console.log("NumerologyDisplay rendering, userProfile:", userProfile);
+  
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
+    console.log("No birthdate found, not showing numerology");
     return null;
   }
   
@@ -39,7 +42,7 @@ export const NumerologyDisplay: React.FC = () => {
   
   // Create the numerology content component
   const numerologyContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full max-w-lg mx-auto">
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
@@ -79,7 +82,7 @@ export const NumerologyDisplay: React.FC = () => {
       <ProFeatureOverlay 
         title={titleText}
         message={messageText}
-        className="mb-6 w-full max-w-lg mx-auto"
+        className="mb-6 w-full"
       >
         {numerologyContent}
       </ProFeatureOverlay>
