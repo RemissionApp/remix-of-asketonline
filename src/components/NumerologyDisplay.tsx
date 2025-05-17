@@ -17,7 +17,7 @@ export const NumerologyDisplay: React.FC = () => {
   
   // Calculate the life path number using our utility function
   // Make sure to pass birthDate as a string
-  const lifePathNumber = calculateLifePathNumber(userProfile.birthDate);
+  const lifePathNumber = calculateLifePathNumber(String(userProfile.birthDate));
   
   // Get the numerology meaning for the life path number
   const numerologyMeaning = getNumerologyMeaning(lifePathNumber, language);
