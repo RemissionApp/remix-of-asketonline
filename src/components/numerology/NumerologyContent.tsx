@@ -71,15 +71,13 @@ export const NumerologyContent: React.FC<NumerologyContentProps> = ({
           "mt-4 flex justify-center transition-all duration-500 delay-700",
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         )}>
-          <CosmicButton 
+          <button 
             onClick={handleMoreDetails} 
-            variant="outline" 
-            size="sm"
-            className="mt-2 flex items-center bg-black border-cosmic-gold/40 text-cosmic-gold rounded-none"
+            className="flex items-center justify-center px-4 py-2 mt-2 bg-black border border-cosmic-gold/40 rounded-none"
           >
-            <Star className="mr-1 w-4 h-4 text-cosmic-gold" />
-            {moreDetailsText}
-          </CosmicButton>
+            <Star className="mr-2 w-4 h-4 text-cosmic-gold" />
+            <span className="text-cosmic-gold">{moreDetailsText}</span>
+          </button>
         </div>
       </div>
     </div>
