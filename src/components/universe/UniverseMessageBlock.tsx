@@ -32,8 +32,17 @@ export const UniverseMessageBlock: React.FC = () => {
   const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
   
   const messageContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
-      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
+      {/* Background image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
+        style={{ 
+          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//dialogue.png)`,
+          filter: 'brightness(1.2) contrast(1.15)'
+        }}
+      />
+      
+      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
         <div className="flex items-center mb-4">
           <Avatar className="h-14 w-14 mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
             <AvatarImage src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" alt="Universe Avatar" />
