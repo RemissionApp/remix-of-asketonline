@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
@@ -9,7 +8,8 @@ import { ErrorMessage } from './sections/ErrorMessage';
 import { HoroscopeDisplay } from './sections/HoroscopeDisplay';
 import { DeveloperSwitch } from '../DeveloperSwitch';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Stars } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -32,6 +32,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 }) => {
   const [showGenerateButton, setShowGenerateButton] = useState(true);
   const [showDevTools, setShowDevTools] = useState(false);
+  const navigate = useNavigate();
   
   // Add debugging for props
   console.log("DetailedHoroscopeContent PROPS:", {
@@ -91,6 +92,11 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     setShowDevTools(!showDevTools);
   };
 
+  // Navigate to full horoscope page
+  const goToFullHoroscope = () => {
+    navigate('/full-horoscope');
+  };
+
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
     console.log("No zodiac info available, showing message");
@@ -126,7 +132,17 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
           <div className="space-y-3">
             <DeveloperSwitch />
             
-            <div className="flex justify-end mt-2">
+            <div className="flex justify-between mt-2">
+              <Button 
+                onClick={goToFullHoroscope} 
+                variant="outline"
+                size="sm"
+                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+              >
+                <Stars size={16} className="mr-1" />
+                {language === 'ru' ? 'Полный гороскоп' : 'Full Horoscope'}
+              </Button>
+              
               <Button 
                 onClick={handleRegenerateHoroscope} 
                 variant="outline"
@@ -181,6 +197,19 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
           userName={userProfile?.name}
           onRegenerate={onGenerateHoroscope}
         />
+      )}
+
+      {/* Full Horoscope Link */}
+      {userProfile?.isPro && horoscope && (
+        <div className="mt-8 mb-4 flex justify-center">
+          <Button 
+            onClick={goToFullHoroscope}
+            className="bg-amber-500 hover:bg-amber-600 text-black"
+          >
+            <Stars className="mr-2 h-4 w-4" />
+            {language === 'ru' ? 'Посмотреть полный гороскоп' : 'View Full Horoscope Analysis'}
+          </Button>
+        </div>
       )}
     </>
   );

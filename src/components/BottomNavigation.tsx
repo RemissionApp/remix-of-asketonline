@@ -1,19 +1,20 @@
 
 import React from 'react';
-import { Home, Sparkles, MessageSquare, UserRound } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, UserRound, Stars } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat'> = {
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope'> = {
   '/main': 'main',
   '/create-pact': 'create-pact',
   '/universe': 'universe',
   '/universe-chat': 'universe-chat',
   '/profile': 'profile',
   '/comparison': 'comparison',
-  '/meditation': 'meditation'
+  '/meditation': 'meditation',
+  '/full-horoscope': 'full-horoscope'
 };
 
 export const BottomNavigation: React.FC = () => {
@@ -25,7 +26,7 @@ export const BottomNavigation: React.FC = () => {
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;
   
-  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat', path: string) => {
+  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
@@ -76,16 +77,36 @@ export const BottomNavigation: React.FC = () => {
                   <MessageSquare size={18} />
                   <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
                 </button>
+                
+                {/* Full Horoscope button for PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
+                >
+                  <Stars size={18} />
+                  <span className="text-xs">Полный гороскоп</span>
+                </button>
               </>
             ) : (
-              /* Only Universe Question button for non-PRO users */
-              <button 
-                className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                onClick={() => handleNavigation('universe', '/universe')}
-              >
-                <MessageSquare size={18} />
-                <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
-              </button>
+              <>
+                {/* Universe Question button for non-PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('universe', '/universe')}
+                >
+                  <MessageSquare size={18} />
+                  <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
+                </button>
+                
+                {/* Full Horoscope preview for non-PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
+                >
+                  <Stars size={18} />
+                  <span className="text-xs">Полный гороскоп</span>
+                </button>
+              </>
             )}
             
             <button 
