@@ -36,6 +36,7 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) =
         onClick={handleCreatePact}
         className="mt-4"
         variant="outline"
+        // Use the cosmic-accent color for the border to match energy points and locks
       >
         {language === 'ru' ? 'Заключить договор' : 
          language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
