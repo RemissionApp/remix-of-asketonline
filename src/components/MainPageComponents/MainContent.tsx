@@ -8,7 +8,7 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { Pact } from '@/types';
 import { HoroscopeDisplay } from '@/components/HoroscopeDisplay';
 import { Loader } from 'lucide-react';
-import { UniverseChatBlock } from '@/components/UniverseChatBlock';
+import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 
 interface MainContentProps {
@@ -73,8 +73,8 @@ export const MainContent: React.FC<MainContentProps> = ({
           {/* Zodiac Badge Display */}
           <ZodiacBadgeDisplay />
           
-          {/* Universe Chat block with similar design */}
-          <UniverseChatBlock />
+          {/* Universe Message block */}
+          <UniverseMessageBlock />
           
           {/* Action buttons */}
           <ActionButtonsSection />
