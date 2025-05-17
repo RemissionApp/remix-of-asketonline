@@ -82,16 +82,16 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Приветствие пользователя над карточкой совета дня - обновлено на две строки */}
+      {/* Приветствие пользователя без прямоугольного фона */}
       <div className="mb-3 text-center">
-        <h2 className="text-cosmic-gold font-cormorant text-2xl animate-glow-pulse">
+        <h2 className="text-cosmic-gold font-cormorant text-2xl animate-glow-pulse bg-transparent">
           {language === 'ru' 
             ? "Приветствую тебя!" 
             : language === 'es'
               ? "¡Te saludo!"
               : "Greetings!"}
         </h2>
-        <h3 className="text-cosmic-gold font-cormorant text-xl mt-1 animate-glow-pulse">
+        <h3 className="text-cosmic-gold font-cormorant text-xl mt-1 animate-glow-pulse bg-transparent">
           {userName}
         </h3>
       </div>
