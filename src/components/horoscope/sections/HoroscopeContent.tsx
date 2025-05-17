@@ -92,11 +92,14 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     <div className="space-y-4">
       {sectionConfig.map((section, index) => {
         const sectionContent = horoscope.sections?.[section.key] || "";
-        console.log(`Checking section ${section.key}:`, {
-          content: sectionContent.substring(0, 30) + '...',
-          length: sectionContent.length,
+        console.log(`Section ${section.key}:`, {
+          content: sectionContent ? (sectionContent.substring(0, 30) + '...') : 'No content',
+          length: sectionContent?.length || 0,
           shouldRender: activeSection >= index
         });
+        
+        // Только отображаем секцию, если у нас есть контент
+        if (!sectionContent) return null;
         
         return (activeSection >= index) && (
           <HoroscopeSection

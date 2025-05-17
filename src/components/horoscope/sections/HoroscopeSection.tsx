@@ -15,6 +15,8 @@ export const HoroscopeSection: React.FC<HoroscopeSectionProps> = ({
   onComplete,
   className = ''
 }) => {
+  console.log(`Rendering section "${title}" with content length: ${content.length}`);
+  
   return (
     <div className={`cosmic-section p-4 border border-cosmic-accent/30 rounded-lg shadow-lg ${className} transition-all duration-500 hover:border-cosmic-accent/50`}>
       <h3 className="text-cosmic-accent font-medium mb-3 text-xl">

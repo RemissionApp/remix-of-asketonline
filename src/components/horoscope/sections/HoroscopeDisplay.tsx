@@ -20,6 +20,14 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   zodiacInfo,
   userName
 }) => {
+  // Добавляем дополнительную отладочную информацию
+  console.log("HoroscopeDisplay rendering with:", {
+    sections: horoscope?.sections ? Object.keys(horoscope.sections) : [],
+    hasGeneralAtmosphere: horoscope?.sections?.general_atmosphere ? 
+      horoscope.sections.general_atmosphere.substring(0, 30) + "..." : 
+      "No general_atmosphere"
+  });
+
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
       <CardHeader>

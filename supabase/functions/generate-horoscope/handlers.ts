@@ -51,14 +51,15 @@ export async function handleRequest(req: Request): Promise<Response> {
       dailyAdvice: `${dailyAdvice.substring(0, 50)}... (${dailyAdvice.length} chars)`
     });
     
+    // Обеспечим заполнение всех секций
     horoscopeResponse.data = {
       description: horoscopeText,
       sections: {
-        general_atmosphere: generalAtmosphere,
-        work_finance: workFinance,
-        love_relationships: loveRelationships,
-        health_wellbeing: healthWellbeing,
-        daily_advice: dailyAdvice
+        general_atmosphere: generalAtmosphere || "Сегодня день будет наполнен возможностями для личностного роста.",
+        work_finance: workFinance || "В профессиональной сфере возможны интересные предложения.",
+        love_relationships: loveRelationships || "В личной жизни возможны приятные сюрпризы.",
+        health_wellbeing: healthWellbeing || "Уделите внимание своему физическому и эмоциональному здоровью.",
+        daily_advice: dailyAdvice || "Слушайте свою интуицию, она укажет верное направление."
       }
     };
     
