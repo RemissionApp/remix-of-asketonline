@@ -5,12 +5,14 @@ import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
+import { TypingEffect } from '@/components/TypingEffect';
 
 export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
+  const [typingComplete, setTypingComplete] = useState(false);
 
   // Update the current time every second
   useEffect(() => {
@@ -108,6 +110,15 @@ export const DailyAdviceDisplay: React.FC = () => {
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
 
+  // Signature text based on language
+  const universeSignature = language === 'ru' ? '— Вселенная' : 
+                           language === 'es' ? '— El Universo' : 
+                           '— The Universe';
+
+  const handleTypingComplete = () => {
+    setTypingComplete(true);
+  };
+
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя */}
@@ -130,7 +141,7 @@ export const DailyAdviceDisplay: React.FC = () => {
       
       <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
         <div className="p-4">
-          <div className="flex items-center mb-3">
+          <div className="flex items-center mb-3 justify-center">
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
             </div>
@@ -142,10 +153,20 @@ export const DailyAdviceDisplay: React.FC = () => {
           {isLoading ? (
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
-            <div className="px-1 py-2">
-              <p className="text-white text-base font-sans leading-relaxed">
-                {dailyAdvice}
-              </p>
+            <div className="px-1 py-2 text-center">
+              <div className="text-white text-base font-sans leading-relaxed">
+                <TypingEffect 
+                  text={dailyAdvice || ''}
+                  speed={40}
+                  className="cosmic-gradient-text"
+                  onComplete={handleTypingComplete}
+                />
+              </div>
+              {typingComplete && (
+                <div className="mt-3 text-right text-cosmic-accent/80 italic text-sm animate-fade-in">
+                  {universeSignature}
+                </div>
+              )}
             </div>
           )}
         </div>
