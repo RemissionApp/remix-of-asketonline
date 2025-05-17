@@ -3,6 +3,7 @@ import { corsHeaders } from "./config.ts";
 import { HoroscopeRequest, HoroscopeResponse } from "./types.ts";
 import { generateHoroscope } from "./horoscopeGenerator.ts";
 import { extractSections } from "./utils.ts";
+import { supabase } from "./supabaseClient.ts";
 
 export async function handleRequest(req: Request): Promise<Response> {
   // Log request for debugging
@@ -23,6 +24,26 @@ export async function handleRequest(req: Request): Promise<Response> {
   const horoscopeText = await generateHoroscope(sign, language, detailed, birthDate);
   console.log(`Generated horoscope text length: ${horoscopeText.length}`);
   console.log(`Generated horoscope preview: ${horoscopeText.substring(0, 200)}...`);
+
+  // Сохраним исходный текст в таблицу raw_horoscopes для отладки
+  try {
+    const { error } = await supabase
+      .from('raw_horoscopes')
+      .insert({
+        zodiac_sign: sign,
+        language,
+        content: horoscopeText,
+        detailed: detailed
+      });
+    
+    if (error) {
+      console.error("Error saving raw horoscope:", error);
+    } else {
+      console.log("Raw horoscope saved to database");
+    }
+  } catch (saveError) {
+    console.error("Exception when saving raw horoscope:", saveError);
+  }
 
   // Prepare response based on whether detailed or brief horoscope was requested
   let horoscopeResponse: HoroscopeResponse = { success: true };

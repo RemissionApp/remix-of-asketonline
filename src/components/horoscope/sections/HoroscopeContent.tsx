@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { TypingEffect } from '@/components/TypingEffect';
 import { HoroscopeSection } from './HoroscopeSection';
 import { DetailedHoroscope } from '@/types/horoscope';
+import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface HoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -17,6 +19,8 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState(0);
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
+  const [showRawData, setShowRawData] = useState(false);
+  const [rawHoroscopeData, setRawHoroscopeData] = useState<any>(null);
 
   // Улучшенное логирование с информацией о секциях и их содержимом
   console.log("HoroscopeContent rendered with:", {
@@ -53,6 +57,9 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
         setSectionsLoaded(false);
         console.error("No sections object in horoscope data");
       }
+
+      // Сохраняем необработанные данные для отображения
+      setRawHoroscopeData(horoscope);
     }
   }, [horoscope]);
 
@@ -77,14 +84,51 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   if (!horoscope.sections || !sectionsLoaded) {
     console.log("No valid sections in horoscope, showing full description");
     return (
-      <div className="cosmic-gradient-text text-base font-serif leading-relaxed whitespace-pre-wrap p-4 bg-cosmic-dark/40 border border-cosmic-accent/20 backdrop-blur-sm rounded-lg">
-        <h3 className="text-cosmic-accent font-medium mb-3 text-xl">
-          {language === 'ru' ? 'Ваш гороскоп на сегодня' : 'Your Horoscope Today'}
-        </h3>
-        <TypingEffect 
-          text={horoscope.description || "Извините, в данный момент гороскоп недоступен. Пожалуйста, попробуйте обновить страницу или повторите запрос позже."} 
-          className="cosmic-gradient-text font-serif"
-        />
+      <div className="space-y-4">
+        <div className="cosmic-gradient-text text-base font-serif leading-relaxed whitespace-pre-wrap p-4 bg-cosmic-dark/40 border border-cosmic-accent/20 backdrop-blur-sm rounded-lg">
+          <h3 className="text-cosmic-accent font-medium mb-3 text-xl">
+            {language === 'ru' ? 'Ваш гороскоп на сегодня' : 'Your Horoscope Today'}
+          </h3>
+          <TypingEffect 
+            text={horoscope.description || "Извините, в данный момент гороскоп недоступен. Пожалуйста, попробуйте обновить страницу или повторите запрос позже."} 
+            className="cosmic-gradient-text font-serif"
+          />
+        </div>
+        
+        {/* Кнопка для переключения отображения необработанных данных */}
+        <button 
+          onClick={() => setShowRawData(!showRawData)}
+          className="text-cosmic-secondary hover:text-cosmic-accent text-sm underline mt-4"
+        >
+          {showRawData ? "Скрыть исходные данные" : "Показать исходные данные"}
+        </button>
+
+        {/* Отображение необработанных данных */}
+        {showRawData && rawHoroscopeData && (
+          <Accordion type="single" collapsible className="bg-cosmic-dark/40 border border-cosmic-accent/30 rounded-lg overflow-hidden">
+            <AccordionItem value="raw-data">
+              <AccordionTrigger className="px-4 py-2 text-cosmic-accent">
+                Необработанные данные гороскопа
+              </AccordionTrigger>
+              <AccordionContent className="p-4 bg-black/20">
+                <pre className="text-xs text-cosmic-secondary overflow-auto max-h-[500px] whitespace-pre-wrap">
+                  {JSON.stringify(rawHoroscopeData, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="original-text">
+              <AccordionTrigger className="px-4 py-2 text-cosmic-accent">
+                Исходный текст (без разделения)
+              </AccordionTrigger>
+              <AccordionContent className="p-4 bg-black/20">
+                <div className="text-xs text-cosmic-secondary overflow-auto max-h-[500px] whitespace-pre-wrap">
+                  {horoscope.description}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
       </div>
     );
   }
@@ -151,6 +195,56 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
           />
         );
       })}
+      
+      {/* Кнопка для переключения отображения необработанных данных */}
+      <button 
+        onClick={() => setShowRawData(!showRawData)}
+        className="text-cosmic-secondary hover:text-cosmic-accent text-sm underline mt-4"
+      >
+        {showRawData ? "Скрыть исходные данные" : "Показать исходные данные"}
+      </button>
+
+      {/* Отображение необработанных данных */}
+      {showRawData && rawHoroscopeData && (
+        <Accordion type="single" collapsible className="bg-cosmic-dark/40 border border-cosmic-accent/30 rounded-lg overflow-hidden">
+          <AccordionItem value="raw-data">
+            <AccordionTrigger className="px-4 py-2 text-cosmic-accent">
+              Необработанные данные гороскопа
+            </AccordionTrigger>
+            <AccordionContent className="p-4 bg-black/20">
+              <pre className="text-xs text-cosmic-secondary overflow-auto max-h-[500px] whitespace-pre-wrap">
+                {JSON.stringify(rawHoroscopeData, null, 2)}
+              </pre>
+            </AccordionContent>
+          </AccordionItem>
+          
+          <AccordionItem value="sections-data">
+            <AccordionTrigger className="px-4 py-2 text-cosmic-accent">
+              Данные секций
+            </AccordionTrigger>
+            <AccordionContent className="p-4 bg-black/20">
+              {Object.entries(horoscope.sections || {}).map(([key, value]) => (
+                <div key={key} className="mb-4">
+                  <h4 className="text-cosmic-accent text-sm mb-2">{key}:</h4>
+                  <div className="text-xs text-cosmic-secondary whitespace-pre-wrap">{value}</div>
+                  <Separator className="my-2 bg-cosmic-accent/20" />
+                </div>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="original-text">
+            <AccordionTrigger className="px-4 py-2 text-cosmic-accent">
+              Исходный текст (без разделения)
+            </AccordionTrigger>
+            <AccordionContent className="p-4 bg-black/20">
+              <div className="text-xs text-cosmic-secondary overflow-auto max-h-[500px] whitespace-pre-wrap">
+                {horoscope.description}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
       
       {/* Debug section to show raw content when sections validation fails */}
       {(!sectionsLoaded && horoscope.description) && (

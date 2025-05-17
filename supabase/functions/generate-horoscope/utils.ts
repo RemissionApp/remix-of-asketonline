@@ -1,178 +1,169 @@
-// Helper functions for processing horoscopes
+// Парсер для извлечения секций из текста гороскопа
 
-// Extract specific section from the horoscope text
-export function extractSections(text: string, sectionType: string): string {
-  // Log the input text for debugging
-  console.log(`Extracting ${sectionType} section, text length: ${text.length}`);
-  console.log(`First 100 chars of text: ${text.substring(0, 100)}`);
-  console.log(`Last 100 chars of text: ${text.substring(text.length - 100)}`);
+// Обновленная функция для извлечения секций с улучшенной обработкой ошибок и дополнительными логами
+export function extractSections(horoscopeText: string, sectionName: string): string {
+  console.log(`Extracting section "${sectionName}" from text...`);
   
-  // Заголовки разделов, которые могут встречаться в ответах
-  const sectionHeaders = {
-    general_atmosphere: [
-      'Общая атмосфера дня',
-      'General Day Atmosphere',
-      'Атмосфера дня',
-      'Общая атмосфера'
+  // Определение различных паттернов заголовков для разных секций
+  const sectionHeaders: { [key: string]: string[] } = {
+    'general_atmosphere': [
+      'Общая атмосфера дня', 'Общая атмосфера', 'Общее', 'General Day Atmosphere', 'General Atmosphere'
     ],
-    work_finance: [
-      'Советы по работе и финансам',
-      'Work & Finance Advice',
-      'Работа и финансы',
-      'Финансы и работа'
+    'work_finance': [
+      'Советы по работе и финансам', 'Работа и финансы', 'Work & Finance', 'Work and Finance', 'Career', 'Карьера'
     ],
-    love_relationships: [
-      'Рекомендации по отношениям и любви',
-      'Love & Relationship Recommendations',
-      'Любовь и отношения',
-      'Отношения'
+    'love_relationships': [
+      'Рекомендации по отношениям и любви', 'Любовь и отношения', 'Отношения', 'Love & Relationships', 'Relationships', 'Love'
     ],
-    health_wellbeing: [
-      'Состояние здоровья и эмоционального баланса',
-      'Health & Emotional Balance',
-      'Здоровье и самочувствие',
-      'Эмоциональный баланс'
+    'health_wellbeing': [
+      'Состояние здоровья и эмоционального баланса', 'Здоровье', 'Health', 'Wellbeing', 'Health & Wellbeing', 'Здоровье и благополучие'
     ],
-    daily_advice: [
-      'Практичный совет дня',
-      'Practical Daily Advice',
-      'Совет дня',
-      'Практический совет'
+    'daily_advice': [
+      'Практичный совет дня', 'Совет дня', 'Advice', 'Daily Advice', 'Практический совет'
     ]
   };
   
-  const headers = sectionHeaders[sectionType] || [];
+  // Получаем возможные заголовки для данной секции
+  const possibleHeaders = sectionHeaders[sectionName] || [];
   
-  // Пытаемся найти раздел, используя все возможные варианты заголовков
-  for (const header of headers) {
-    console.log(`Trying to find section with header: "${header}"`);
+  // Логируем все возможные заголовки для секции
+  console.log(`Looking for section "${sectionName}" with headers:`, possibleHeaders);
+  
+  let sectionText = "";
+  
+  // Пробуем найти секцию по любому из возможных заголовков
+  for (const header of possibleHeaders) {
+    console.log(`Searching for header: "${header}"`);
     
-    // Более простой и надежный подход - ищем заголовок и берем текст до следующего заголовка
-    // или до конца текста
-    const headerIndex = text.indexOf(header);
-    if (headerIndex !== -1) {
-      console.log(`Found header "${header}" at position ${headerIndex}`);
-      
-      // Получаем текст после заголовка
-      let startIndex = headerIndex + header.length;
-      
-      // Пропускаем двоеточие и пробелы если они есть
-      if (text[startIndex] === ':') {
-        startIndex++;
-      }
-      while (text[startIndex] === ' ' || text[startIndex] === '\n') {
-        startIndex++;
-      }
-      
-      // Ищем следующий заголовок из всех возможных
-      let endIndex = text.length;
-      
-      // Создаем массив всех возможных заголовков из всех секций
-      const allHeaders = [
-        ...sectionHeaders.general_atmosphere,
-        ...sectionHeaders.work_finance,
-        ...sectionHeaders.love_relationships,
-        ...sectionHeaders.health_wellbeing,
-        ...sectionHeaders.daily_advice
-      ].filter(h => h !== header); // исключаем текущий заголовок
-      
-      // Ищем следующий заголовок
-      for (const nextHeader of allHeaders) {
-        const nextHeaderIndex = text.indexOf(nextHeader, startIndex);
-        if (nextHeaderIndex !== -1 && nextHeaderIndex < endIndex) {
-          endIndex = nextHeaderIndex;
-        }
-      }
-      
-      // Извлекаем содержимое раздела
-      const sectionContent = text.substring(startIndex, endIndex).trim();
-      console.log(`Extracted section content: "${sectionContent.substring(0, 50)}..."`);
-      
-      if (sectionContent) {
-        return sectionContent;
-      }
+    // Пытаемся найти секцию с названием и заканчивающуюся пустой строкой
+    // Регулярное выражение для заголовка (с двоеточием или без)
+    const headerPatternWithColon = new RegExp(`${header}:\\s*([\\s\\S]*?)(?:\\n\\s*\\n|$)`, 'i');
+    const headerPatternNoColon = new RegExp(`${header}\\s*([\\s\\S]*?)(?:\\n\\s*\\n|$)`, 'i');
+    const numberPatternWithDot = new RegExp(`\\d\\.\\s*${header}[:\\s]*([\\s\\S]*?)(?:\\n\\s*\\n|\\d\\.\\s*|$)`, 'i');
+    
+    let match = horoscopeText.match(headerPatternWithColon);
+    if (!match) {
+      match = horoscopeText.match(headerPatternNoColon);
     }
-  }
-  
-  console.log(`NO MATCH found for section ${sectionType}, trying fallback regex approach`);
-  
-  // Если предыдущий подход не сработал, пробуем регулярные выражения
-  const sectionPatterns = {
-    general_atmosphere: [
-      /Общая атмосфера дня[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-      /General Day Atmosphere[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-    ],
-    work_finance: [
-      /Советы по работе и финансам[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-      /Work & Finance[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-    ],
-    love_relationships: [
-      /Рекомендации по отношениям и любви[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-      /Love & Relationship[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-    ],
-    health_wellbeing: [
-      /Состояние здоровья и эмоционального баланса[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-      /Health & Emotional[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-    ],
-    daily_advice: [
-      /Практичный совет дня[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-      /Practical Daily Advice[:\s]*([^]*?)(?=\n\s*\n|$)/i,
-    ]
-  };
-  
-  const patterns = sectionPatterns[sectionType] || [];
-  
-  for (const pattern of patterns) {
-    const match = text.match(pattern);
+    if (!match) {
+      match = horoscopeText.match(numberPatternWithDot);
+    }
+    
     if (match && match[1]) {
-      console.log(`REGEX MATCH FOUND for section ${sectionType}`);
-      const content = match[1].trim();
-      return content;
+      console.log(`Found match for "${header}"!`);
+      
+      // Очищаем найденный текст от лишних пробелов и переносов строк
+      sectionText = match[1].trim();
+      
+      // Нормализуем переносы строк и удаляем маркеры списков
+      sectionText = sectionText
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .replace(/^\s*[-*•]\s*/gm, '')
+        .replace(/^\s*\d+\.\s*/gm, '')
+        .trim();
+        
+      console.log(`Extracted section text (${sectionText.length} chars): "${sectionText.substring(0, 50)}..."`);
+      break;
     }
   }
   
-  console.log(`NO MATCH found for section ${sectionType} with any method, using fallback`);
+  // Если текст не найден, ищем по позиции в тексте
+  if (!sectionText) {
+    console.log("Section not found by headers, trying positional extraction...");
+    
+    // Определяем порядок секций в зависимости от имени
+    const sectionOrder = {
+      'general_atmosphere': 1,
+      'work_finance': 2,
+      'love_relationships': 3,
+      'health_wellbeing': 4,
+      'daily_advice': 5
+    };
+    
+    // Разбиваем текст на параграфы по двойным переносам строк
+    const paragraphs = horoscopeText.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+    console.log(`Found ${paragraphs.length} paragraphs in the horoscope`);
+    
+    // Если количество параграфов совпадает с ожидаемым количеством секций, пробуем извлечь по порядку
+    if (paragraphs.length >= 5) {
+      const sectionIndex = sectionOrder[sectionName] - 1;
+      if (paragraphs[sectionIndex]) {
+        sectionText = paragraphs[sectionIndex].trim();
+        console.log(`Extracted section text by position (${sectionText.length} chars): "${sectionText.substring(0, 50)}..."`);
+      }
+    }
+  }
   
-  // Создаем секцию с дефолтным текстом и информацией о проблеме для отладки
-  const debugSection = `[Не удалось извлечь содержимое секции "${sectionType}". 
+  // Обработка особого случая для русского языка: заголовок может быть слит с текстом
+  if (!sectionText && horoscopeText.includes('русск')) {
+    console.log("Trying special case extraction for Russian language...");
+    
+    const russianSectionNames = {
+      'general_atmosphere': 'Общая атмосфера дня',
+      'work_finance': 'Советы по работе и финансам',
+      'love_relationships': 'Рекомендации по отношениям и любви',
+      'health_wellbeing': 'Состояние здоровья и эмоционального баланса',
+      'daily_advice': 'Практичный совет дня'
+    };
+    
+    const russianTitle = russianSectionNames[sectionName];
+    if (russianTitle) {
+      const index = horoscopeText.indexOf(russianTitle);
+      if (index !== -1) {
+        // Найдем начало секции (после заголовка)
+        const sectionStart = index + russianTitle.length;
+        
+        // Найдем конец секции (начало следующей секции или конец текста)
+        let sectionEnd = horoscopeText.length;
+        
+        // Ищем следующую секцию
+        for (const nextSectionTitle of Object.values(russianSectionNames)) {
+          if (nextSectionTitle !== russianTitle) {
+            const nextIndex = horoscopeText.indexOf(nextSectionTitle, sectionStart);
+            if (nextIndex !== -1 && nextIndex < sectionEnd) {
+              sectionEnd = nextIndex;
+            }
+          }
+        }
+        
+        // Извлекаем текст секции
+        sectionText = horoscopeText.substring(sectionStart, sectionEnd).trim();
+        console.log(`Extracted section text by Russian title (${sectionText.length} chars): "${sectionText.substring(0, 50)}..."`);
+      }
+    }
+  }
   
-  Для отладки:
-  1. Полученный формат текста не соответствует ожидаемому. 
-  2. Убедитесь, что каждая секция начинается с правильного заголовка. 
-  3. Между секциями должна быть пустая строка.]`;
+  // Если секция все равно не найдена, ищем по номерам
+  if (!sectionText) {
+    console.log("Section not found by headers or position, trying numbered sections...");
+    
+    const sectionNumbers = {
+      'general_atmosphere': 1,
+      'work_finance': 2,
+      'love_relationships': 3,
+      'health_wellbeing': 4,
+      'daily_advice': 5
+    };
+    
+    const sectionNumber = sectionNumbers[sectionName];
+    if (sectionNumber) {
+      // Ищем раздел, начинающийся с номера
+      const numberPattern = new RegExp(`\\s*${sectionNumber}[.:]\\s*([\\s\\S]*?)(?:\\s*\\d+[.:]|$)`, 'i');
+      const match = horoscopeText.match(numberPattern);
+      
+      if (match && match[1]) {
+        sectionText = match[1].trim();
+        console.log(`Extracted section text by number (${sectionText.length} chars): "${sectionText.substring(0, 50)}..."`);
+      }
+    }
+  }
   
-  // Дефолтный контент для разных секций
-  const fallbackResponses = {
-    general_atmosphere: debugSection || 'Сегодня день будет наполнен возможностями для личностного роста и самопознания. Влияние планет способствует ясности мышления и принятию взвешенных решений. Внешние обстоятельства будут складываться в вашу пользу, особенно в первой половине дня. Вечером возможен небольшой эмоциональный спад, который легко преодолеть с помощью любимого хобби. Постарайтесь быть открытыми к новому опыту и идеям, которые могут неожиданно появиться.',
-    work_finance: debugSection || 'Сегодня благоприятный день для профессиональных начинаний и деловых переговоров. Ваша продуктивность будет высокой, если вы сосредоточитесь на приоритетных задачах и не станете распылять внимание. Возможны новые деловые предложения или финансовые поступления, которые стоит внимательно рассмотреть. Избегайте рискованных инвестиций и необдуманных трат, особенно во второй половине дня. Доверяйте своей интуиции в финансовых вопросах, она сегодня особенно остра.',
-    love_relationships: debugSection || 'В личной жизни сегодня наступает период гармонии и взаимопонимания с близкими людьми. Открытое и честное общение поможет укрепить существующие отношения и разрешить любые недопонимания. Если вы одиноки, то велика вероятность интересного знакомства, которое может перерасти в нечто большее. Проявите внимание и заботу к партнеру, даже небольшой знак внимания будет высоко оценен. Избегайте чрезмерного контроля и давления, позвольте отношениям развиваться естественно.',
-    health_wellbeing: debugSection || 'Сегодня стоит уделить особое внимание своему физическому и эмоциональному здоровью. Небольшая прогулка на свежем воздухе или легкая физическая активность поможет восстановить энергетический баланс. Избегайте стрессовых ситуаций и конфликтов, они могут негативно сказаться на вашем самочувствии. Хорошее время для начала новой программы оздоровления или изменения режима питания. Вечером уделите время медитации или другим практикам расслабления, это поможет снять накопившееся напряжение.',
-    daily_advice: debugSection || 'Разбейте большие цели на маленькие, выполнимые задачи и отмечайте каждое достижение. Это поможет поддерживать мотивацию и видеть свой прогресс. Не бойтесь просить помощи, когда она вам действительно нужна - это признак силы, а не слабости. Развивайте гибкость мышления и готовность адаптироваться к меняющимся обстоятельствам. Помните, что иногда лучший выход - это сделать перерыв и вернуться к проблеме со свежим взглядом. Практикуйте благодарность за то, что уже есть в вашей жизни, это привлечет еще больше позитивных изменений.'
-  };
+  // Если секция не найдена, возвращаем пустую строку
+  if (!sectionText) {
+    console.warn(`Section "${sectionName}" not found in horoscope text`);
+    return "";
+  }
   
-  return fallbackResponses[sectionType] || 'Информация временно недоступна. Пожалуйста, попробуйте обновить страницу или повторите попытку позже.';
-}
-
-// Helper function to get random color based on language
-export function getRandomColor(language: string): string {
-  const colors = {
-    ru: ['красный', 'синий', 'зеленый', 'фиолетовый', 'оранжевый', 'розовый', 'золотой', 'серебряный', 'бирюзовый', 'индиго'],
-    en: ['red', 'blue', 'green', 'purple', 'orange', 'pink', 'gold', 'silver', 'turquoise', 'indigo'],
-    es: ['rojo', 'azul', 'verde', 'púrpura', 'naranja', 'rosa', 'oro', 'plata', 'turquesa', 'índigo']
-  };
-  
-  const colorList = colors[language] || colors.en;
-  return colorList[Math.floor(Math.random() * colorList.length)];
-}
-
-// Helper function to get random mood based on language
-export function getRandomMood(language: string): string {
-  const moods = {
-    ru: ['радостный', 'задумчивый', 'спокойный', 'энергичный', 'вдохновленный', 'мечтательный', 'созерцательный', 'творческий'],
-    en: ['joyful', 'thoughtful', 'peaceful', 'energetic', 'inspired', 'dreamy', 'contemplative', 'creative'],
-    es: ['alegre', 'pensativo', 'tranquilo', 'enérgico', 'inspirado', 'soñador', 'contemplativo', 'creativo']
-  };
-  
-  const moodList = moods[language] || moods.en;
-  return moodList[Math.floor(Math.random() * moodList.length)];
+  return sectionText;
 }
