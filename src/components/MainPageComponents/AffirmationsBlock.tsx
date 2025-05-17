@@ -26,10 +26,10 @@ export const AffirmationsBlock: React.FC = () => {
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
       {/* Background image with reflection effect */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
+        className="absolute inset-0 bg-cover bg-center opacity-70 z-0"
         style={{ 
           backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//affirmation.png)`,
-          filter: 'brightness(1.4) contrast(1.15)', // Increased brightness by 40%
+          filter: 'brightness(1.7) contrast(1.2)', // Increased brightness by 70% (up from 40%)
           transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
         }}
       />
