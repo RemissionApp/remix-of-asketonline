@@ -9,7 +9,7 @@ export interface LoadPactsSlice {
 }
 
 export const createLoadPactsSlice = (
-  set: StateCreator<AppState>['setState'],
+  set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): LoadPactsSlice => ({
   loadPacts: async () => {

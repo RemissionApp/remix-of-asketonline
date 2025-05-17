@@ -10,7 +10,7 @@ export interface SyncPactsSlice {
 }
 
 export const createSyncPactsSlice = (
-  set: StateCreator<AppState>['setState'],
+  set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): SyncPactsSlice => ({
   syncPactsWithCurrentDate: async () => {

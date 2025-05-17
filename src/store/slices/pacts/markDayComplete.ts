@@ -10,7 +10,7 @@ export interface MarkDayCompleteSlice {
 }
 
 export const createMarkDayCompleteSlice = (
-  set: StateCreator<AppState>['setState'],
+  set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): MarkDayCompleteSlice => ({
   markDayComplete: async (pactId) => {

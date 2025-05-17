@@ -9,7 +9,7 @@ export interface BreakAscesisSlice {
 }
 
 export const createBreakAscesisSlice = (
-  set: StateCreator<AppState>['setState'],
+  set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): BreakAscesisSlice => ({
   breakAscesis: async (pactId) => {

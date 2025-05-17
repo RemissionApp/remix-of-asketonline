@@ -10,7 +10,7 @@ export interface AddPactSlice {
 }
 
 export const createAddPactSlice = (
-  set: StateCreator<AppState>['setState'],
+  set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): AddPactSlice => ({
   addPact: async (pact) => {
