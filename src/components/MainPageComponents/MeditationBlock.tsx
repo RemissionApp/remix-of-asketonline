@@ -24,12 +24,12 @@ export const MeditationBlock: React.FC = () => {
   
   return (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
-      {/* Background image with brightness filter */}
+      {/* Background image with increased brightness filter */}
       <div 
-        className="absolute inset-0 bg-cover bg-center brightness-110 opacity-50 z-0"
+        className="absolute inset-0 bg-cover bg-right-top opacity-60 z-0"
         style={{ 
           backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation.png)`,
-          filter: 'brightness(1.4) contrast(1.1)'
+          filter: 'brightness(1.7) contrast(1.15)'
         }}
       />
       
