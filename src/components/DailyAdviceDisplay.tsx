@@ -13,7 +13,8 @@ export const DailyAdviceDisplay: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
   const [typingComplete, setTypingComplete] = useState(false);
-
+  const [isTyping, setIsTyping] = useState(false);
+  
   // Update the current time every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -114,9 +115,19 @@ export const DailyAdviceDisplay: React.FC = () => {
   const universeSignature = language === 'ru' ? '— Вселенная' : 
                            language === 'es' ? '— El Universo' : 
                            '— The Universe';
+  
+  // Typing indicator text based on language
+  const typingIndicator = language === 'ru' ? 'Вселенная печатает...' : 
+                         language === 'es' ? 'El Universo está escribiendo...' : 
+                         'Universe is typing...';
 
   const handleTypingComplete = () => {
     setTypingComplete(true);
+    setIsTyping(false);
+  };
+  
+  const handleTypingStart = () => {
+    setIsTyping(true);
   };
 
   return (
@@ -141,7 +152,7 @@ export const DailyAdviceDisplay: React.FC = () => {
       
       <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
         <div className="p-4">
-          <div className="flex items-center mb-3 justify-center">
+          <div className="flex items-center mb-3">
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
             </div>
@@ -153,15 +164,22 @@ export const DailyAdviceDisplay: React.FC = () => {
           {isLoading ? (
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
-            <div className="px-1 py-2 text-center">
+            <div className="px-1 py-2">
               <div className="text-white text-base font-sans leading-relaxed">
                 <TypingEffect 
                   text={dailyAdvice || ''}
                   speed={40}
-                  className="cosmic-gradient-text"
+                  className="text-white"
                   onComplete={handleTypingComplete}
+                  onStart={handleTypingStart}
+                  runOnce={true}
                 />
               </div>
+              {isTyping && (
+                <div className="mt-2 mb-1 text-left text-cosmic-accent/60 italic text-xs animate-pulse">
+                  {typingIndicator}
+                </div>
+              )}
               {typingComplete && (
                 <div className="mt-3 text-right text-cosmic-accent/80 italic text-sm animate-fade-in">
                   {universeSignature}

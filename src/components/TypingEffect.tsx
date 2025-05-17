@@ -6,23 +6,37 @@ interface TypingProps {
   speed?: number;
   className?: string;
   onComplete?: () => void;
+  onStart?: () => void;
+  runOnce?: boolean;
 }
 
 export const TypingEffect: React.FC<TypingProps> = ({ 
   text, 
   speed = 30, 
   className = "", 
-  onComplete 
+  onComplete,
+  onStart,
+  runOnce = false
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [hasRun, setHasRun] = useState(false);
   
   useEffect(() => {
-    if (!text || hasRun) return;
+    // Skip if text is empty
+    if (!text) return;
+    
+    // Skip if already run and runOnce is true
+    if (runOnce && hasRun) {
+      setDisplayedText(text);
+      return;
+    }
     
     setIsTyping(true);
     setDisplayedText('');
+    
+    if (onStart) onStart();
+    
     let index = 0;
     
     const typingInterval = setInterval(() => {
@@ -38,7 +52,7 @@ export const TypingEffect: React.FC<TypingProps> = ({
     }, speed);
     
     return () => clearInterval(typingInterval);
-  }, [text, speed, onComplete, hasRun]);
+  }, [text, speed, onComplete, onStart, runOnce, hasRun]);
   
   return (
     <div className={className}>
