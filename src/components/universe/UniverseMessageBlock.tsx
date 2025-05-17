@@ -78,65 +78,54 @@ export const UniverseMessageBlock: React.FC = () => {
   };
   
   const messageContent = (
-    <div 
-      className="cosmic-block relative overflow-hidden flex flex-col bg-cosmic-dark/70 backdrop-blur-sm border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto"
-      style={{
-        backgroundImage: 'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      {/* Semi-transparent overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-cosmic-dark/60 backdrop-blur-sm"></div>
-      
-      <div className="flex items-center z-10 mb-3">
-        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-cosmic-accent/20 mr-3">
-          <MessageSquare size={20} className="text-cosmic-accent" />
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
+      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
+        <div className="flex items-center mb-3">
+          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+            <MessageSquare size={20} className="text-cosmic-accent" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-cosmic-accent">{t.universe?.chatTitle || "Диалог со Вселенной"}</h3>
+            <p className="text-sm text-cosmic-secondary">{t.universe?.chatDescription || "Задайте вопрос Вселенной"}</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-cosmic-accent text-base font-medium">
-            {t.universe?.chatTitle || "Диалог со Вселенной"}
-          </h3>
-          <p className="text-sm text-cosmic-secondary">
-            {t.universe?.chatDescription || "Задайте вопрос Вселенной"}
-          </p>
+        
+        {userProfile?.isPro && (
+          <div className="mt-4">
+            {isLoading ? (
+              <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
+            ) : (
+              <>
+                <div className="flex items-center mb-2">
+                  <Sparkles size={16} className="text-cosmic-gold mr-2" />
+                  <h4 className="text-cosmic-gold text-xs">
+                    {language === 'ru' ? 'ПОСЛАНИЕ ВСЕЛЕННОЙ' : 
+                     language === 'es' ? 'MENSAJE DEL UNIVERSO' : 'UNIVERSE MESSAGE'}
+                  </h4>
+                </div>
+                <p className="text-white text-base font-sans leading-relaxed">
+                  {dailyHoroscope || (
+                    language === 'ru' ? 'Загрузка послания...' : 
+                    language === 'es' ? 'Cargando mensaje...' : 
+                    'Loading message...'
+                  )}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+        
+        <div className="flex justify-end mt-4">
+          <CosmicButton 
+            onClick={handleChatClick} 
+            size="sm" 
+            variant="outline"
+          >
+            {t.universe?.enterChat || "Начать диалог"} 
+            <ArrowRight size={16} className="ml-2" />
+          </CosmicButton>
         </div>
       </div>
-      
-      {userProfile?.isPro && userProfile?.birthDate && (
-        <div className="z-10 mb-3 mt-1 px-2">
-          {isLoading ? (
-            <Skeleton className="h-20 w-full bg-cosmic-accent/10 rounded-md" />
-          ) : (
-            <>
-              <div className="flex items-center mb-2">
-                <Sparkles size={16} className="text-cosmic-gold mr-2" />
-                <h4 className="text-cosmic-gold text-xs">
-                  {language === 'ru' ? 'ПОСЛАНИЕ ВСЕЛЕННОЙ' : 
-                   language === 'es' ? 'MENSAJE DEL UNIVERSO' : 'UNIVERSE MESSAGE'}
-                </h4>
-              </div>
-              <p className="text-sm text-cosmic-secondary italic">
-                {dailyHoroscope || (
-                  language === 'ru' ? 'Загрузка послания...' : 
-                  language === 'es' ? 'Cargando mensaje...' : 
-                  'Loading message...'
-                )}
-              </p>
-            </>
-          )}
-        </div>
-      )}
-      
-      <CosmicButton 
-        onClick={handleChatClick} 
-        size="sm" 
-        variant="outline" 
-        className="self-end mt-2 z-10"
-      >
-        {t.universe?.enterChat || "Начать диалог"} 
-        <ArrowRight size={16} />
-      </CosmicButton>
     </div>
   );
   
@@ -144,8 +133,8 @@ export const UniverseMessageBlock: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay 
-        title="Диалог со Вселенной"
-        message="Разблокируй PRO чтобы вести диалог со Вселенной"
+        title={t.universe?.chatProTitle || "Диалог со Вселенной"}
+        message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
         className="mb-6 w-full max-w-lg mx-auto"
       >
         {messageContent}
