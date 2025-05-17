@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { CosmicButton } from '../CosmicButton';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface NumerologyContentProps {
   lifePathNumber: number;
@@ -75,15 +75,13 @@ export const NumerologyContent: React.FC<NumerologyContentProps> = ({
             onClick={handleMoreDetails} 
             variant="outline" 
             size="sm"
-            className="mt-2 group flex items-center bg-black border-cosmic-gold/40 text-cosmic-gold rounded-full"
+            className="mt-2 flex items-center bg-black border-cosmic-gold/40 text-cosmic-gold rounded-none"
           >
             <Star className="mr-1 w-4 h-4 text-cosmic-gold" />
             {moreDetailsText}
-            <ArrowRight className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" />
           </CosmicButton>
         </div>
       </div>
     </div>
   );
 };
-
