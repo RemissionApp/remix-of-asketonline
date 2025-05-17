@@ -5,16 +5,13 @@ import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
-import { TypingEffect } from '@/components/TypingEffect';
 
 export const DailyAdviceDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
-  const [typingComplete, setTypingComplete] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  
+
   // Update the current time every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -111,25 +108,6 @@ export const DailyAdviceDisplay: React.FC = () => {
   // Определяем имя для приветствия
   const userName = userProfile?.name || (language === 'ru' ? 'Искатель' : language === 'es' ? 'Buscador' : 'Seeker');
 
-  // Signature text based on language
-  const universeSignature = language === 'ru' ? '— Вселенная' : 
-                           language === 'es' ? '— El Universo' : 
-                           '— The Universe';
-  
-  // Typing indicator text based on language
-  const typingIndicator = language === 'ru' ? 'Вселенная печатает...' : 
-                         language === 'es' ? 'El Universo está escribiendo...' : 
-                         'Universe is typing...';
-
-  const handleTypingComplete = () => {
-    setTypingComplete(true);
-    setIsTyping(false);
-  };
-  
-  const handleTypingStart = () => {
-    setIsTyping(true);
-  };
-
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя */}
@@ -165,26 +143,9 @@ export const DailyAdviceDisplay: React.FC = () => {
             <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
             <div className="px-1 py-2">
-              <div className="text-white text-base font-sans leading-relaxed">
-                <TypingEffect 
-                  text={dailyAdvice || ''}
-                  speed={40}
-                  className="text-white"
-                  onComplete={handleTypingComplete}
-                  onStart={handleTypingStart}
-                  runOnce={true}
-                />
-              </div>
-              {isTyping && (
-                <div className="mt-2 mb-1 text-left text-cosmic-accent/60 italic text-xs animate-pulse">
-                  {typingIndicator}
-                </div>
-              )}
-              {typingComplete && (
-                <div className="mt-3 text-right text-cosmic-accent/80 italic text-sm animate-fade-in">
-                  {universeSignature}
-                </div>
-              )}
+              <p className="text-white text-base font-sans leading-relaxed">
+                {dailyAdvice}
+              </p>
             </div>
           )}
         </div>
