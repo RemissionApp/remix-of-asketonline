@@ -6,6 +6,7 @@ import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -29,6 +30,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   formatRejection
 }) => {
   const { t } = useTranslations();
+  const { language } = useAppStore();
   
   if (!currentPact) return null;
   

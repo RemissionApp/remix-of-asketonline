@@ -21,6 +21,7 @@ const MainPage: React.FC = () => {
     loadUserProfile,
     userProfile,
     setActiveScreen,
+    // Get the breakAscesis function from the store
     breakAscesis
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);

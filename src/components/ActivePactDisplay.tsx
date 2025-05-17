@@ -20,7 +20,8 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
   getAscesisPrefix,
   formatRejection
 }) => {
-  const { t, language } = useTranslations();
+  const { t } = useTranslations();
+  const { language } = useAppStore();
   
   if (!pact) return null;
   
