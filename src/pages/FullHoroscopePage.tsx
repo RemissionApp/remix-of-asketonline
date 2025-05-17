@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -116,7 +115,6 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Консультация со звездами и планетами для вашего полного космического профиля...',
         loadingDescription: 'Это может занять некоторое время, пока мы анализируем ваши космические закономерности',
         regenerateButton: 'Пересоздать гороскоп',
-        userInfoPrefix: 'Персональный гороскоп для:'
       };
     } else if (language === 'es') {
       return {
@@ -132,7 +130,6 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Consultando a las estrellas y planetas para tu perfil cósmico completo...',
         loadingDescription: 'Esto puede tardar un momento mientras analizamos tus patrones celestiales',
         regenerateButton: 'Regenerar horóscopo',
-        userInfoPrefix: 'Horóscopo personal para:'
       };
     } else {
       return {
@@ -148,7 +145,6 @@ export default function FullHoroscopePage() {
         loadingTitle: 'Consulting the stars and planets for your complete cosmic profile...',
         loadingDescription: 'This may take a moment as we analyze your celestial patterns',
         regenerateButton: 'Regenerate Horoscope',
-        userInfoPrefix: 'Personal horoscope for:'
       };
     }
   };
@@ -168,7 +164,7 @@ export default function FullHoroscopePage() {
             <h1 className="text-3xl font-bold text-amber-400">{uiText.pageTitle}</h1>
             {userProfile && zodiacSign && (
               <p className="text-gray-300 mt-1">
-                {uiText.userInfoPrefix} {userProfile.name}, {formattedBirthDate}, 
+                {userProfile.name}, {formattedBirthDate}, 
                 <span className="ml-1 text-amber-300">
                   {zodiacData[zodiacSign].symbol} {language === 'ru' 
                     ? zodiacData[zodiacSign].name.ru 
@@ -259,7 +255,7 @@ export default function FullHoroscopePage() {
           <div className="space-y-8">
             {Object.entries(horoscope).map(([key, content]) => (
               <section key={key}>
-                <h2 className="text-2xl font-bold mb-4 text-amber-400">{translateSection(key, language as any)}</h2>
+                <h2 className="text-2xl font-bold mb-4 text-amber-400 text-center">{translateSection(key, language as any)}</h2>
                 <Card className="p-6 bg-slate-800 border-amber-500/30">
                   <p className="whitespace-pre-line">{content}</p>
                 </Card>
