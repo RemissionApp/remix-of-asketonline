@@ -46,6 +46,7 @@ export const NumerologyDisplay: React.FC = () => {
     return reduceToSingleDigit(sum);
   };
   
+  // We need to pass a string to calculateLifePathNumber, not a Date object
   const lifePathNumber = calculateLifePathNumber(userProfile.birthDate);
   
   // Get numerology meaning based on life path number
@@ -270,4 +271,3 @@ export const NumerologyDisplay: React.FC = () => {
   
   return numerologyContent;
 };
-
