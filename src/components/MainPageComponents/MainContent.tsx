@@ -7,7 +7,7 @@ import { Pact } from '@/types';
 import { ActionButtonsSection } from '@/components/MainPageComponents/ActionButtonsSection';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
-import { UniverseChatBlock } from '@/components/UniverseChatBlock';
+import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
 import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 
@@ -68,14 +68,14 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 5. Numerology Display - Fifth */}
       <NumerologyDisplay />
       
-      {/* 6. Affirmations Block - Sixth (New) */}
+      {/* 6. Affirmations Block - Sixth */}
       <AffirmationsBlock />
       
       {/* 7. Meditation Block - Seventh */}
       <MeditationBlock />
       
       {/* 8. Universe Chat Block - Eighth */}
-      <UniverseChatBlock />
+      <UniverseMessageBlock />
       
       {/* Action Buttons - Remains at the bottom but now empty */}
       <div className="mt-auto">
