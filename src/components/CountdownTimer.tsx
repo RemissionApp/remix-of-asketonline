@@ -116,7 +116,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   }, [pactId, pacts]);
   
   return (
-    <div className="fixed top-16 left-0 right-0 bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 z-20">
+    <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
       <div className="flex items-center justify-center text-xs">
         <Clock size={16} className="text-cosmic-secondary mr-1" />
         <div className="flex items-center space-x-2">
