@@ -28,7 +28,7 @@ export const AffirmationsBlock: React.FC = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
         style={{ 
-          backgroundImage: `url(https://images.unsplash.com/photo-1500673922987-e212871fec22)`,
+          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//affirmation.png)`,
           filter: 'brightness(1.4) contrast(1.15)', // Increased brightness by 40%
           transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
         }}
