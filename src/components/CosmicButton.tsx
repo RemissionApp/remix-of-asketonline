@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 interface CosmicButtonProps {
   onClick?: () => void;
   children: React.ReactNode;
-  variant?: 'default' | 'outline' | 'subtle' | 'destructive';
+  variant?: 'default' | 'outline' | 'subtle' | 'destructive' | 'white';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
@@ -25,7 +25,8 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
     default: 'bg-gradient-to-r from-cosmic-accent to-cosmic-indigo hover:from-purple-500 hover:to-blue-500 text-white shadow-md',
     outline: 'border border-cosmic-accent bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 shadow-sm',
     subtle: 'bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20',
-    destructive: 'bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30'
+    destructive: 'bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30',
+    white: 'border border-white text-white hover:bg-white/10 shadow-sm'
   };
   
   const sizeClasses = {

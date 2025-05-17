@@ -34,12 +34,18 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({ onCreatePactClick }) =
       
       <CosmicButton 
         onClick={handleCreatePact}
-        className="mt-4"
-        variant="outline"
+        className="mt-4 mb-5"
+        variant="white"
       >
         {language === 'ru' ? 'Заключить договор' : 
          language === 'es' ? 'Hacer un pacto' : 'Make a covenant'}
       </CosmicButton>
+      
+      <p className="text-cosmic-secondary text-sm mt-2">
+        {language === 'ru' ? 'Нет действующих договоров со вселенной' : 
+         language === 'es' ? 'No hay pactos activos con el universo' : 
+         'No active covenants with the universe'}
+      </p>
     </div>
   );
 };

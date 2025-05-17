@@ -41,8 +41,10 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      {/* Always show the user greeting section */}
-      <UserGreetingSection />
+      <div className="mt-4 mb-2">
+        {/* User greeting section moved down slightly */}
+        <UserGreetingSection />
+      </div>
       
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
