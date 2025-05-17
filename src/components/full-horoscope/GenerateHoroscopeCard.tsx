@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { zodiacData } from '@/utils/zodiac';
+import { ZodiacSignDisplay } from '@/components/ZodiacSignDisplay';
 
 interface GenerateHoroscopeCardProps {
   zodiacSign: string;
@@ -23,15 +23,15 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
   return (
     <Card className="p-6 mb-8 bg-slate-800 border-amber-500/30">
       <div className="flex items-center gap-4 mb-4">
-        <span className="text-4xl">{zodiacData[zodiacSign].symbol}</span>
-        <div>
-          <h2 className="text-xl font-semibold text-amber-300">
-            {language === 'ru' ? zodiacData[zodiacSign].name.ru :
-             language === 'es' ? zodiacData[zodiacSign].name.es :
-             zodiacData[zodiacSign].name.en}
-          </h2>
-          <p className="text-gray-400">{zodiacData[zodiacSign].dates}</p>
-        </div>
+        <ZodiacSignDisplay 
+          zodiacSign={zodiacSign}
+          language={language}
+          size="lg"
+          showDates={true}
+          className="flex items-center"
+          symbolClassName="text-4xl"
+          textClassName="flex flex-col"
+        />
       </div>
       <p className="mb-6">{uiText.generateDescription}</p>
       <Button 

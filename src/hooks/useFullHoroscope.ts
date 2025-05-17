@@ -72,9 +72,9 @@ export function useFullHoroscope() {
         console.log("Found existing horoscope:", data);
         setHoroscope(data.content);
       } else {
-        // No records found, generate new horoscope
-        console.log("No existing horoscope found, will generate a new one");
-        await generateFullHoroscope();
+        // No records found
+        console.log("No existing horoscope found");
+        setHoroscope(null);
       }
     } catch (error: any) {
       console.error("Error in fetchExistingHoroscope:", error);

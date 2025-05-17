@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { zodiacData } from '@/utils/zodiac';
 import { formatDateLong } from '@/utils/dateFormatUtils';
+import { ZodiacSignDisplay } from '@/components/ZodiacSignDisplay';
 
 interface PageHeaderProps {
   currentYear: number;
@@ -39,14 +39,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {userName && zodiacSign && (
           <p className="text-gray-300 mt-1">
             {userName}, {formattedBirthDate}, 
-            <span className="ml-1 text-amber-300">
-              {zodiacData[zodiacSign].symbol} {language === 'ru' 
-                ? zodiacData[zodiacSign].name.ru 
-                : language === 'es' 
-                  ? zodiacData[zodiacSign].name.es
-                  : zodiacData[zodiacSign].name.en
-              }
-            </span>
+            <ZodiacSignDisplay 
+              zodiacSign={zodiacSign}
+              language={language}
+              className="ml-1 inline-flex"
+              textClassName="text-amber-300"
+            />
           </p>
         )}
       </div>

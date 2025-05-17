@@ -2,6 +2,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { CardTitle, CardDescription } from '@/components/ui/card';
+import { ZodiacSignDisplay } from '@/components/ZodiacSignDisplay';
 
 interface HoroscopeHeaderProps {
   zodiacInfo: any;
@@ -23,7 +24,14 @@ export const HoroscopeHeader: React.FC<HoroscopeHeaderProps> = ({
         {translations.title[language] || translations.title.en}
       </CardTitle>
       <CardDescription className="text-cosmic-secondary text-base">
-        {zodiacInfo?.symbol} {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
+        {zodiacInfo && (
+          <ZodiacSignDisplay 
+            zodiacSign={zodiacInfo.sign}
+            language={language}
+            className="inline-flex"
+            textClassName="text-cosmic-secondary"
+          />
+        )}
       </CardDescription>
       {/* User Greeting */}
       <h2 className="text-cosmic-gold font-serif text-xl mt-3">
