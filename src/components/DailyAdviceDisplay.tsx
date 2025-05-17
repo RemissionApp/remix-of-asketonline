@@ -1,7 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Calendar, LightbulbIcon } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/lib/supabase';
@@ -96,10 +95,10 @@ export const DailyAdviceDisplay: React.FC = () => {
         </h3>
       </div>
       
-      <Card className="border-cosmic-accent/20 bg-cosmic-dark/70 backdrop-blur-sm mb-6 overflow-hidden">
-        <CardContent className="p-4">
+      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
+        <div className="p-4">
           <div className="flex items-center mb-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-cosmic-accent/20 mr-3">
+            <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <LightbulbIcon size={20} className="text-cosmic-accent" />
             </div>
             <h3 className="text-cosmic-accent font-medium">
@@ -125,8 +124,8 @@ export const DailyAdviceDisplay: React.FC = () => {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

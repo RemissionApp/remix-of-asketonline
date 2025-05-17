@@ -38,7 +38,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   const progress = Math.round((activeDaysCompleted / (currentPact.duration || 1)) * 100);
   
   return (
-    <>
+    <div className="w-full max-w-lg mx-auto flex flex-col items-center">
       {/* Pact navigation controls */}
       {activePacts.length > 1 && (
         <div className="mb-4 flex items-center justify-center">
@@ -94,6 +94,6 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
           </CosmicButton>
         </div>
       </EnergyCircle>
-    </>
+    </div>
   );
 };
