@@ -13,6 +13,7 @@ export interface HoroscopeResponse {
   data?: {
     description: string;
     sections?: {
+      general_atmosphere: string;
       work_finance: string;
       love_relationships: string;
       health_wellbeing: string;
