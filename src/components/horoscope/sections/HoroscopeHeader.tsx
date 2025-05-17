@@ -21,7 +21,11 @@ export const HoroscopeHeader: React.FC<HoroscopeHeaderProps> = ({
     <>
       <CardTitle className="flex items-center gap-2 text-cosmic-gold">
         <Star className="text-cosmic-gold" size={24} />
-        {translations.title[language] || translations.title.en}
+        {language === 'ru' 
+          ? 'Гороскоп'
+          : language === 'es' 
+            ? 'Horóscopo'
+            : 'Horoscope'}
       </CardTitle>
       <CardDescription className="text-cosmic-secondary text-base">
         {zodiacInfo && (
