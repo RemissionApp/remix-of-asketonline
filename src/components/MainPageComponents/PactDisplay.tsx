@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -77,22 +77,23 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       </h1>
       
       <EnergyCircle progress={progress} size="lg">
-        <div className="text-center p-4">
+        <div className="text-center p-4 flex flex-col items-center">
           <p className="text-4xl font-bold font-serif text-white">
             {activeDaysCompleted}/{currentPact.duration}
           </p>
           <p className="text-lg text-cosmic-accent mt-2">{t.main.days}</p>
+          
+          {/* Break Ascesis button moved inside the circle */}
+          <CosmicButton 
+            className="mt-4" 
+            variant="destructive"
+            size="sm"
+            onClick={handleBreakAscesis}
+          >
+            {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
+          </CosmicButton>
         </div>
       </EnergyCircle>
-      
-      <CosmicButton 
-        className="mt-8" 
-        variant="destructive"
-        onClick={handleBreakAscesis}
-      >
-        <X size={16} />
-        {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
-      </CosmicButton>
     </>
   );
 };

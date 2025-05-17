@@ -63,11 +63,11 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 4. Zodiac Badge Display - Fourth */}
       <ZodiacBadgeDisplay />
       
-      {/* 5. Universe Chat Block (Messages from Universe) - Fifth */}
-      <UniverseChatBlock />
-      
-      {/* Numerology Display was moved lower in priority */}
+      {/* 5. Numerology Display - Fifth (moved here as requested) */}
       <NumerologyDisplay />
+      
+      {/* 6. Universe Chat Block (Messages from Universe) - Sixth */}
+      <UniverseChatBlock />
       
       {/* Action Buttons - Remains at the bottom */}
       <div className="mt-auto">
