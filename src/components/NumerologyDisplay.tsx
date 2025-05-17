@@ -41,7 +41,9 @@ export const NumerologyDisplay: React.FC = () => {
             <Calculator size={20} className="text-cosmic-accent" />
           </div>
           <div>
-            <h3 className="font-sans font-medium">{numerologyText}</h3>
+            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
+              {numerologyText}
+            </h3>
           </div>
         </div>
         <NumerologyContent

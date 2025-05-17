@@ -1,4 +1,5 @@
 
+
 @layer components {
   .cosmic-block {
     @apply w-full max-w-lg mx-auto rounded-lg transition-all duration-300;
@@ -43,7 +44,12 @@
     @apply font-sans font-medium text-base flex items-center;
   }
   
+  .cosmic-block-heading-en {
+    @apply font-serif font-medium text-lg flex items-center;
+  }
+  
   .cosmic-block-icon-wrapper {
     @apply bg-cosmic-accent/20 rounded-lg p-2 mr-3 flex items-center justify-center;
   }
 }
+

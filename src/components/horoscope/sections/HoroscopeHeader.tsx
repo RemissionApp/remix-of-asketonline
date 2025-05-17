@@ -34,7 +34,7 @@ export const HoroscopeHeader: React.FC<HoroscopeHeaderProps> = ({
         )}
       </CardDescription>
       {/* User Greeting */}
-      <h2 className="text-cosmic-gold font-serif text-xl mt-3">
+      <h2 className={`text-cosmic-gold ${language === 'en' ? 'font-serif' : 'font-sans'} text-xl mt-3`}>
         {language === 'ru' 
           ? `Приветствую тебя, ${userName || 'Искатель'}!` 
           : language === 'es'

@@ -112,14 +112,14 @@ export const DailyAdviceDisplay: React.FC = () => {
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя */}
       <div className="mb-6 text-center p-4 relative z-10">
-        <h2 className="font-sans text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+        <h2 className={language === 'en' ? "font-serif text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
           {language === 'ru' 
             ? "Приветствую тебя!" 
             : language === 'es'
               ? "¡Te saludo!"
               : "Greetings!"}
         </h2>
-        <h3 className="font-sans text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+        <h3 className={language === 'en' ? "font-serif text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
           {userName}
         </h3>
         <div className="flex items-center justify-center mt-3 text-slate-300 text-sm font-medium">
@@ -134,7 +134,7 @@ export const DailyAdviceDisplay: React.FC = () => {
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
             </div>
-            <h3 className="font-sans font-medium">
+            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
               {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
             </h3>
           </div>

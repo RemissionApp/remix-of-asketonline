@@ -6,7 +6,7 @@ import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
-  const { userProfile } = useAppStore();
+  const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   
   // Only display if user has a birthdate
@@ -22,7 +22,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
             <div className="text-cosmic-accent">♈</div>
           </div>
           <div>
-            <h3 className="font-sans font-medium">
+            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
               {t.zodiac?.title || "Гороскоп"}
             </h3>
           </div>
