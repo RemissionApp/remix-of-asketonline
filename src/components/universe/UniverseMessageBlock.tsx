@@ -28,6 +28,9 @@ export const UniverseMessageBlock: React.FC = () => {
   const universeTitle = language === 'ru' ? 'Диалог со вселенной' : 
                          language === 'es' ? 'Diálogo con el Universo' : 'Dialogue with the Universe';
   
+  // Determine the correct font class based on language - matching other headings in the app
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
+  
   const messageContent = (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
       <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent">
@@ -40,7 +43,7 @@ export const UniverseMessageBlock: React.FC = () => {
           </Avatar>
           
           <div>
-            <h3 className="text-lg font-serif font-medium text-white">
+            <h3 className={`text-lg ${headingFontClass} font-medium text-white`}>
               {universeTitle}
             </h3>
             <div className="flex items-center text-xs text-cosmic-secondary">
