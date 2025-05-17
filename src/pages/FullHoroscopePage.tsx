@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
-import { Loader } from 'lucide-react';
+import { Loader, AlertCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
 interface FullHoroscopeData {
@@ -23,6 +23,7 @@ export default function FullHoroscopePage() {
   const { user, userProfile } = useAppStore();
   const [horoscope, setHoroscope] = useState<FullHoroscopeData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [zodiacSign, setZodiacSign] = useState<ZodiacSign | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function FullHoroscopePage() {
       const birthDate = new Date(userProfile.birthDate);
       const sign = getZodiacSign(birthDate);
       setZodiacSign(sign);
+      console.log("Set zodiac sign:", sign, "from birthDate:", userProfile.birthDate);
     }
   }, [userProfile?.birthDate]);
 
@@ -48,6 +50,14 @@ export default function FullHoroscopePage() {
 
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log("Calling generateFullHoroscope edge function with params:", { 
+        userId: user.id,
+        zodiacSign,
+        birthDate: userProfile?.birthDate || null
+      });
+      
       // Call the edge function to generate the full horoscope
       const { data, error } = await supabase.functions.invoke('generate-full-horoscope', {
         body: { 
@@ -58,12 +68,21 @@ export default function FullHoroscopePage() {
       });
 
       if (error) {
+        console.error("Edge function error:", error);
         throw new Error(error.message || 'Failed to generate full horoscope');
       }
 
+      console.log("Received horoscope data:", data);
       setHoroscope(data);
+      
+      toast({
+        title: 'Success',
+        description: 'Your comprehensive horoscope has been generated!',
+        variant: 'default'
+      });
     } catch (error: any) {
       console.error('Error generating full horoscope:', error);
+      setError(error.message || "Failed to generate horoscope. Please try again later.");
       toast({
         title: 'Error',
         description: error.message || 'Failed to generate full horoscope',
@@ -101,7 +120,26 @@ export default function FullHoroscopePage() {
           </Card>
         )}
 
-        {zodiacSign && !horoscope && !loading && (
+        {error && (
+          <Card className="p-6 mb-8 bg-slate-800 border-red-500/30">
+            <div className="flex items-center gap-2 text-red-400 mb-4">
+              <AlertCircle size={20} />
+              <h2 className="text-xl font-semibold">Error</h2>
+            </div>
+            <p className="mb-4">{error}</p>
+            <Button 
+              onClick={() => {
+                setError(null);
+                generateFullHoroscope();
+              }}
+              className="bg-amber-500 hover:bg-amber-600 text-black"
+            >
+              Try Again
+            </Button>
+          </Card>
+        )}
+
+        {zodiacSign && !horoscope && !loading && !error && (
           <Card className="p-6 mb-8 bg-slate-800 border-amber-500/30">
             <div className="flex items-center gap-4 mb-4">
               <span className="text-4xl">{zodiacData[zodiacSign].symbol}</span>

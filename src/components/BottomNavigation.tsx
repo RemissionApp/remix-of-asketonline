@@ -26,6 +26,7 @@ export const BottomNavigation: React.FC = () => {
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;
   
+  // Updated to match the ActiveScreen type
   const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);

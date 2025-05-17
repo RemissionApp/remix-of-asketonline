@@ -3,7 +3,21 @@ import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat';
 
 export type AppLanguage = 'ru' | 'en' | 'es';
 
-export type ActiveScreen = 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat';
+// Define the available screens in the application
+export type ActiveScreen = 
+  | 'welcome' 
+  | 'language' 
+  | 'onboarding' 
+  | 'main' 
+  | 'create-pact' 
+  | 'universe' 
+  | 'profile' 
+  | 'comparison' 
+  | 'meditation'
+  | 'login'
+  | 'signup'
+  | 'universe-chat'
+  | 'full-horoscope';
 
 export interface AppState {
   pacts: Pact[];

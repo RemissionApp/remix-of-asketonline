@@ -46,6 +46,8 @@ serve(async (req) => {
       
       if (error) {
         console.error("Error saving full horoscope:", error);
+      } else {
+        console.log("Successfully saved horoscope to database");
       }
     } catch (saveError) {
       console.error("Exception when saving horoscope:", saveError);
@@ -53,6 +55,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify(horoscopeData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200
     });
     
   } catch (error) {
