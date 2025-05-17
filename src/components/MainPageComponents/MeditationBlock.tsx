@@ -24,12 +24,13 @@ export const MeditationBlock: React.FC = () => {
   
   return (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
-      {/* Background image with increased brightness filter */}
+      {/* Background image with reflection effect */}
       <div 
-        className="absolute inset-0 bg-cover bg-right-top opacity-60 z-0"
+        className="absolute inset-0 bg-cover bg-left opacity-60 z-0"
         style={{ 
           backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation.png)`,
-          filter: 'brightness(1.7) contrast(1.15)'
+          filter: 'brightness(1.7) contrast(1.15)',
+          transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
         }}
       />
       
