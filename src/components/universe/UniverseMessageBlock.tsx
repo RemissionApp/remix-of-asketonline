@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageSquare, ArrowRight, HelpCircle } from 'lucide-react';
+import { MessageSquare, HelpCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
@@ -54,28 +54,25 @@ export const UniverseMessageBlock: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-col sm:flex-row gap-2 mt-4">
           <CosmicButton 
             onClick={handleQuestionClick} 
-            size="sm"
-            variant="outline"
-            className="flex-1"
+            size="md"
+            variant="default"
+            className="flex-1 bg-gradient-to-r from-cosmic-gold/70 to-cosmic-gold/50 hover:from-cosmic-gold/90 hover:to-cosmic-gold/70 text-white backdrop-blur-md border border-white/10"
           >
-            <HelpCircle size={16} className="mr-1" />
             {language === 'ru' ? 'Задать вопрос' : 
              language === 'es' ? 'Hacer pregunta' : 'Ask a question'}
           </CosmicButton>
           
           <CosmicButton 
             onClick={handleChatClick} 
-            size="sm" 
-            variant="outline"
-            className="flex-1"
+            size="md" 
+            variant="default"
+            className="flex-1 bg-gradient-to-r from-cosmic-accent/80 to-cosmic-indigo/80 hover:from-cosmic-accent hover:to-cosmic-indigo backdrop-blur-md border border-white/10"
           >
-            <MessageSquare size={16} className="mr-1" />
             {language === 'ru' ? 'Перейти в чат' : 
              language === 'es' ? 'Ir al chat' : 'Enter chat'}
-            <ArrowRight size={16} className="ml-1" />
           </CosmicButton>
         </div>
       </div>

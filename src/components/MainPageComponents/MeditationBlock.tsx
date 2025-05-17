@@ -43,11 +43,10 @@ export const MeditationBlock: React.FC = () => {
         
         <CosmicButton 
           onClick={handleMeditationClick} 
-          size="sm"
-          variant="outline"
-          className="w-full"
+          size="md"
+          variant="default"
+          className="w-full bg-gradient-to-r from-cosmic-accent/80 to-cosmic-indigo/80 hover:from-cosmic-accent hover:to-cosmic-indigo backdrop-blur-md border border-white/10"
         >
-          <Headphones size={16} className="mr-1" />
           {language === 'ru' ? 'Открыть медитации' : 
            language === 'es' ? 'Abrir meditaciones' : 'Open meditations'}
         </CosmicButton>
