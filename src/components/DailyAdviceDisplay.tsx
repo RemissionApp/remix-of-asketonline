@@ -112,14 +112,14 @@ export const DailyAdviceDisplay: React.FC = () => {
     <div className="w-full max-w-lg mx-auto">
       {/* Приветствие пользователя */}
       <div className="mb-6 text-center p-4 relative z-10">
-        <h2 className={language === 'en' ? "font-serif text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-2xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
+        <h2 className={language === 'en' ? "font-serif text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
           {language === 'ru' 
             ? "Приветствую тебя!" 
             : language === 'es'
               ? "¡Te saludo!"
               : "Greetings!"}
         </h2>
-        <h3 className={language === 'en' ? "font-serif text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
+        <h3 className={language === 'en' ? "font-serif text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" : "font-sans text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"}>
           {userName}
         </h3>
         <div className="flex items-center justify-center mt-3 text-slate-300 text-sm font-medium">
