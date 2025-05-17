@@ -5,21 +5,22 @@ import { CosmicButton } from './CosmicButton';
 import { Pact } from '@/types';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import { X } from 'lucide-react';
 
 interface ActivePactDisplayProps {
   pact: Pact | null;
-  onCompleteDayClick: () => void;
+  onBreakAscesis: () => void;
   getAscesisPrefix: () => string;
   formatRejection: (text: string) => string;
 }
 
 export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
   pact,
-  onCompleteDayClick,
+  onBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
-  const { t } = useTranslations();
+  const { t, language } = useTranslations();
   
   if (!pact) return null;
   
@@ -43,9 +44,11 @@ export const ActivePactDisplay: React.FC<ActivePactDisplayProps> = ({
       
       <CosmicButton 
         className="mt-8" 
-        onClick={onCompleteDayClick}
+        variant="destructive"
+        onClick={onBreakAscesis}
       >
-        {t.main?.todayCompleted || "Complete today"}
+        <X size={16} />
+        {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
       </CosmicButton>
     </>
   );

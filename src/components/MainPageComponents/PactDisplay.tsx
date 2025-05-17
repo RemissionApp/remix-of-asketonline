@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -13,7 +13,7 @@ interface PactDisplayProps {
   currentPact: Pact | null;
   handlePrevPact: () => void;
   handleNextPact: () => void;
-  handleCompleteDayWithEffect: () => void;
+  handleBreakAscesis: () => void;
   getAscesisPrefix: () => string;
   formatRejection: (text: string) => string;
 }
@@ -24,7 +24,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   currentPact,
   handlePrevPact,
   handleNextPact,
-  handleCompleteDayWithEffect,
+  handleBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
@@ -85,9 +85,11 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       
       <CosmicButton 
         className="mt-8" 
-        onClick={handleCompleteDayWithEffect}
+        variant="destructive"
+        onClick={handleBreakAscesis}
       >
-        {t.main.todayCompleted}
+        <X size={16} />
+        {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
       </CosmicButton>
     </>
   );

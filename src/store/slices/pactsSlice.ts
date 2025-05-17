@@ -10,6 +10,7 @@ export interface PactsSlice {
   
   addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
+  breakAscesis: (pactId: string) => Promise<void>;
   loadPacts: () => Promise<void>;
   syncPactsWithCurrentDate: () => Promise<void>;
 }
@@ -227,6 +228,71 @@ export const createPactsSlice: StateCreator<AppState, [], [], PactsSlice> = (set
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось отметить день",
+        variant: "destructive"
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
+  
+  // Break ascesis - new function
+  breakAscesis: async (pactId) => {
+    const { user, loadPacts, addEnergyPoints } = get();
+    
+    if (!user) {
+      toast({
+        title: "Ошибка",
+        description: "Вы должны войти в систему для прерывания аскезы",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    set({ loading: true });
+    
+    try {
+      // Update pact status to failed
+      const { error: pactError } = await supabase
+        .from('pacts')
+        .update({ status: 'failed' })
+        .eq('id', pactId);
+      
+      if (pactError) throw pactError;
+      
+      // Subtract 100 energy points as a penalty
+      await addEnergyPoints(-100);
+      
+      // Update the profile to reflect the broken ascesis
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (profileError) throw profileError;
+      
+      // Reload pacts to reflect changes
+      await loadPacts();
+      
+      // Show message to the user
+      const { language } = get();
+      toast({
+        title: language === 'ru' 
+          ? "Аскеза прервана" 
+          : language === 'es'
+            ? "Ascesis interrumpida"
+            : "Ascesis broken",
+        description: language === 'ru' 
+          ? "Вы потеряли 100 энергетических очков" 
+          : language === 'es'
+            ? "Has perdido 100 puntos de energía"
+            : "You lost 100 energy points",
+        variant: "destructive"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Ошибка",
+        description: error.message || "Не удалось прервать аскезу",
         variant: "destructive"
       });
     } finally {

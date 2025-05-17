@@ -21,7 +21,7 @@ const MainPage: React.FC = () => {
     loadUserProfile,
     userProfile,
     setActiveScreen,
-    markDayComplete
+    breakAscesis
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
@@ -71,21 +71,27 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Handler for completing a day with visual effect
-  const handleCompleteDayWithEffect = () => {
+  // Handler for breaking ascesis
+  const handleBreakAscesis = () => {
     if (currentPact) {
-      markDayComplete(currentPact.id);
-      setShowEnergyEffect(true);
-      
-      // Show success toast
-      toast({
-        title: language === 'ru' ? 'День отмечен!' : language === 'es' ? '¡Día completado!' : 'Day completed!',
-        description: language === 'ru' ? '+10 энергии' : language === 'es' ? '+10 de energía' : '+10 energy',
-      });
-      
-      setTimeout(() => {
-        setShowEnergyEffect(false);
-      }, 2000);
+      const confirmMessage = language === 'ru' 
+        ? "Вы уверены, что хотите прервать аскезу? Вы потеряете 100 энергетических очков."
+        : language === 'es'
+          ? "¿Estás seguro de que quieres romper la ascesis? Perderás 100 puntos de energía."
+          : "Are you sure you want to break this ascesis? You will lose 100 energy points.";
+          
+      if (window.confirm(confirmMessage)) {
+        breakAscesis(currentPact.id);
+        
+        // If this was the only pact, reset the index
+        if (activePacts.length === 1) {
+          setCurrentPactIndex(0);
+        }
+        // If we're at the last pact and it's being removed, go back one
+        else if (currentPactIndex === activePacts.length - 1) {
+          setCurrentPactIndex(currentPactIndex - 1);
+        }
+      }
     }
   };
   
@@ -120,7 +126,7 @@ const MainPage: React.FC = () => {
         showEnergyEffect={showEnergyEffect}
         handlePrevPact={handlePrevPact}
         handleNextPact={handleNextPact}
-        handleCompleteDayWithEffect={handleCompleteDayWithEffect}
+        handleBreakAscesis={handleBreakAscesis}
         getAscesisPrefix={getAscesisPrefix}
         formatRejection={formatRejection}
       />

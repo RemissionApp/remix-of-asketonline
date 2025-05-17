@@ -1,26 +1,21 @@
 
 import React from 'react';
-import { PactDisplay } from './PactDisplay';
-import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
-import { ActionButtonsSection } from './ActionButtonsSection';
-import { NoPactsView } from '@/components/NoPactsView';
-import { CountdownTimer } from '@/components/CountdownTimer';
-import { Pact } from '@/types';
 import { DailyAdviceDisplay } from '@/components/DailyAdviceDisplay';
-import { Loader } from 'lucide-react';
-import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
-import { NumerologyDisplay } from '@/components/NumerologyDisplay';
+import { NoPactsView } from '@/components/NoPactsView';
+import { PactDisplay } from '@/components/MainPageComponents/PactDisplay';
+import { Pact } from '@/types';
+import { ActionButtonsSection } from '@/components/MainPageComponents/ActionButtonsSection';
 
 interface MainContentProps {
   activePacts: Pact[];
   currentPactIndex: number;
   currentPact: Pact | null;
   dailyQuote: string;
-  showEnergyEffect: boolean;
   isLoading: boolean;
+  showEnergyEffect: boolean;
   handlePrevPact: () => void;
   handleNextPact: () => void;
-  handleCompleteDayWithEffect: () => void;
+  handleBreakAscesis: () => void;
   getAscesisPrefix: () => string;
   formatRejection: (text: string) => string;
 }
@@ -31,57 +26,40 @@ export const MainContent: React.FC<MainContentProps> = ({
   currentPact,
   dailyQuote,
   isLoading,
+  showEnergyEffect,
   handlePrevPact,
   handleNextPact,
-  handleCompleteDayWithEffect,
+  handleBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
-  // Show loading indicator while data is being fetched
-  if (isLoading) {
-    return (
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-16">
-        <div className="flex flex-col items-center justify-center p-8">
-          <Loader className="h-12 w-12 text-cosmic-accent animate-spin mb-4" />
-          <p className="text-cosmic-accent text-lg">Загрузка данных...</p>
-        </div>
-      </div>
-    );
-  }
-  
   return (
-    <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 mt-24">
-      {activePacts.length > 0 ? (
-        <>
+    <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
+      {/* Advice Display */}
+      <DailyAdviceDisplay />
+      
+      {/* Pact or No-Pacts View */}
+      <div className={`mt-6 w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+        {activePacts.length > 0 && currentPact ? (
           <PactDisplay
             activePacts={activePacts}
             currentPactIndex={currentPactIndex}
             currentPact={currentPact}
             handlePrevPact={handlePrevPact}
             handleNextPact={handleNextPact}
-            handleCompleteDayWithEffect={handleCompleteDayWithEffect}
+            handleBreakAscesis={handleBreakAscesis}
             getAscesisPrefix={getAscesisPrefix}
             formatRejection={formatRejection}
           />
-          
-          {/* Daily Advice display (previously HoroscopeDisplay) */}
-          <DailyAdviceDisplay />
-          
-          {/* Numerology display */}
-          <NumerologyDisplay />
-          
-          {/* Zodiac Badge Display */}
-          <ZodiacBadgeDisplay />
-          
-          {/* Universe Message block */}
-          <UniverseMessageBlock />
-          
-          {/* Action buttons */}
-          <ActionButtonsSection />
-        </>
-      ) : (
-        <NoPactsView />
-      )}
-    </div>
+        ) : !isLoading ? (
+          <NoPactsView />
+        ) : null}
+      </div>
+      
+      {/* Action Buttons */}
+      <div className="mt-auto">
+        <ActionButtonsSection />
+      </div>
+    </main>
   );
 };
