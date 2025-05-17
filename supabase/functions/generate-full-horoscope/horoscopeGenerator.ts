@@ -32,6 +32,7 @@ Your analysis should be divided into 6 clear sections:
 6. Personal Growth - Suggest areas for personal development and spiritual growth.
 
 For each section, write at least 150 words of specific, personalized content.
+Format your response with clear section headers like "1. Personality Analysis:", "2. Year Ahead Forecast:", etc.
 Avoid generic statements and platitudes. Use cosmic metaphors and reference planetary positions where relevant.
 The tone should be insightful, wise, and educational but also accessible and practical.
 DO NOT mention that this is AI-generated content.`;

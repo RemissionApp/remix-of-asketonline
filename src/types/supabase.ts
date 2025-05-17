@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -211,6 +210,29 @@ export interface Database {
           subscription_end?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      full_horoscopes: {
+        Row: {
+          id: string
+          user_id: string
+          zodiac_sign: string
+          content: any
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          zodiac_sign: string
+          content: any
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          zodiac_sign?: string
+          content?: any
+          created_at?: string
         }
       }
     }
