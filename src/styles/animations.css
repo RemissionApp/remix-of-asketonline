@@ -121,12 +121,16 @@
   }
 }
 
-/* Анимация свечения для текста приветствия */
+/* Анимация свечения для текста приветствия - Enhanced glow effect */
 @keyframes text-glow {
   0%, 100% {
     text-shadow: 0 0 5px rgba(245, 158, 11, 0.5), 0 0 10px rgba(245, 158, 11, 0.3);
   }
   50% {
-    text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 0 15px rgba(245, 158, 11, 0.6);
+    text-shadow: 0 0 15px rgba(245, 158, 11, 0.8), 0 0 20px rgba(245, 158, 11, 0.7), 0 0 25px rgba(245, 158, 11, 0.5);
   }
+}
+
+.animate-glow-pulse {
+  animation: text-glow 3s infinite ease-in-out;
 }
