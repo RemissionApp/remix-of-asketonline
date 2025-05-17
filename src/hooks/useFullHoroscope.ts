@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ZodiacSign, getZodiacSign } from '@/utils/zodiac';
@@ -51,7 +52,7 @@ export function useFullHoroscope() {
 
       console.log("Checking for existing horoscope for user", user.id, "with zodiac sign", zodiacSign);
       
-      // Query the full_horoscopes table - REMOVE language from the query
+      // Query the full_horoscopes table
       const { data, error } = await supabase
         .from('full_horoscopes')
         .select('*')
