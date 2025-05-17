@@ -110,21 +110,21 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* Приветствие пользователя - improved visibility with stronger colors and better spacing */}
+      {/* Приветствие пользователя - updated with a more subtle color and font */}
       <div className="mb-6 text-center p-4 relative z-10">
-        <h2 className="text-cosmic-gold font-cormorant text-3xl font-bold animate-glow-pulse drop-shadow-[0_2px_4px_rgba(245,158,11,0.6)]">
+        <h2 className="text-slate-100 font-sans text-3xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
           {language === 'ru' 
             ? "Приветствую тебя!" 
             : language === 'es'
               ? "¡Te saludo!"
               : "Greetings!"}
         </h2>
-        <h3 className="text-cosmic-gold font-cormorant text-2xl mt-2 font-semibold animate-glow-pulse drop-shadow-[0_1px_3px_rgba(245,158,11,0.5)]">
+        <h3 className="text-slate-200 font-sans text-2xl mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
           {userName}
         </h3>
-        <div className="flex items-center justify-center mt-3 text-cosmic-gold text-sm font-medium">
+        <div className="flex items-center justify-center mt-3 text-slate-300 text-sm font-medium">
           <Clock size={14} className="mr-1" />
-          <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{getFormattedDate()}</span>
+          <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">{getFormattedDate()}</span>
         </div>
       </div>
       
