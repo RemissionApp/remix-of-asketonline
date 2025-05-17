@@ -239,6 +239,33 @@ export type Database = {
         }
         Relationships: []
       }
+      raw_horoscopes: {
+        Row: {
+          content: string
+          created_at: string
+          detailed: boolean
+          id: string
+          language: string
+          zodiac_sign: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          detailed?: boolean
+          id?: string
+          language: string
+          zodiac_sign: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          detailed?: boolean
+          id?: string
+          language?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
