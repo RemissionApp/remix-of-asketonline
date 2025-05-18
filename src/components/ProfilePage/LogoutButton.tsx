@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '@/hooks/useTranslations';
+import { cleanupAuthState } from '@/lib/supabase';
 
 export const LogoutButton: React.FC = () => {
   const { signOut } = useAppStore();
@@ -12,8 +13,14 @@ export const LogoutButton: React.FC = () => {
   const { t } = useTranslations();
   
   const handleLogout = async () => {
+    // Очищаем состояние аутентификации перед выходом
+    cleanupAuthState();
+    
+    // Выполняем выход
     await signOut();
-    navigate('/'); // Navigate to home page after logout
+    
+    // Принудительно перенаправляем на страницу входа
+    navigate('/login'); 
   };
   
   return (
@@ -23,7 +30,7 @@ export const LogoutButton: React.FC = () => {
       onClick={handleLogout}
     >
       <LogOut className="mr-2 h-5 w-5" />
-      <span>{t.userProfile?.logout || "Logout"}</span>
+      <span>{t.userProfile?.logout || "Выход"}</span>
     </Button>
   );
 };

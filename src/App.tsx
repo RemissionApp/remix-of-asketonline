@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import { useAppStore } from "./store/useAppStore";
+import { supabase, cleanupAuthState } from "./lib/supabase";
 import WelcomePage from "./pages/WelcomePage";
 import LanguagePage from "./pages/LanguagePage";
 import LoginPage from "./pages/LoginPage";
@@ -25,24 +26,66 @@ import UniverseChatPage from "./pages/UniverseChatPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
-import { supabase, cleanupAuthState } from "./lib/supabase";
 
-// Create a new QueryClient instance
+// Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
 
-// Global onboarding check component
+// Компонент глобальной инициализации приложения
 const AppInitializer = () => {
-  const { checkOnboardingStatus } = useAppStore();
+  const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
   
   useEffect(() => {
-    // Check onboarding status on app load
+    // Проверяем состояние onboarding при загрузке приложения
     checkOnboardingStatus();
-  }, [checkOnboardingStatus]);
+    
+    // Настраиваем слушатель изменений состояния аутентификации
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.id);
+        
+        if (event === 'SIGNED_IN' && session) {
+          setUser(session.user);
+          
+          // Отложенная загрузка данных пользователя для предотвращения deadlock
+          setTimeout(() => {
+            loadUserProfile();
+          }, 0);
+        } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          setUser(null);
+        }
+      }
+    );
+    
+    // Проверяем текущую сессию при инициализации
+    const checkSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Ошибка получения сессии:", error);
+          return;
+        }
+        
+        if (data.session?.user) {
+          setUser(data.session.user);
+          await loadUserProfile();
+        }
+      } catch (error) {
+        console.error("Не удалось проверить сессию:", error);
+      }
+    };
+    
+    checkSession();
+    
+    // Отписываемся при размонтировании
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [checkOnboardingStatus, loadUserProfile, setUser]);
   
   return null;
 };
 
-// AuthCallback component to handle OAuth redirects
+// Компонент для обработки перенаправлений OAuth
 const AuthCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,34 +93,34 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      // Get the auth data from the URL
+      // Получаем данные аутентификации из URL
       const hashParams = new URLSearchParams(location.hash.substring(1));
       const queryParams = new URLSearchParams(location.search);
       
-      // Check if this is an auth callback
+      // Проверяем, является ли это обратным вызовом аутентификации
       if (hashParams.get('access_token') || queryParams.get('code')) {
         try {
-          // Handle the redirect internally
+          // Обрабатываем перенаправление внутренне
           const { data, error } = await supabase.auth.getSession();
           
           if (error) throw error;
           
           if (data?.session?.user) {
-            // Clean up auth state to prevent issues
+            // Очищаем состояние аутентификации для предотвращения проблем
             cleanupAuthState();
             
-            // Load user profile data
+            // Загружаем данные профиля пользователя
             await loadUserProfile();
             
-            // Navigate to profile setup or main
+            // Перенаправляем на настройку профиля или главную
             navigate('/profile-setup');
           }
         } catch (error) {
-          console.error('Auth callback error:', error);
+          console.error('Ошибка обратного вызова аутентификации:', error);
           navigate('/login');
         }
       } else {
-        // Not an auth callback, redirect to home
+        // Не является обратным вызовом аутентификации, перенаправляем на главную
         navigate('/');
       }
     };

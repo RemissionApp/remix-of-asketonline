@@ -10,9 +10,9 @@ import { createProFeaturesSlice } from './slices/proFeaturesSlice';
 import { createAuthSlice } from './slices/authSlice';
 import { defaultAchievements } from './data/constants';
 
-// Creating the store with all the slices
+// Создание хранилища со всеми срезами
 export const useAppStore = create<AppState>()((set, get, api) => ({
-  // Initial state
+  // Начальное состояние
   pacts: [],
   activeQuestions: [],
   dailyQuote: quotes[Math.floor(Math.random() * quotes.length)],
@@ -35,7 +35,19 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   loading: false,
   emailConfirmed: false,
   
-  // Combine all slices
+  // Добавляем новый метод для установки пользователя
+  setUser: (user) => set({ user }),
+  
+  // Состояние чата
+  chatSessions: [],
+  isLoadingChatSessions: false,
+  currentChatSession: null,
+  chatMessages: [],
+  isLoadingChat: false,
+  isSendingMessage: false,
+  isUniverseTyping: false,
+  
+  // Комбинируем все срезы
   ...createUISlice(set, get, api),
   ...createPactsSlice(set, get, api),
   ...createUniverseSlice(set, get, api),

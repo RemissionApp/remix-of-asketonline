@@ -49,6 +49,7 @@ export interface AppState {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
+  setUser: (user: any) => void;
   
   // Data loading methods
   loadUserProfile: () => Promise<void>;
@@ -81,7 +82,7 @@ export interface AppState {
   createChatSession: (title: string) => Promise<string | null>;
   setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
-  sendChatMessage: (message: string, messageType?: 'user' | 'system') => Promise<void>;
+  sendChatMessage: (message: string) => Promise<void>;
   subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
   handleNewChatMessage: (payload: any) => void;
 }

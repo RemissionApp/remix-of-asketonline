@@ -1,36 +1,39 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
 import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile, user, loading, onboardingComplete, emailConfirmed, checkEmailConfirmation } = useAppStore();
+  const [authChecking, setAuthChecking] = useState(true);
   
-  // Check if user is logged in, profile data exists, and email is confirmed
+  // Проверяем, вошел ли пользователь в систему, существуют ли данные профиля и подтвержден ли email
   useEffect(() => {
-    // Added a console.log to help debug the auth flow
+    // Добавлен console.log для отладки потока аутентификации
     console.log("Profile setup: user status", { user, userProfile, loading, onboardingComplete, emailConfirmed });
 
     const checkAuth = async () => {
-      // If user is still loading, don't redirect yet
-      if (loading) return;
-      
-      // If no user is found after loading completes, redirect to login
-      if (!user && !loading) {
-        console.log("No user found, redirecting to login");
-        navigate('/login');
-        return;
-      }
-      
-      // Check if email is confirmed
-      if (user && !loading) {
+      try {
+        // Сначала проверяем текущую сессию
+        const { data: sessionData } = await supabase.auth.getSession();
+        const sessionUser = sessionData?.session?.user;
+        
+        // Если сессия не найдена, перенаправляем на вход
+        if (!sessionUser) {
+          console.log("Пользователь не найден, перенаправляем на вход");
+          navigate('/login');
+          return;
+        }
+        
+        // Проверяем, подтвержден ли email
         const isConfirmed = await checkEmailConfirmation();
-        console.log("Email confirmed status:", isConfirmed);
+        console.log("Статус подтверждения email:", isConfirmed);
         
         if (!isConfirmed) {
           toast({
@@ -41,29 +44,51 @@ const UserProfilePage: React.FC = () => {
           navigate('/login');
           return;
         }
-      }
 
-      // Only redirect to onboarding or main if user has completed profile
-      if (!loading && 
-          userProfile && 
-          userProfile.name && 
-          userProfile.name !== 'Искатель' && 
-          userProfile.birthDate) {
-        
-        // If user hasn't completed onboarding yet, send them there
-        if (!onboardingComplete) {
-          console.log("Profile completed, redirecting to onboarding");
-          navigate('/onboarding');
-        } else {
-          // If onboarding is already complete, go to main
-          console.log("Profile and onboarding already completed, redirecting to main");
-          navigate('/main');
+        // Перенаправляем на onboarding или main только если пользователь заполнил профиль
+        if (userProfile && 
+            userProfile.name && 
+            userProfile.name !== 'Искатель' && 
+            userProfile.birthDate) {
+          
+          // Если пользователь еще не прошел onboarding, отправляем его туда
+          if (!onboardingComplete) {
+            console.log("Профиль заполнен, перенаправляем на onboarding");
+            navigate('/onboarding');
+          } else {
+            // Если onboarding уже пройден, перенаправляем на main
+            console.log("Профиль и onboarding завершены, перенаправляем на main");
+            navigate('/main');
+          }
         }
+        
+        setAuthChecking(false);
+      } catch (error) {
+        console.error("Ошибка при проверке аутентификации:", error);
+        setAuthChecking(false);
       }
     };
     
-    checkAuth();
+    // Если данные еще загружаются, ждем завершения загрузки
+    if (!loading) {
+      checkAuth();
+    }
   }, [userProfile, user, loading, navigate, onboardingComplete, emailConfirmed, checkEmailConfirmation]);
+
+  // Показываем загрузку, пока проверяем статус аутентификации
+  if (loading || authChecking) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <StarField starCount={150} />
+        <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-cosmic-secondary">Загрузка профиля...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">

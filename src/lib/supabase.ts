@@ -13,28 +13,35 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 /**
- * Cleans up authentication state to prevent auth limbo issues
+ * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации
  */
 export const cleanupAuthState = () => {
   try {
-    // Remove standard auth tokens
+    // Удаляем все стандартные токены аутентификации
     localStorage.removeItem('supabase.auth.token');
     
-    // Remove all Supabase auth keys from localStorage
+    // Удаляем все ключи аутентификации Supabase из localStorage
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
         localStorage.removeItem(key);
       }
     });
     
-    // Remove from sessionStorage if in use
+    // Удаляем из sessionStorage, если используется
     Object.keys(sessionStorage || {}).forEach((key) => {
       if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
         sessionStorage.removeItem(key);
       }
     });
+
+    // Удаляем куки, связанные с аутентификацией
+    document.cookie.split(";").forEach((c) => {
+      if (c.trim().startsWith('sb-')) {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      }
+    });
   } catch (error) {
-    console.error('Error cleaning up auth state:', error);
+    console.error('Ошибка при очистке состояния аутентификации:', error);
   }
 };
 

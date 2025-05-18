@@ -24,53 +24,71 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("login");
   const [emailSent, setEmailSent] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
   
-  // Effect to check if user is already logged in
+  // Эффект для проверки, вошел ли пользователь уже в систему
   useEffect(() => {
-    // If user is loading, don't do anything yet
-    if (loading) return;
-    
-    const checkUser = async () => {
-      if (user) {
-        console.log("Login page: user is logged in", { user, userProfile, emailConfirmed });
+    const checkAuthStatus = async () => {
+      try {
+        // Проверяем текущую сессию
+        const { data } = await supabase.auth.getSession();
         
-        // Check if email is confirmed
-        const isConfirmed = await checkEmailConfirmation();
-        console.log("Email confirmation status:", isConfirmed);
-        
-        if (!isConfirmed) {
-          toast({
-            title: "Подтвердите email",
-            description: "Пожалуйста, подтвердите ваш email перед продолжением",
-            variant: "warning"
-          });
-          return;
-        }
-        
-        // Check if user has completed their profile
-        if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
-          // User has a completed profile, navigate to main or onboarding
-          navigate('/onboarding');
+        // Если пользователь уже вошел в систему
+        if (data?.session?.user) {
+          console.log("Пользователь уже авторизован:", data.session.user);
+          
+          // Проверяем подтверждение email
+          const isConfirmed = await checkEmailConfirmation();
+          
+          if (!isConfirmed) {
+            toast({
+              title: "Подтвердите email",
+              description: "Пожалуйста, подтвердите ваш email перед продолжением",
+              variant: "warning"
+            });
+            setAuthChecking(false);
+            return;
+          }
+          
+          // Проверяем, заполнил ли пользователь профиль
+          if (userProfile && userProfile.name !== 'Искатель' && userProfile.birthDate) {
+            // Пользователь имеет заполненный профиль, перенаправляем на главную или onboarding
+            navigate('/onboarding');
+          } else {
+            // Пользователю необходимо заполнить профиль
+            navigate('/profile-setup');
+          }
         } else {
-          // User needs to complete their profile
-          navigate('/profile-setup');
+          setAuthChecking(false);
         }
+      } catch (err) {
+        console.error("Ошибка при проверке статуса аутентификации:", err);
+        setAuthChecking(false);
       }
     };
     
-    checkUser();
-  }, [user, userProfile, loading, navigate, checkEmailConfirmation, emailConfirmed]);
+    checkAuthStatus();
+  }, [navigate, checkEmailConfirmation, userProfile]);
   
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Clean up auth state before signing in to prevent issues
+    if (!email || !password) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, введите email и пароль",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Очищаем состояние аутентификации перед входом в систему
     cleanupAuthState();
     
     const success = await signIn(email, password);
     if (success) {
-      console.log("Sign in successful");
-      // Check if email is confirmed
+      console.log("Вход выполнен успешно");
+      // Проверяем, подтвержден ли email
       const isConfirmed = await checkEmailConfirmation();
       
       if (!isConfirmed) {
@@ -82,11 +100,11 @@ const LoginPage: React.FC = () => {
         return;
       }
       
-      // Navigate to profile setup if profile is not complete
+      // Перенаправляем на настройку профиля, если профиль не заполнен
       if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
         navigate('/profile-setup');
       } else {
-        // Navigate to onboarding if profile is complete
+        // Перенаправляем на onboarding, если профиль заполнен
         navigate('/onboarding');
       }
     }
@@ -95,13 +113,22 @@ const LoginPage: React.FC = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Clean up auth state before signing up
+    if (!email || !password) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, введите email и пароль",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Очищаем состояние аутентификации перед регистрацией
     cleanupAuthState();
     
     await signUp(email, password);
-    setEmailSent(true);  // Indicate that the verification email might have been sent
+    setEmailSent(true);  // Указываем, что письмо с подтверждением могло быть отправлено
     
-    // Navigate to profile setup if email verification is not required
+    // Перенаправляем на настройку профиля, если подтверждение email не требуется
     if (user) {
       navigate('/profile-setup');
     }
@@ -111,7 +138,7 @@ const LoginPage: React.FC = () => {
     if (!email) {
       toast({
         title: t.auth.resetPasswordError,
-        description: t.auth.resetPasswordButton,
+        description: "Пожалуйста, введите email для восстановления пароля",
         variant: "destructive"
       });
       return;
@@ -144,7 +171,7 @@ const LoginPage: React.FC = () => {
       variant: "warning"
     });
     
-    // Navigate to main page as guest
+    // Перенаправляем на главную страницу как гость
     setTimeout(() => {
       navigate('/main');
     }, 1500);
@@ -153,6 +180,21 @@ const LoginPage: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
+  // Показываем загрузку, пока проверяем статус аутентификации
+  if (authChecking) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <StarField starCount={150} />
+        <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-cosmic-secondary">Проверка авторизации...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
@@ -253,7 +295,7 @@ const LoginPage: React.FC = () => {
                         className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                         disabled={loading}
                       >
-                        {loading ? t.auth.signInButton : t.auth.signInButton}
+                        {loading ? "Выполняется вход..." : t.auth.signInButton}
                       </CosmicButton>
                     </div>
 
@@ -286,7 +328,7 @@ const LoginPage: React.FC = () => {
                         className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
                         onClick={handleGuestLogin}
                       >
-                        {t.auth.guestSignIn || "Sign in as guest"}
+                        {t.auth.guestSignIn || "Войти как гость"}
                       </Button>
                     </div>
                   </form>
@@ -339,7 +381,7 @@ const LoginPage: React.FC = () => {
                         className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                         disabled={loading}
                       >
-                        {loading ? t.auth.signUpButton : t.auth.signUpButton}
+                        {loading ? "Регистрация..." : t.auth.signUpButton}
                       </CosmicButton>
                     </div>
 
