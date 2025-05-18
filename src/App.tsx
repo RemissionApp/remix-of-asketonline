@@ -23,7 +23,6 @@ import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
 import FullHoroscopePage from "./pages/FullHoroscopePage";
 import UniverseChatPage from "./pages/UniverseChatPage";
 import NumerologyPage from "./pages/NumerologyPage";
-import NumerologyCalculatorPage from "./pages/NumerologyCalculatorPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
 import { supabase, cleanupAuthState } from "./lib/supabase";
@@ -56,7 +55,7 @@ const AuthCallback = () => {
       const queryParams = new URLSearchParams(location.search);
       
       // Check if this is an auth callback
-      if (hashParams.get('access_token') || queryParams.get('code') || queryParams.get('email_confirmed')) {
+      if (hashParams.get('access_token') || queryParams.get('code')) {
         try {
           // Handle the redirect internally
           const { data, error } = await supabase.auth.getSession();
@@ -69,12 +68,6 @@ const AuthCallback = () => {
             
             // Load user profile data
             await loadUserProfile();
-            
-            // If email confirmed or email verified parameter exists, redirect to login
-            if (queryParams.get('email_confirmed') || queryParams.get('email_verified')) {
-              navigate('/login?verified=true');
-              return;
-            }
             
             // Navigate to profile setup or main
             navigate('/profile-setup');
@@ -127,7 +120,6 @@ const App = () => {
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
-            <Route path="/numerology-calculator" element={<NumerologyCalculatorPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

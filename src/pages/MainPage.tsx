@@ -10,8 +10,6 @@ import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
 import { CountdownTimer } from '@/components/CountdownTimer';
-import { NumerologyPreview } from '@/components/numerology/NumerologyPreview';
-import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 
 const MainPage: React.FC = () => {
   const { 
@@ -22,6 +20,7 @@ const MainPage: React.FC = () => {
     loadUserProfile,
     userProfile,
     setActiveScreen,
+    // Get the breakAscesis function from the store
     breakAscesis
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
@@ -47,9 +46,6 @@ const MainPage: React.FC = () => {
     };
     
     initializeUserData();
-    
-    // Log successful rendering for debugging
-    console.log("MainPage initialized with components");
   }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate]);
   
   // Filter active pacts
@@ -99,11 +95,11 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Empty string for dailyQuote since we're using DailyAdviceDisplay component
+  // Empty string for dailyQuote since we're removing QuoteDisplay
   const dailyQuote = '';
   
   // Log visibility information
-  console.log("MainPage rendering with components:", {
+  console.log("MainPage rendering with visibility information:", {
     hasUserProfile: !!userProfile,
     hasBirthDate: !!userProfile?.birthDate,
     isPro: userProfile?.isPro,
@@ -111,23 +107,14 @@ const MainPage: React.FC = () => {
     isLoading
   });
   
-  // Check if the user has a birth date to determine whether to show numerology preview
-  const showNumerologyPreview = userProfile?.birthDate !== undefined && userProfile?.birthDate !== null;
-  
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
-      {/* Background StarField animation */}
       <StarField starCount={100} />
       
-      {/* TopBar component at the top of the page */}
+      {/* Use the TopBar component */}
       <TopBar />
       
-      {/* Developer mode switch */}
-      <div className="fixed top-16 right-4 z-30">
-        <DeveloperSwitch />
-      </div>
-      
-      {/* Countdown timer when there's an active pact - fixed at top */}
+      {/* Always show the countdown timer when there's an active pact - fixed at top */}
       {activePacts.length > 0 && 
         <div className="sticky top-16 z-20 w-full bg-cosmic-dark/70 backdrop-blur-md shadow-md">
           <CountdownTimer pactId={currentPact?.id} />
@@ -137,14 +124,7 @@ const MainPage: React.FC = () => {
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
       
-      {/* Special Numerology Preview - Displayed with high visibility */}
-      {showNumerologyPreview && (
-        <div className="px-4 pt-4 mt-20 max-w-md mx-auto w-full">
-          <NumerologyPreview />
-        </div>
-      )}
-      
-      {/* Main content with all components */}
+      {/* Main content */}
       <MainContent
         activePacts={activePacts}
         currentPactIndex={currentPactIndex}

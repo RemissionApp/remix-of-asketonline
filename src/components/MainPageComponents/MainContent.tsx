@@ -39,12 +39,9 @@ export const MainContent: React.FC<MainContentProps> = ({
   getAscesisPrefix,
   formatRejection
 }) => {
-  // Log component rendering to help debug
-  console.log("MainContent rendering with blocks");
-  
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">
-      {/* 1. PactDisplay section - Shows active pacts or NoPactsView if none */}
+      {/* 1. PactDisplay - First */}
       <div className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
         {activePacts.length > 0 && currentPact ? (
           <PactDisplay
@@ -62,10 +59,10 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
       
-      {/* 2. User Greeting and Daily Advice Display */}
+      {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 3. Universe Chat Block */}
+      {/* 3. Universe Chat Block - Moved right after Daily Advice */}
       <div className="w-full max-w-lg mx-auto">
         <UniverseMessageBlock />
       </div>
@@ -75,14 +72,14 @@ export const MainContent: React.FC<MainContentProps> = ({
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 5. Numerology Display - with increased visibility */}
-      <div className="w-full max-w-lg mx-auto mt-6">
-        <NumerologyDisplay />
-      </div>
-      
-      {/* 6. Meditation Block */}
+      {/* 5. Meditation Block - Moved to appear after Zodiac Badge */}
       <div className="w-full max-w-lg mx-auto">
         <MeditationBlock />
+      </div>
+      
+      {/* 6. Numerology Display */}
+      <div className="w-full max-w-lg mx-auto">
+        <NumerologyDisplay />
       </div>
       
       {/* 7. Affirmations Block */}
@@ -90,7 +87,7 @@ export const MainContent: React.FC<MainContentProps> = ({
         <AffirmationsBlock />
       </div>
       
-      {/* Action Buttons - at the bottom */}
+      {/* Action Buttons - Remains at the bottom */}
       <div className="mt-auto">
         <ActionButtonsSection />
       </div>

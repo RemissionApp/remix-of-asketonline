@@ -18,8 +18,7 @@ export type ActiveScreen =
   | 'login'
   | 'signup'
   | 'universe-chat'
-  | 'full-horoscope'
-  | 'numerology';
+  | 'full-horoscope';
 
 export interface AppState {
   pacts: Pact[];

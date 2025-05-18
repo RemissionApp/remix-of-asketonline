@@ -1,32 +1,17 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { calculateLifePathNumber, getNumerologyMeaning, calculateExpressionNumber, calculatePersonalityNumber } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
-import { Calculator, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from './ui/button';
+import { Calculator } from 'lucide-react';
 
 export const NumerologyDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
-  const navigate = useNavigate();
   
-  useEffect(() => {
-    // Log when component mounts for debugging
-    console.log("NumerologyDisplay mounted with:", {
-      userProfile,
-      birthDateExists: !!userProfile?.birthDate,
-      isPro: userProfile?.isPro,
-      language
-    });
-    
-    return () => {
-      console.log("NumerologyDisplay unmounted");
-    };
-  }, [userProfile, language]);
+  console.log("NumerologyDisplay rendering, userProfile:", userProfile);
   
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
@@ -55,21 +40,16 @@ export const NumerologyDisplay: React.FC = () => {
   const personalityText = language === 'ru' ? 'Число личности' : language === 'es' ? 'Número de personalidad' : 'Personality Number';
   const moreDetailsText = language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : 'More details';
   
-  const handleNavigateToNumerology = () => {
-    console.log("Navigating to numerology page from NumerologyDisplay");
-    navigate('/numerology');
-  };
-  
-  // Create the numerology content component with enhanced visibility
+  // Create the numerology content component
   const numerologyContent = (
-    <div className="cosmic-block backdrop-blur-sm border-2 border-cosmic-accent/40 rounded-lg mb-6 w-full hover:border-cosmic-accent/60 transition-all">
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
-            <Calculator size={24} className="text-cosmic-accent animate-pulse-slow" />
+            <Calculator size={20} className="text-cosmic-accent" />
           </div>
           <div>
-            <h3 className={`text-xl ${language === 'en' ? "font-serif" : "font-sans"} font-medium text-cosmic-accent`}>
+            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
               {numerologyText}
             </h3>
           </div>
@@ -85,14 +65,6 @@ export const NumerologyDisplay: React.FC = () => {
           personalityText={personalityText}
           moreDetailsText={moreDetailsText}
         />
-        <Button
-          onClick={handleNavigateToNumerology}
-          variant="outline"
-          className="w-full mt-3 bg-cosmic-dark/50 border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/20 hover:text-white transition-colors"
-        >
-          {moreDetailsText}
-          <ArrowRight size={16} className="ml-2" />
-        </Button>
       </div>
     </div>
   );
@@ -106,7 +78,6 @@ export const NumerologyDisplay: React.FC = () => {
         ? 'Desbloquea PRO para obtener acceso completo a la numerología' 
         : 'Unlock PRO to get full access to numerology';
         
-    console.log("Rendering NumerologyDisplay with PRO overlay");
     return (
       <ProFeatureOverlay 
         title={titleText}
@@ -118,6 +89,5 @@ export const NumerologyDisplay: React.FC = () => {
     );
   }
   
-  console.log("Rendering NumerologyDisplay without PRO overlay");
   return numerologyContent;
 };
