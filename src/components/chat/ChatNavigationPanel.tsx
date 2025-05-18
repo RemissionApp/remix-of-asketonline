@@ -3,12 +3,23 @@ import React from 'react';
 import { Home, MessageSquare, Search, Star, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '@/hooks/useTranslations';
+import { UniverseChatSession } from '@/utils/universeChat';
 
 interface ChatNavigationPanelProps {
   onNewChat: () => void;
+  sessions?: UniverseChatSession[];
+  currentSessionId?: string;
+  onSelectSession?: (sessionId: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export const ChatNavigationPanel: React.FC<ChatNavigationPanelProps> = ({ onNewChat }) => {
+export const ChatNavigationPanel: React.FC<ChatNavigationPanelProps> = ({ 
+  onNewChat,
+  sessions,
+  currentSessionId,
+  onSelectSession,
+  isLoading
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslations();
   

@@ -55,7 +55,6 @@ const UniverseChatPage: React.FC = () => {
   
   const handleSendMessage = async (message: string) => {
     if (currentChatSession) {
-      // Здесь исправлена ошибка - удален второй аргумент
       await sendChatMessage(message);
     }
   };
@@ -90,7 +89,7 @@ const UniverseChatPage: React.FC = () => {
                   />
                   <ChatInput 
                     onSendMessage={handleSendMessage}
-                    disabled={isSendingMessage}
+                    isDisabled={isSendingMessage}
                     isLoading={isSendingMessage}
                   />
                 </>

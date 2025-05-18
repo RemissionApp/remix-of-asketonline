@@ -9,9 +9,10 @@ import { AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface ChatHeaderProps {
   title?: string;
+  onNewChat?: () => void;
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, onNewChat }) => {
   const navigate = useNavigate();
   const { t } = useTranslations();
   

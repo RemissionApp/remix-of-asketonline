@@ -5,17 +5,18 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { Card } from '@/components/ui/card';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 interface UniverseChatProWrapperProps {
   children: React.ReactNode;
-  isPro: boolean;
 }
 
 export const UniverseChatProWrapper: React.FC<UniverseChatProWrapperProps> = ({ 
-  children, 
-  isPro 
+  children
 }) => {
   const { t } = useTranslations();
+  const { userProfile } = useAppStore();
+  const isPro = userProfile?.isPro || false;
   
   if (!isPro) {
     return (

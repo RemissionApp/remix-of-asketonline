@@ -8,9 +8,14 @@ import { useTranslations } from '@/hooks/useTranslations';
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isDisabled?: boolean;
+  isLoading?: boolean;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isDisabled = false }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ 
+  onSendMessage, 
+  isDisabled = false, 
+  isLoading = false 
+}) => {
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);

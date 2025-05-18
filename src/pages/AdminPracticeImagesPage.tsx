@@ -15,7 +15,7 @@ const AdminPracticeImagesPage: React.FC = () => {
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-cosmic-dark to-black text-white">
-        <TopBar title="Доступ запрещен" />
+        <TopBar />
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-[80vh]">
           <h1 className="text-2xl font-bold text-cosmic-accent mb-4">Доступ запрещен</h1>
           <p className="text-center">
@@ -29,7 +29,7 @@ const AdminPracticeImagesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cosmic-dark to-black text-white">
-      <TopBar title="Управление изображениями практик" />
+      <TopBar />
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-cosmic-accent mb-6">Управление изображениями для практик</h1>

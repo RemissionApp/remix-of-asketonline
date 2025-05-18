@@ -10,12 +10,14 @@ interface MeditationLayoutProps {
   children: React.ReactNode;
   title: string;
   icon?: React.ReactNode;
+  disablePadding?: boolean; // добавлен новый пропс
 }
 
 export const MeditationLayout: React.FC<MeditationLayoutProps> = ({ 
   children, 
   title,
-  icon
+  icon,
+  disablePadding = false // со значением по умолчанию
 }) => {
   const { t } = useTranslations();
 
@@ -24,7 +26,7 @@ export const MeditationLayout: React.FC<MeditationLayoutProps> = ({
       <StarField starCount={100} />
 
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8">
+      <div className={`relative z-10 flex-1 flex flex-col items-center justify-start ${disablePadding ? '' : 'px-4 py-8'}`}>
         <div className="flex items-center justify-center mb-6">
           {icon}
           <h1 className="text-2xl text-center uppercase font-serif text-white">

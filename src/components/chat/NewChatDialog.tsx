@@ -8,15 +8,15 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { toast } from 'sonner';
 
 interface NewChatDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onCreateChat: (title: string) => Promise<void>;
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (title: string) => Promise<void>;
 }
 
 export const NewChatDialog: React.FC<NewChatDialogProps> = ({ 
-  open, 
-  onOpenChange,
-  onCreateChat 
+  isOpen, 
+  onClose,
+  onCreate 
 }) => {
   const [newChatTitle, setNewChatTitle] = useState('');
   const { t } = useTranslations();
@@ -28,9 +28,9 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
     }
     
     try {
-      await onCreateChat(newChatTitle);
+      await onCreate(newChatTitle);
       setNewChatTitle('');
-      onOpenChange(false);
+      onClose();
     } catch (error) {
       console.error('Error creating chat session:', error);
       toast.error('Не удалось создать новый диалог');
@@ -38,7 +38,7 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
   };
   
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
         <h3 className="text-lg font-medium font-serif text-cosmic-accent mb-4">
           {t.universe?.newChatTitle || 'Новый диалог со Вселенной'}
@@ -56,7 +56,7 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
         <div className="flex justify-end gap-2">
           <Button
             variant="ghost"
-            onClick={() => onOpenChange(false)}
+            onClick={onClose}
           >
             {t.common?.cancel || 'Отмена'}
           </Button>

@@ -13,13 +13,14 @@ import { useAppStore } from '@/store/useAppStore';
 interface ChatMessagesDisplayProps {
   isLoading: boolean;
   messages: UniverseChatMessage[];
+  isTyping?: boolean;
 }
 
 export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({ 
   isLoading,
-  messages 
+  messages,
+  isTyping = false
 }) => {
-  const { isUniverseTyping } = useAppStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = React.useState(0);
@@ -54,7 +55,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [displayMessages, isLoading, isUniverseTyping]);
+  }, [displayMessages, isLoading, isTyping]);
   
   // Отображаем состояние загрузки
   if (isLoading && displayMessages.length === 0) {
@@ -131,7 +132,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
         )}
         
         {/* Show typing indicator when universe is typing */}
-        {isUniverseTyping && !isLoading && <TypingIndicator />}
+        {isTyping && !isLoading && <TypingIndicator />}
         
         <div ref={messagesEndRef} className="h-16" />
       </div>
