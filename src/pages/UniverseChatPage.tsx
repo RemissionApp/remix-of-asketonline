@@ -7,7 +7,7 @@ import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
-import { ChatNavigationPanel } from '@/components/chat/ChatNavigationPanel';
+import { BottomNavigation } from '@/components/BottomNavigation';
 import { toast } from 'sonner';
 
 const UniverseChatPage = () => {
@@ -75,8 +75,8 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          // Fix: Remove the second argument (true) as sendChatMessage expects only one argument
-          await sendChatMessage(welcomeMessage);
+          // Send welcome message using the sendChatMessage with isWelcomeMessage flag
+          await sendChatMessage(welcomeMessage, true);
         } catch (error) {
           console.error('Error sending welcome message:', error);
         }
@@ -124,12 +124,10 @@ const UniverseChatPage = () => {
       
       if (sessionId) {
         await setCurrentChatSession(sessionId);
-        // Fix: Use fallback translation strings that are definitely available
         toast.success('Создан новый диалог');
       }
     } catch (error) {
       console.error('Error creating new chat:', error);
-      // Fix: Use fallback translation strings that are definitely available
       toast.error('Ошибка создания нового диалога');
     }
   };
@@ -155,13 +153,14 @@ const UniverseChatPage = () => {
         isDisabled={isSendingMessage}
       />
       
-      <ChatNavigationPanel onNewChat={handleNewChat} />
+      {/* Replace ChatNavigationPanel with standard BottomNavigation */}
     </div>
   );
   
   return (
     <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
       {content}
+      <BottomNavigation />
     </UniverseChatProWrapper>
   );
 };
