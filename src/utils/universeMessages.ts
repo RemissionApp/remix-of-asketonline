@@ -67,17 +67,15 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     
     console.log('Calling universe-answer edge function with context data');
     
-    // Use the dialogue function with the structured response format
-    // FIX: Passing timeout correctly according to FunctionInvokeOptions type
+    // Call the edge function with the appropriate options
+    // The invoke method doesn't directly accept a timeout parameter
     const { data, error } = await supabase.functions.invoke('universe-answer', {
       body: { 
         question, 
         language,
         userData,
         systemPrompt: customSystemPrompt
-      },
-      // Add timeout parameter directly to the object (not within an options property)
-      timeout: 30000 // 30 seconds timeout
+      }
     });
 
     if (error) {
