@@ -74,14 +74,14 @@ export const MainContent: React.FC<MainContentProps> = ({
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 5. Numerology Display */}
-      <div className="w-full max-w-lg mx-auto">
-        <NumerologyDisplay />
-      </div>
-      
-      {/* 6. Meditation Block */}
+      {/* 5. Meditation Block */}
       <div className="w-full max-w-lg mx-auto">
         <MeditationBlock />
+      </div>
+      
+      {/* 6. Numerology Display - Moved between Meditation and Affirmations */}
+      <div className="w-full max-w-lg mx-auto">
+        <NumerologyDisplay />
       </div>
       
       {/* 7. Affirmations Block */}
