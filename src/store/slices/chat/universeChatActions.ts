@@ -4,7 +4,7 @@ import { AppState } from '../../types';
 import { UniverseChatState } from './universeChatTypes';
 import { 
   createLoadChatSessionsAction,
-  createCreateChatSessionAction,
+  createChatSessionAction,
   createSetCurrentChatSessionAction,
   createLoadChatMessagesAction,
   createSendChatMessageAction
@@ -29,7 +29,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
   get: () => T
 ): UniverseChatActions => ({
   loadChatSessions: createLoadChatSessionsAction(set, get),
-  createChatSession: createCreateChatSessionAction(set, get),
+  createChatSession: createChatSessionAction(set, get),
   setCurrentChatSession: createSetCurrentChatSessionAction(set, get),
   loadChatMessages: createLoadChatMessagesAction(set, get),
   sendChatMessage: createSendChatMessageAction(set, get)
