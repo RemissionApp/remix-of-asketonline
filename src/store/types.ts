@@ -1,3 +1,4 @@
+
 import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
 import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat';
 
@@ -74,9 +75,10 @@ export interface AppState {
   chatMessages: UniverseChatMessage[];
   loadChatSessions: () => Promise<void>;
   createChatSession: (title: string) => Promise<string | null>;
-  setCurrentChatSession: (sessionId: string | null) => void;
+  setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
   isLoadingChat: boolean;
   isSendingMessage: boolean;
+  isUniverseTyping: boolean; // Add the new state property
 }
