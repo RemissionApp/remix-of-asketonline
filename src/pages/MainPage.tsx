@@ -30,19 +30,25 @@ const MainPage: React.FC = () => {
   const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   
+  console.log("MainPage rendering - initial render");
+  
   // Check if user is logged in and load user profile if needed
   useEffect(() => {
     const initializeUserData = async () => {
+      console.log("MainPage: initializeUserData started");
       setIsLoading(true);
       
       // If user is logged in but we don't have profile data yet, load it
       if (user && !userProfile) {
+        console.log("MainPage: loading user profile");
         await loadUserProfile();
       }
       
       // Then sync pacts with current date
+      console.log("MainPage: syncing pacts");
       syncPactsWithCurrentDate();
       setIsLoading(false);
+      console.log("MainPage: initializeUserData complete, isLoading set to false");
     };
     
     initializeUserData();

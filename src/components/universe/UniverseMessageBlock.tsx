@@ -16,6 +16,8 @@ export const UniverseMessageBlock: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   
+  console.log("UniverseMessageBlock rendering, userProfile:", userProfile);
+  
   const handleChatClick = () => {
     navigate('/universe-chat');
   };
@@ -102,10 +104,6 @@ export const UniverseMessageBlock: React.FC = () => {
     </div>
   );
   
-  // If user is not PRO, wrap with ProFeatureOverlay (but only the chat feature, not the full block)
-  if (!userProfile?.isPro) {
-    return messageContent;
-  }
-  
+  // Leave the chat button visible for free users, but wrap the whole block with ProFeatureOverlay for non-PRO users
   return messageContent;
 };
