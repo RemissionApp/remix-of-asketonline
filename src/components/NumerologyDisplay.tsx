@@ -14,7 +14,11 @@ export const NumerologyDisplay: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  console.log("NumerologyDisplay rendering, userProfile:", userProfile);
+  console.log("NumerologyDisplay rendering with:", {
+    userProfile,
+    birthDateExists: !!userProfile?.birthDate,
+    isPro: userProfile?.isPro
+  });
   
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
@@ -44,6 +48,7 @@ export const NumerologyDisplay: React.FC = () => {
   const moreDetailsText = language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : 'More details';
   
   const handleNavigateToNumerology = () => {
+    console.log("Navigating to numerology page");
     navigate('/numerology');
   };
   

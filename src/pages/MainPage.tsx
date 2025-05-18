@@ -10,6 +10,7 @@ import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
 import { CountdownTimer } from '@/components/CountdownTimer';
+import { NumerologyPreview } from '@/components/numerology/NumerologyPreview';
 
 const MainPage: React.FC = () => {
   const { 
@@ -107,6 +108,9 @@ const MainPage: React.FC = () => {
     isLoading
   });
   
+  // Check if the user has a birth date to determine whether to show numerology preview
+  const showNumerologyPreview = userProfile?.birthDate !== undefined && userProfile?.birthDate !== null;
+  
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
@@ -123,6 +127,13 @@ const MainPage: React.FC = () => {
       
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
+      
+      {/* Special Numerology Preview - Displayed at the top of main content for high visibility */}
+      {showNumerologyPreview && (
+        <div className="px-4 pt-4 mt-20 max-w-md mx-auto w-full">
+          <NumerologyPreview />
+        </div>
+      )}
       
       {/* Main content */}
       <MainContent
