@@ -75,7 +75,8 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          await sendChatMessage(welcomeMessage, true);
+          // Fix: Remove the second argument (true) as sendChatMessage expects only one argument
+          await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error sending welcome message:', error);
         }
@@ -123,11 +124,13 @@ const UniverseChatPage = () => {
       
       if (sessionId) {
         await setCurrentChatSession(sessionId);
-        toast.success(t.universe?.newChatCreated || 'Создан новый диалог');
+        // Fix: Use fallback translation strings that are definitely available
+        toast.success('Создан новый диалог');
       }
     } catch (error) {
       console.error('Error creating new chat:', error);
-      toast.error(t.universe?.errorCreatingChat || 'Ошибка создания нового диалога');
+      // Fix: Use fallback translation strings that are definitely available
+      toast.error('Ошибка создания нового диалога');
     }
   };
   
