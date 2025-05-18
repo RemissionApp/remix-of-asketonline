@@ -6,16 +6,26 @@ import { useAppStore } from '@/store/useAppStore';
 import { ProBadge } from './ProBadge';
 import { ZodiacBadge } from './ZodiacBadge';
 import { UserAvatar } from './UserAvatar';
+import { useNavigate } from 'react-router-dom';
 
 export const TopBar: React.FC = () => {
   const { userProfile } = useAppStore();
+  const navigate = useNavigate();
+  
+  const handleZodiacClick = () => {
+    if (userProfile?.isPro && userProfile?.birthDate) {
+      navigate('/full-horoscope');
+    }
+  };
   
   return (
     <>
       {/* Energy points and Zodiac badges group */}
       <div className="absolute top-4 right-4 z-10 flex items-center space-x-2">
         {/* Zodiac badge - now positioned to the left of energy points */}
-        <ZodiacBadge size="sm" />
+        <div onClick={handleZodiacClick} className={userProfile?.isPro && userProfile?.birthDate ? "cursor-pointer" : ""}>
+          <ZodiacBadge size="sm" />
+        </div>
         
         {/* Energy points display */}
         <div className="flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">

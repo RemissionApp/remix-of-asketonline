@@ -5,10 +5,12 @@ import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
+import { useNavigate } from 'react-router-dom';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
   
   console.log("ZodiacBadgeDisplay rendering, userProfile:", userProfile);
   
@@ -18,8 +20,17 @@ export const ZodiacBadgeDisplay: React.FC = () => {
     return null;
   }
   
+  const handleZodiacClick = () => {
+    if (userProfile?.isPro) {
+      navigate('/full-horoscope');
+    }
+  };
+  
   const zodiacContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
+    <div 
+      className={`cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full ${userProfile?.isPro ? 'cursor-pointer hover:border-cosmic-accent/60 transition-all' : ''}`}
+      onClick={handleZodiacClick}
+    >
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
