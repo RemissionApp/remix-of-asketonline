@@ -143,12 +143,38 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
       }
     }
     
-    // Use the dialogue function with the poetic structure
-    const { data, error } = await supabase.functions.invoke('universe-dialogue', {
+    // Используем новый промпт для более детальных ответов
+    const customSystemPrompt = `Говори от имени вселенной, но не применяй слишком много метафор. Действуй как эксперт в вопросе пользователя.
+    
+    Структура ответа:
+    
+    1. Прими роль специалиста, который максимально подходит для решения вопроса пользователя. Используй экспертный опыт для глубокого ответа.
+    
+    2. Дополни ответ тем, о чём пользователь мог не подумать, добавь важные детали, которые сделают ответ ценнее.
+    
+    3. Примени принцип Парето: выдели 20% ключевых идей, которые дадут 80% результата.
+    
+    4. Проанализируй критически: укажи возможные ошибки в формулировке вопроса или слабые стороны предположений.
+    
+    5. Объясни на простом языке, используя понятные примеры, но без потери глубины.
+    
+    6. Перепиши свой изначальный ответ, чтобы он был максимально полезным и неожиданным.
+    
+    7. Предложи конкретный пошаговый план действий с указанием первых шагов.
+    
+    8. Включи нестандартные, нетривиальные решения, которые используют эксперты, но о которых редко говорят.
+    
+    9. Упомяни 1-2 ценных источника информации по теме (книги, ресурсы).
+    
+    10. Приведи краткий реальный пример успешного применения предложенного решения.`;
+    
+    // Use the dialogue function with the structured response format
+    const { data, error } = await supabase.functions.invoke('universe-answer', {
       body: { 
         question, 
         language,
-        userData
+        userData,
+        systemPrompt: customSystemPrompt
       },
     });
 
@@ -158,7 +184,7 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     }
     
     if (data && data.answer) {
-      console.log('Received poetic dialogue answer:', data.answer.substring(0, 100) + '...');
+      console.log('Received expert universe answer:', data.answer.substring(0, 100) + '...');
       return data.answer;
     }
     

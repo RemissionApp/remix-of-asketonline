@@ -33,8 +33,18 @@ const UniversePage: React.FC = () => {
     navigate('/main');
   };
   
+  // Проверка минимальной длины вопроса (100 символов)
+  const isQuestionTooShort = question.trim().length < 100;
+  
   const handleAskUniverse = () => {
-    if (question.trim().length < 3) return;
+    if (isQuestionTooShort) {
+      toast.error(language === 'ru' 
+        ? 'Опишите свой вопрос подробнее (минимум 100 символов)' 
+        : language === 'es' 
+          ? 'Describe tu pregunta con más detalle (mínimo 100 caracteres)'
+          : 'Describe your question in more detail (minimum 100 characters)');
+      return;
+    }
     
     setIsAsking(true);
     
@@ -58,6 +68,10 @@ const UniversePage: React.FC = () => {
   
   // Determine if user has PRO access
   const isPro = userProfile?.isPro || false;
+  
+  // Счетчик символов
+  const characterCount = question.length;
+  const characterCountColor = isQuestionTooShort ? 'text-red-400' : 'text-cosmic-secondary';
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -97,20 +111,20 @@ const UniversePage: React.FC = () => {
         {currentAnswer ? (
           <div className="animate-fade-in w-full">
             <div className="cosmic-card mb-6">
-              <h2 className="text-lg font-serif text-cosmic-accent mb-2">
+              <h2 className="text-lg font-cormorant font-medium text-cosmic-accent mb-2">
                 {t.universe.yourQuestion}
               </h2>
-              <p className="text-white">{currentAnswer.question}</p>
+              <p className="text-white font-inter">{currentAnswer.question}</p>
             </div>
             
             <div className="cosmic-card bg-cosmic-accent/10">
-              <h2 className="text-lg font-serif text-cosmic-gold mb-4">
+              <h2 className="text-lg font-cormorant font-medium text-cosmic-gold mb-4">
                 {t.universe.universeAnswer}
               </h2>
               
               <TypingEffect 
                 text={currentAnswer.answer} 
-                className="text-white font-serif leading-relaxed"
+                className="text-white font-inter leading-relaxed"
               />
               
               <div className="mt-8 flex justify-center">
@@ -136,30 +150,49 @@ const UniversePage: React.FC = () => {
               </div>
             </div>
             
-            <p className="text-cosmic-secondary text-center">
+            <p className="text-cosmic-secondary text-center font-inter">
               {t.universe.thinking}
             </p>
           </div>
         ) : (
           <div className="w-full animate-fade-in">
-            <h2 className="text-2xl font-serif text-white mb-6 text-center">
-              {t.universe.question}
+            <h2 className="text-2xl font-cormorant font-medium text-white mb-6 text-center">
+              {language === 'ru' 
+                ? "Подробно опиши свою проблему Вселенной" 
+                : language === 'es'
+                  ? "Describe detalladamente tu problema al Universo"
+                  : "Describe your problem to the Universe in detail"}
             </h2>
             
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder={t.universe.questionPlaceholder}
-              className="cosmic-input w-full h-40 resize-none mb-8"
+              placeholder={language === 'ru' 
+                ? "Опиши свою ситуацию подробно (минимум 100 символов)..." 
+                : language === 'es'
+                  ? "Describe tu situación en detalle (mínimo 100 caracteres)..."
+                  : "Describe your situation in detail (minimum 100 characters)..."}
+              className="cosmic-input font-inter w-full h-40 resize-none mb-2"
             />
+            
+            {/* Счетчик символов */}
+            <div className={`text-right mb-6 ${characterCountColor}`}>
+              <span className="text-xs">
+                {characterCount}/100 {language === 'ru' ? 'символов' : language === 'es' ? 'caracteres' : 'characters'}
+              </span>
+            </div>
             
             <CosmicButton 
               onClick={handleAskUniverse}
-              className="w-full"
+              className="w-full font-inter"
               variant="outline"
-              disabled={question.length < 3}
+              disabled={isQuestionTooShort}
             >
-              {t.universe.askButton}
+              {language === 'ru' 
+                ? "Отправить вопрос" 
+                : language === 'es'
+                  ? "Enviar pregunta"
+                  : "Send question"}
             </CosmicButton>
             
             {/* Only show Chat Preview for PRO users */}
@@ -171,18 +204,18 @@ const UniversePage: React.FC = () => {
             
             {activeQuestions.length > 0 && (
               <div className="mt-12">
-                <h3 className="text-lg font-serif text-cosmic-secondary mb-4">
+                <h3 className="text-lg font-cormorant font-medium text-cosmic-secondary mb-4">
                   {t.universe.previousQuestions}
                 </h3>
                 
                 <div className="space-y-4">
                   {activeQuestions.slice(0, 3).map((q) => (
                     <div key={q.id} className="cosmic-card bg-cosmic-dark/60">
-                      <p className="text-sm text-cosmic-secondary mb-2">
+                      <p className="text-sm text-cosmic-secondary mb-2 font-inter">
                         {new Date(q.created_at).toLocaleDateString()}
                       </p>
-                      <p className="text-white mb-2">{q.question}</p>
-                      <QuoteDisplay quote={q.answer} className="!text-sm !p-0" />
+                      <p className="text-white mb-2 font-inter">{q.question}</p>
+                      <QuoteDisplay quote={q.answer} className="!text-sm !p-0 font-inter" />
                     </div>
                   ))}
                 </div>
