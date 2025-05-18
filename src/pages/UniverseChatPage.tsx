@@ -22,6 +22,7 @@ const UniverseChatPage = () => {
     setCurrentChatSession,
     sendChatMessage,
     loadChatMessages,
+    isUniverseTyping
   } = useAppStore();
   
   const { t } = useTranslations();
@@ -152,10 +153,10 @@ const UniverseChatPage = () => {
           onSendMessage={handleSendMessage} 
           isDisabled={isSendingMessage}
         />
+        
+        {/* Add BottomNavigation component */}
+        <BottomNavigation />
       </div>
-      
-      {/* Add BottomNavigation component outside of main content div but inside the wrapper */}
-      <BottomNavigation />
     </UniverseChatProWrapper>
   );
 };

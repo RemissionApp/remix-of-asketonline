@@ -68,7 +68,6 @@ export async function generateUniverseAnswer(question: string): Promise<string> 
     console.log('Calling universe-answer edge function with context data');
     
     // Call the edge function with the appropriate options
-    // The invoke method doesn't directly accept a timeout parameter
     const { data, error } = await supabase.functions.invoke('universe-answer', {
       body: { 
         question, 
