@@ -26,8 +26,15 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
         {paragraphs.map((paragraph, index) => (
           <div key={index} className="space-y-2">
             {paragraph.split('\n').map((line, lineIdx) => {
-              // Выделяем заголовки цифрами (1., 2., и т.д.)
-              if (/^\d+\./.test(line.trim())) {
+              // Выделяем заголовки (числа в начале строки или фразы, похожие на заголовки)
+              if (/^\d+\./.test(line.trim()) || 
+                  line.includes("Дополнительные аспекты") ||
+                  line.includes("Ключевые идеи") ||
+                  line.includes("Критический анализ") ||
+                  line.includes("Простыми словами") ||
+                  line.includes("План действий") ||
+                  line.includes("Нестандартные решения") ||
+                  line.includes("Литература по теме")) {
                 return (
                   <h3 key={lineIdx} className="text-cosmic-gold font-cormorant text-xl font-medium mt-4">
                     {line}
