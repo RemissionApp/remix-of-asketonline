@@ -31,6 +31,42 @@ export interface MainNavTranslations {
   profile: string;
 }
 
+export interface AffirmationCategoriesTranslations {
+  all: string;
+  success: string;
+  confidence: string;
+  wellbeing: string;
+  love: string;
+  abundance: string;
+}
+
+export interface AffirmationPracticeTranslations {
+  title: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  step4: string;
+  step5: string;
+  complete: string;
+  duration: string;
+}
+
+export interface AffirmationsTranslations {
+  title: string;
+  description: string;
+  categories: AffirmationCategoriesTranslations;
+  instructions: string;
+  practiceButton: string;
+  favoriteButton: string;
+  unfavoriteButton: string;
+  showDetails: string;
+  hideDetails: string;
+  instruction: string;
+  action: string;
+  daily: string;
+  practice: AffirmationPracticeTranslations;
+}
+
 export interface UniverseTranslations {
   title: string;
   question: string;
@@ -172,4 +208,5 @@ export interface Translations {
   legal?: LegalTranslations;
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
+  affirmations?: AffirmationsTranslations;  // Add this new field to support affirmations
 }
