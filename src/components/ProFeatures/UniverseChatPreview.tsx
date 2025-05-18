@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageSquare, ArrowRight } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useAppStore } from '@/store/useAppStore';
@@ -65,7 +65,6 @@ export const UniverseChatPreview: React.FC = () => {
         >
           {language === 'ru' ? 'Перейти в чат' : 
            language === 'es' ? 'Ir al chat' : 'Enter chat'}
-          <ArrowRight size={16} className="ml-2" />
         </CosmicButton>
       </div>
     </div>
