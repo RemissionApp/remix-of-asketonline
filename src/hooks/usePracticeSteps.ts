@@ -5,7 +5,7 @@ export interface PracticeStep {
   title: string;
   instruction: string;
   visualGuide: string;
-  visualImageUrl?: string; // Добавляем поле для ссылки на изображение
+  visualImageUrl?: string; // Поле для ссылки на изображение
 }
 
 export const usePracticeSteps = (language: string) => {

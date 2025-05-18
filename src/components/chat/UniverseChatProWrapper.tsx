@@ -9,14 +9,17 @@ import { useAppStore } from '@/store/useAppStore';
 
 interface UniverseChatProWrapperProps {
   children: React.ReactNode;
+  isPro?: boolean; // Добавляем опциональный параметр
 }
 
 export const UniverseChatProWrapper: React.FC<UniverseChatProWrapperProps> = ({ 
-  children
+  children,
+  isPro: propIsPro
 }) => {
   const { t } = useTranslations();
   const { userProfile } = useAppStore();
-  const isPro = userProfile?.isPro || false;
+  // Используем значение из пропса, если оно передано, иначе из профиля пользователя
+  const isPro = propIsPro !== undefined ? propIsPro : (userProfile?.isPro || false);
   
   if (!isPro) {
     return (

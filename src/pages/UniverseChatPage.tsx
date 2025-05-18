@@ -1,96 +1,99 @@
 
 import React, { useState, useEffect } from 'react';
+import { useAppStore } from '@/store/useAppStore';
 import { MeditationLayout } from '@/components/MeditationLayout';
+import { MessageSquare } from 'lucide-react';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
+import { EmptyChatState } from '@/components/chat/EmptyChatState';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatNavigationPanel } from '@/components/chat/ChatNavigationPanel';
+import { NewChatDialog } from '@/components/chat/NewChatDialog';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { ChatInput } from '@/components/chat/ChatInput';
-import { EmptyChatState } from '@/components/chat/EmptyChatState';
-import { NewChatDialog } from '@/components/chat/NewChatDialog';
-import { useAppStore } from '@/store/useAppStore';
-import { MessageCircle } from 'lucide-react';
+import { UniverseChatSession, UniverseChatMessage } from '@/store/slices/chat/universeChatTypes';
 
 const UniverseChatPage: React.FC = () => {
+  // Состояние для диалогового окна нового чата
   const [isNewChatDialogOpen, setIsNewChatDialogOpen] = useState(false);
+  
+  // Получаем все необходимые состояния и функции из хранилища приложения
   const { 
-    userProfile,
-    chatSessions,
-    loadChatSessions,
-    createChatSession,
-    currentChatSession,
-    setCurrentChatSession,
-    chatMessages,
-    loadChatMessages,
-    sendChatMessage,
-    isLoadingChatSessions,
-    isSendingMessage,
-    isUniverseTyping,
-    isLoadingChat
+    universeChat,
+    universeChatSessions,
+    universeChatMessages,
+    universeChatCurrentSessionId,
+    universeChatIsTyping,
+    universeChatIsLoading,
+    createUniverseChatSession,
+    setCurrentUniverseChatSession,
+    loadUniverseChatMessages,
+    sendUniverseChatMessage
   } = useAppStore();
   
+  // При монтировании компонента создаем новый сеанс, если нет активных сеансов
   useEffect(() => {
-    // Загружаем сессии чата при монтировании компонента
-    loadChatSessions();
-  }, [loadChatSessions]);
-  
-  const handleChatSelection = async (sessionId: string) => {
-    if (currentChatSession !== sessionId) {
-      await setCurrentChatSession(sessionId);
-    }
-  };
-  
-  const handleCreateChat = async (title: string) => {
-    const sessionId = await createChatSession(title);
-    setIsNewChatDialogOpen(false);
+    const initializeChat = async () => {
+      if (universeChatSessions.length === 0) {
+        await createUniverseChatSession('Новый диалог с Вселенной');
+      }
+    };
     
-    if (sessionId) {
-      await setCurrentChatSession(sessionId);
-    }
-  };
+    initializeChat();
+  }, [universeChatSessions, createUniverseChatSession]);
   
+  // Обработчики действий
   const handleNewChat = () => {
     setIsNewChatDialogOpen(true);
   };
   
-  const handleSendMessage = async (message: string) => {
-    if (currentChatSession) {
-      await sendChatMessage(message);
-    }
+  const handleCreateNewChat = async (title: string) => {
+    await createUniverseChatSession(title);
+    setIsNewChatDialogOpen(false);
   };
   
+  const handleSelectSession = async (sessionId: string) => {
+    await setCurrentUniverseChatSession(sessionId);
+  };
+  
+  const handleSendMessage = async (message: string) => {
+    if (message.trim() === '') return;
+    await sendUniverseChatMessage(message);
+  };
+
   return (
-    <MeditationLayout
-      title="Чат с Вселенной"
-      icon={<MessageCircle size={24} className="text-purple-400 mr-3" />}
-      disablePadding
+    <MeditationLayout 
+      title="Диалог с Вселенной" 
+      icon={<MessageSquare size={24} className="text-purple-400 mr-3" />}
+      disablePadding={true}
     >
-      {/* Для доступа к этой функции требуется Pro подписка */}
-      <UniverseChatProWrapper>
-        <div className="h-screen flex flex-col">
+      <UniverseChatProWrapper isPro={true}>
+        <div className="w-full h-full flex flex-col">
           <ChatHeader onNewChat={handleNewChat} />
           
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex">
+            {/* Боковая панель с сеансами чата */}
             <ChatNavigationPanel 
-              sessions={chatSessions}
-              currentSessionId={currentChatSession}
-              onSelectSession={handleChatSelection}
+              sessions={universeChatSessions as UniverseChatSession[]}
+              currentSessionId={universeChatCurrentSessionId}
+              onSelectSession={handleSelectSession}
               onNewChat={handleNewChat}
-              isLoading={isLoadingChatSessions}
+              isLoading={universeChatIsLoading}
             />
             
-            <div className="flex-1 flex flex-col h-full relative">
-              {currentChatSession ? (
+            {/* Основная область чата */}
+            <div className="flex-1 flex flex-col h-full px-1 md:px-4">
+              {universeChatCurrentSessionId ? (
                 <>
                   <ChatMessagesDisplay 
-                    messages={chatMessages}
-                    isLoading={isLoadingChat}
-                    isTyping={isUniverseTyping}
+                    messages={universeChatMessages as UniverseChatMessage[]} 
+                    isLoading={universeChatIsLoading}
+                    isTyping={universeChatIsTyping}
                   />
+                  
                   <ChatInput 
                     onSendMessage={handleSendMessage}
-                    isDisabled={isSendingMessage}
-                    isLoading={isSendingMessage}
+                    disabled={universeChatIsLoading || universeChatIsTyping}
+                    isLoading={universeChatIsLoading}
                   />
                 </>
               ) : (
@@ -102,9 +105,9 @@ const UniverseChatPage: React.FC = () => {
       </UniverseChatProWrapper>
       
       <NewChatDialog 
-        isOpen={isNewChatDialogOpen} 
+        open={isNewChatDialogOpen}
         onClose={() => setIsNewChatDialogOpen(false)}
-        onCreate={handleCreateChat}
+        onCreateSession={handleCreateNewChat}
       />
     </MeditationLayout>
   );

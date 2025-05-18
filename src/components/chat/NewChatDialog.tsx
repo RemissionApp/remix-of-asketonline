@@ -1,73 +1,80 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useTranslations } from '@/hooks/useTranslations';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 interface NewChatDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onCreate: (title: string) => Promise<void>;
+  onCreateSession: (title: string) => Promise<void>;
 }
 
-export const NewChatDialog: React.FC<NewChatDialogProps> = ({ 
-  isOpen, 
+export const NewChatDialog: React.FC<NewChatDialogProps> = ({
+  open,
   onClose,
-  onCreate 
+  onCreateSession
 }) => {
-  const [newChatTitle, setNewChatTitle] = useState('');
-  const { t } = useTranslations();
-  
-  const handleCreateNewChat = async () => {
-    if (newChatTitle.trim().length < 3) {
-      toast.error('Название диалога должно содержать не менее 3 символов');
-      return;
-    }
+  const [title, setTitle] = useState('Новый диалог с Вселенной');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     
+    if (!title.trim()) return;
+    
+    setIsSubmitting(true);
     try {
-      await onCreate(newChatTitle);
-      setNewChatTitle('');
-      onClose();
+      await onCreateSession(title);
+      setTitle('Новый диалог с Вселенной');
     } catch (error) {
-      console.error('Error creating chat session:', error);
-      toast.error('Не удалось создать новый диалог');
+      console.error('Error creating new chat session:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
-        <h3 className="text-lg font-medium font-serif text-cosmic-accent mb-4">
-          {t.universe?.newChatTitle || 'Новый диалог со Вселенной'}
-        </h3>
-        <Label htmlFor="chat-title" className="text-cosmic-secondary text-sm">
-          {t.universe?.chatTitleLabel || 'Название диалога'}
-        </Label>
-        <Input
-          id="chat-title"
-          value={newChatTitle}
-          onChange={(e) => setNewChatTitle(e.target.value)}
-          placeholder={t.universe?.chatTitlePlaceholder || 'Например: Поиск моего пути'}
-          className="bg-cosmic-dark/50 border-cosmic-accent/30 text-white mb-4"
-        />
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-          >
-            {t.common?.cancel || 'Отмена'}
-          </Button>
-          <Button
-            onClick={handleCreateNewChat}
-            className="bg-cosmic-accent hover:bg-cosmic-accent/90"
-            disabled={newChatTitle.trim().length < 3}
-          >
-            {t.common?.create || 'Создать'}
-          </Button>
-        </div>
+        <DialogHeader>
+          <DialogTitle className="text-cosmic-accent">Создать новый диалог</DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="title" className="text-sm text-white/80">Название диалога</label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Введите название"
+                className="bg-cosmic-dark/60 border-cosmic-accent/30 text-white"
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+            >
+              Отмена
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={!title.trim() || isSubmitting}
+              className="bg-cosmic-accent hover:bg-cosmic-accent/90"
+            >
+              {isSubmitting ? 'Создание...' : 'Создать'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
