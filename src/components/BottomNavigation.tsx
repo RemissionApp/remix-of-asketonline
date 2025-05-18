@@ -19,7 +19,7 @@ const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding'
 };
 
 export const BottomNavigation: React.FC = () => {
-  const { setActiveScreen, activeScreen, userProfile } = useAppStore();
+  const { setActiveScreen, activeScreen, userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const location = useLocation();
