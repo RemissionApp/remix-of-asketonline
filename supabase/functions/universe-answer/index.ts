@@ -153,7 +153,7 @@ serve(async (req) => {
         ],
         temperature: 0.8,
         // Увеличиваем лимит токенов для более подробных ответов
-        max_tokens: 1000
+        max_tokens: 4000
       }),
     });
 
@@ -166,7 +166,7 @@ serve(async (req) => {
 
     const answer = data.choices[0].message.content;
     
-    console.log("Generated astrological advice:", answer.substring(0, 100) + "...");
+    console.log("Generated universe answer:", answer.substring(0, 100) + "...");
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
