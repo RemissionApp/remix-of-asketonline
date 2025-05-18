@@ -11,7 +11,7 @@ import { UniverseChatState } from '../universeChatTypes';
 export const createSendChatMessageAction = <T extends AppState & UniverseChatState>(
   set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
   get: () => T
-) => async (message: string) => {
+) => async (message: string, messageType: 'user' | 'system' = 'user') => {
   const { user, userProfile, pacts } = get();
   const sessionId = get().currentChatSession;
   const currentMessages = get().chatMessages;
@@ -47,6 +47,28 @@ export const createSendChatMessageAction = <T extends AppState & UniverseChatSta
       isUniverseTyping: false // Reset typing state
     } as unknown as Partial<T>);
     
+    // If this is a system message (welcome), we'll add it directly as universe message
+    if (messageType === 'system') {
+      // Save universe welcome message to database
+      const universeMessageId = await saveMessage(user.id, sessionId, message, 'universe');
+      
+      if (!universeMessageId) {
+        throw new Error('Failed to save universe welcome message');
+      }
+      
+      // Load updated messages
+      const updatedMessages = await loadSessionMessages(sessionId);
+      
+      // Update state with all messages
+      set({ 
+        chatMessages: updatedMessages,
+        isSendingMessage: false
+      } as unknown as Partial<T>);
+      
+      return;
+    }
+    
+    // Regular user message flow
     // Add temporary message to state immediately
     const tempUserMsg = {
       id: `temp-${Date.now()}-${Math.random()}`,

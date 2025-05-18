@@ -26,7 +26,7 @@ const UniverseChatPage = () => {
   } = useAppStore();
   
   const { t } = useTranslations();
-  const [initialMessageSent, setInitialMessageSent] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   
   // Load chat sessions on first render
   useEffect(() => {
@@ -52,39 +52,39 @@ const UniverseChatPage = () => {
         }
       } else {
         // If we already have a session, load its messages
-        loadChatMessages(currentChatSession);
+        await loadChatMessages(currentChatSession);
+        setInitialLoaded(true);
       }
     };
     
     initializeChat();
   }, [currentChatSession, createChatSession, loadChatMessages, setCurrentChatSession, t.universe]);
   
-  // Send initial welcome message from the universe when session is ready and no messages exist
+  // Add welcome message when session and messages are loaded
   useEffect(() => {
-    const sendWelcomeMessage = async () => {
-      // Only proceed if we have a session, messages are loaded, and no messages exist
+    const addWelcomeMessage = async () => {
+      // Only proceed if we have a session, messages are loaded, and there are no messages
       if (
         currentChatSession && 
         !isLoadingChat && 
+        initialLoaded &&
         chatMessages.length === 0 && 
-        !initialMessageSent &&
         !isSendingMessage
       ) {
-        setInitialMessageSent(true);
-        
         try {
+          // Create welcome message from universe (not from user)
           const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Only pass the message parameter
-          await sendChatMessage(welcomeMessage);
+          // Add universe message through the store action
+          await sendChatMessage(welcomeMessage, 'system');
         } catch (error) {
-          console.error('Error sending welcome message:', error);
+          console.error('Error adding welcome message:', error);
         }
       }
     };
     
-    sendWelcomeMessage();
-  }, [currentChatSession, isLoadingChat, chatMessages.length, initialMessageSent, isSendingMessage, sendChatMessage]);
+    addWelcomeMessage();
+  }, [currentChatSession, isLoadingChat, initialLoaded, chatMessages.length, isSendingMessage, sendChatMessage]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -124,6 +124,7 @@ const UniverseChatPage = () => {
       
       if (sessionId) {
         await setCurrentChatSession(sessionId);
+        setInitialLoaded(false); // Reset so welcome message can be added
         toast.success('Создан новый диалог');
       }
     } catch (error) {
