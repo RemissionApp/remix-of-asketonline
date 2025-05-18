@@ -70,21 +70,6 @@ serve(async (req) => {
     // Получаем результат
     const data = await dalle3Response.json();
     const imageBase64 = data.data[0].b64_json;
-    
-    // Создаем бакет, если он не существует
-    const { data: bucketData, error: bucketError } = await supabase.storage.getBucket(BUCKET_NAME);
-    
-    if (bucketError && bucketError.message.includes('The resource was not found')) {
-      const { error: createBucketError } = await supabase.storage.createBucket(BUCKET_NAME, {
-        public: true,
-        fileSizeLimit: 10 * 1024 * 1024, // 10MB лимит
-      });
-      
-      if (createBucketError) {
-        console.error('Ошибка при создании бакета:', createBucketError);
-        throw new Error(`Не удалось создать бакет: ${createBucketError.message}`);
-      }
-    }
 
     // Декодируем base64 в бинарные данные
     const binary = atob(imageBase64);
@@ -95,7 +80,7 @@ serve(async (req) => {
 
     // Формируем имя файла для сохранения
     const fileExt = "png";
-    const fullFilename = `practice_${practiceId}_step_${stepId || 'common'}_${filename}.${fileExt}`;
+    const fullFilename = `practice_${practiceId || 0}_step_${stepId || 'common'}_${filename}.${fileExt}`;
     
     // Сохраняем файл в хранилище
     const { data: uploadData, error: uploadError } = await supabase.storage

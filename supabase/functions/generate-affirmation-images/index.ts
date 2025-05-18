@@ -71,31 +71,12 @@ serve(async (req) => {
     const data = await dalle3Response.json();
     const imageBase64 = data.data[0].b64_json;
     
-    // Ensure bucket exists
-    const { data: bucketData, error: bucketError } = await supabase.storage.getBucket(BUCKET_NAME);
-    
-    if (bucketError && bucketError.message.includes('The resource was not found')) {
-      const { error: createBucketError } = await supabase.storage.createBucket(BUCKET_NAME, {
-        public: true,
-        fileSizeLimit: 10 * 1024 * 1024, // 10MB limit
-      });
-      
-      if (createBucketError) {
-        console.error('Error creating bucket:', createBucketError);
-        throw new Error(`Failed to create bucket: ${createBucketError.message}`);
-      }
-    }
-
     // Decode base64 to binary data
     const binary = atob(imageBase64);
     const array = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       array[i] = binary.charCodeAt(i);
     }
-
-    // Optimize image size by creating a smaller version
-    // We're already getting a 1024x1024 image, which should be suitable for web use
-    // But we could resize this further if needed
 
     // Create filename for saving
     const fileExt = "png";
