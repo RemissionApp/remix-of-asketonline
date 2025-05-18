@@ -1,11 +1,10 @@
 
+import React from "react";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { useTranslations } from "@/hooks/useTranslations";
 
-const NotFound = () => {
+export const NotFound: React.FC = () => {
   const location = useLocation();
-  const { t } = useTranslations();
 
   useEffect(() => {
     console.error(
@@ -26,5 +25,3 @@ const NotFound = () => {
     </div>
   );
 };
-
-export default NotFound;
