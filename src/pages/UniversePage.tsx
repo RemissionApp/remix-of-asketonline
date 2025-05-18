@@ -72,6 +72,32 @@ const UniversePage: React.FC = () => {
   // Счетчик символов
   const characterCount = question.length;
   const characterCountColor = isQuestionTooShort ? 'text-red-400' : 'text-cosmic-secondary';
+
+  // Функция для форматирования ответа с разделением на абзацы
+  const formatUniverseAnswer = (answer: string) => {
+    // Разделяем текст на абзацы по двойным переносам строк
+    const paragraphs = answer.split(/\n\s*\n/);
+    
+    return (
+      <div className="space-y-6">
+        {paragraphs.map((paragraph, index) => (
+          <div key={index} className="space-y-2">
+            {paragraph.split('\n').map((line, lineIdx) => {
+              // Выделяем заголовки цифрами (1., 2., и т.д.)
+              if (/^\d+\./.test(line.trim())) {
+                return (
+                  <h3 key={lineIdx} className="text-cosmic-gold font-cormorant text-xl font-medium mt-4">
+                    {line}
+                  </h3>
+                );
+              }
+              return <p key={lineIdx} className="text-white font-inter leading-relaxed">{line}</p>;
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -107,7 +133,7 @@ const UniversePage: React.FC = () => {
       {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}
       
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-lg mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-3xl mx-auto w-full">
         {currentAnswer ? (
           <div className="animate-fade-in w-full">
             <div className="cosmic-card mb-6">
@@ -122,10 +148,8 @@ const UniversePage: React.FC = () => {
                 {t.universe.universeAnswer}
               </h2>
               
-              <TypingEffect 
-                text={currentAnswer.answer} 
-                className="text-white font-inter leading-relaxed"
-              />
+              {/* Используем форматированный вывод ответа */}
+              {formatUniverseAnswer(currentAnswer.answer)}
               
               <div className="mt-8 flex justify-center">
                 <CosmicButton 
