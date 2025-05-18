@@ -2,6 +2,7 @@
 import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 import { 
   UniverseChatMessage, 
   UniverseChatSession,
@@ -260,8 +261,8 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
         throw new Error('Failed to save user message');
       }
       
-      // Call the new universe-dialogue function to get a response
-      const { data: dialogueResponse, error: dialogueError } = await get().supabase.functions.invoke('universe-dialogue', {
+      // Call the universe-dialogue function using the imported supabase client
+      const { data: dialogueResponse, error: dialogueError } = await supabase.functions.invoke('universe-dialogue', {
         body: {
           question: message,
           language: get().language,
