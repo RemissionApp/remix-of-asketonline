@@ -1,6 +1,5 @@
 
 import { AppState } from '../../../types';
-import { loadChatMessages } from '.';
 import { UniverseChatState } from '../universeChatTypes';
 
 /**
