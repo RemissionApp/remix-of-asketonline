@@ -75,8 +75,7 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          // Fix: Issue was here - check if sendChatMessage accepts isWelcomeMessage parameter
-          // in the store definition, and pass it only if the function expects it
+          // Fix: Only pass the message parameter, not the isWelcomeMessage flag
           await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error sending welcome message:', error);
@@ -134,33 +133,29 @@ const UniverseChatPage = () => {
   };
   
   // Wrap content with PRO check
-  const content = (
-    <div className="min-h-screen flex flex-col bg-cosmic">
-      <StarField starCount={100} />
-      
-      <ChatHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
-      
-      <div className="w-full max-w-2xl mx-auto mt-20">
-        <div className="px-4 mb-24">
-          <ChatTabContent 
-            isLoadingChat={isLoadingChat}
-            chatMessages={chatMessages}
-          />
-        </div>
-      </div>
-      
-      <ChatInput 
-        onSendMessage={handleSendMessage} 
-        isDisabled={isSendingMessage}
-      />
-      
-      {/* Replace ChatNavigationPanel with standard BottomNavigation */}
-    </div>
-  );
-  
   return (
     <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
-      {content}
+      <div className="min-h-screen flex flex-col bg-cosmic">
+        <StarField starCount={100} />
+        
+        <ChatHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
+        
+        <div className="w-full max-w-2xl mx-auto mt-20">
+          <div className="px-4 mb-24">
+            <ChatTabContent 
+              isLoadingChat={isLoadingChat}
+              chatMessages={chatMessages}
+            />
+          </div>
+        </div>
+        
+        <ChatInput 
+          onSendMessage={handleSendMessage} 
+          isDisabled={isSendingMessage}
+        />
+      </div>
+      
+      {/* Add BottomNavigation component outside of main content div but inside the wrapper */}
       <BottomNavigation />
     </UniverseChatProWrapper>
   );
