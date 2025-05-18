@@ -75,8 +75,9 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          // Send welcome message using the sendChatMessage with isWelcomeMessage flag
-          await sendChatMessage(welcomeMessage, true);
+          // Fix: Issue was here - check if sendChatMessage accepts isWelcomeMessage parameter
+          // in the store definition, and pass it only if the function expects it
+          await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error sending welcome message:', error);
         }
