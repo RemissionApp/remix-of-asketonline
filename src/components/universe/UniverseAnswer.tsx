@@ -42,12 +42,12 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
                   line.includes("Нестандартные решения") ||
                   line.includes("Литература по теме")) {
                 return (
-                  <h3 key={lineIdx} className="text-cosmic-gold font-cormorant text-xl font-bold mt-4">
+                  <h3 key={lineIdx} className="text-cosmic-gold font-serif text-xl font-bold mt-4">
                     {line}
                   </h3>
                 );
               }
-              return <p key={lineIdx} className="text-white font-inter leading-relaxed">{line}</p>;
+              return <p key={lineIdx} className="text-white font-sans leading-relaxed">{line}</p>;
             })}
           </div>
         ))}
@@ -61,11 +61,11 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
         <h2 className="text-lg font-cormorant font-medium text-cosmic-accent mb-2">
           {t.universe.yourQuestion}
         </h2>
-        <p className="text-white font-inter">{question}</p>
+        <p className="text-white font-sans">{question}</p>
       </div>
       
       <div className="cosmic-card bg-cosmic-accent/10">
-        <h2 className="text-lg font-cormorant font-medium text-cosmic-gold mb-4">
+        <h2 className="text-2xl font-serif font-medium text-cosmic-gold mb-6 text-center">
           {t.universe.universeAnswer}
         </h2>
         
