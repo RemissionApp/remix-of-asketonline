@@ -372,5 +372,37 @@ export const enTranslations: Translations = {
     termsChangesText: "We may modify these terms at any time. By continuing to use the application after such changes, you agree to the updated terms.",
     termination: "Termination",
     terminationText: "We may terminate or suspend your access to the application immediately, without prior notice or liability, for any reason, including violation of these terms."
+  },
+  
+  affirmations: {
+    title: "Affirmations",
+    description: "Daily positive statements to transform your mindset",
+    categories: {
+      all: "All",
+      success: "Success",
+      confidence: "Confidence",
+      wellbeing: "Well-being",
+      love: "Love",
+      abundance: "Abundance"
+    },
+    instructions: "Choose an affirmation, meditate on it, and repeat it daily for transformative effect.",
+    practiceButton: "Practice",
+    favoriteButton: "Add to favorites",
+    unfavoriteButton: "Remove from favorites",
+    showDetails: "Show details",
+    hideDetails: "Hide details",
+    instruction: "Instruction",
+    action: "Action",
+    daily: "Today's Affirmation",
+    practice: {
+      title: "Practice Affirmation",
+      step1: "Find a quiet space where you won't be disturbed",
+      step2: "Take three deep breaths to center yourself",
+      step3: "Repeat the affirmation aloud three times",
+      step4: "Close your eyes and repeat it mentally three more times",
+      step5: "Visualize the affirmation as already true in your life",
+      complete: "Complete Practice",
+      duration: "Recommended practice time: 2-5 minutes"
+    }
   }
 };
