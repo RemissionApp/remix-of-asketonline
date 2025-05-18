@@ -17,29 +17,36 @@ const UniverseChatPage: React.FC = () => {
   const [isNewChatDialogOpen, setIsNewChatDialogOpen] = useState(false);
   
   // Получаем все необходимые состояния и функции из хранилища приложения
-  const { 
-    universeChat,
-    universeChatSessions,
-    universeChatMessages,
-    universeChatCurrentSessionId,
-    universeChatIsTyping,
-    universeChatIsLoading,
-    createUniverseChatSession,
-    setCurrentUniverseChatSession,
-    loadUniverseChatMessages,
-    sendUniverseChatMessage
+  const {
+    chatSessions,
+    isLoadingChatSessions,
+    currentChatSession,
+    chatMessages,
+    isLoadingChat,
+    isSendingMessage,
+    isUniverseTyping,
+    loadChatSessions,
+    loadChatMessages,
+    createChatSession,
+    setCurrentChatSession,
+    sendChatMessage
   } = useAppStore();
+  
+  // Загружаем сессии чата при монтировании компонента
+  useEffect(() => {
+    loadChatSessions();
+  }, [loadChatSessions]);
   
   // При монтировании компонента создаем новый сеанс, если нет активных сеансов
   useEffect(() => {
     const initializeChat = async () => {
-      if (universeChatSessions.length === 0) {
-        await createUniverseChatSession('Новый диалог с Вселенной');
+      if (chatSessions.length === 0 && !isLoadingChatSessions) {
+        await createChatSession('Новый диалог с Вселенной');
       }
     };
     
     initializeChat();
-  }, [universeChatSessions, createUniverseChatSession]);
+  }, [chatSessions, isLoadingChatSessions, createChatSession]);
   
   // Обработчики действий
   const handleNewChat = () => {
@@ -47,24 +54,24 @@ const UniverseChatPage: React.FC = () => {
   };
   
   const handleCreateNewChat = async (title: string) => {
-    await createUniverseChatSession(title);
+    await createChatSession(title);
     setIsNewChatDialogOpen(false);
   };
   
   const handleSelectSession = async (sessionId: string) => {
-    await setCurrentUniverseChatSession(sessionId);
+    await setCurrentChatSession(sessionId);
   };
   
   const handleSendMessage = async (message: string) => {
     if (message.trim() === '') return;
-    await sendUniverseChatMessage(message);
+    await sendChatMessage(message);
   };
 
   return (
     <MeditationLayout 
       title="Диалог с Вселенной" 
       icon={<MessageSquare size={24} className="text-purple-400 mr-3" />}
-      disablePadding={true}
+      padded={false}
     >
       <UniverseChatProWrapper isPro={true}>
         <div className="w-full h-full flex flex-col">
@@ -73,27 +80,27 @@ const UniverseChatPage: React.FC = () => {
           <div className="flex-1 flex">
             {/* Боковая панель с сеансами чата */}
             <ChatNavigationPanel 
-              sessions={universeChatSessions as UniverseChatSession[]}
-              currentSessionId={universeChatCurrentSessionId}
+              sessions={chatSessions as UniverseChatSession[]}
+              currentSessionId={currentChatSession || ''}
               onSelectSession={handleSelectSession}
               onNewChat={handleNewChat}
-              isLoading={universeChatIsLoading}
+              isLoading={isLoadingChatSessions}
             />
             
             {/* Основная область чата */}
             <div className="flex-1 flex flex-col h-full px-1 md:px-4">
-              {universeChatCurrentSessionId ? (
+              {currentChatSession ? (
                 <>
                   <ChatMessagesDisplay 
-                    messages={universeChatMessages as UniverseChatMessage[]} 
-                    isLoading={universeChatIsLoading}
-                    isTyping={universeChatIsTyping}
+                    messages={chatMessages as UniverseChatMessage[]} 
+                    isLoading={isLoadingChat}
+                    isTyping={isUniverseTyping}
                   />
                   
                   <ChatInput 
                     onSendMessage={handleSendMessage}
-                    disabled={universeChatIsLoading || universeChatIsTyping}
-                    isLoading={universeChatIsLoading}
+                    disabled={isLoadingChat || isUniverseTyping}
+                    isLoading={isSendingMessage}
                   />
                 </>
               ) : (

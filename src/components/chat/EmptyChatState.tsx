@@ -1,30 +1,30 @@
 
 import React from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface EmptyChatStateProps {
-  onNewChat?: () => void;
+  onNewChat: () => void;
 }
 
 export const EmptyChatState: React.FC<EmptyChatStateProps> = ({ onNewChat }) => {
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 mt-20 mb-20">
-      <div className="w-16 h-16 rounded-full bg-cosmic-dark/60 border border-cosmic-accent/30 flex items-center justify-center mb-4">
-        <MessageCircle className="h-8 w-8 text-cosmic-accent/80" />
+    <div className="h-full flex flex-col items-center justify-center p-4 text-center">
+      <div className="w-20 h-20 bg-cosmic-accent/10 rounded-full flex items-center justify-center mb-6">
+        <MessageSquare size={40} className="text-cosmic-accent/70" />
       </div>
-      <h3 className="text-xl font-serif text-cosmic-accent mb-2">Начните новый диалог</h3>
-      <p className="text-center text-cosmic-secondary mb-6 max-w-md">
-        Задайте вопрос Вселенной и получите ответ, основанный на космических энергиях и мудрости звезд
+      
+      <h3 className="text-xl font-serif text-white mb-2">Диалог с Вселенной</h3>
+      <p className="text-cosmic-secondary mb-8 max-w-md">
+        Задайте вопрос и Вселенная откроет вам свои тайны. Создайте новый диалог, чтобы начать путешествие.
       </p>
-      {onNewChat && (
-        <Button 
-          onClick={onNewChat}
-          className="bg-cosmic-accent hover:bg-cosmic-accent/90"
-        >
-          Новый диалог
-        </Button>
-      )}
+      
+      <Button 
+        onClick={onNewChat}
+        className="bg-cosmic-accent hover:bg-cosmic-accent/90"
+      >
+        Начать новый диалог
+      </Button>
     </div>
   );
 };

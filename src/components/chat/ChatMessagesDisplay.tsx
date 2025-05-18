@@ -6,7 +6,7 @@ import { UniverseChatMessage } from '@/store/slices/chat/universeChatTypes';
 interface ChatMessagesDisplayProps {
   messages: UniverseChatMessage[];
   isLoading: boolean;
-  isTyping: boolean; // Добавляем статус набора текста
+  isTyping: boolean; // Параметр для отображения статуса печатания
 }
 
 export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({ 
@@ -32,9 +32,9 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
         messages.map((message, index) => (
           <div 
             key={message.id || index} 
-            className={`flex items-start space-x-3 ${message.role === 'user' ? 'justify-end' : ''}`}
+            className={`flex items-start space-x-3 ${message.sender === 'user' ? 'justify-end' : ''}`}
           >
-            {message.role !== 'user' && (
+            {message.sender !== 'user' && (
               <div className="rounded-full bg-cosmic-accent/20 p-2 flex-shrink-0">
                 <Bot size={18} className="text-cosmic-accent" />
               </div>
@@ -42,7 +42,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
             
             <div 
               className={`rounded-lg p-3 max-w-[80%] ${
-                message.role === 'user'
+                message.sender === 'user'
                   ? 'bg-cosmic-accent/30 text-white ml-auto'
                   : 'bg-cosmic-dark/60 border border-cosmic-accent/20 text-white/90'
               }`}
@@ -50,7 +50,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
               {message.content}
             </div>
             
-            {message.role === 'user' && (
+            {message.sender === 'user' && (
               <div className="rounded-full bg-purple-500/20 p-2 flex-shrink-0">
                 <MessageSquare size={18} className="text-purple-400" />
               </div>
