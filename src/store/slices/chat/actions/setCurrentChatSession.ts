@@ -12,7 +12,10 @@ export const createSetCurrentChatSessionAction = <T extends AppState & UniverseC
   console.log('Setting current chat session:', sessionId);
   
   // Important: Set the session ID first before loading messages
-  set({ currentChatSession: sessionId } as unknown as Partial<T>);
+  set({ 
+    currentChatSession: sessionId,
+    isUniverseTyping: false // Reset typing state when changing sessions
+  } as unknown as Partial<T>);
   
   if (sessionId) {
     // Then load messages for the selected session

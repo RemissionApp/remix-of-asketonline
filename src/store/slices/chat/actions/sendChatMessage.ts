@@ -42,7 +42,10 @@ export const createSendChatMessageAction = <T extends AppState & UniverseChatSta
   }
   
   try {
-    set({ isSendingMessage: true } as unknown as Partial<T>);
+    set({ 
+      isSendingMessage: true,
+      isUniverseTyping: false // Reset typing state
+    } as unknown as Partial<T>);
     
     // Add temporary message to state immediately
     const tempUserMsg = {
@@ -103,6 +106,9 @@ export const createSendChatMessageAction = <T extends AppState & UniverseChatSta
       throw new Error('Failed to save user message');
     }
     
+    // Set universe typing indicator before calling the function
+    set({ isUniverseTyping: true } as unknown as Partial<T>);
+    
     // Call the universe-dialogue function using the imported supabase client
     const { data: dialogueResponse, error: dialogueError } = await supabase.functions.invoke('universe-dialogue', {
       body: {
@@ -112,6 +118,9 @@ export const createSendChatMessageAction = <T extends AppState & UniverseChatSta
         recentMessages: recentUserMessages
       }
     });
+    
+    // Reset typing indicator once response is received
+    set({ isUniverseTyping: false } as unknown as Partial<T>);
     
     if (dialogueError) {
       throw new Error(`Error from universe-dialogue function: ${dialogueError.message}`);
@@ -139,6 +148,9 @@ export const createSendChatMessageAction = <T extends AppState & UniverseChatSta
   } catch (error) {
     console.error("Error sending chat message:", error);
     toast.error('Не удалось отправить сообщение');
-    set({ isSendingMessage: false } as unknown as Partial<T>);
+    set({ 
+      isSendingMessage: false,
+      isUniverseTyping: false // Reset typing state on error
+    } as unknown as Partial<T>);
   }
 };

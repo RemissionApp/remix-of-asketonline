@@ -10,6 +10,7 @@ export interface UniverseChatState {
   chatMessages: UniverseChatMessage[];
   isLoadingChat: boolean;
   isSendingMessage: boolean;
+  isUniverseTyping: boolean; // New state to track when universe is typing
 }
 
 /**
@@ -20,5 +21,6 @@ export const initialUniverseChatState: UniverseChatState = {
   currentChatSession: null,
   chatMessages: [],
   isLoadingChat: false,
-  isSendingMessage: false
+  isSendingMessage: false,
+  isUniverseTyping: false // Initialize as not typing
 };
