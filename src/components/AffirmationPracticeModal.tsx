@@ -89,7 +89,6 @@ export const AffirmationPracticeModal: React.FC<AffirmationPracticeModalProps> =
                 instruction={currentStep.instruction}
                 visualGuide={currentStep.visualGuide}
                 language={language}
-                visualImageUrl={currentStep.visualImageUrl}
               />
             </div>
           )}

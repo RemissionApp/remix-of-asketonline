@@ -25,6 +25,3 @@ export interface UniverseChatState {
   subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
   handleNewChatMessage: (payload: any) => void;
 }
-
-// Экспортируем типы из utils/universeChat/types для удобного использования
-export type { UniverseChatMessage, UniverseChatSession };

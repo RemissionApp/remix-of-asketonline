@@ -1,36 +1,40 @@
 
 import React from 'react';
 import { StarField } from '@/components/StarField';
-import { BottomNavigation } from '@/components/BottomNavigation';
+import { useAppStore } from '@/store/useAppStore';
+import { useTranslations } from '@/hooks/useTranslations';
+import { Home, Sparkles, MessageSquare, User } from 'lucide-react';
+import { BottomNavigation } from './BottomNavigation';
 
-export interface MeditationLayoutProps {
+interface MeditationLayoutProps {
   children: React.ReactNode;
-  title?: string;
+  title: string;
   icon?: React.ReactNode;
-  padded?: boolean;
 }
 
-export const MeditationLayout: React.FC<MeditationLayoutProps> = ({
-  children,
+export const MeditationLayout: React.FC<MeditationLayoutProps> = ({ 
+  children, 
   title,
-  icon,
-  padded = true
+  icon
 }) => {
+  const { t } = useTranslations();
+
   return (
-    <div className="min-h-screen flex flex-col bg-cosmic">
-      <StarField starCount={50} />
-      
-      {title && (
-        <div className="border-b border-cosmic-accent/20 p-4 flex items-center bg-cosmic-dark/40 backdrop-blur-md">
+    <div className="min-h-screen flex flex-col relative pb-16">
+      <StarField starCount={100} />
+
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-8">
+        <div className="flex items-center justify-center mb-6">
           {icon}
-          <h1 className="text-cosmic-accent text-xl font-serif">{title}</h1>
+          <h1 className="text-2xl text-center uppercase font-serif text-white">
+            {title}
+          </h1>
         </div>
-      )}
-      
-      <div className={`flex-1 ${padded ? 'p-4' : 'p-0'}`}>
+
         {children}
       </div>
-      
+
       <BottomNavigation />
     </div>
   );

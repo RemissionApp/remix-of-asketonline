@@ -235,31 +235,6 @@ export interface Database {
           created_at?: string
         }
       }
-      
-      // Мы можем добавить новую таблицу для практических изображений, если нужно
-      practice_images: {
-        Row: {
-          id: string
-          practice_id: number
-          step_id: number | null
-          image_url: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          practice_id: number
-          step_id?: number | null
-          image_url: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          practice_id?: number
-          step_id?: number | null
-          image_url?: string
-          created_at?: string
-        }
-      }
     }
   }
 }

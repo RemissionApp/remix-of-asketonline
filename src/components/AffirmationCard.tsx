@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { AffirmationPracticeModal } from './AffirmationPracticeModal';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Affirmation {
   id: number;
@@ -26,7 +25,6 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, l
   const [open, setOpen] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [isPracticeOpen, setIsPracticeOpen] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const { userProfile } = useAppStore();
   
   const instructionLabel = language === 'ru' ? 'Инструкция' : 
@@ -44,26 +42,16 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, l
   
   const toggleFavorite = () => {
     setFavorite(!favorite);
-    // В реальном приложении здесь был бы код для сохранения в предпочтениях пользователя
+    // In a real app, you would save this to user preferences
   };
   
   return (
     <Card className="w-full backdrop-blur-sm bg-cosmic-dark/80 border-cosmic-accent/30 hover:border-cosmic-accent/50 transition-all">
       <div className="relative overflow-hidden">
-        {!imageLoaded && (
-          <div className="w-full h-40 flex items-center justify-center bg-gray-800">
-            <ImageIcon className="h-10 w-10 text-gray-600" />
-          </div>
-        )}
         <img 
           src={affirmation.image} 
           alt={affirmation.text}
-          className={`w-full h-40 object-cover ${!imageLoaded ? 'hidden' : ''}`} 
-          onLoad={() => setImageLoaded(true)}
-          onError={(e) => {
-            console.error("Ошибка загрузки изображения:", e);
-            setImageLoaded(true); // Показать, что загрузка завершена, даже если с ошибкой
-          }}
+          className="w-full h-40 object-cover" 
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent py-4">
           <CardTitle className="text-white px-6 text-lg text-shadow">{affirmation.text}</CardTitle>

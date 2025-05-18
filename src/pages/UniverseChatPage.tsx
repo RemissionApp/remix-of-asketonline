@@ -1,122 +1,164 @@
 
 import React, { useState, useEffect } from 'react';
+import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
-import { MeditationLayout } from '@/components/MeditationLayout';
-import { MessageSquare } from 'lucide-react';
-import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
-import { EmptyChatState } from '@/components/chat/EmptyChatState';
+import { useTranslations } from '@/hooks/useTranslations';
 import { ChatHeader } from '@/components/chat/ChatHeader';
-import { ChatNavigationPanel } from '@/components/chat/ChatNavigationPanel';
-import { NewChatDialog } from '@/components/chat/NewChatDialog';
-import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { ChatInput } from '@/components/chat/ChatInput';
-import { UniverseChatSession, UniverseChatMessage } from '@/store/slices/chat/universeChatTypes';
+import { ChatTabContent } from '@/components/chat/ChatTabContent';
+import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
+import { BottomNavigation } from '@/components/BottomNavigation';
+import { toast } from 'sonner';
 
-const UniverseChatPage: React.FC = () => {
-  // Состояние для диалогового окна нового чата
-  const [isNewChatDialogOpen, setIsNewChatDialogOpen] = useState(false);
-  
-  // Получаем все необходимые состояния и функции из хранилища приложения
-  const {
-    chatSessions,
-    isLoadingChatSessions,
-    currentChatSession,
+const UniverseChatPage = () => {
+  const { 
+    userProfile, 
+    currentChatSession, 
     chatMessages,
     isLoadingChat,
     isSendingMessage,
-    isUniverseTyping,
     loadChatSessions,
-    loadChatMessages,
     createChatSession,
     setCurrentChatSession,
-    sendChatMessage
+    sendChatMessage,
+    loadChatMessages,
+    isUniverseTyping
   } = useAppStore();
   
-  // Загружаем сессии чата при монтировании компонента
+  const { t } = useTranslations();
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  
+  // Load chat sessions on first render
   useEffect(() => {
     loadChatSessions();
   }, [loadChatSessions]);
   
-  // При монтировании компонента создаем новый сеанс, если нет активных сеансов
+  // Ensure we have a current session and load messages
   useEffect(() => {
     const initializeChat = async () => {
-      if (chatSessions.length === 0 && !isLoadingChatSessions) {
-        await createChatSession('Новый диалог с Вселенной');
+      // If there's no active session, create one
+      if (!currentChatSession) {
+        try {
+          // Using a fallback for defaultChatTitle if it doesn't exist in translations
+          const defaultTitle = t.universe?.chatTitle || 'Диалог со Вселенной';
+          const sessionId = await createChatSession(defaultTitle);
+          
+          if (sessionId) {
+            console.log('Created new default session:', sessionId);
+            await setCurrentChatSession(sessionId);
+          }
+        } catch (error) {
+          console.error('Error creating default chat session:', error);
+        }
+      } else {
+        // If we already have a session, load its messages
+        await loadChatMessages(currentChatSession);
+        setInitialLoaded(true);
       }
     };
     
     initializeChat();
-  }, [chatSessions, isLoadingChatSessions, createChatSession]);
+  }, [currentChatSession, createChatSession, loadChatMessages, setCurrentChatSession, t.universe]);
   
-  // Обработчики действий
-  const handleNewChat = () => {
-    setIsNewChatDialogOpen(true);
-  };
-  
-  const handleCreateNewChat = async (title: string) => {
-    await createChatSession(title);
-    setIsNewChatDialogOpen(false);
-  };
-  
-  const handleSelectSession = async (sessionId: string) => {
-    await setCurrentChatSession(sessionId);
-  };
+  // Add welcome message when session and messages are loaded
+  useEffect(() => {
+    const addWelcomeMessage = async () => {
+      // Only proceed if we have a session, messages are loaded, and there are no messages
+      if (
+        currentChatSession && 
+        !isLoadingChat && 
+        initialLoaded &&
+        chatMessages.length === 0 && 
+        !isSendingMessage
+      ) {
+        try {
+          // Create welcome message from universe (not from user)
+          const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
+          
+          // Add universe message through the store action
+          await sendChatMessage(welcomeMessage, 'system');
+        } catch (error) {
+          console.error('Error adding welcome message:', error);
+        }
+      }
+    };
+    
+    addWelcomeMessage();
+  }, [currentChatSession, isLoadingChat, initialLoaded, chatMessages.length, isSendingMessage, sendChatMessage]);
   
   const handleSendMessage = async (message: string) => {
-    if (message.trim() === '') return;
-    await sendChatMessage(message);
-  };
-
-  return (
-    <MeditationLayout 
-      title="Диалог с Вселенной" 
-      icon={<MessageSquare size={24} className="text-purple-400 mr-3" />}
-      padded={false}
-    >
-      <UniverseChatProWrapper isPro={true}>
-        <div className="w-full h-full flex flex-col">
-          <ChatHeader onNewChat={handleNewChat} />
+    if (!message.trim()) return;
+    
+    try {
+      if (!currentChatSession) {
+        // Create a new session with the message as title
+        const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
+        console.log('Creating new chat session with title:', title);
+        
+        const sessionId = await createChatSession(title);
+        
+        if (sessionId) {
+          console.log('Session created with ID:', sessionId);
+          await setCurrentChatSession(sessionId);
           
-          <div className="flex-1 flex">
-            {/* Боковая панель с сеансами чата */}
-            <ChatNavigationPanel 
-              sessions={chatSessions as UniverseChatSession[]}
-              currentSessionId={currentChatSession || ''}
-              onSelectSession={handleSelectSession}
-              onNewChat={handleNewChat}
-              isLoading={isLoadingChatSessions}
+          // Wait a bit for state to update before sending
+          setTimeout(() => {
+            sendChatMessage(message);
+          }, 200);
+        }
+      } else {
+        // Session exists, send message
+        await sendChatMessage(message);
+      }
+    } catch (error) {
+      console.error('Error in send message flow:', error);
+      toast.error(t.universe?.errorSendingMessage || 'Failed to send message');
+    }
+  };
+  
+  const handleNewChat = async () => {
+    try {
+      // Creating a new chat session
+      const defaultTitle = t.universe?.newChatTitle || 'Новый диалог со Вселенной';
+      const sessionId = await createChatSession(defaultTitle);
+      
+      if (sessionId) {
+        await setCurrentChatSession(sessionId);
+        setInitialLoaded(false); // Reset so welcome message can be added
+        toast.success('Создан новый диалог');
+      }
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      toast.error('Ошибка создания нового диалога');
+    }
+  };
+  
+  // Wrap content with PRO check
+  return (
+    <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
+      <div className="min-h-screen flex flex-col bg-cosmic">
+        <StarField starCount={100} />
+        
+        <ChatHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
+        
+        <div className="w-full max-w-2xl mx-auto mt-20">
+          <div className="px-4 mb-24">
+            <ChatTabContent 
+              isLoadingChat={isLoadingChat}
+              chatMessages={chatMessages}
             />
-            
-            {/* Основная область чата */}
-            <div className="flex-1 flex flex-col h-full px-1 md:px-4">
-              {currentChatSession ? (
-                <>
-                  <ChatMessagesDisplay 
-                    messages={chatMessages as UniverseChatMessage[]} 
-                    isLoading={isLoadingChat}
-                    isTyping={isUniverseTyping}
-                  />
-                  
-                  <ChatInput 
-                    onSendMessage={handleSendMessage}
-                    disabled={isLoadingChat || isUniverseTyping}
-                    isLoading={isSendingMessage}
-                  />
-                </>
-              ) : (
-                <EmptyChatState onNewChat={handleNewChat} />
-              )}
-            </div>
           </div>
         </div>
-      </UniverseChatProWrapper>
-      
-      <NewChatDialog 
-        open={isNewChatDialogOpen}
-        onClose={() => setIsNewChatDialogOpen(false)}
-        onCreateSession={handleCreateNewChat}
-      />
-    </MeditationLayout>
+        
+        <ChatInput 
+          onSendMessage={handleSendMessage} 
+          isDisabled={isSendingMessage}
+        />
+        
+        {/* Add BottomNavigation component */}
+        <BottomNavigation />
+      </div>
+    </UniverseChatProWrapper>
   );
 };
 

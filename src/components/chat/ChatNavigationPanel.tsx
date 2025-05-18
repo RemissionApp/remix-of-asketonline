@@ -1,55 +1,62 @@
+
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { MessageSquare, PlusCircle, Loader2 } from 'lucide-react';
-import { UniverseChatSession } from '@/store/slices/chat/universeChatTypes';
+import { Home, MessageSquare, Search, Star, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface ChatNavigationPanelProps {
-  sessions: UniverseChatSession[];
-  currentSessionId: string;
-  onSelectSession: (sessionId: string) => Promise<void>;
   onNewChat: () => void;
-  isLoading: boolean;
 }
 
-export const ChatNavigationPanel: React.FC<ChatNavigationPanelProps> = ({
-  sessions,
-  currentSessionId,
-  onSelectSession,
-  onNewChat,
-  isLoading
-}) => {
+export const ChatNavigationPanel: React.FC<ChatNavigationPanelProps> = ({ onNewChat }) => {
+  const navigate = useNavigate();
+  const { t } = useTranslations();
+  
   return (
-    <div className="hidden md:flex w-64 flex-col border-r border-cosmic-accent/20 bg-cosmic-dark/40">
-      <div className="p-4">
-        <Button 
-          className="w-full bg-cosmic-accent hover:bg-cosmic-accent/90 gap-2" 
-          onClick={onNewChat}
-        >
-          <PlusCircle size={16} /> Новый диалог
-        </Button>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-2">
-        {isLoading && sessions.length === 0 ? (
-          <div className="flex items-center justify-center h-20 text-cosmic-accent">
-            <Loader2 className="animate-spin mr-2" size={18} />
-            <span>Загрузка...</span>
-          </div>
-        ) : (
-          sessions.map((session) => (
-            <button
-              key={session.id}
-              onClick={() => onSelectSession(session.id)}
-              className={`w-full text-left px-3 py-2 mb-1 rounded-md flex items-center space-x-2 transition-colors
-                ${session.id === currentSessionId 
-                  ? 'bg-cosmic-accent/20 text-white' 
-                  : 'text-white/70 hover:bg-cosmic-accent/10'}`}
+    <div className="fixed bottom-0 left-0 right-0 z-20">
+      <div className="flex justify-center">
+        <div className="w-full bg-cosmic-dark/60 backdrop-blur-md border-t border-cosmic-accent/15 px-2">
+          <div className="flex justify-around items-center py-2 max-w-3xl mx-auto">
+            <button 
+              onClick={() => navigate('/main')}
+              className="flex flex-col items-center p-1 text-cosmic-secondary hover:text-cosmic-accent transition-colors"
             >
-              <MessageSquare size={16} />
-              <span className="truncate">{session.title}</span>
+              <Home size={18} />
+              <span className="text-xs">{t.main.nav.path || 'Главная'}</span>
             </button>
-          ))
-        )}
+            
+            <button 
+              onClick={onNewChat}
+              className="flex flex-col items-center p-1 text-cosmic-secondary hover:text-cosmic-accent transition-colors"
+            >
+              <MessageSquare size={18} />
+              <span className="text-xs">Новый диалог</span>
+            </button>
+            
+            <button 
+              className="flex flex-col items-center p-1 text-cosmic-secondary hover:text-cosmic-accent transition-colors"
+            >
+              <Search size={18} />
+              <span className="text-xs">Поиск</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/universe')}
+              className="flex flex-col items-center p-1 text-cosmic-secondary hover:text-cosmic-accent transition-colors"
+            >
+              <Star size={18} />
+              <span className="text-xs">Вселенная</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/profile')}
+              className="flex flex-col items-center p-1 text-cosmic-secondary hover:text-cosmic-accent transition-colors"
+            >
+              <Settings size={18} />
+              <span className="text-xs">{t.main.nav.profile || 'Профиль'}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

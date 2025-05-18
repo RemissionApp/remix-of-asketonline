@@ -1,20 +1,18 @@
 
 import React from 'react';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
-import { UniverseChatMessage } from '@/store/slices/chat/universeChatTypes';
+import { UniverseChatMessage } from '@/utils/universeChat';
 import { useAppStore } from '@/store/useAppStore';
 import { UserGreeting } from '@/components/universe/UserGreeting';
 
 export interface ChatTabContentProps {
   isLoadingChat: boolean;
   chatMessages: UniverseChatMessage[];
-  isTyping: boolean; // Добавляем свойство isTyping
 }
 
 export const ChatTabContent: React.FC<ChatTabContentProps> = ({ 
   isLoadingChat,
-  chatMessages,
-  isTyping = false // Добавляем свойство с дефолтным значением
+  chatMessages
 }) => {
   const { userProfile, language } = useAppStore();
   
@@ -25,8 +23,7 @@ export const ChatTabContent: React.FC<ChatTabContentProps> = ({
       )}
       <ChatMessagesDisplay 
         isLoading={isLoadingChat} 
-        messages={chatMessages}
-        isTyping={isTyping}
+        messages={chatMessages} 
       />
     </div>
   );

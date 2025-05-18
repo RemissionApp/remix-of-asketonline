@@ -67,26 +67,3 @@ export const ensureAvatarBucketExists = async () => {
     return false;
   }
 };
-
-/**
- * Ensure the practice-images bucket exists and has proper permissions
- */
-export const ensurePracticeImageBucketExists = async () => {
-  try {
-    // Check if bucket exists
-    const { error: bucketError } = await supabase.storage.getBucket('practice-images');
-    
-    // Create bucket if it doesn't exist
-    if (bucketError) {
-      await supabase.storage.createBucket('practice-images', {
-        public: true,
-        fileSizeLimit: 1024 * 1024 * 5, // 5MB limit
-      });
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Error ensuring practice-images bucket exists:', error);
-    return false;
-  }
-};
