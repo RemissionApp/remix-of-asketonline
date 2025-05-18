@@ -1,78 +1,44 @@
 
 @keyframes pulse-slow {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 1;
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.6;
   }
 }
 
-@keyframes star-shine {
-  0% {
-    opacity: 0.2;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.2);
-  }
-  100% {
-    opacity: 0.2;
-    transform: scale(0.8);
-  }
-}
-
-@keyframes galaxy-rotate {
-  0% {
+@keyframes spin-slow {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes circle-expand {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.4;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.4;
+    transform: translateY(-10px);
   }
 }
 
-@layer utilities {
-  .animate-pulse-slow {
-    animation: pulse-slow 3s infinite;
+@keyframes glow {
+  0%, 100% {
+    filter: brightness(1);
   }
-  
-  .animate-star-shine {
-    animation: star-shine 4s infinite;
-  }
-  
-  .animate-galaxy-rotate {
-    animation: galaxy-rotate 60s linear infinite;
-  }
-  
-  .animate-circle-expand {
-    animation: circle-expand 6s infinite;
-  }
-  
-  .animate-fade-in {
-    animation: fade-in 1.5s ease forwards;
+  50% {
+    filter: brightness(1.3);
   }
 }
 
-@keyframes fade-in {
+@keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -80,57 +46,24 @@
   }
 }
 
-/* Add typing effect cursor */
-.typing-cursor {
-  display: inline-block;
-  width: 2px;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to {
-    opacity: 1;
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
   }
-  50% {
-    opacity: 0;
+  
+  .animate-spin-slow {
+    animation: spin-slow 6s linear infinite;
   }
-}
-
-/* Cosmic gradient text animation */
-.cosmic-gradient-text {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 215, 0, 0.8),
-    rgba(138, 43, 226, 0.8),
-    rgba(65, 105, 225, 0.8),
-    rgba(255, 215, 0, 0.8)
-  );
-  background-size: 300% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: cosmic-gradient 15s ease infinite;
-}
-
-@keyframes cosmic-gradient {
-  0%, 100% {
-    background-position: 0% 50%;
+  
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
   }
-  50% {
-    background-position: 100% 50%;
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
   }
-}
-
-/* Анимация свечения для текста приветствия - Enhanced glow effect */
-@keyframes text-glow {
-  0%, 100% {
-    text-shadow: 0 0 5px rgba(245, 158, 11, 0.5), 0 0 10px rgba(245, 158, 11, 0.3);
+  
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out forwards;
   }
-  50% {
-    text-shadow: 0 0 15px rgba(245, 158, 11, 0.8), 0 0 20px rgba(245, 158, 11, 0.7), 0 0 25px rgba(245, 158, 11, 0.5);
-  }
-}
-
-.animate-glow-pulse {
-  animation: text-glow 3s infinite ease-in-out;
 }

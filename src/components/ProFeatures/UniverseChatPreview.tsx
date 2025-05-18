@@ -7,9 +7,10 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const UniverseChatPreview: React.FC = () => {
-  const { userProfile } = useAppStore();
+  const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   
@@ -17,31 +18,57 @@ export const UniverseChatPreview: React.FC = () => {
     navigate('/universe-chat');
   };
   
+  // Translation for the title "Диалог со вселенной"
+  const universeTitle = language === 'ru' ? 'Диалог со вселенной' : 
+                        language === 'es' ? 'Diálogo con el Universo' : 'Dialogue with the Universe';
+  
+  // Determine the correct font class based on language
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
+  
   const chatPreviewContent = (
-    <Card className="bg-cosmic-dark/50 border-cosmic-accent/30 backdrop-blur-sm mb-6 w-full max-w-lg mx-auto">
-      <CardContent className="p-4">
-        <div className="flex flex-col items-center text-center">
-          <div className="w-16 h-16 rounded-full bg-cosmic-accent/20 flex items-center justify-center mb-4">
-            <MessageSquare size={28} className="text-cosmic-accent" />
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
+      {/* Background image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
+        style={{ 
+          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//dialogue.png)`,
+          filter: 'brightness(1.2) contrast(1.15)'
+        }}
+      />
+      
+      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
+        <div className="flex items-center mb-4">
+          <Avatar className="h-14 w-14 mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
+            <AvatarImage src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" alt="Universe Avatar" />
+            <AvatarFallback className="bg-cosmic-accent/20 text-cosmic-accent">
+              <MessageSquare size={24} />
+            </AvatarFallback>
+          </Avatar>
+          
+          <div>
+            <h3 className={`text-xl ${headingFontClass} font-medium text-white`}>
+              {universeTitle}
+            </h3>
+            <div className="flex items-center text-xs text-cosmic-secondary">
+              <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse-slow"></span>
+              {language === 'ru' ? 'онлайн' : 
+               language === 'es' ? 'en línea' : 'online'}
+            </div>
           </div>
-          <h3 className="text-xl font-serif text-cosmic-accent mb-2">
-            {t.universe?.chatTitle || "Диалог со Вселенной"}
-          </h3>
-          <p className="text-cosmic-secondary mb-4 text-sm">
-            {t.universe?.chatDescription || "Задавай любые вопросы и получай мудрые ответы напрямую от Вселенной"}
-          </p>
-          <CosmicButton 
-            onClick={handleEnterChat} 
-            className="mt-2 w-full max-w-xs"
-            variant="outline"
-          >
-            <MessageSquare size={16} className="mr-2" />
-            {t.universe?.enterChat || "Войти в чат"}
-            <ArrowRight size={16} className="ml-2" />
-          </CosmicButton>
         </div>
-      </CardContent>
-    </Card>
+        
+        <CosmicButton 
+          onClick={handleEnterChat} 
+          size="md"
+          variant="default"
+          className="w-full bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/20 mt-4"
+        >
+          {language === 'ru' ? 'Перейти в чат' : 
+           language === 'es' ? 'Ir al chat' : 'Enter chat'}
+          <ArrowRight size={16} className="ml-2" />
+        </CosmicButton>
+      </div>
+    </div>
   );
   
   // If user is not PRO, wrap with ProFeatureOverlay

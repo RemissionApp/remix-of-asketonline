@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -77,12 +76,10 @@ const UniversePage: React.FC = () => {
               language={language}
             />
             
-            {/* Only show Chat Preview for PRO users */}
-            {isPro && (
-              <div className="mt-10">
-                <UniverseChatPreview />
-              </div>
-            )}
+            {/* Only show Chat Preview for all users, but with PRO overlay for non-pro */}
+            <div className="mt-10">
+              <UniverseChatPreview />
+            </div>
             
             <PreviousQuestions questions={activeQuestions} />
           </div>
