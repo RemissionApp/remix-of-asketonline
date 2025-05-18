@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
 import { toast } from 'sonner';
@@ -253,7 +252,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       set({ 
         chatMessages: updatedMessages,
         isSendingMessage: false
-      } as unknown as Partial<T>));
+      } as unknown as Partial<T>);
     } catch (error) {
       console.error("Error sending chat message:", error);
       toast.error('Не удалось отправить сообщение');
