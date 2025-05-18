@@ -78,14 +78,14 @@ serve(async (req) => {
       array[i] = binary.charCodeAt(i);
     }
 
-    // Create filename for saving
+    // Create safe filename for saving
     const fileExt = "png";
-    const fullFilename = `practice_0_step_${stepNumber}_${filename}.${fileExt}`;
+    const safeFilename = `guide_step_${stepNumber}_${Date.now()}.${fileExt}`;
     
     // Save file to storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(BUCKET_NAME)
-      .upload(fullFilename, array, {
+      .upload(safeFilename, array, {
         contentType: "image/png",
         upsert: true,
       });
@@ -98,7 +98,7 @@ serve(async (req) => {
     // Get public URL of image
     const { data: publicUrlData } = supabase.storage
       .from(BUCKET_NAME)
-      .getPublicUrl(fullFilename);
+      .getPublicUrl(safeFilename);
 
     const imageUrl = publicUrlData.publicUrl;
 
@@ -107,7 +107,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         imageUrl,
-        filename: fullFilename
+        filename: safeFilename
       }),
       {
         status: 200,

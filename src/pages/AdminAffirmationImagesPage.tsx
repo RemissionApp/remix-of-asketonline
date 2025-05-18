@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateAllAffirmationImages as generateAllVisualGuideImages } from '@/utils/generateAffirmationImages';
 import { useToast } from '@/components/ui/use-toast';
 import { CosmicButton } from '@/components/CosmicButton'; 
+import { ensurePracticeImageBucketExists } from '@/lib/supabase';
 
 const AdminAffirmationImagesPage: React.FC = () => {
   const { language } = useAppStore();
@@ -21,6 +22,19 @@ const AdminAffirmationImagesPage: React.FC = () => {
   const [guideResults, setGuideResults] = useState<Record<number, string>>({});
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  
+  // Убедимся, что бакет для изображений существует
+  useEffect(() => {
+    ensurePracticeImageBucketExists()
+      .then(success => {
+        if (success) {
+          console.log("Бакет practice-images успешно создан или уже существует");
+        } else {
+          console.error("Не удалось создать бакет practice-images");
+          setError("Не удалось создать бакет для изображений. Проверьте консоль.");
+        }
+      });
+  }, []);
   
   const handleGenerateImages = async () => {
     setIsGenerating(true);

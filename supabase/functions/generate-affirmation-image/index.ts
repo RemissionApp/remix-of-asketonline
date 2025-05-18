@@ -88,14 +88,14 @@ serve(async (req) => {
       array[i] = binary.charCodeAt(i);
     }
 
-    // Формируем имя файла для сохранения
+    // Формируем безопасное имя файла для сохранения, заменяя недопустимые символы
     const fileExt = "png";
-    const fullFilename = `affirmation_${affirmationId}_${language}_${filename}.${fileExt}`;
+    const safeFilename = `affirmation_${affirmationId}_${language}_${Date.now()}.${fileExt}`;
     
     // Сохраняем файл в хранилище
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(BUCKET_NAME)
-      .upload(fullFilename, array, {
+      .upload(safeFilename, array, {
         contentType: "image/png",
         upsert: true,
       });
@@ -108,7 +108,7 @@ serve(async (req) => {
     // Получаем публичный URL изображения
     const { data: publicUrlData } = supabase.storage
       .from(BUCKET_NAME)
-      .getPublicUrl(fullFilename);
+      .getPublicUrl(safeFilename);
 
     const imageUrl = publicUrlData.publicUrl;
 
@@ -117,7 +117,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         imageUrl,
-        filename: fullFilename
+        filename: safeFilename
       }),
       {
         status: 200,
