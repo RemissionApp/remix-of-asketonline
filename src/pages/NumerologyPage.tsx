@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { TopBar } from '@/components/TopBar';
 import { StarField } from '@/components/StarField';
@@ -558,7 +557,7 @@ const NumerologyPage = () => {
                 <Card className="bg-cosmic-dark/50 border-cosmic-accent/20 mb-4">
                   <CardHeader>
                     <CardTitle className="text-cosmic-accent font-serif flex items-center">
-                      <Calendar className="mr-2 h-5 w-5" />
+                      <Clock className="mr-2 h-5 w-5" />
                       {getTranslatedText('personalYear')}
                     </CardTitle>
                   </CardHeader>

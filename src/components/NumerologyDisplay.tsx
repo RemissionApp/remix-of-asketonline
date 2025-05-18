@@ -5,11 +5,14 @@ import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { calculateLifePathNumber, getNumerologyMeaning, calculateExpressionNumber, calculatePersonalityNumber } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
-import { Calculator } from 'lucide-react';
+import { Calculator, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from './ui/button';
 
 export const NumerologyDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
   
   console.log("NumerologyDisplay rendering, userProfile:", userProfile);
   
@@ -40,6 +43,10 @@ export const NumerologyDisplay: React.FC = () => {
   const personalityText = language === 'ru' ? 'Число личности' : language === 'es' ? 'Número de personalidad' : 'Personality Number';
   const moreDetailsText = language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : 'More details';
   
+  const handleNavigateToNumerology = () => {
+    navigate('/numerology');
+  };
+  
   // Create the numerology content component
   const numerologyContent = (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
@@ -65,6 +72,14 @@ export const NumerologyDisplay: React.FC = () => {
           personalityText={personalityText}
           moreDetailsText={moreDetailsText}
         />
+        <Button
+          onClick={handleNavigateToNumerology}
+          variant="outline"
+          className="w-full mt-3 bg-cosmic-dark/50 border-cosmic-accent/30 text-cosmic-accent"
+        >
+          {moreDetailsText}
+          <ArrowRight size={16} className="ml-2" />
+        </Button>
       </div>
     </div>
   );

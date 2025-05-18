@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Home, Sparkles, MessageSquare, UserRound, Stars } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, UserRound, Stars, Calculator } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope'> = {
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology'> = {
   '/main': 'main',
   '/create-pact': 'create-pact',
   '/universe': 'universe',
@@ -14,7 +14,8 @@ const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding'
   '/profile': 'profile',
   '/comparison': 'comparison',
   '/meditation': 'meditation',
-  '/full-horoscope': 'full-horoscope'
+  '/full-horoscope': 'full-horoscope',
+  '/numerology': 'numerology'
 };
 
 export const BottomNavigation: React.FC = () => {
@@ -27,7 +28,7 @@ export const BottomNavigation: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
   
   // Updated to match the ActiveScreen type
-  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope', path: string) => {
+  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
@@ -79,13 +80,13 @@ export const BottomNavigation: React.FC = () => {
                   <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
                 </button>
                 
-                {/* Full Horoscope button for PRO users */}
+                {/* Numerology button for PRO users */}
                 <button 
-                  className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                  onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
+                  className={`flex flex-col items-center p-1 ${isActive('/numerology') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('numerology', '/numerology')}
                 >
-                  <Stars size={18} />
-                  <span className="text-xs">Полный гороскоп</span>
+                  <Calculator size={18} />
+                  <span className="text-xs">{language === 'ru' ? 'Нумерология' : 'Numerology'}</span>
                 </button>
               </>
             ) : (
@@ -105,7 +106,16 @@ export const BottomNavigation: React.FC = () => {
                   onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
                 >
                   <Stars size={18} />
-                  <span className="text-xs">Полный гороскоп</span>
+                  <span className="text-xs">Гороскоп</span>
+                </button>
+                
+                {/* Numerology button preview for non-PRO users */}
+                <button 
+                  className={`flex flex-col items-center p-1 ${isActive('/numerology') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('numerology', '/numerology')}
+                >
+                  <Calculator size={18} />
+                  <span className="text-xs">{language === 'ru' ? 'Нумерология' : 'Numerology'}</span>
                 </button>
               </>
             )}

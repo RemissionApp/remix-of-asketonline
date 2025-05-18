@@ -77,7 +77,7 @@ export const MainContent: React.FC<MainContentProps> = ({
         <MeditationBlock />
       </div>
       
-      {/* 6. Numerology Display */}
+      {/* 6. Numerology Display - Make sure it's visible and clickable */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
       </div>
