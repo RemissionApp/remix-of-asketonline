@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AffirmationCard } from '@/components/AffirmationCard';
 import { useAffirmations } from '@/hooks/useAffirmations';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface AffirmationsContentProps {
   selectedCategory: string;
@@ -12,12 +13,13 @@ interface AffirmationsContentProps {
 export const AffirmationsContent: React.FC<AffirmationsContentProps> = ({ selectedCategory, language }) => {
   const affirmations = useAffirmations(language);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingImagesCount, setLoadingImagesCount] = useState(0);
   
   useEffect(() => {
     // Добавляем небольшую задержку для лучшего UX
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 300);
+    }, 500);
     
     return () => clearTimeout(timer);
   }, [affirmations]);
@@ -28,13 +30,17 @@ export const AffirmationsContent: React.FC<AffirmationsContentProps> = ({ select
 
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col items-center justify-center py-10">
-        <Loader2 className="h-8 w-8 text-cosmic-accent animate-spin mb-2" />
-        <p className="text-white/80">
-          {language === 'ru' ? 'Загрузка аффирмаций...' : 
-           language === 'es' ? 'Cargando afirmaciones...' : 
-           'Loading affirmations...'}
-        </p>
+      <div className="w-full grid gap-4 md:grid-cols-2">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="w-full bg-cosmic-dark/80 border border-cosmic-accent/30 rounded-md overflow-hidden">
+            <Skeleton className="h-40 w-full bg-gray-800/50" />
+            <div className="p-4">
+              <Skeleton className="h-6 w-3/4 mb-2 bg-gray-800/50" />
+              <Skeleton className="h-4 w-full mb-2 bg-gray-800/50" />
+              <Skeleton className="h-4 w-2/3 bg-gray-800/50" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
