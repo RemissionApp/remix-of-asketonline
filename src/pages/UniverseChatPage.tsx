@@ -72,10 +72,9 @@ const UniverseChatPage = () => {
         setInitialMessageSent(true);
         
         try {
-          const welcomeMessage = t.universe?.welcomeMessage || 
-            "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
+          const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Fix: Only pass the message parameter, not the isWelcomeMessage flag
+          // Only pass the message parameter
           await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error sending welcome message:', error);
@@ -84,7 +83,7 @@ const UniverseChatPage = () => {
     };
     
     sendWelcomeMessage();
-  }, [currentChatSession, isLoadingChat, chatMessages.length, initialMessageSent, isSendingMessage, sendChatMessage, t.universe]);
+  }, [currentChatSession, isLoadingChat, chatMessages.length, initialMessageSent, isSendingMessage, sendChatMessage]);
   
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;

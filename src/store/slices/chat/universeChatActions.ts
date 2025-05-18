@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
 import { toast } from 'sonner';
@@ -21,7 +22,7 @@ export interface UniverseChatActions {
   createChatSession: (title: string) => Promise<string | null>;
   setCurrentChatSession: (sessionId: string | null) => Promise<void>;
   loadChatMessages: (sessionId: string) => Promise<void>;
-  sendChatMessage: (message: string, isWelcomeMessage?: boolean) => Promise<void>;
+  sendChatMessage: (message: string) => Promise<void>;
 }
 
 /**
@@ -167,8 +168,8 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     }
   },
   
-  sendChatMessage: async (message: string, isWelcomeMessage: boolean = false) => {
-    const { user } = get();
+  sendChatMessage: async (message: string) => {
+    const { user, userProfile, pacts } = get();
     const sessionId = get().currentChatSession;
     const currentMessages = get().chatMessages;
     
@@ -200,35 +201,6 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
     try {
       set({ isSendingMessage: true } as unknown as Partial<T>);
       
-      // If this is a welcome message, save it directly as a universe message
-      if (isWelcomeMessage) {
-        // Save the welcome message directly as coming from the universe
-        const universeMessageId = await saveMessage(user.id, sessionId, message, 'universe');
-        
-        if (!universeMessageId) {
-          throw new Error('Failed to save welcome message');
-        }
-        
-        console.log('Welcome message saved with ID:', universeMessageId);
-        
-        // Load updated messages after saving the welcome message
-        const updatedMessages = await loadSessionMessages(sessionId);
-        set({ 
-          chatMessages: updatedMessages,
-          isSendingMessage: false
-        } as unknown as Partial<T>);
-        
-        return;
-      }
-      
-      // Собираем последние 10 сообщений пользователя для контекста
-      const recentUserMessages = currentMessages
-        .filter(msg => msg.sender === 'user')
-        .slice(-10)
-        .map(msg => msg.content);
-      
-      console.log('Recent user messages for context:', recentUserMessages.length);
-      
       // Add temporary message to state immediately
       const tempUserMsg: UniverseChatMessage = {
         id: `temp-${Date.now()}-${Math.random()}`,
@@ -244,11 +216,79 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       
       console.log('Sending chat message:', message);
       
-      // Send the message and get updated messages, включаем историю сообщений
-      const updatedMessages = await sendMessageToUniverse(user.id, sessionId, message, recentUserMessages);
-      console.log('Updated messages after sending:', updatedMessages.length);
+      // Prepare user data for context
+      const userData: any = {};
       
-      // Update all messages to ensure consistent state
+      // Add user profile information
+      if (userProfile) {
+        if (userProfile.name) {
+          userData.userName = userProfile.name;
+        }
+        
+        if (userProfile.goal) {
+          userData.userGoal = userProfile.goal;
+        }
+        
+        if (userProfile.birthDate) {
+          userData.birthDate = userProfile.birthDate;
+        }
+      }
+      
+      // Find current active pact
+      const currentVow = pacts?.find(p => p.status === 'active');
+      
+      // Add pact information if available
+      if (currentVow) {
+        userData.currentVow = currentVow.title || 'вредных привычек';
+        
+        // Get current day of the pact
+        const completedDays = (currentVow.days || []).filter((day: any) => day.completed).length;
+        userData.vowDay = completedDays + 1;
+        userData.vowDuration = currentVow.duration || 21;
+      }
+      
+      // Get recent messages for context (last 5 user messages)
+      const recentUserMessages = currentMessages
+        .filter(msg => msg.sender === 'user')
+        .slice(-5)
+        .map(msg => msg.content);
+      
+      // Save user message to database
+      const userMessageId = await saveMessage(user.id, sessionId, message, 'user');
+      
+      if (!userMessageId) {
+        throw new Error('Failed to save user message');
+      }
+      
+      // Call the new universe-dialogue function to get a response
+      const { data: dialogueResponse, error: dialogueError } = await get().supabase.functions.invoke('universe-dialogue', {
+        body: {
+          question: message,
+          language: get().language,
+          userData,
+          recentMessages: recentUserMessages
+        }
+      });
+      
+      if (dialogueError) {
+        throw new Error(`Error from universe-dialogue function: ${dialogueError.message}`);
+      }
+      
+      if (!dialogueResponse?.answer) {
+        throw new Error('No response received from universe-dialogue function');
+      }
+      
+      // Save universe response to database
+      const universeMessageId = await saveMessage(user.id, sessionId, dialogueResponse.answer, 'universe');
+      
+      if (!universeMessageId) {
+        throw new Error('Failed to save universe response');
+      }
+      
+      // Load updated messages
+      const updatedMessages = await loadSessionMessages(sessionId);
+      
+      // Update state with all messages
       set({ 
         chatMessages: updatedMessages,
         isSendingMessage: false
