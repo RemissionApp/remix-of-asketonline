@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, X, CheckCircle } from "lucide-react";
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface AffirmationPracticeModalProps {
   affirmation: {
@@ -26,7 +26,7 @@ export const AffirmationPracticeModal: React.FC<AffirmationPracticeModalProps> =
 }) => {
   const [step, setStep] = useState(0);
   const [completed, setCompleted] = useState(false);
-  const { t } = useAppStore();
+  const { t } = useTranslations();
   
   const steps = [
     {
@@ -50,7 +50,7 @@ export const AffirmationPracticeModal: React.FC<AffirmationPracticeModalProps> =
     {
       title: t?.affirmations?.practice?.step3 || "Repeat the affirmation aloud",
       instruction: language === 'ru' 
-        ? "Произнесите аффирмацию вслух три раза медленно и с уверенностью. Говорите четко, с эмоциональной убежденностью, словно это уже существующая истина. Уделите внимание каждому слову, наполняя его значением. Почувствуйте вибрацию вашего голоса в вашем теле, позвольте словам резонировать в вашей груди."
+        ? "Произнесите аффирмацию вслух три раза медленно и с ��веренностью. Говорите четко, с эмоциональной убежденностью, словно это уже существующая истина. Уделите внимание каждому слову, наполняя его значением. Почувствуйте вибрацию вашего голоса в вашем теле, позвольте словам резонировать в вашей груди."
         : language === 'es' 
         ? "Repite la afirmación en voz alta tres veces, lenta y confiadamente. Habla con claridad y con convicción emocional, como si fuera una verdad ya existente. Presta atención a cada palabra, llenándola de significado. Siente la vibración de tu voz en tu cuerpo, permite que las palabras resuenen en tu pecho."
         : "Say the affirmation out loud three times, slowly and confidently. Speak clearly and with emotional conviction, as if it's an existing truth. Pay attention to each word, filling it with meaning. Feel the vibration of your voice in your body, allow the words to resonate in your chest.",
