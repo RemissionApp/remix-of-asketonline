@@ -47,33 +47,33 @@ serve(async (req) => {
     let systemPrompt = customSystemPrompt;
     
     if (isDailyAdvice) {
-      // Use a horoscope-style format for daily advice
+      // Use an astrologer-style format for daily advice
       if (language === 'ru') {
-        systemPrompt = `Ты генерируешь персональный гороскоп на сегодня. 
-        Напиши ТОЧНО 3 предложения, включающие:
-        1) Общее настроение дня и энергетику
-        2) Конкретный совет по делам и работе
-        3) Рекомендацию в личной или духовной сфере
+        systemPrompt = `Ты астролог, дающий точные и конкретные прогнозы на день. 
+        Напиши ТОЧНО 2 предложения, включающие:
+        1) Прогноз основных событий дня и перспектив
+        2) Конкретную рекомендацию по работе или личной жизни
         
-        Сделай гороскоп конкретным, с упоминанием материальных аспектов жизни.
+        Используй ясный язык без лишних метафор и абстракций.
+        Пиши конкретно, упоминая практические аспекты.
         Не упоминай имя пользователя в тексте.`;
       } else if (language === 'es') {
-        systemPrompt = `Estás generando un horóscopo personal para hoy.
-        Escribe EXACTAMENTE 3 oraciones que incluyan:
-        1) El estado de ánimo general del día y la energía
-        2) Un consejo específico sobre asuntos y trabajo
-        3) Una recomendación en la esfera personal o espiritual
+        systemPrompt = `Eres un astrólogo que da pronósticos precisos y específicos para el día.
+        Escribe EXACTAMENTE 2 oraciones que incluyan:
+        1) Un pronóstico de los principales eventos del día y perspectivas
+        2) Una recomendación concreta sobre trabajo o vida personal
         
-        Haz que el horóscopo sea específico, mencionando aspectos materiales de la vida.
+        Usa un lenguaje claro sin metáforas excesivas o abstracciones.
+        Escribe específicamente, mencionando aspectos prácticos.
         No menciones el nombre del usuario en el texto.`;
       } else {
-        systemPrompt = `You are generating a personal horoscope for today.
-        Write EXACTLY 3 sentences that include:
-        1) The general mood of the day and energy
-        2) A specific advice on affairs and work
-        3) A recommendation in the personal or spiritual sphere
+        systemPrompt = `You are an astrologer giving accurate and specific forecasts for the day.
+        Write EXACTLY 2 sentences that include:
+        1) A forecast of the main events of the day and prospects
+        2) A specific recommendation about work or personal life
         
-        Make the horoscope specific, mentioning material aspects of life.
+        Use clear language without excessive metaphors or abstractions.
+        Write specifically, mentioning practical aspects.
         Do not mention the user's name in the text.`;
       }
     } else {
@@ -111,7 +111,7 @@ serve(async (req) => {
 
     ${userContext}
     
-    Ответь согласно описанной выше структуре, создавая ощущение глубокого разговора с мудрой Вселенной.`;
+    Ответь согласно описанной выше структуре, в стиле астролога, с конкретными и практичными рекомендациями.`;
 
     // Use GPT-4o for responses
     const gptModel = "gpt-4o";
@@ -150,7 +150,7 @@ serve(async (req) => {
 
     const answer = data.choices[0].message.content;
     
-    console.log("Generated poetic universe answer:", answer.substring(0, 100) + "...");
+    console.log("Generated astrological advice:", answer.substring(0, 100) + "...");
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
