@@ -10,6 +10,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateAllAffirmationImages as generateAllVisualGuideImages } from '@/utils/generateAffirmationImages';
 import { useToast } from '@/components/ui/use-toast';
+import { CosmicButton } from '@/components/CosmicButton'; 
 
 const AdminAffirmationImagesPage: React.FC = () => {
   const { language } = useAppStore();
@@ -115,18 +116,29 @@ const AdminAffirmationImagesPage: React.FC = () => {
                     Изображения успешно сгенерированы!
                   </div>
                 )}
+                
+                <div className="flex flex-wrap gap-4 mt-6">
+                  <Button 
+                    onClick={handleGenerateImages} 
+                    disabled={isGenerating}
+                    className="flex items-center gap-2"
+                  >
+                    {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Image className="h-4 w-4" />
+                    {isGenerating ? 'Генерация изображений...' : 'Сгенерировать изображения аффирмаций'}
+                  </Button>
+                  
+                  <CosmicButton
+                    onClick={handleGenerateImages}
+                    disabled={isGenerating}
+                    className="flex items-center gap-2"
+                  >
+                    {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Image className="h-4 w-4" />
+                    {isGenerating ? 'Генерация...' : 'Сгенерировать (Космический стиль)'}
+                  </CosmicButton>
+                </div>
               </CardContent>
-              <CardFooter>
-                <Button 
-                  onClick={handleGenerateImages} 
-                  disabled={isGenerating}
-                  className="flex items-center gap-2"
-                >
-                  {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <Image className="h-4 w-4" />
-                  {isGenerating ? 'Генерация изображений...' : 'Сгенерировать изображения аффирмаций'}
-                </Button>
-              </CardFooter>
             </Card>
             
             {Object.entries(results).length > 0 && (
@@ -166,18 +178,30 @@ const AdminAffirmationImagesPage: React.FC = () => {
                   Здесь можно сгенерировать изображения для визуальных руководств в практике аффирмаций.
                   Изображения будут созданы с помощью DALL-E и сохранены в хранилище Supabase.
                 </p>
+                
+                <div className="flex flex-wrap gap-4 mt-6">
+                  <Button 
+                    onClick={handleGenerateGuideImages} 
+                    disabled={isGeneratingGuides}
+                    className="flex items-center gap-2"
+                  >
+                    {isGeneratingGuides && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Image className="h-4 w-4" />
+                    {isGeneratingGuides ? 'Генерация руководств...' : 'Сгенерировать изображения руководств'}
+                  </Button>
+                  
+                  <CosmicButton 
+                    onClick={handleGenerateGuideImages} 
+                    disabled={isGeneratingGuides}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    {isGeneratingGuides && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Image className="h-4 w-4" />
+                    {isGeneratingGuides ? 'Генерация...' : 'Космический стиль'}
+                  </CosmicButton>
+                </div>
               </CardContent>
-              <CardFooter>
-                <Button 
-                  onClick={handleGenerateGuideImages} 
-                  disabled={isGeneratingGuides}
-                  className="flex items-center gap-2"
-                >
-                  {isGeneratingGuides && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <Image className="h-4 w-4" />
-                  {isGeneratingGuides ? 'Генерация руководств...' : 'Сгенерировать изображения руководств'}
-                </Button>
-              </CardFooter>
             </Card>
             
             {Object.entries(guideResults).length > 0 && (
