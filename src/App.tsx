@@ -26,6 +26,7 @@ import UniverseChatPage from "./pages/UniverseChatPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
+import AdminPracticeImagesPage from "./pages/AdminPracticeImagesPage";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -164,6 +165,8 @@ const App = () => {
             <Route path="/universe-chat" element={<UniverseChatPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            {/* Admin routes */}
+            <Route path="/admin/practice-images" element={<AdminPracticeImagesPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
