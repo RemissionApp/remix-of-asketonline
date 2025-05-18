@@ -63,42 +63,48 @@ export const UniverseMessageBlock: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-2 mt-4">
-          <CosmicButton 
-            onClick={handleQuestionClick} 
-            size="md"
-            variant="default"
-            className="flex-1 bg-gradient-to-r from-cosmic-gold/40 to-cosmic-gold/30 hover:from-cosmic-gold/50 hover:to-cosmic-gold/40 text-white backdrop-blur-md border border-white/10"
-          >
-            {language === 'ru' ? 'Задать вопрос' : 
-             language === 'es' ? 'Hacer pregunta' : 'Ask a question'}
-          </CosmicButton>
-          
-          <CosmicButton 
-            onClick={handleChatClick} 
-            size="md" 
-            variant="default"
-            className="flex-1 bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/10"
-          >
-            {language === 'ru' ? 'Перейти в чат' : 
-             language === 'es' ? 'Ir al chat' : 'Enter chat'}
-          </CosmicButton>
-        </div>
+        {userProfile?.isPro ? (
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <CosmicButton 
+              onClick={handleQuestionClick} 
+              size="md"
+              variant="default"
+              className="flex-1 bg-gradient-to-r from-cosmic-gold/40 to-cosmic-gold/30 hover:from-cosmic-gold/50 hover:to-cosmic-gold/40 text-white backdrop-blur-md border border-white/10"
+            >
+              {language === 'ru' ? 'Задать вопрос' : 
+               language === 'es' ? 'Hacer pregunta' : 'Ask a question'}
+            </CosmicButton>
+            
+            <CosmicButton 
+              onClick={handleChatClick} 
+              size="md" 
+              variant="default"
+              className="flex-1 bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/10"
+            >
+              {language === 'ru' ? 'Перейти в чат' : 
+               language === 'es' ? 'Ir al chat' : 'Enter chat'}
+            </CosmicButton>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <CosmicButton 
+              onClick={handleQuestionClick} 
+              size="md"
+              variant="default"
+              className="flex-1 bg-gradient-to-r from-cosmic-gold/40 to-cosmic-gold/30 hover:from-cosmic-gold/50 hover:to-cosmic-gold/40 text-white backdrop-blur-md border border-white/10"
+            >
+              {language === 'ru' ? 'Задать вопрос' : 
+               language === 'es' ? 'Hacer pregunta' : 'Ask a question'}
+            </CosmicButton>
+          </div>
+        )}
       </div>
     </div>
   );
   
-  // If user is not PRO, wrap with ProFeatureOverlay
+  // If user is not PRO, wrap with ProFeatureOverlay (but only the chat feature, not the full block)
   if (!userProfile?.isPro) {
-    return (
-      <ProFeatureOverlay 
-        title={t.universe?.chatProTitle || "Диалог со Вселенной"}
-        message={t.universe?.chatProMessage || "Разблокируй PRO чтобы вести диалог со Вселенной"}
-        className="mb-6 w-full"
-      >
-        {messageContent}
-      </ProFeatureOverlay>
-    );
+    return messageContent;
   }
   
   return messageContent;

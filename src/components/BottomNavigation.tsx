@@ -6,7 +6,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope'> = {
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology'> = {
   '/main': 'main',
   '/create-pact': 'create-pact',
   '/universe': 'universe',
@@ -14,11 +14,12 @@ const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding'
   '/profile': 'profile',
   '/comparison': 'comparison',
   '/meditation': 'meditation',
-  '/full-horoscope': 'full-horoscope'
+  '/full-horoscope': 'full-horoscope',
+  '/numerology': 'numerology'
 };
 
 export const BottomNavigation: React.FC = () => {
-  const { setActiveScreen, activeScreen, userProfile } = useAppStore();
+  const { setActiveScreen, activeScreen, userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +28,7 @@ export const BottomNavigation: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
   
   // Updated to match the ActiveScreen type
-  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope', path: string) => {
+  const handleNavigation = (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
@@ -42,6 +43,7 @@ export const BottomNavigation: React.FC = () => {
       <div className="flex justify-center">
         <div className="w-full bg-cosmic-dark/40 backdrop-blur-md border-t border-cosmic-accent/15 px-2">
           <div className="flex justify-around items-center py-1 max-w-3xl mx-auto">
+            {/* Path button - Visible for both PRO and free users */}
             <button 
               className={`flex flex-col items-center p-1 ${isActive('/main') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
               onClick={() => handleNavigation('main', '/main')}
@@ -50,6 +52,7 @@ export const BottomNavigation: React.FC = () => {
               <span className="text-xs">{t.main.nav.path || 'Path'}</span>
             </button>
             
+            {/* Ascesis button - Visible for both PRO and free users */}
             <button 
               className={`flex flex-col items-center p-1 ${isActive('/create-pact') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
               onClick={() => handleNavigation('create-pact', '/create-pact')}
@@ -58,19 +61,10 @@ export const BottomNavigation: React.FC = () => {
               <span className="text-xs">{t.main.nav.ascesis || 'Ascesis'}</span>
             </button>
             
-            {/* Show different Universe/Chat buttons based on PRO status */}
+            {/* Different navigation options based on PRO status */}
             {isPro ? (
               <>
-                {/* Universe Question button for PRO users */}
-                <button 
-                  className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                  onClick={() => handleNavigation('universe', '/universe')}
-                >
-                  <MessageSquare size={18} />
-                  <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
-                </button>
-                
-                {/* Universe Chat button for PRO users */}
+                {/* Chat button - Only visible for PRO users */}
                 <button 
                   className={`flex flex-col items-center p-1 ${isActive('/universe-chat') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
                   onClick={() => handleNavigation('universe-chat', '/universe-chat')}
@@ -79,18 +73,18 @@ export const BottomNavigation: React.FC = () => {
                   <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
                 </button>
                 
-                {/* Full Horoscope button for PRO users */}
+                {/* Full Horoscope button - Only visible for PRO users */}
                 <button 
                   className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
                   onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
                 >
                   <Stars size={18} />
-                  <span className="text-xs">Полный гороскоп</span>
+                  <span className="text-xs">{language === 'ru' ? 'Гороскоп' : language === 'es' ? 'Horóscopo' : 'Horoscope'}</span>
                 </button>
               </>
             ) : (
               <>
-                {/* Universe Question button for non-PRO users */}
+                {/* Universe question button - Only visible for free users */}
                 <button 
                   className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
                   onClick={() => handleNavigation('universe', '/universe')}
@@ -98,18 +92,10 @@ export const BottomNavigation: React.FC = () => {
                   <MessageSquare size={18} />
                   <span className="text-xs">{t.main.nav.universe || 'Universe'}</span>
                 </button>
-                
-                {/* Full Horoscope preview for non-PRO users */}
-                <button 
-                  className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                  onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
-                >
-                  <Stars size={18} />
-                  <span className="text-xs">Полный гороскоп</span>
-                </button>
               </>
             )}
             
+            {/* Profile button - Visible for both PRO and free users */}
             <button 
               className={`flex flex-col items-center p-1 ${isActive('/profile') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
               onClick={() => handleNavigation('profile', '/profile')}

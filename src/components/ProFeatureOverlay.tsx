@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { LockIcon, SparklesIcon } from 'lucide-react';
-import { CosmicButton } from './CosmicButton';
+import { LockIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -10,45 +9,45 @@ interface ProFeatureOverlayProps {
   message?: string;
   children: React.ReactNode;
   className?: string;
+  navigateTo?: string;
 }
 
 export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
   title = 'PRO Feature',
   message = 'Upgrade to PRO to unlock this feature',
   children,
-  className = ''
+  className = '',
+  navigateTo = '/comparison'
 }) => {
   const navigate = useNavigate();
   const { upgradeToPro } = useAppStore();
   
-  const handleUpgrade = () => {
-    // For demo purposes, we'll just set the user to PRO immediately
-    upgradeToPro();
-    navigate('/comparison');
+  const handleClick = () => {
+    navigate(navigateTo);
   };
   
   return (
-    <div className={`relative ${className}`}>
+    <div 
+      className={`relative ${className} cursor-pointer`} 
+      onClick={handleClick}
+    >
       {/* The actual content that's blurred/locked */}
       <div className="filter blur-sm pointer-events-none opacity-60">
         {children}
       </div>
       
-      {/* Overlay with upgrade CTA */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-cosmic-dark/70 backdrop-blur-sm rounded-lg border border-cosmic-accent/20">
-        <div className="p-6 text-center max-w-xs">
-          <div className="w-12 h-12 bg-cosmic-gold/20 rounded-full mx-auto flex items-center justify-center mb-4">
-            <LockIcon size={24} className="text-cosmic-gold" />
-          </div>
+      {/* Lock icon in top right corner */}
+      <div className="absolute top-2 right-2 z-10">
+        <div className="w-8 h-8 bg-cosmic-dark/70 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <LockIcon size={16} className="text-cosmic-gold" />
+        </div>
+      </div>
+      
+      {/* Overlay that makes the whole component clickable */}
+      <div className="absolute inset-0 bg-cosmic-dark/40 backdrop-blur-sm rounded-lg border border-cosmic-accent/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="p-4 text-center">
           <h3 className="text-lg font-serif text-white mb-2">{title}</h3>
-          <p className="text-sm text-cosmic-secondary mb-4">{message}</p>
-          <CosmicButton
-            onClick={handleUpgrade}
-            className="bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30"
-          >
-            <SparklesIcon size={16} className="mr-2" />
-            Unlock PRO
-          </CosmicButton>
+          <p className="text-sm text-cosmic-secondary">{message}</p>
         </div>
       </div>
     </div>

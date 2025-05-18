@@ -62,7 +62,7 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 3. Universe Chat Block - Moved right after Daily Advice */}
+      {/* 3. Universe Message Block */}
       <div className="w-full max-w-lg mx-auto">
         <UniverseMessageBlock />
       </div>
@@ -72,14 +72,14 @@ export const MainContent: React.FC<MainContentProps> = ({
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 5. Meditation Block - Moved to appear after Zodiac Badge */}
-      <div className="w-full max-w-lg mx-auto">
-        <MeditationBlock />
-      </div>
-      
-      {/* 6. Numerology Display */}
+      {/* 5. Numerology Display */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
+      </div>
+      
+      {/* 6. Meditation Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <MeditationBlock />
       </div>
       
       {/* 7. Affirmations Block */}

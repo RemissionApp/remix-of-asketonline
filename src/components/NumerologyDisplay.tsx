@@ -83,6 +83,7 @@ export const NumerologyDisplay: React.FC = () => {
         title={titleText}
         message={messageText}
         className="mb-6 w-full"
+        navigateTo="/numerology"
       >
         {numerologyContent}
       </ProFeatureOverlay>

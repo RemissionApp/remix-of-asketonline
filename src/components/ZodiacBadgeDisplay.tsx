@@ -51,6 +51,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
                 language === 'es' ? 'Desbloquea PRO para acceso completo al horóscopo' : 
                 'Unlock PRO to get full access to horoscope'}
         className="mb-6 w-full"
+        navigateTo="/full-horoscope"
       >
         {zodiacContent}
       </ProFeatureOverlay>
