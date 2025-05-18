@@ -5,6 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
+import { AffirmationPracticeModal } from './AffirmationPracticeModal';
 
 interface Affirmation {
   id: number;
@@ -23,6 +24,7 @@ interface AffirmationCardProps {
 export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, language }) => {
   const [open, setOpen] = useState(false);
   const [favorite, setFavorite] = useState(false);
+  const [isPracticeOpen, setIsPracticeOpen] = useState(false);
   const { userProfile } = useAppStore();
   
   const instructionLabel = language === 'ru' ? 'Инструкция' : 
@@ -97,16 +99,20 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, l
               variant="default" 
               size="sm"
               className="bg-gradient-to-r from-purple-500/80 to-indigo-500/80 hover:from-purple-500 hover:to-indigo-500"
-              onClick={() => {
-                // In a real app, this could show a practice modal or navigate to a practice page
-                console.log(`Practice affirmation: ${affirmation.id}`);
-              }}
+              onClick={() => setIsPracticeOpen(true)}
             >
               {practiceText}
             </Button>
           </CardFooter>
         </CollapsibleContent>
       </Collapsible>
+      
+      <AffirmationPracticeModal 
+        affirmation={affirmation}
+        isOpen={isPracticeOpen}
+        onClose={() => setIsPracticeOpen(false)}
+        language={language}
+      />
     </Card>
   );
 };
