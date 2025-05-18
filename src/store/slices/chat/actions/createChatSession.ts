@@ -7,7 +7,7 @@ import { UniverseChatState } from '../universeChatTypes';
 /**
  * Action creator for creating a new chat session
  */
-export const createCreateChatSessionAction = <T extends AppState & UniverseChatState>(
+export const createChatSessionAction = <T extends AppState & UniverseChatState>(
   set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
   get: () => T
 ) => async (title: string) => {

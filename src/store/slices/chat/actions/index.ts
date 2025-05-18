@@ -5,3 +5,5 @@ export * from './createChatSession';
 export * from './setCurrentChatSession';
 export * from './loadChatMessages';
 export * from './sendChatMessage';
+export * from './subscribeToChatMessages';
+export * from './handleNewChatMessage';

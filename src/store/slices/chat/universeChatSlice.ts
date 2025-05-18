@@ -31,11 +31,11 @@ export const createUniverseChatSlice: StateCreator<
   isUniverseTyping: false,
   
   // Actions
-  loadChatSessions: createLoadChatSessionsAction(set, get),
-  loadChatMessages: createLoadChatMessagesAction(set, get),
-  createChatSession: createChatSessionAction(set, get),
-  setCurrentChatSession: createSetCurrentChatSessionAction(set, get),
-  sendChatMessage: createSendChatMessageAction(set, get),
-  subscribeToChatMessages: createSubscribeToChatMessagesAction(set, get),
-  handleNewChatMessage: createHandleNewChatMessageAction(set, get)
+  loadChatSessions: createLoadChatSessionsAction(set, get as () => AppState & UniverseChatState),
+  loadChatMessages: createLoadChatMessagesAction(set, get as () => AppState & UniverseChatState),
+  createChatSession: createChatSessionAction(set, get as () => AppState & UniverseChatState),
+  setCurrentChatSession: createSetCurrentChatSessionAction(set, get as () => AppState & UniverseChatState),
+  sendChatMessage: createSendChatMessageAction(set, get as () => AppState & UniverseChatState),
+  subscribeToChatMessages: createSubscribeToChatMessagesAction(set, get as () => AppState & UniverseChatState),
+  handleNewChatMessage: createHandleNewChatMessageAction(set, get as () => AppState & UniverseChatState)
 });
