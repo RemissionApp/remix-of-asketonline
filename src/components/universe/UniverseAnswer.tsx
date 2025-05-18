@@ -42,7 +42,7 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
                   line.includes("Нестандартные решения") ||
                   line.includes("Литература по теме")) {
                 return (
-                  <h3 key={lineIdx} className="text-cosmic-gold font-cormorant text-xl font-medium mt-4">
+                  <h3 key={lineIdx} className="text-cosmic-gold font-cormorant text-xl font-bold mt-4">
                     {line}
                   </h3>
                 );
