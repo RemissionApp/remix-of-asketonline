@@ -27,12 +27,18 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
           <div key={index} className="space-y-2">
             {paragraph.split('\n').map((line, lineIdx) => {
               // Выделяем заголовки (числа в начале строки или фразы, похожие на заголовки)
-              if (/^\d+\./.test(line.trim()) || 
+              if (/^\d+[\.\)]\s/.test(line.trim()) || 
+                  line.includes("Сегодня я буду в этой роли") ||
+                  line.includes("Хочу дополнить") ||
+                  line.includes("Вот принцип 20/80 и основная суть") ||
+                  line.includes("Твои слабые места и пробелы") ||
+                  line.includes("Вот простыми словами") ||
+                  line.includes("Ломаем шаблоны") ||
+                  line.includes("План действий") ||
                   line.includes("Дополнительные аспекты") ||
                   line.includes("Ключевые идеи") ||
                   line.includes("Критический анализ") ||
                   line.includes("Простыми словами") ||
-                  line.includes("План действий") ||
                   line.includes("Нестандартные решения") ||
                   line.includes("Литература по теме")) {
                 return (
