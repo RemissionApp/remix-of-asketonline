@@ -6,7 +6,7 @@ interface PracticeStepContentProps {
   instruction: string;
   visualGuide: string;
   language: string;
-  visualImageUrl?: string; // Добавляем опциональную ссылку на изображение
+  visualImageUrl: string; // Make this required, not optional
 }
 
 export const PracticeStepContent: React.FC<PracticeStepContentProps> = ({

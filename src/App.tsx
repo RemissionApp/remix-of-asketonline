@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -27,6 +26,7 @@ import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
 import AdminPracticeImagesPage from "./pages/AdminPracticeImagesPage";
+import AdminAffirmationImagesPage from "./pages/AdminAffirmationImagesPage";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -167,6 +167,7 @@ const App = () => {
             <Route path="/auth/callback" element={<AuthCallback />} />
             {/* Admin routes */}
             <Route path="/admin/practice-images" element={<AdminPracticeImagesPage />} />
+            <Route path="/admin/affirmation-images" element={<AdminAffirmationImagesPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
