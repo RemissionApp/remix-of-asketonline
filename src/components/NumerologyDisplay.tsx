@@ -71,19 +71,24 @@ export const NumerologyDisplay: React.FC = () => {
   
   // If user is not PRO, wrap with ProFeatureOverlay
   if (!userProfile?.isPro) {
-    const titleText = numerologyText;
-    const messageText = language === 'ru' 
-      ? 'Разблокируй PRO чтобы получить полный доступ к нумерологии' 
+    const proUnlockText = language === 'ru' 
+      ? 'Открой функции PRO' 
       : language === 'es' 
-        ? 'Desbloquea PRO para obtener acceso completo a la numerología' 
-        : 'Unlock PRO to get full access to numerology';
+        ? 'Desbloquea funciones PRO' 
+        : 'Unlock PRO functions';
         
     return (
       <ProFeatureOverlay 
-        title={titleText}
-        message={messageText}
+        title={numerologyText}
+        message={language === 'ru' 
+          ? 'Разблокируй PRO чтобы получить полный доступ к нумерологии' 
+          : language === 'es' 
+            ? 'Desbloquea PRO para obtener acceso completo a la numerología' 
+            : 'Unlock PRO to get full access to numerology'}
         className="mb-6 w-full"
-        navigateTo="/numerology"
+        navigateTo="/comparison"
+        showUnlockPrompt={true}
+        unlockText={proUnlockText}
       >
         {numerologyContent}
       </ProFeatureOverlay>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LockIcon } from 'lucide-react';
+import { LockIcon, SparklesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -10,6 +10,8 @@ interface ProFeatureOverlayProps {
   children: React.ReactNode;
   className?: string;
   navigateTo?: string;
+  showUnlockPrompt?: boolean;
+  unlockText?: string;
 }
 
 export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
@@ -17,7 +19,9 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
   message = 'Upgrade to PRO to unlock this feature',
   children,
   className = '',
-  navigateTo = '/comparison'
+  navigateTo = '/comparison',
+  showUnlockPrompt = false,
+  unlockText = 'Unlock PRO functions'
 }) => {
   const navigate = useNavigate();
   const { upgradeToPro } = useAppStore();
@@ -50,6 +54,14 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
           <p className="text-sm text-cosmic-secondary">{message}</p>
         </div>
       </div>
+      
+      {/* Bottom PRO unlock prompt - only shown when showUnlockPrompt is true */}
+      {showUnlockPrompt && (
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-cosmic-gold/50 to-cosmic-accent/50 py-2 px-3 rounded-b-lg flex items-center justify-center z-20">
+          <SparklesIcon size={16} className="text-white mr-2" />
+          <span className="text-white font-medium text-sm">{unlockText}</span>
+        </div>
+      )}
     </div>
   );
 };

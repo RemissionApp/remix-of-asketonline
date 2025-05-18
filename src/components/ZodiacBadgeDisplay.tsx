@@ -44,6 +44,12 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   
   // If user is not PRO, wrap with ProFeatureOverlay
   if (!userProfile?.isPro) {
+    const proUnlockText = language === 'ru' 
+      ? 'Открой функции PRO' 
+      : language === 'es' 
+        ? 'Desbloquea funciones PRO' 
+        : 'Unlock PRO functions';
+        
     return (
       <ProFeatureOverlay 
         title={language === 'ru' ? 'Гороскоп' : language === 'es' ? 'Horóscopo' : 'Horoscope'}
@@ -51,7 +57,9 @@ export const ZodiacBadgeDisplay: React.FC = () => {
                 language === 'es' ? 'Desbloquea PRO para acceso completo al horóscopo' : 
                 'Unlock PRO to get full access to horoscope'}
         className="mb-6 w-full"
-        navigateTo="/full-horoscope"
+        navigateTo="/comparison"
+        showUnlockPrompt={true}
+        unlockText={proUnlockText}
       >
         {zodiacContent}
       </ProFeatureOverlay>
