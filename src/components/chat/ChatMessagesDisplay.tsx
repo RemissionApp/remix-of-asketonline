@@ -21,7 +21,22 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = React.useState(0);
   
-  // Simulate loading progress for better UX
+  // Фильтруем сообщения, оставляя только сообщения от вселенной и первое приветственное сообщение
+  const filteredMessages = React.useMemo(() => {
+    if (!messages || messages.length === 0) return [];
+    
+    // Находим первое сообщение (приветственное)
+    const firstMessage = messages[0];
+    
+    // Фильтруем все остальные сообщения, оставляя только от вселенной
+    const universeMessages = messages.filter((msg, index) => 
+      index === 0 || msg.sender === 'universe'
+    );
+    
+    return universeMessages;
+  }, [messages]);
+  
+  // Симулируем прогресс загрузки для лучшего UX
   useEffect(() => {
     if (isLoading) {
       setLoadingProgress(0);
@@ -41,15 +56,15 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
     }
   }, [isLoading]);
   
-  // Scroll to bottom of messages when new messages arrive or when loading completes
+  // Скроллим к последнему сообщению при появлении новых
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isLoading]);
+  }, [filteredMessages, isLoading]);
   
-  // Handle empty state with styled loader
-  if (isLoading && messages.length === 0) {
+  // Отображаем состояние загрузки
+  if (isLoading && filteredMessages.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-4">
         <div className="w-20 h-20 rounded-full bg-cosmic-dark border-2 border-cosmic-gold flex items-center justify-center mb-4 relative overflow-hidden">
@@ -79,8 +94,8 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
     );
   }
   
-  // Handle empty chat state
-  if (!isLoading && messages.length === 0) {
+  // Пустое состояние чата
+  if (!isLoading && filteredMessages.length === 0) {
     return <EmptyChatState />;
   }
   
@@ -90,7 +105,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
       className="flex-1 overflow-y-auto px-4 pb-4 pt-2 scrollbar-thin scrollbar-thumb-cosmic-accent/20 scrollbar-track-transparent mb-16"
     >
       <div className="space-y-4">
-        {messages.map((message) => (
+        {filteredMessages.map((message) => (
           <ChatMessage 
             key={message.id || `temp-${Date.now()}-${Math.random()}`} 
             message={message} 

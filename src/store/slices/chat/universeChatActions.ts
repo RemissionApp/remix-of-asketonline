@@ -171,6 +171,7 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
   sendChatMessage: async (message: string, isWelcomeMessage: boolean = false) => {
     const { user } = get();
     const sessionId = get().currentChatSession;
+    const currentMessages = get().chatMessages;
     
     if (!user) {
       toast.error('Требуется авторизация');
@@ -221,7 +222,13 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
         return;
       }
       
-      // For regular user messages, continue with normal flow
+      // Собираем последние 10 сообщений пользователя для контекста
+      const recentUserMessages = currentMessages
+        .filter(msg => msg.sender === 'user')
+        .slice(-10)
+        .map(msg => msg.content);
+      
+      console.log('Recent user messages for context:', recentUserMessages.length);
       
       // Add temporary message to state immediately
       const tempUserMsg: UniverseChatMessage = {
@@ -238,8 +245,8 @@ export const createUniverseChatActions = <T extends AppState & UniverseChatState
       
       console.log('Sending chat message:', message);
       
-      // Send the message and get updated messages
-      const updatedMessages = await sendMessageToUniverse(user.id, sessionId, message);
+      // Send the message and get updated messages, включаем историю сообщений
+      const updatedMessages = await sendMessageToUniverse(user.id, sessionId, message, recentUserMessages);
       console.log('Updated messages after sending:', updatedMessages.length);
       
       // Update all messages to ensure consistent state

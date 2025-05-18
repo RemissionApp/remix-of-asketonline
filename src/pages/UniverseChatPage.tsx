@@ -7,8 +7,8 @@ import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
+import { ChatNavigationPanel } from '@/components/chat/ChatNavigationPanel';
 import { toast } from 'sonner';
-import { BottomNavigation } from '@/components/BottomNavigation';
 
 const UniverseChatPage = () => {
   const { 
@@ -75,8 +75,7 @@ const UniverseChatPage = () => {
           const welcomeMessage = t.universe?.welcomeMessage || 
             "Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.";
           
-          // Fixed: Removed the second argument as it's causing the error
-          await sendChatMessage(welcomeMessage);
+          await sendChatMessage(welcomeMessage, true);
         } catch (error) {
           console.error('Error sending welcome message:', error);
         }
@@ -116,6 +115,22 @@ const UniverseChatPage = () => {
     }
   };
   
+  const handleNewChat = async () => {
+    try {
+      // Creating a new chat session
+      const defaultTitle = t.universe?.newChatTitle || 'Новый диалог со Вселенной';
+      const sessionId = await createChatSession(defaultTitle);
+      
+      if (sessionId) {
+        await setCurrentChatSession(sessionId);
+        toast.success(t.universe?.newChatCreated || 'Создан новый диалог');
+      }
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      toast.error(t.universe?.errorCreatingChat || 'Ошибка создания нового диалога');
+    }
+  };
+  
   // Wrap content with PRO check
   const content = (
     <div className="min-h-screen flex flex-col bg-cosmic">
@@ -137,7 +152,7 @@ const UniverseChatPage = () => {
         isDisabled={isSendingMessage}
       />
       
-      <BottomNavigation />
+      <ChatNavigationPanel onNewChat={handleNewChat} />
     </div>
   );
   

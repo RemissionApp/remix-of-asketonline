@@ -10,6 +10,7 @@ const corsHeaders = {
 interface RequestBody {
   question: string;
   language: string;
+  recentMessages?: string[]; // Добавляем поле для истории сообщений
   userData?: {
     zodiacSign?: string;
     currentVow?: string;
@@ -34,7 +35,7 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language = 'ru', userData } = await req.json() as RequestBody;
+    const { question, language = 'ru', userData, recentMessages = [] } = await req.json() as RequestBody;
     
     if (!question || question.trim() === '') {
       throw new Error('Question is required');
@@ -108,10 +109,17 @@ serve(async (req) => {
       }
     }
     
+    // Добавляем историю последних сообщений пользователя
+    let messageHistory = "";
+    if (recentMessages && recentMessages.length > 0) {
+      messageHistory = `\n\nИстория последних сообщений пользователя (используй для контекста):\n${recentMessages.map((msg, i) => `${i+1}. ${msg}`).join('\n')}`;
+    }
+    
     // User prompt with context
     const userPrompt = `Сообщение пользователя: "${question}"
 
     ${userContext}
+    ${messageHistory}
     
     Ответь, следуя указанной выше структуре, как голос Вселенной, обращаясь к человеку в поэтической форме.`;
 

@@ -24,7 +24,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
   
   return (
     <div 
-      className="flex mb-4"
+      className={`flex mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}
       data-message-id={messageId}
     >
       {!isUser && (
@@ -51,8 +51,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = React.memo(({ message }) 
       <div 
         className={`max-w-xs md:max-w-md rounded-2xl p-4 relative ${
           isUser 
-            ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm ml-auto' 
-            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md mr-auto'
+            ? 'bg-cosmic-accent/30 text-white rounded-tr-none backdrop-blur-sm' 
+            : 'bg-cosmic-dark/80 border border-cosmic-accent/20 text-cosmic-secondary rounded-tl-none backdrop-blur-md'
         }`}
       >
         {!isUser && (
