@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Home, Sparkles, MessageSquare, UserRound, Stars, Calculator } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -23,6 +23,15 @@ export const BottomNavigation: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  useEffect(() => {
+    // Log navigation state for debugging
+    console.log("BottomNavigation rendered with:", {
+      activeScreen,
+      currentPath: location.pathname,
+      isPro: userProfile?.isPro
+    });
+  }, [activeScreen, location.pathname, userProfile?.isPro]);
   
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;
@@ -84,12 +93,12 @@ export const BottomNavigation: React.FC = () => {
                   <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
                 </button>
                 
-                {/* Numerology button for PRO users - HIGHLIGHTED */}
+                {/* Numerology button for PRO users */}
                 <button 
                   className={`flex flex-col items-center p-1 ${isActive('/numerology') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
                   onClick={() => handleNavigation('numerology', '/numerology')}
                 >
-                  <Calculator size={18} className={isActive('/numerology') ? '' : 'animate-bounce'} />
+                  <Calculator size={18} className={isActive('/numerology') ? '' : 'animate-pulse'} />
                   <span className="text-xs">{numerologyText}</span>
                 </button>
               </>
@@ -110,15 +119,15 @@ export const BottomNavigation: React.FC = () => {
                   onClick={() => handleNavigation('full-horoscope', '/full-horoscope')}
                 >
                   <Stars size={18} />
-                  <span className="text-xs">Гороскоп</span>
+                  <span className="text-xs">{language === 'ru' ? 'Гороскоп' : language === 'es' ? 'Horóscopo' : 'Horoscope'}</span>
                 </button>
                 
-                {/* Numerology button preview for non-PRO users - HIGHLIGHTED */}
+                {/* Numerology button preview for non-PRO users - with animation */}
                 <button 
                   className={`flex flex-col items-center p-1 ${isActive('/numerology') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
                   onClick={() => handleNavigation('numerology', '/numerology')}
                 >
-                  <Calculator size={18} className={isActive('/numerology') ? '' : 'animate-bounce'} />
+                  <Calculator size={18} className={isActive('/numerology') ? '' : 'animate-pulse'} />
                   <span className="text-xs">{numerologyText}</span>
                 </button>
               </>

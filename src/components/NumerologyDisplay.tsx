@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -14,11 +14,19 @@ export const NumerologyDisplay: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  console.log("NumerologyDisplay rendering with:", {
-    userProfile,
-    birthDateExists: !!userProfile?.birthDate,
-    isPro: userProfile?.isPro
-  });
+  useEffect(() => {
+    // Log when component mounts for debugging
+    console.log("NumerologyDisplay mounted with:", {
+      userProfile,
+      birthDateExists: !!userProfile?.birthDate,
+      isPro: userProfile?.isPro,
+      language
+    });
+    
+    return () => {
+      console.log("NumerologyDisplay unmounted");
+    };
+  }, [userProfile, language]);
   
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
@@ -48,20 +56,20 @@ export const NumerologyDisplay: React.FC = () => {
   const moreDetailsText = language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : 'More details';
   
   const handleNavigateToNumerology = () => {
-    console.log("Navigating to numerology page");
+    console.log("Navigating to numerology page from NumerologyDisplay");
     navigate('/numerology');
   };
   
-  // Create the numerology content component
+  // Create the numerology content component with enhanced visibility
   const numerologyContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
+    <div className="cosmic-block backdrop-blur-sm border-2 border-cosmic-accent/40 rounded-lg mb-6 w-full hover:border-cosmic-accent/60 transition-all">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
-            <Calculator size={20} className="text-cosmic-accent" />
+            <Calculator size={24} className="text-cosmic-accent animate-pulse-slow" />
           </div>
           <div>
-            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
+            <h3 className={`text-xl ${language === 'en' ? "font-serif" : "font-sans"} font-medium text-cosmic-accent`}>
               {numerologyText}
             </h3>
           </div>
@@ -80,7 +88,7 @@ export const NumerologyDisplay: React.FC = () => {
         <Button
           onClick={handleNavigateToNumerology}
           variant="outline"
-          className="w-full mt-3 bg-cosmic-dark/50 border-cosmic-accent/30 text-cosmic-accent"
+          className="w-full mt-3 bg-cosmic-dark/50 border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/20 hover:text-white transition-colors"
         >
           {moreDetailsText}
           <ArrowRight size={16} className="ml-2" />
@@ -98,6 +106,7 @@ export const NumerologyDisplay: React.FC = () => {
         ? 'Desbloquea PRO para obtener acceso completo a la numerología' 
         : 'Unlock PRO to get full access to numerology';
         
+    console.log("Rendering NumerologyDisplay with PRO overlay");
     return (
       <ProFeatureOverlay 
         title={titleText}
@@ -109,5 +118,6 @@ export const NumerologyDisplay: React.FC = () => {
     );
   }
   
+  console.log("Rendering NumerologyDisplay without PRO overlay");
   return numerologyContent;
 };
