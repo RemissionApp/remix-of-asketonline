@@ -1,19 +1,41 @@
 
 import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
-import { UniverseChatState, initialUniverseChatState } from './universeChatTypes';
-import { UniverseChatActions, createUniverseChatActions } from './universeChatActions';
+import { UniverseChatState } from './universeChatTypes';
+import { 
+  createLoadChatSessionsAction,
+  createLoadChatMessagesAction,
+  createChatSessionAction,
+  createSetCurrentChatSessionAction,
+  createSendChatMessageAction,
+  createSubscribeToChatMessagesAction,
+  createHandleNewChatMessageAction
+} from './actions';
 
 /**
- * Combined type for universe chat slice
+ * Create the universe chat slice
  */
-export interface UniverseChatSlice extends UniverseChatState, UniverseChatActions {}
-
-/**
- * Creates the universe chat slice for the Zustand store
- */
-export const createUniverseChatSlice: StateCreator<AppState, [], [], UniverseChatSlice> = 
-  (set, get, api) => ({
-    ...initialUniverseChatState,
-    ...createUniverseChatActions(set, get)
-  });
+export const createUniverseChatSlice: StateCreator<
+  AppState,
+  [],
+  [],
+  UniverseChatState
+> = (set, get, api) => ({
+  // State
+  chatSessions: [],
+  isLoadingChatSessions: false,
+  currentChatSession: null,
+  chatMessages: [],
+  isLoadingChat: false,
+  isSendingMessage: false,
+  isUniverseTyping: false,
+  
+  // Actions
+  loadChatSessions: createLoadChatSessionsAction(set, get),
+  loadChatMessages: createLoadChatMessagesAction(set, get),
+  createChatSession: createChatSessionAction(set, get),
+  setCurrentChatSession: createSetCurrentChatSessionAction(set, get),
+  sendChatMessage: createSendChatMessageAction(set, get),
+  subscribeToChatMessages: createSubscribeToChatMessagesAction(set, get),
+  handleNewChatMessage: createHandleNewChatMessageAction(set, get)
+});
