@@ -9,75 +9,109 @@ import ProfilePage from '@/pages/ProfilePage';
 import LegalPage from '@/pages/LegalPage';
 import { useAppStore } from './store/useAppStore';
 import { supabase } from './lib/supabase';
-import { fetchUserProfile } from './utils/profile';
-import { fetchPacts } from './utils/pacts';
-import { fetchMissions } from './utils/missions';
-import { fetchUniverseQuestions } from './utils/universeQuestions';
-import { fetchAchievements } from './utils/achievements';
-import { fetchAllTranslations } from './utils/translations';
-import { Language } from './types/Language';
 import SupportPage from './pages/SupportPage';
 
 const App: React.FC = () => {
-  const { setUserProfile, setPacts, setMissions, setUniverseQuestions, setAchievements, setTranslations, language } = useAppStore();
+  const { 
+    setUserProfile, 
+    setPacts, 
+    setMissions, 
+    setUniverseQuestions, 
+    setAchievements, 
+    setTranslations, 
+    language, 
+    userProfile,
+    user,
+    updateUserProfile,
+    loadPacts,
+    loadUniverseQuestions
+  } = useAppStore();
   
   useEffect(() => {
     const fetchData = async () => {
-      const user = supabase.auth.user();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (user) {
+      if (session?.user) {
         // Fetch user-specific data
-        const profile = await fetchUserProfile(user.id);
-        setUserProfile(profile);
+        try {
+          // Get the user's profile from supabase
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (profileData && !profileError) {
+            setUserProfile({
+              ...userProfile,
+              name: profileData.name || 'Искатель',
+              email: profileData.email || '',
+              birthDate: profileData.birth_date || null,
+              avatar_url: profileData.avatar_url || null,
+              id: profileData.id
+            });
+          }
         
-        const pacts = await fetchPacts(user.id);
-        setPacts(pacts);
-        
-        const missions = await fetchMissions(user.id);
-        setMissions(missions);
-        
-        const universeQuestions = await fetchUniverseQuestions(user.id);
-        setUniverseQuestions(universeQuestions);
-        
-        const achievements = await fetchAchievements(user.id);
-        setAchievements(achievements);
+          // Load pacts, missions and other data
+          await loadPacts();
+          await loadUniverseQuestions();
+          
+          // These methods would need to be implemented properly
+          // Currently using placeholder empty arrays
+          setMissions([]);
+          setAchievements(userProfile.achievements);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
       }
       
-      // Fetch translations (no user id needed)
-      const translations = await fetchAllTranslations(language);
-      setTranslations(translations);
+      // Load translations (mock implementation)
+      setTranslations({
+        main: { profile: "Профиль" },
+        support: { 
+          title: "Поддержка",
+          description: "Нужна помощь? Наша служба поддержки готова помочь вам с любыми вопросами.",
+          contactUs: "Связаться с поддержкой",
+          responseTime: "Мы обычно отвечаем в течение 24 часов в рабочие дни."
+        }
+      });
     };
     
     fetchData();
     
     // Subscribe to auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      if (event === 'SIGNED_IN' && session) {
         fetchData();
       }
       if (event === 'SIGNED_OUT') {
-        setUserProfile(null);
+        setUserProfile({
+          name: 'Искатель',
+          email: '',
+          age: null,
+          energyPoints: 0,
+          goal: 'Познать свою истинную силу',
+          isPro: false,
+          rank: 'seeker',
+          zodiacSign: '',
+          totalDays: 0,
+          achievements: [...userProfile.achievements],
+          birthDate: null,
+          avatar_url: null,
+          activeMission: undefined,
+          id: undefined
+        });
         setPacts([]);
         setMissions([]);
         setUniverseQuestions([]);
-        setAchievements([]);
       }
     });
     
     // Unsubscribe from auth state changes when the component unmounts
     return () => {
-      authListener?.unsubscribe();
+      authListener?.subscription.unsubscribe();
     };
   }, [setUserProfile, setPacts, setMissions, setUniverseQuestions, setAchievements, setTranslations, language]);
-  
-  useEffect(() => {
-    const updateTranslations = async () => {
-      const translations = await fetchAllTranslations(language);
-      setTranslations(translations);
-    };
-    
-    updateTranslations();
-  }, [language, setTranslations]);
 
   const router = createBrowserRouter([
     {

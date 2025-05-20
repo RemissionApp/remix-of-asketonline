@@ -12,7 +12,10 @@ export type SpiritualRank =
   | 'apprentice'
   | 'adept'
   | 'master'
-  | 'grandmaster';
+  | 'grandmaster'
+  | 'pilgrim'  // Added missing ranks
+  | 'warrior'
+  | 'enlightened';
 
 export type Achievement = {
   id: string;
@@ -20,6 +23,7 @@ export type Achievement = {
   description: string;
   icon: string;
   unlocked: boolean;
+  unlockedDate?: string;  // Added missing property
 };
 
 export type Pact = {
@@ -92,7 +96,7 @@ export interface UserProfile {
   zodiacSign: string;
   totalDays: number;
   achievements: Achievement[];
-  birthDate: string | null;
+  birthDate: Date | string | null;  // Allow both Date and string
   avatar_url: string | null;
   activeMission?: Mission | null;
   id?: string;
