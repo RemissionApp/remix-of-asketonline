@@ -126,11 +126,13 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   
   return (
     <div className={cn(
-      'p-4 rounded-lg border border-cosmic-gold/30 bg-gradient-to-br from-cosmic-dark to-cosmic-accent/5',
+      'p-4 rounded-lg',
       className
     )}>
       <div className="flex items-center mb-3">
-        <Flag className="w-5 h-5 text-cosmic-gold mr-2" />
+        <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
+          <Flag className="w-5 h-5 text-cosmic-gold" />
+        </div>
         <h3 className={language === 'en' ? "font-serif text-lg text-white" : "font-sans text-lg text-white"}>
           {getTitle()}
         </h3>
@@ -144,7 +146,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       </h4>
       
       <p className={cn(
-        "text-sm mb-4",
+        "text-sm mb-4 text-shadow",
         language === 'en' ? "font-serif text-cosmic-secondary" : "text-cosmic-secondary"
       )}>
         {mission.description}
@@ -236,14 +238,16 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           className="w-full mt-2" 
           onClick={handleCompleteMission}
           disabled={!allCompleted}
+          variant="default"
         >
           <CheckCircle className="w-4 h-4 mr-1" />
           {language === 'ru' ? 'Завершить миссию' : language === 'es' ? 'Completar misión' : 'Complete mission'}
         </CosmicButton>
       ) : (
         <CosmicButton 
-          className="w-full mt-2" 
+          className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20" 
           onClick={handleAcceptMission}
+          variant="default"
         >
           {language === 'ru' ? 'Принять миссию' : language === 'es' ? 'Aceptar misión' : 'Accept mission'}
         </CosmicButton>
@@ -251,4 +255,3 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     </div>
   );
 };
-
