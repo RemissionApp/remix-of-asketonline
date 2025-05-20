@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -75,9 +74,7 @@ const UniverseChatPage = () => {
           // Create welcome message from universe (not from user)
           const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Fix: The sendChatMessage function is being called with two arguments when it only expects one
-          // Change from: await sendChatMessage(welcomeMessage, 'system');
-          // To: await sendChatMessage(welcomeMessage);
+          // Fix: Removed the second argument as sendChatMessage only accepts one argument
           await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error adding welcome message:', error);
