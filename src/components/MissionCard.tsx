@@ -57,6 +57,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       position: 'relative',
+      backgroundColor: 'rgba(255, 255, 255, 0.85)', // Добавляем светлый фон
+      backgroundBlendMode: 'lighten', // Смешиваем фон и изображение для яркости
     };
   } else if (isGratitudeChain) {
     backgroundStyle = {
@@ -64,6 +66,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       position: 'relative',
+      backgroundColor: 'rgba(255, 255, 255, 0.85)', // Добавляем светлый фон
+      backgroundBlendMode: 'lighten', // Смешиваем фон и изображение для яркости
     };
   }
   
@@ -73,14 +77,16 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   return (
     <div 
       className={cn(
-        'p-4 rounded-lg',
+        'p-4 rounded-lg border-2',
         needsOverlay && 'relative overflow-hidden',
+        isSilenceChallenge && 'border-purple-300',
+        isGratitudeChain && 'border-amber-300',
         className
       )}
       style={backgroundStyle}
     >
       {needsOverlay && (
-        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/60 to-cosmic-indigo/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-cosmic-indigo/20"></div>
       )}
       
       <div className={cn("relative z-10", needsOverlay && "animate-fade-in")}>
