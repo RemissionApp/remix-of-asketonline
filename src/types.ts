@@ -9,12 +9,9 @@ export type Json =
 
 export type SpiritualRank =
   | 'seeker'
-  | 'apprentice'
-  | 'adept'
-  | 'master'
-  | 'grandmaster'
   | 'pilgrim'
   | 'warrior'
+  | 'master'
   | 'enlightened';
 
 export type Achievement = {
@@ -76,13 +73,15 @@ export type Mission = {
   title: string;
   description: string;
   requirements: string[] | MissionRequirement[];
-  reward: {
-    energyPoints: number;
-    achievement?: string;
-  };
+  reward: MissionReward;
   completed: boolean;
   type?: 'single' | 'multi-day' | 'chain';
   progress?: MissionProgress[];
+};
+
+export type MissionReward = {
+  energyPoints: number;
+  achievement?: string;
 };
 
 export interface UserProfile {
@@ -102,13 +101,14 @@ export interface UserProfile {
   id?: string;
 }
 
-export type Meditation = {
+export interface Meditation {
   id: string;
   title: string;
   description: string;
-  duration: number;
   category: string;
-  audioUrl: string;
-  imageUrl: string;
-  isPro: boolean;
-};
+  duration: number;
+  image: string;
+  audioSrc?: string;
+  locked?: boolean;
+  requiresPro?: boolean;
+}

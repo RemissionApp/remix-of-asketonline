@@ -21,7 +21,6 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
   const [tempBirthDate, setTempBirthDate] = useState<Date | null>(
     userProfile?.birthDate ? new Date(userProfile.birthDate) : null
   );
-  const [isLoading, setIsLoading] = useState(false);
   
   // Save the new birth date
   const handleSaveBirthDate = async () => {
@@ -29,8 +28,6 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
       onOpenChange(false);
       return;
     }
-    
-    setIsLoading(true);
     
     try {
       // Format birthDate to YYYY-MM-DD for Supabase
@@ -55,18 +52,17 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
       });
       
       toast({
-        title: t.success?.birthDateUpdated || "Дата рождения обновлена",
-        description: t.success?.profileSaved || "Ваши данные успешно сохранены"
+        title: "Дата рождения обновлена",
+        description: "Ваши данные успешно сохранены"
       });
     } catch (error: any) {
       console.error("Error updating birth date:", error);
       toast({
-        title: t.errors?.updateFailed || "Ошибка",
-        description: error.message || t.errors?.birthDateUpdateFailed || "Не удалось обновить дату рождения",
+        title: "Ошибка",
+        description: error.message || "Не удалось обновить дату рождения",
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
       onOpenChange(false);
     }
   };
@@ -86,7 +82,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
         <div className="py-4">
           <Calendar
             mode="single"
-            selected={tempBirthDate || undefined}
+            selected={tempBirthDate}
             onSelect={(date) => setTempBirthDate(date)}
             disabled={(date) =>
               date > new Date() || date < new Date("1900-01-01")
@@ -102,14 +98,11 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
             variant="outline" 
             onClick={() => onOpenChange(false)}
             className="border-cosmic-accent/30 text-cosmic-secondary hover:bg-cosmic-accent/10"
-            disabled={isLoading}
           >
-            {t.common?.cancel || "Отмена"}
+            {t.zodiac?.cancelBirthDate || "Cancel"}
           </Button>
-          <CosmicButton onClick={handleSaveBirthDate} disabled={isLoading}>
-            {isLoading 
-              ? (t.common?.saving || "Сохранение...") 
-              : (t.common?.save || "Сохранить")}
+          <CosmicButton onClick={handleSaveBirthDate}>
+            {t.zodiac?.saveBirthDate || "Save"}
           </CosmicButton>
         </DialogFooter>
       </DialogContent>

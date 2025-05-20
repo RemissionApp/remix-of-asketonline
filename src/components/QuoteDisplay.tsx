@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
@@ -58,7 +59,8 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
         }
         
         // Determine zodiac sign based on birth date
-        const sign = getZodiacSign(userProfile.birthDate);
+        const birthDate = new Date(userProfile.birthDate);
+        const sign = getZodiacSign(birthDate);
         
         if (!sign) {
           throw new Error('Could not determine zodiac sign');
@@ -103,7 +105,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
                     'Today is';
                    
   // Get zodiac sign symbol and name if available
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
+  const zodiacSign = userProfile?.birthDate ? getZodiacSign(new Date(userProfile.birthDate)) : null;
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
   const renderHoroscope = () => {

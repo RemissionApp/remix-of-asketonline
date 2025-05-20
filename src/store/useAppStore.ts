@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -39,56 +38,6 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   
   // Добавляем новый метод для установки пользователя
   setUser: (user) => set({ user }),
-  
-  // Метод для загрузки профиля пользователя
-  loadUserProfile: async () => {
-    try {
-      const { user } = get();
-      
-      if (!user) {
-        console.error("No user found, can't load profile");
-        return;
-      }
-      
-      set({ loading: true });
-      
-      // Запрос профиля из Supabase
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error('Error loading profile:', error);
-        return;
-      }
-      
-      if (data) {
-        // Конвертируем birth_date в объект Date если есть
-        const birthDate = data.birth_date ? new Date(data.birth_date) : null;
-        
-        // Обновляем локальное состояние
-        set({
-          userProfile: {
-            ...get().userProfile,
-            name: data.name,
-            birthDate,
-            avatar_url: data.avatar_url,
-            energyPoints: data.energy_points || 0,
-            goal: data.goal || 'Познать свою истинную силу',
-            totalDays: data.total_days || 0,
-            rank: data.rank || 'seeker',
-            id: data.id
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      set({ loading: false });
-    }
-  },
   
   // Состояние чата
   chatSessions: [],
