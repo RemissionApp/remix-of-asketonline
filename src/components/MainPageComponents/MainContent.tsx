@@ -65,7 +65,7 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 3. NEW: Cosmic Missions Block - right after Daily Advice */}
+      {/* 3. Cosmic Missions Block - right after Daily Advice */}
       <CosmicMissionsBlock />
       
       {/* 4. Universe Message Block */}

@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
-import { Flag, Star, Infinity, Award } from 'lucide-react';
+import { Flag, Star, CheckCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { MissionCard } from '@/components/MissionCard';
 import { Mission } from '@/types';
+import { Progress } from '@/components/ui/progress';
 
 export const CosmicMissionsBlock: React.FC = () => {
-  const { language, userProfile } = useAppStore();
+  const { language, userProfile, assignMission } = useAppStore();
   const { t } = useTranslations();
   const [showAll, setShowAll] = useState(false);
   
@@ -83,6 +84,10 @@ export const CosmicMissionsBlock: React.FC = () => {
     }
   ];
 
+  const handleAcceptMission = (mission: Mission) => {
+    assignMission();
+  };
+
   // Show only active mission if exists, or first available mission
   const displayedMissions = showAll 
     ? missions 
@@ -98,7 +103,7 @@ export const CosmicMissionsBlock: React.FC = () => {
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
               <Star size={20} className="text-cosmic-gold" />
             </div>
-            <h3 className="font-medium">
+            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
               {language === 'ru' ? 'Космические миссии' : 
                language === 'es' ? 'Misiones cósmicas' : 
                'Cosmic missions'}
@@ -111,6 +116,7 @@ export const CosmicMissionsBlock: React.FC = () => {
                 key={mission.id} 
                 mission={mission}
                 className="mb-4"
+                onComplete={() => {}}
               />
             ))}
           </div>
