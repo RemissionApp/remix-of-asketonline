@@ -8,12 +8,16 @@ interface MissionProgressProps {
   progress: number;
   lastCompletedDate: Date | null;
   missionType?: 'single' | 'multi-day' | 'chain';
+  daysCompleted?: number;
+  totalDays?: number;
 }
 
 export const MissionProgress: React.FC<MissionProgressProps> = ({
   progress,
   lastCompletedDate,
-  missionType
+  missionType,
+  daysCompleted = 0,
+  totalDays = 0
 }) => {
   const { language } = useAppStore();
   
@@ -26,7 +30,12 @@ export const MissionProgress: React.FC<MissionProgressProps> = ({
              language === 'es' ? 'Progreso' : 
              'Progress'}
           </span>
-          <span>{progress}%</span>
+          <span>
+            {missionType === 'multi-day' ? 
+              `${daysCompleted}/${totalDays} (${progress}%)` : 
+              `${progress}%`
+            }
+          </span>
         </div>
         <Progress value={progress} className="h-2" />
       </div>

@@ -32,6 +32,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     lastCompletedDate,
     canCompleteToday,
     allCompleted,
+    daysCompleted,
+    totalDays,
     toggleRequirement,
     handleCompleteMission,
     handleAcceptMission
@@ -62,6 +64,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           progress={progress}
           lastCompletedDate={lastCompletedDate}
           missionType={mission.type}
+          daysCompleted={daysCompleted}
+          totalDays={totalDays}
         />
       )}
       

@@ -12,6 +12,7 @@ import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
+import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -65,30 +66,33 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 3. Cosmic Missions Entry Point - right after Daily Advice */}
+      {/* 3. Active Mission Widget (if available) */}
+      <ActiveMissionWidget />
+      
+      {/* 4. Cosmic Missions Entry Point */}
       <CosmicMissionsEntryPoint />
       
-      {/* 4. Universe Message Block */}
+      {/* 5. Universe Message Block */}
       <div className="w-full max-w-lg mx-auto">
         <UniverseMessageBlock />
       </div>
       
-      {/* 5. Zodiac Badge Display */}
+      {/* 6. Zodiac Badge Display */}
       <div className="w-full max-w-lg mx-auto">
         <ZodiacBadgeDisplay />
       </div>
       
-      {/* 6. Meditation Block */}
+      {/* 7. Meditation Block */}
       <div className="w-full max-w-lg mx-auto">
         <MeditationBlock />
       </div>
       
-      {/* 7. Numerology Display */}
+      {/* 8. Numerology Display */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
       </div>
       
-      {/* 8. Affirmations Block */}
+      {/* 9. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
       </div>

@@ -10,6 +10,7 @@ import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
 import { CountdownTimer } from '@/components/CountdownTimer';
+import { MissionReminder } from '@/components/missions/MissionReminder';
 
 const MainPage: React.FC = () => {
   const { 
@@ -144,6 +145,9 @@ const MainPage: React.FC = () => {
         getAscesisPrefix={getAscesisPrefix}
         formatRejection={formatRejection}
       />
+      
+      {/* Mission Reminder */}
+      <MissionReminder />
       
       {/* Bottom navigation */}
       <BottomNavigation />
