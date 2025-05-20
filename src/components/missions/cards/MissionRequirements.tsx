@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppStore } from '@/store/useAppStore';
 import { MissionRequirement } from '@/types';
@@ -49,13 +49,19 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
         {requirementStrings.map((req, i) => (
           <li key={i} className="flex items-start">
             <div className="flex items-center h-5 mr-2">
-              <Checkbox
-                id={`req-${i}`}
-                checked={requirementStatus[i] || false}
-                onCheckedChange={() => handleToggle(i)}
-                className="border-cosmic-gold data-[state=checked]:bg-cosmic-gold data-[state=checked]:text-cosmic-dark"
-                disabled={missionType === 'multi-day' && !canCompleteToday && !requirementStatus[i]}
-              />
+              {requirementStatus[i] ? (
+                <div className="w-4 h-4 flex items-center justify-center">
+                  <CheckSquare size={16} className="text-green-500" />
+                </div>
+              ) : (
+                <Checkbox
+                  id={`req-${i}`}
+                  checked={false}
+                  onCheckedChange={() => handleToggle(i)}
+                  className="border-cosmic-gold data-[state=checked]:bg-cosmic-gold data-[state=checked]:text-cosmic-dark rounded-sm"
+                  disabled={missionType === 'multi-day' && !canCompleteToday}
+                />
+              )}
             </div>
             <label 
               htmlFor={`req-${i}`}

@@ -3,6 +3,7 @@ import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore } from '@/store/useAppStore';
 import { isToday } from 'date-fns';
+import { CheckSquare } from 'lucide-react';
 
 interface MissionProgressProps {
   progress: number;
@@ -41,7 +42,8 @@ export const MissionProgress: React.FC<MissionProgressProps> = ({
       </div>
       
       {missionType === 'multi-day' && lastCompletedDate && isToday(lastCompletedDate) && (
-        <div className="text-xs text-cosmic-secondary mb-3">
+        <div className="text-xs text-cosmic-secondary mb-3 flex items-center">
+          <CheckSquare size={14} className="inline mr-1 text-green-500" />
           {language === 'ru' ? 'Задача на сегодня выполнена' : 
            language === 'es' ? 'Tarea de hoy completada' : 
            'Today\'s task completed'}

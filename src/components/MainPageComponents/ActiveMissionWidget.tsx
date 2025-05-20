@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Clock } from 'lucide-react';
+import { Star, Clock, CheckSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { Progress } from '@/components/ui/progress';
 import { isToday } from 'date-fns';
@@ -83,6 +83,13 @@ export const ActiveMissionWidget: React.FC = () => {
             </div>
             <Progress value={progress} className="h-2" />
           </div>
+          
+          {todayCompleted && (
+            <div className="text-xs text-cosmic-secondary flex items-center">
+              <CheckSquare size={14} className="inline mr-1 text-green-500" />
+              {getReminderText()}
+            </div>
+          )}
         </div>
       </div>
     </div>
