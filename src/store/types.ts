@@ -1,4 +1,3 @@
-
 import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
 import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat/types';
 
@@ -18,8 +17,9 @@ export type ActiveScreen =
   | 'login'
   | 'signup'
   | 'universe-chat'
-  | 'full-horoscope'
-  | 'numerology';
+  | 'full-horoscope' 
+  | 'numerology'
+  | 'support';  // Добавляем новый тип экрана
 
 export interface AppState {
   pacts: Pact[];

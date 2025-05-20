@@ -1,44 +1,44 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useTranslations } from '@/hooks/useTranslations';
 import { CosmicButton } from '@/components/CosmicButton';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { formatDate, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 
-interface BirthDateEditorProps {
+interface NameEditorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange }) => {
+const NameEditor: React.FC<NameEditorProps> = ({ open, onOpenChange }) => {
   const { t } = useTranslations();
-  const { userProfile, updateUserProfile, user, language } = useAppStore();
-  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(userProfile?.birthDate || null);
+  const { userProfile, updateUserProfile, user } = useAppStore();
+  const [tempName, setTempName] = useState<string>(userProfile?.name || '');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Save the new birth date
-  const handleSaveBirthDate = async () => {
-    if (!user || !tempBirthDate) {
-      onOpenChange(false);
+  // Save the new name
+  const handleSaveName = async () => {
+    if (!user || !tempName || tempName.trim() === '') {
+      toast({
+        title: t.errors?.invalidName || "Ошибка",
+        description: t.errors?.nameRequired || "Имя не может быть пустым",
+        variant: "destructive"
+      });
       return;
     }
     
     setIsLoading(true);
     
     try {
-      // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = formatDate(tempBirthDate, 'en', false).split('/').reverse().join('-');
-      
-      // Update directly in Supabase
+      // Обновляем в Supabase
       const { error } = await supabase
         .from('profiles')
         .update({
-          birth_date: formattedBirthDate
+          name: tempName.trim()
         })
         .eq('id', user.id);
       
@@ -46,21 +46,21 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
         throw error;
       }
       
-      // Also update the local store
+      // Обновляем локальное состояние
       await updateUserProfile({
         ...userProfile,
-        birthDate: tempBirthDate
+        name: tempName.trim()
       });
       
       toast({
-        title: t.success?.birthDateUpdated || "Дата рождения обновлена",
+        title: t.success?.nameUpdated || "Имя обновлено",
         description: t.success?.profileSaved || "Ваши данные успешно сохранены"
       });
     } catch (error: any) {
-      console.error("Error updating birth date:", error);
+      console.error("Error updating name:", error);
       toast({
         title: t.errors?.updateFailed || "Ошибка",
-        description: error.message || t.errors?.birthDateUpdateFailed || "Не удалось обновить дату рождения",
+        description: error.message || t.errors?.nameUpdateFailed || "Не удалось обновить имя",
         variant: "destructive"
       });
     } finally {
@@ -74,24 +74,20 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-cosmic-accent">
-            {t.zodiac?.editBirthDate || "Edit birth date"}
+            {t.userProfile?.editName || "Изменить имя"}
           </DialogTitle>
           <DialogDescription className="text-cosmic-secondary">
-            {t.userProfile?.birthDateLabel || "Дата рождения"}
+            {t.userProfile?.enterNewName || "Введите новое имя"}
           </DialogDescription>
         </DialogHeader>
         
         <div className="py-4">
-          <Calendar
-            mode="single"
-            selected={tempBirthDate || undefined}
-            onSelect={(date) => setTempBirthDate(date)}
-            disabled={(date) =>
-              date > new Date() || date < new Date("1900-01-01")
-            }
-            initialFocus
-            className="mx-auto pointer-events-auto"
-            locale={getLocaleByLanguage(language)}
+          <Input
+            value={tempName}
+            onChange={(e) => setTempName(e.target.value)}
+            className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white"
+            placeholder={t.userProfile?.namePlaceholder || "Ваше имя"}
+            autoFocus
           />
         </div>
         
@@ -104,7 +100,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
           >
             {t.common?.cancel || "Отмена"}
           </Button>
-          <CosmicButton onClick={handleSaveBirthDate} disabled={isLoading}>
+          <CosmicButton onClick={handleSaveName} disabled={isLoading}>
             {isLoading 
               ? (t.common?.saving || "Сохранение...") 
               : (t.common?.save || "Сохранить")}
@@ -115,4 +111,4 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
   );
 };
 
-export default BirthDateEditor;
+export default NameEditor;
