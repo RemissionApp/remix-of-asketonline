@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, ChevronRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
 
@@ -70,11 +70,10 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
         <CosmicButton 
           onClick={handleViewMissions} 
           size="md"
-          variant="default"
-          className="w-full bg-gradient-to-r from-purple-500/60 to-indigo-500/50 hover:from-purple-500/70 hover:to-indigo-500/60 backdrop-blur-md border border-white/20"
+          variant="ghost"
+          className="w-full backdrop-blur-md border border-white/20"
         >
           {getButtonText()}
-          <ChevronRight className="ml-1 w-4 h-4" />
         </CosmicButton>
       </div>
     </div>
