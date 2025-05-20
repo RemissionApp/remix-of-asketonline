@@ -37,42 +37,45 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
     }
   };
   
+  // Determine the correct font class based on language - matching other headings in the app
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
+  
   return (
-    <div className="w-full max-w-lg mx-auto mb-6">
-      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg overflow-hidden">
-        <div 
-          className="w-full bg-cover bg-center h-24 relative"
-          style={{ 
-            backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
-            backgroundPosition: 'center 30%'
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/30 to-cosmic-dark/80 flex items-center justify-center">
-            <div className="flex flex-col items-center">
-              <div className="bg-cosmic-accent/20 rounded-full p-2 mb-1">
-                <Star size={24} className="text-cosmic-gold" />
-              </div>
-              <h3 className={language === 'en' ? "font-serif text-xl text-white" : "text-xl text-white"}>
-                {getTitle()}
-              </h3>
-            </div>
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
+      {/* Background image with reflection effect */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-70 z-0"
+        style={{ 
+          backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
+          filter: 'brightness(1.6) contrast(1.2)',
+          transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
+        }}
+      />
+      
+      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
+        <div className="flex items-center mb-4">
+          <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
+            <Star size={24} className="text-cosmic-accent" />
           </div>
+          
+          <h3 className={`text-xl ${headingFontClass} font-medium text-white`}>
+            {getTitle()}
+          </h3>
         </div>
         
-        <div className="p-4">
-          <p className={`text-sm text-cosmic-secondary mb-4 ${language === 'en' ? "font-serif" : ""}`}>
-            {getDescription()}
-          </p>
-          
-          <CosmicButton 
-            onClick={handleViewMissions} 
-            className="w-full"
-            variant="outline"
-          >
-            {getButtonText()}
-            <ChevronRight className="ml-1 w-4 h-4" />
-          </CosmicButton>
-        </div>
+        <p className="text-white mb-4 text-shadow text-center">
+          {getDescription()}
+        </p>
+        
+        <CosmicButton 
+          onClick={handleViewMissions} 
+          size="md"
+          variant="default"
+          className="w-full bg-gradient-to-r from-purple-500/60 to-indigo-500/50 hover:from-purple-500/70 hover:to-indigo-500/60 backdrop-blur-md border border-white/20"
+        >
+          {getButtonText()}
+          <ChevronRight className="ml-1 w-4 h-4" />
+        </CosmicButton>
       </div>
     </div>
   );
