@@ -26,6 +26,7 @@ import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
 import CosmicMissionsPage from "./pages/CosmicMissionsPage";
+import SupportPage from "./pages/SupportPage";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -138,7 +139,7 @@ const AuthCallback = () => {
   );
 };
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -154,6 +155,7 @@ const App = () => {
             <Route path="/create-pact" element={<CreatePactPage />} />
             <Route path="/universe" element={<UniversePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/comparison" element={<ComparisonPage />} />
             <Route path="/meditation" element={<MeditationPage />} />
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />

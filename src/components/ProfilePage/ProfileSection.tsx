@@ -7,6 +7,7 @@ import { LegalDocuments } from './LegalDocuments';
 import { LogoutButton } from './LogoutButton';
 import UserProfileForm from '@/components/UserProfileForm';
 import { DeveloperSwitch } from '@/components/DeveloperSwitch';
+import { SupportSection } from './SupportSection';
 
 export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
@@ -29,6 +30,10 @@ export const ProfileSection: React.FC = () => {
         {/* Add Developer Switch here to replace the one from MainPage */}
         <h2 className="text-2xl text-white font-serif mb-4">Developer Mode</h2>
         <DeveloperSwitch />
+        
+        {/* Добавляем новый блок службы поддержки */}
+        <h2 className="text-2xl text-white font-serif mb-4">{t.support?.title || "Поддержка"}</h2>
+        <SupportSection />
         
         <LegalDocuments />
         <LogoutButton />
