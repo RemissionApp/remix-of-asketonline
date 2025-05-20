@@ -42,9 +42,9 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
   
   return (
     <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
-      {/* Background image with reflection effect */}
+      {/* Background image with reflection and brightness effect */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-70 z-0"
+        className="absolute inset-0 bg-cover bg-center opacity-70 z-0 animate-image-brighten"
         style={{ 
           backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
           filter: 'brightness(1.6) contrast(1.2)',

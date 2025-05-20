@@ -39,44 +39,67 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     handleAcceptMission
   } = useMissionCard(mission, onComplete);
   
+  // Определим, является ли это "Космический челлендж тишины"
+  const isSilenceChallenge = mission.title.includes('тишины') || 
+                            mission.title.includes('silence') || 
+                            mission.title.includes('silencio');
+  
+  const backgroundStyle = isSilenceChallenge ? {
+    backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//slse.png')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundBlendMode: 'lighten',
+    position: 'relative',
+  } as React.CSSProperties : {};
+  
   return (
-    <div className={cn(
-      'p-4 rounded-lg',
-      className
-    )}>
-      <MissionHeader 
-        title={mission.title}
-        description={mission.description}
-        language={language}
-      />
-      
-      <MissionRequirements
-        requirements={mission.requirements}
-        requirementStatus={requirementStatus}
-        toggleRequirement={toggleRequirement}
-        acceptedMission={acceptedMission}
-        missionType={mission.type}
-        canCompleteToday={canCompleteToday}
-      />
-      
-      {acceptedMission && (
-        <MissionProgress
-          progress={progress}
-          lastCompletedDate={lastCompletedDate}
-          missionType={mission.type}
-          daysCompleted={daysCompleted}
-          totalDays={totalDays}
-        />
+    <div 
+      className={cn(
+        'p-4 rounded-lg',
+        isSilenceChallenge && 'relative overflow-hidden',
+        className
+      )}
+      style={backgroundStyle}
+    >
+      {isSilenceChallenge && (
+        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/80 to-cosmic-indigo/60 backdrop-blur-sm"></div>
       )}
       
-      <MissionReward reward={mission.reward} />
-      
-      <MissionActions
-        acceptedMission={acceptedMission}
-        allCompleted={allCompleted}
-        onComplete={handleCompleteMission}
-        onAccept={handleAcceptMission}
-      />
+      <div className={cn("relative z-10", isSilenceChallenge && "animate-fade-in")}>
+        <MissionHeader 
+          title={mission.title}
+          description={mission.description}
+          language={language}
+        />
+        
+        <MissionRequirements
+          requirements={mission.requirements}
+          requirementStatus={requirementStatus}
+          toggleRequirement={toggleRequirement}
+          acceptedMission={acceptedMission}
+          missionType={mission.type}
+          canCompleteToday={canCompleteToday}
+        />
+        
+        {acceptedMission && (
+          <MissionProgress
+            progress={progress}
+            lastCompletedDate={lastCompletedDate}
+            missionType={mission.type}
+            daysCompleted={daysCompleted}
+            totalDays={totalDays}
+          />
+        )}
+        
+        <MissionReward reward={mission.reward} />
+        
+        <MissionActions
+          acceptedMission={acceptedMission}
+          allCompleted={allCompleted}
+          onComplete={handleCompleteMission}
+          onAccept={handleAcceptMission}
+        />
+      </div>
     </div>
   );
 };
