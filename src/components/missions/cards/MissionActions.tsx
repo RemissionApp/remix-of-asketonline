@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { CosmicButton } from '@/components/CosmicButton';
-import { CheckCircle } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
 interface MissionActionsProps {
@@ -22,12 +21,11 @@ export const MissionActions: React.FC<MissionActionsProps> = ({
   if (acceptedMission) {
     return (
       <CosmicButton 
-        className="w-full mt-2" 
+        className="w-full mt-2 opacity-20 hover:opacity-100 transition-opacity" 
         onClick={onComplete}
         disabled={!allCompleted}
         variant="default"
       >
-        <CheckCircle className="w-4 h-4 mr-1" />
         {language === 'ru' ? 'Завершить миссию' : language === 'es' ? 'Completar misión' : 'Complete mission'}
       </CosmicButton>
     );
@@ -35,7 +33,7 @@ export const MissionActions: React.FC<MissionActionsProps> = ({
   
   return (
     <CosmicButton 
-      className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20" 
+      className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20 opacity-20 hover:opacity-100 transition-opacity" 
       onClick={onAccept}
       variant="default"
     >
