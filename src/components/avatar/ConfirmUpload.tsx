@@ -30,9 +30,9 @@ export const ConfirmUpload: React.FC<ConfirmUploadProps> = ({
       
       <div className="flex gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="text-red-400 hover:text-red-500 hover:bg-red-500/10"
+          className="text-red-400 hover:text-red-500 hover:bg-red-500/10 border-cosmic-accent/30"
           onClick={onCancel}
           disabled={uploading}
         >

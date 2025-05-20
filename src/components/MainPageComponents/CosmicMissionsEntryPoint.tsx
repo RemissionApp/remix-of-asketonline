@@ -67,7 +67,7 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
           <CosmicButton 
             onClick={handleViewMissions} 
             className="w-full"
-            variant="ghost"
+            variant="outline"
           >
             {getButtonText()}
             <ChevronRight className="ml-1 w-4 h-4" />

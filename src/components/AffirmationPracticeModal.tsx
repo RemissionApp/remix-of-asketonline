@@ -59,7 +59,7 @@ export const AffirmationPracticeModal: React.FC<AffirmationPracticeModalProps> =
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg bg-gradient-to-br from-cosmic-dark to-gray-900 border-cosmic-accent/40 text-white">
         <DialogHeader>
-          <DialogTitle className="text-xl text-cosmic-accent font-semibold">
+          <DialogTitle className="text-xl text-cosmic-accent font-medium">
             {t?.affirmations?.practice?.title || "Practice Affirmation"}
           </DialogTitle>
           <DialogDescription className="text-white/80">

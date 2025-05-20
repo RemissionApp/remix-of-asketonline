@@ -40,7 +40,7 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
-        <h3 className="text-lg font-medium font-serif text-cosmic-accent mb-4">
+        <h3 className="text-lg font-medium text-cosmic-accent mb-4">
           {t.universe?.newChatTitle || 'Новый диалог со Вселенной'}
         </h3>
         <Label htmlFor="chat-title" className="text-cosmic-secondary text-sm">
@@ -55,8 +55,9 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
         />
         <div className="flex justify-end gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => onOpenChange(false)}
+            className="border-cosmic-accent/30 text-cosmic-secondary hover:bg-cosmic-accent/10"
           >
             {t.common?.cancel || 'Отмена'}
           </Button>

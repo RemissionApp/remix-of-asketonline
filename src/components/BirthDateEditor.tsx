@@ -95,7 +95,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
-            className="border-cosmic-accent/30 text-cosmic-secondary"
+            className="border-cosmic-accent/30 text-cosmic-secondary hover:bg-cosmic-accent/10"
           >
             {t.zodiac?.cancelBirthDate || "Cancel"}
           </Button>
