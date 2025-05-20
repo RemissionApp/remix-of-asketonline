@@ -49,7 +49,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     
     // If no custom avatar, use rank-based default avatar
     console.log("Using default avatar based on rank:", userProfile?.rank);
-    return getAvatarImagePath(userProfile.rank);
+    return getAvatarImagePath(userProfile.rank as SpiritualRank);
   };
   
   // Get path to avatar image based on rank
@@ -71,7 +71,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
   
   const borderClass = showRankBorder 
-    ? `border-2 ${rankBorderColor[userProfile.rank] || 'border-amber-400'}` 
+    ? `border-2 ${rankBorderColor[userProfile.rank as keyof typeof rankBorderColor] || 'border-amber-400'}` 
     : '';
 
   const hasZodiac = !!userProfile?.birthDate;

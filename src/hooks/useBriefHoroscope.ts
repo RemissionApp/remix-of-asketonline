@@ -58,10 +58,8 @@ export const useBriefHoroscope = () => {
           return;
         }
         
-        // Get zodiac sign based on birth date - convert string to Date first
-        const birthDateObj = new Date(userProfile.birthDate);
-        const sign = getZodiacSign(birthDateObj);
-        
+        // Get zodiac sign based on birth date
+        const sign = getZodiacSign(userProfile.birthDate);
         if (!sign) {
           throw new Error('Could not determine zodiac sign');
         }

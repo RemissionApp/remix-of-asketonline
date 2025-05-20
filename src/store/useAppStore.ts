@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -48,72 +47,6 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   isLoadingChat: false,
   isSendingMessage: false,
   isUniverseTyping: false,
-  
-  // Load user profile from Supabase
-  loadUserProfile: async () => {
-    const { user } = get();
-    
-    if (!user) return;
-    
-    try {
-      set({ loading: true });
-      
-      // Fetch user profile from Supabase
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error("Error loading user profile:", error);
-        return;
-      }
-      
-      if (!data) {
-        console.error("No profile data found for user:", user.id);
-        return;
-      }
-      
-      // Transform to our app's format
-      const userProfile = {
-        name: data.name,
-        email: user.email,
-        age: null,
-        energyPoints: data.energy_points,
-        goal: data.goal || 'Познать свою истинную силу',
-        isPro: false, // Will be set from subscriptions table
-        rank: data.rank,
-        zodiacSign: '',
-        totalDays: data.total_days,
-        achievements: [...defaultAchievements],
-        birthDate: data.birth_date,
-        avatar_url: data.avatar_url,
-        activeMission: undefined,
-        id: user.id
-      };
-      
-      // Check if user has PRO subscription
-      const { data: subscription, error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (!subscriptionError && subscription) {
-        userProfile.isPro = subscription.is_pro;
-      }
-      
-      // Update local state
-      set({
-        userProfile,
-        loading: false
-      });
-    } catch (error) {
-      console.error("Error loading user profile:", error);
-      set({ loading: false });
-    }
-  },
   
   // Комбинируем все срезы
   ...createUISlice(set, get, api),

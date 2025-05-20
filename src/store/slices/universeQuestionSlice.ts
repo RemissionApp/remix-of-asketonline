@@ -23,24 +23,20 @@ export const createUniverseQuestionSlice: StateCreator<AppState, [], [], Univers
 
     try {
       // Get user data for context
-      const { userProfile, user } = get();
+      const { userProfile } = get();
       const zodiacSign = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
       
       // Get answer from our universe message function
       const answer = await generateUniverseAnswer(question);
       
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-      
       // Create question record
       const id = Date.now().toString();
       const newQuestion: UniverseQuestion = {
         id,
-        user_id: user.id, // Include user_id
         question,
         answer,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        date: new Date().toISOString()
       };
 
       // Add question to store
@@ -49,6 +45,7 @@ export const createUniverseQuestionSlice: StateCreator<AppState, [], [], Univers
       }));
 
       // Save to database if user is logged in
+      const { user } = get();
       if (user) {
         await get().saveUniverseQuestion(newQuestion);
       }
@@ -71,7 +68,7 @@ export const createUniverseQuestionSlice: StateCreator<AppState, [], [], Univers
         .from('universe_questions')
         .insert({
           id: question.id,
-          user_id: question.user_id,
+          user_id: user.id,
           question: question.question,
           answer: question.answer,
           created_at: question.created_at
@@ -106,10 +103,10 @@ export const createUniverseQuestionSlice: StateCreator<AppState, [], [], Univers
       // Transform to our app's format
       const questions: UniverseQuestion[] = data.map(q => ({
         id: q.id,
-        user_id: q.user_id,
         question: q.question,
         answer: q.answer,
-        created_at: q.created_at
+        created_at: q.created_at,
+        date: q.created_at // Add date field same as created_at
       }));
       
       // Update local state

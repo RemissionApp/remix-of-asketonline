@@ -18,7 +18,7 @@ export const ZodiacBadge: React.FC<ZodiacBadgeProps> = ({
   const { t } = useTranslations();
   
   const birthDate = userProfile?.birthDate;
-  const zodiacSign = birthDate ? getZodiacSign(new Date(birthDate)) : null;
+  const zodiacSign = getZodiacSign(birthDate || null);
   
   if (!zodiacSign) return null;
   

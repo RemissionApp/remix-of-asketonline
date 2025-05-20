@@ -9,7 +9,7 @@ export const useFreeMeditations = (): Meditation[] => {
       id: 'morning-free-1',
       title: 'Утренняя медитация',
       description: 'Начните свой день с этой простой 5-минутной медитации',
-      duration: 5, // Changed from '5 мин' to 5
+      duration: '5 мин',
       category: 'morning',
       image: '/meditation/morning1.jpg',
       audioSrc: '/meditations/morning-free.mp3',
@@ -20,7 +20,7 @@ export const useFreeMeditations = (): Meditation[] => {
       id: 'evening-free-1',
       title: 'Вечернее расслабление',
       description: 'Подготовьтесь ко сну с этой успокаивающей медитацией',
-      duration: 7, // Changed from '7 мин' to 7
+      duration: '7 мин',
       category: 'evening',
       image: '/meditation/evening1.jpg',
       audioSrc: '/meditations/evening-free.mp3',
@@ -31,7 +31,7 @@ export const useFreeMeditations = (): Meditation[] => {
       id: 'stress-free-1',
       title: 'Снятие стресса',
       description: 'Быстрая медитация для снятия напряжения',
-      duration: 3, // Changed from '3 мин' to 3
+      duration: '3 мин',
       category: 'stress',
       image: '/meditation/stress1.jpg',
       audioSrc: '/meditations/stress-free.mp3',
@@ -50,7 +50,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       id: 'morning-pro-1',
       title: t.meditation.morning.title1,
       description: t.meditation.morning.desc1,
-      duration: 10, // Changed from '10 мин' to 10
+      duration: '10 мин',
       category: 'morning',
       image: '/meditation/morning2.jpg',
       audioSrc: '/meditations/morning-pro-1.mp3',
@@ -61,7 +61,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       id: 'morning-pro-2',
       title: t.meditation.morning.title2 || 'Утренняя энергия',
       description: t.meditation.morning.desc2 || 'Зарядитесь энергией на весь день',
-      duration: 15, // Changed from '15 мин' to 15
+      duration: '15 мин',
       category: 'morning',
       image: '/meditation/morning3.jpg',
       audioSrc: '/meditations/morning-pro-2.mp3',
@@ -72,7 +72,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       id: 'evening-pro-1',
       title: t.meditation.evening.title1,
       description: t.meditation.evening.desc1,
-      duration: 12, // Changed from '12 мин' to 12
+      duration: '12 мин',
       category: 'evening',
       image: '/meditation/evening2.jpg',
       audioSrc: '/meditations/evening-pro-1.mp3',
@@ -83,7 +83,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       id: 'stress-pro-1',
       title: t.meditation.stress.title1,
       description: t.meditation.stress.desc1,
-      duration: 8, // Changed from '8 мин' to 8
+      duration: '8 мин',
       category: 'stress',
       image: '/meditation/stress2.jpg',
       audioSrc: '/meditations/stress-pro-1.mp3',
@@ -94,7 +94,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       id: 'visualization-pro-1',
       title: t.meditation.visualization.title1,
       description: t.meditation.visualization.desc1,
-      duration: 15, // Changed from '15 мин' to 15
+      duration: '15 мин',
       category: 'visualization',
       image: '/meditation/visualization1.jpg',
       audioSrc: '/meditations/visualization-pro-1.mp3',
