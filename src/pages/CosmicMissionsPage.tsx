@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { TopBar } from '@/components/TopBar';
@@ -26,11 +27,7 @@ const CosmicMissionsPage: React.FC = () => {
       requirements: [
         language === 'ru' ? 'Медитируйте 5 минут каждое утро' : 
         language === 'es' ? 'Medita 5 minutos cada mañana' : 
-        'Meditate for 5 minutes each morning',
-        
-        language === 'ru' ? 'Завершите цикл в 7 дней' : 
-        language === 'es' ? 'Completa un ciclo de 7 días' : 
-        'Complete a 7-day cycle'
+        'Meditate for 5 minutes each morning'
       ],
       reward: {
         energyPoints: 40
@@ -54,11 +51,7 @@ const CosmicMissionsPage: React.FC = () => {
       requirements: [
         language === 'ru' ? 'Один час без разговоров и гаджетов' : 
         language === 'es' ? 'Una hora sin hablar ni usar dispositivos' : 
-        'One hour without talking or using devices',
-        
-        language === 'ru' ? 'Повторите 3 дня подряд' : 
-        language === 'es' ? 'Repite durante 3 días consecutivos' : 
-        'Repeat for 3 consecutive days'
+        'One hour without talking or using devices'
       ],
       reward: {
         energyPoints: 25,
@@ -83,11 +76,7 @@ const CosmicMissionsPage: React.FC = () => {
       requirements: [
         language === 'ru' ? 'Запишите 3 благодарности ежедневно' : 
         language === 'es' ? 'Escribe 3 gratitudes diariamente' : 
-        'Write 3 gratitudes daily',
-        
-        language === 'ru' ? 'Завершите цикл в 10 дней' : 
-        language === 'es' ? 'Completa un ciclo de 10 días' : 
-        'Complete a 10-day cycle'
+        'Write 3 gratitudes daily'
       ],
       reward: {
         energyPoints: 50,

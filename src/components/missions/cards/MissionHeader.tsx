@@ -11,14 +11,6 @@ interface MissionHeaderProps {
 }
 
 export const MissionHeader: React.FC<MissionHeaderProps> = ({ title, description, language }) => {
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return 'Космическая миссия';
-      case 'es': return 'Misión cósmica';
-      default: return 'Cosmic mission';
-    }
-  };
-
   return (
     <>
       <div className="flex items-center mb-3">
@@ -26,16 +18,9 @@ export const MissionHeader: React.FC<MissionHeaderProps> = ({ title, description
           <Flag className="w-5 h-5 text-cosmic-gold" />
         </div>
         <h3 className={language === 'en' ? "font-serif text-lg text-white" : "font-sans text-lg text-white"}>
-          {getTitle()}
+          {title}
         </h3>
       </div>
-      
-      <h4 className={cn(
-        "font-medium mb-1", 
-        language === 'en' ? "font-serif text-cosmic-gold" : "text-cosmic-gold"
-      )}>
-        {title}
-      </h4>
       
       <p className={cn(
         "text-sm mb-4 text-shadow",

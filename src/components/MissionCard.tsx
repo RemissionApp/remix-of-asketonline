@@ -78,6 +78,8 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           acceptedMission={acceptedMission}
           missionType={mission.type}
           canCompleteToday={canCompleteToday}
+          daysCompleted={daysCompleted}
+          totalDays={totalDays}
         />
         
         {acceptedMission && (

@@ -14,6 +14,8 @@ interface MissionRequirementsProps {
   acceptedMission: boolean;
   missionType?: 'single' | 'multi-day' | 'chain';
   canCompleteToday: boolean;
+  daysCompleted?: number;
+  totalDays?: number;
 }
 
 export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
@@ -22,12 +24,18 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   toggleRequirement,
   acceptedMission,
   missionType,
-  canCompleteToday
+  canCompleteToday,
+  daysCompleted = 0,
+  totalDays = 0
 }) => {
   const { language } = useAppStore();
 
   // Convert requirements to string array if they are MissionRequirement objects
   const requirementStrings = requirements.map(req => typeof req === 'string' ? req : req.type);
+  
+  // For multi-day missions, we only need to show the first requirement
+  const displayRequirements = missionType === 'multi-day' ? 
+    requirementStrings.slice(0, 1) : requirementStrings;
 
   const handleToggle = (index: number) => {
     // For multi-day missions, only allow checking today's requirement
@@ -46,7 +54,7 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   if (acceptedMission) {
     return (
       <ul className="space-y-3 mb-4">
-        {requirementStrings.map((req, i) => (
+        {displayRequirements.map((req, i) => (
           <li key={i} className="flex items-start">
             <div className="flex items-center h-5 mr-2">
               {requirementStatus[i] ? (
@@ -80,7 +88,7 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   
   return (
     <ul className="space-y-2 mb-4">
-      {requirementStrings.map((req, i) => (
+      {displayRequirements.map((req, i) => (
         <li key={i} className="flex items-start">
           <ArrowRight className="w-4 h-4 text-cosmic-gold mr-2 mt-0.5" />
           <span className="text-sm text-white">{req}</span>

@@ -65,12 +65,11 @@ export const ActiveMissionWidget: React.FC = () => {
             </div>
             
             <h3 className="text-lg font-medium text-white ml-2">
-              {getTitle()}
+              {mission.title}
             </h3>
           </div>
           
           <div className="mb-3">
-            <h4 className="text-cosmic-gold text-sm mb-1">{mission.title}</h4>
             <div className="flex justify-between text-xs text-cosmic-secondary mb-1">
               <span className="flex items-center">
                 <Clock size={14} className="inline mr-1" />
