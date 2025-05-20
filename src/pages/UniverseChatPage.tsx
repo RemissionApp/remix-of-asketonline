@@ -75,8 +75,10 @@ const UniverseChatPage = () => {
           // Create welcome message from universe (not from user)
           const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Add universe message through the store action
-          await sendChatMessage(welcomeMessage, 'system');
+          // Fix: The sendChatMessage function is being called with two arguments when it only expects one
+          // Change from: await sendChatMessage(welcomeMessage, 'system');
+          // To: await sendChatMessage(welcomeMessage);
+          await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error adding welcome message:', error);
         }
@@ -155,7 +157,6 @@ const UniverseChatPage = () => {
           isDisabled={isSendingMessage}
         />
         
-        {/* Add BottomNavigation component */}
         <BottomNavigation />
       </div>
     </UniverseChatProWrapper>
