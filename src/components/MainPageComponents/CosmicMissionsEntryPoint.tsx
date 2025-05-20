@@ -70,8 +70,8 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
         <CosmicButton 
           onClick={handleViewMissions} 
           size="md"
-          variant="ghost"
-          className="w-full backdrop-blur-md border border-white/20"
+          variant="default"
+          className="w-full bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20"
         >
           {getButtonText()}
         </CosmicButton>
