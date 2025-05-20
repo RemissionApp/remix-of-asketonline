@@ -1,177 +1,105 @@
 import React, { useEffect } from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
+import MainPage from '@/pages/MainPage';
+import ProfilePage from '@/pages/ProfilePage';
+import LegalPage from '@/pages/LegalPage';
+import { useAppStore } from './store/useAppStore';
+import { supabase } from './lib/supabase';
+import { fetchUserProfile } from './utils/profile';
+import { fetchPacts } from './utils/pacts';
+import { fetchMissions } from './utils/missions';
+import { fetchUniverseQuestions } from './utils/universeQuestions';
+import { fetchAchievements } from './utils/achievements';
+import { fetchAllTranslations } from './utils/translations';
+import { Language } from './types/Language';
+import SupportPage from './pages/SupportPage';
 
-import { useAppStore } from "./store/useAppStore";
-import { supabase, cleanupAuthState } from "./lib/supabase";
-import WelcomePage from "./pages/WelcomePage";
-import LanguagePage from "./pages/LanguagePage";
-import LoginPage from "./pages/LoginPage";
-import UserProfilePage from "./pages/UserProfilePage";
-import OnboardingPage from "./pages/OnboardingPage";
-import MainPage from "./pages/MainPage";
-import CreatePactPage from "./pages/CreatePactPage";
-import UniversePage from "./pages/UniversePage";
-import ProfilePage from "./pages/ProfilePage";
-import NotFound from "./pages/NotFound";
-import ComparisonPage from "./pages/ComparisonPage";
-import MeditationPage from "./pages/MeditationPage";
-import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
-import FullHoroscopePage from "./pages/FullHoroscopePage";
-import UniverseChatPage from "./pages/UniverseChatPage";
-import NumerologyPage from "./pages/NumerologyPage";
-import MeditationProPage from "./pages/MeditationProPage";
-import AffirmationsPage from "./pages/AffirmationsPage";
-import CosmicMissionsPage from "./pages/CosmicMissionsPage";
-
-// Создаем новый экземпляр QueryClient
-const queryClient = new QueryClient();
-
-// Компонент глобальной инициализации приложения
-const AppInitializer = () => {
-  const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
+const App: React.FC = () => {
+  const { setUserProfile, setPacts, setMissions, setUniverseQuestions, setAchievements, setTranslations, language } = useAppStore();
   
   useEffect(() => {
-    // Проверяем состояние onboarding при загрузке приложения
-    checkOnboardingStatus();
-    
-    // Настраиваем слушатель изменений состояния аутентификации
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.id);
-        
-        if (event === 'SIGNED_IN' && session) {
-          setUser(session.user);
-          
-          // Отложенная загрузка данных пользователя для предотвращения deadlock
-          setTimeout(() => {
-            loadUserProfile();
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        }
-      }
-    );
-    
-    // Проверяем текущую сессию при инициализации
-    const checkSession = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Ошибка получения сессии:", error);
-          return;
-        }
-        
-        if (data.session?.user) {
-          setUser(data.session.user);
-          await loadUserProfile();
-        }
-      } catch (error) {
-        console.error("Не удалось проверить сессию:", error);
-      }
-    };
-    
-    checkSession();
-    
-    // Отписываемся при размонтировании
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [checkOnboardingStatus, loadUserProfile, setUser]);
-  
-  return null;
-};
-
-// Компонент для обработки перенаправлений OAuth
-const AuthCallback = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { updateUserProfile, user, loadUserProfile } = useAppStore();
-
-  useEffect(() => {
-    const handleAuthCallback = async () => {
-      // Получаем данные аутентификации из URL
-      const hashParams = new URLSearchParams(location.hash.substring(1));
-      const queryParams = new URLSearchParams(location.search);
+    const fetchData = async () => {
+      const user = supabase.auth.user();
       
-      // Проверяем, является ли это обратным вызовом аутентификации
-      if (hashParams.get('access_token') || queryParams.get('code')) {
-        try {
-          // Обрабатываем перенаправление внутренне
-          const { data, error } = await supabase.auth.getSession();
-          
-          if (error) throw error;
-          
-          if (data?.session?.user) {
-            // Очищаем состояние аутентификации для предотвращения проблем
-            cleanupAuthState();
-            
-            // Загружаем данные профиля пользователя
-            await loadUserProfile();
-            
-            // Перенаправляем на настройку профиля или главную
-            navigate('/profile-setup');
-          }
-        } catch (error) {
-          console.error('Ошибка обратного вызова аутентификации:', error);
-          navigate('/login');
-        }
-      } else {
-        // Не является обратным вызовом аутентификации, перенаправляем на главную
-        navigate('/');
+      if (user) {
+        // Fetch user-specific data
+        const profile = await fetchUserProfile(user.id);
+        setUserProfile(profile);
+        
+        const pacts = await fetchPacts(user.id);
+        setPacts(pacts);
+        
+        const missions = await fetchMissions(user.id);
+        setMissions(missions);
+        
+        const universeQuestions = await fetchUniverseQuestions(user.id);
+        setUniverseQuestions(universeQuestions);
+        
+        const achievements = await fetchAchievements(user.id);
+        setAchievements(achievements);
       }
+      
+      // Fetch translations (no user id needed)
+      const translations = await fetchAllTranslations(language);
+      setTranslations(translations);
     };
+    
+    fetchData();
+    
+    // Subscribe to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        fetchData();
+      }
+      if (event === 'SIGNED_OUT') {
+        setUserProfile(null);
+        setPacts([]);
+        setMissions([]);
+        setUniverseQuestions([]);
+        setAchievements([]);
+      }
+    });
+    
+    // Unsubscribe from auth state changes when the component unmounts
+    return () => {
+      authListener?.unsubscribe();
+    };
+  }, [setUserProfile, setPacts, setMissions, setUniverseQuestions, setAchievements, setTranslations, language]);
+  
+  useEffect(() => {
+    const updateTranslations = async () => {
+      const translations = await fetchAllTranslations(language);
+      setTranslations(translations);
+    };
+    
+    updateTranslations();
+  }, [language, setTranslations]);
 
-    handleAuthCallback();
-  }, [location, navigate, updateUserProfile, user, loadUserProfile]);
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <MainPage />,
+    },
+    {
+      path: "/profile",
+      element: <ProfilePage />,
+    },
+    {
+      path: "/legal",
+      element: <LegalPage />,
+    },
+    {
+      path: "/support",
+      element: <SupportPage />,
+    },
+  ]);
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-cosmic-secondary">Выполняется вход...</p>
-      </div>
-    </div>
-  );
-};
-
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <BrowserRouter>
-          <AppInitializer />
-          <Routes>
-            <Route path="/" element={<WelcomePage />} />
-            <Route path="/language" element={<LanguagePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile-setup" element={<UserProfilePage />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/main" element={<MainPage />} />
-            <Route path="/create-pact" element={<CreatePactPage />} />
-            <Route path="/universe" element={<UniversePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/comparison" element={<ComparisonPage />} />
-            <Route path="/meditation" element={<MeditationPage />} />
-            <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
-            <Route path="/full-horoscope" element={<FullHoroscopePage />} />
-            <Route path="/affirmations" element={<AffirmationsPage />} />
-            {/* Pro features routes */}
-            <Route path="/meditation-pro" element={<MeditationProPage />} />
-            <Route path="/universe-chat" element={<UniverseChatPage />} />
-            <Route path="/numerology" element={<NumerologyPage />} />
-            <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <RouterProvider router={router} />
   );
 };
 
