@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
@@ -64,7 +65,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/comparison" element={<ComparisonPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<LoginPage showSignup={true} />} />
+        <Route path="/signup" element={<LoginPage showSignup />} />
         <Route path="/profile-setup" element={<UserProfilePage />} />
         <Route path="/meditation" element={<MeditationPage />} />
         <Route path="/meditation-pro" element={<MeditationProPage />} />

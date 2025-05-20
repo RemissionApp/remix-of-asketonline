@@ -1,142 +1,95 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface RequestBody {
-  question: string;
-  userData?: {
-    userName?: string;
-    isPro?: boolean;
-  };
-}
+const helpMessages = {
+  // Frequently asked questions and answers about the app
+  "default": "Я виртуальный ассистент приложения. Чем я могу помочь вам сегодня? Вы можете спросить о функциях приложения, о аскезах, о том как работает профиль пользователя, или о других возможностях.",
+  "app_features": "Наше приложение предлагает следующие функции: создание и отслеживание аскез, чат со вселенной для получения ответов на вопросы, персональный гороскоп, медитации, нумерология и многое другое. Чем конкретно вы интересуетесь?",
+  "ascesis": "Аскезы - это добровольные практики самоограничения, которые помогают тренировать силу воли и дисциплину. В нашем приложении вы можете создать аскезы разной продолжительности, следить за прогрессом и получать награды за их выполнение. Хотите узнать, как создать аскезу?",
+  "create_pact": "Чтобы создать новую аскезу, перейдите на главный экран и нажмите 'Создать аскезу'. Затем введите название, выберите продолжительность (30, 60, 90 дней или свою), добавьте описание и выберите награду. После этого вам нужно будет произнести клятву, чтобы закрепить намерение.",
+  "profile": "В профиле пользователя вы можете изменить свое имя, дату рождения, посмотреть информацию о знаке зодиака, сменить язык приложения и управлять подпиской. Также там отображается ваш текущий духовный ранг и достижения.",
+  "subscription": "Подписка PRO открывает доступ к расширенным функциям: полный гороскоп, неограниченное количество аскез, продвинутые медитации, нумерологические расчеты и чат со вселенной. Вы можете активировать подписку через профиль.",
+  "horoscope": "В приложении доступен краткий ежедневный гороскоп и полный подробный гороскоп для PRO-пользователей. Для получения гороскопа необходимо указать дату рождения в профиле.",
+  "meditation": "В разделе медитаций вы найдете различные практики для расслабления, сосредоточения, утренние и вечерние медитации. Часть базовых медитаций доступна всем пользователям, а расширенные - только с PRO-подпиской.",
+  "universe": "Раздел 'Вселенная' позволяет задавать вопросы и получать на них глубокие, вдумчивые ответы. Ответы формируются на основе древней мудрости и современных психологических подходов.",
+  "change_language": "Чтобы изменить язык, перейдите в раздел профиля и выберите предпочитаемый язык в блоке языковых настроек. Доступны русский, английский и испанский языки.",
+  "pro_features": "PRO-функции включают: полный персональный гороскоп, расширенные медитации, нумерологию, неограниченные аскезы, чат со вселенной. Хотите узнать подробнее о какой-то из этих функций?",
+  "contact_developer": "Если у вас остались вопросы или предложения, вы можете написать разработчику. Для этого перейдите во вкладку 'Написать разработчику' и заполните форму обратной связи."
+};
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // This is necessary for CORS to work
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders });
   }
-
+  
   try {
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
-    }
-
-    const { question, userData } = await req.json() as RequestBody;
+    const { question, userData } = await req.json();
     
-    if (!question || question.trim() === '') {
-      throw new Error('Question is required');
-    }
+    // Extract user info if available
+    const userName = userData?.userName || 'Пользователь';
+    const isPro = userData?.isPro || false;
     
-    // Информация о приложении
-    const appInfo = `
-Приложение "Cosmic" (Космик) - это духовное приложение для личностного роста, которое помогает пользователям:
-
-1. Проходить духовные практики (аскезы) на выбранный срок (30, 60, 90 дней или свой вариант)
-2. Получать информацию о своем знаке зодиака
-3. Получать ежедневный гороскоп
-4. Взаимодействовать с "Вселенной" (задавать вопросы и получать мудрые ответы)
-5. Для PRO-пользователей: получать расширенную информацию о гороскопах, нумерологии и использовать чат с "Вселенной"
-6. Практиковать медитации
-7. Выполнять духовные миссии
-
-Основные функции приложения:
-- Создание аскез (обетов): пользователь выбирает практику, количество дней и получает ежедневные напоминания
-- Ежедневный гороскоп: краткий прогноз на день
-- Подробный гороскоп (для PRO): расширенная информация по различным сферам жизни
-- Нумерология (для PRO): числовой анализ и прогнозы
-- Общение с "Вселенной": пользователи могут задавать вопросы и получать мудрые ответы
-- Профиль пользователя: хранит информацию о знаке зодиака, рейтинге и достижениях
-- Система рангов духовного роста: seeker (искатель), pilgrim (пилигрим), warrior (воин света), master (мастер), enlightened (просветлённый)
-
-Популярные запросы пользователей:
-- Как создать новую аскезу?
-- Как использовать чат с Вселенной?
-- Как получить PRO подписку?
-- Почему не отображается мой знак зодиака?
-- Как посмотреть историю своих аскез?
-- Как работает система рангов?
-- Как сменить язык в приложении?
-- Как мне обновить свой профиль?
-`;
+    // Simple keyword matching for common questions
+    let answer = helpMessages.default;
+    const lowercaseQuestion = question.toLowerCase();
     
-    // System prompt
-    const systemPrompt = `Ты - ассистент поддержки для приложения "Cosmic" (Космик). Твоя задача - помогать пользователям с их вопросами о приложении.
-
-Вот информация о приложении:
-${appInfo}
-
-Важные правила:
-1. Всегда будь вежливым, краткими и информативным.
-2. Если пользователь задает вопрос, который не связан с приложением, вежливо перенаправь его обратно к теме приложения.
-3. Если не знаешь ответа, предложи пользователю связаться с разработчиками по email: info@remissionsoft.com
-4. Используй дружелюбный, но профессиональный тон.
-5. Отвечай на том же языке, на котором задан вопрос (русский, английский или испанский).
-6. Если пользователя интересует PRO-подписка, объясни, что она дает расширенные функции: полный гороскоп, нумерологию и чат с Вселенной.`;
-    
-    // User prompt with context
-    let userContextString = '';
-    if (userData) {
-      if (userData.userName) {
-        userContextString += `Имя пользователя: ${userData.userName}\n`;
-      }
-      userContextString += `PRO-подписка: ${userData.isPro ? 'Да' : 'Нет'}\n`;
+    if (lowercaseQuestion.includes('функци') || lowercaseQuestion.includes('что умеет') || lowercaseQuestion.includes('возможности')) {
+      answer = helpMessages.app_features;
+    } else if (lowercaseQuestion.includes('аскез') && !lowercaseQuestion.includes('создать')) {
+      answer = helpMessages.ascesis;
+    } else if ((lowercaseQuestion.includes('аскез') || lowercaseQuestion.includes('пакт')) && (lowercaseQuestion.includes('создать') || lowercaseQuestion.includes('новый') || lowercaseQuestion.includes('добавить'))) {
+      answer = helpMessages.create_pact;
+    } else if (lowercaseQuestion.includes('профил')) {
+      answer = helpMessages.profile;
+    } else if (lowercaseQuestion.includes('подпис') || lowercaseQuestion.includes('pro')) {
+      answer = helpMessages.subscription;
+    } else if (lowercaseQuestion.includes('гороскоп') || lowercaseQuestion.includes('зодиак')) {
+      answer = helpMessages.horoscope;
+    } else if (lowercaseQuestion.includes('медитац')) {
+      answer = helpMessages.meditation;
+    } else if (lowercaseQuestion.includes('вселенн') || lowercaseQuestion.includes('спросить')) {
+      answer = helpMessages.universe;
+    } else if (lowercaseQuestion.includes('язык') || lowercaseQuestion.includes('language')) {
+      answer = helpMessages.change_language;
+    } else if (lowercaseQuestion.includes('про') && (lowercaseQuestion.includes('функц') || lowercaseQuestion.includes('возможности'))) {
+      answer = helpMessages.pro_features;
+    } else if (lowercaseQuestion.includes('разработчик') || lowercaseQuestion.includes('поддержк') || lowercaseQuestion.includes('связ')) {
+      answer = helpMessages.contact_developer;
     }
     
-    const userPrompt = `${userContextString}
-Вопрос пользователя: "${question}"`;
-
-    // Use GPT model for replies
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: userPrompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500
+    // Personalize the response if we have user data
+    const personalizedAnswer = `${userName}, ${answer}`;
+    
+    // Add PRO suggestion for non-PRO users where relevant
+    const proSuggestion = !isPro && (
+      lowercaseQuestion.includes('гороскоп') || 
+      lowercaseQuestion.includes('нумеролог') || 
+      lowercaseQuestion.includes('полный') ||
+      lowercaseQuestion.includes('чат') && lowercaseQuestion.includes('вселенн')
+    ) ? "\n\nКстати, с PRO-подпиской вам будут доступны все расширенные функции приложения!" : "";
+    
+    return new Response(
+      JSON.stringify({ 
+        answer: personalizedAnswer + proSuggestion 
       }),
-    });
-
-    const data = await response.json();
-    
-    if (data.error) {
-      console.error('OpenAI API error:', data.error);
-      throw new Error(data.error.message || 'Error from OpenAI API');
-    }
-
-    const answer = data.choices[0].message.content;
-
-    return new Response(JSON.stringify({ answer }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    console.error('Error in support-assistant function:', error);
+    console.error("Error in support-assistant function:", error);
     
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: `Error: ${error.message}`,
-      answer: "Извините, я не могу ответить на ваш вопрос прямо сейчас. Пожалуйста, попробуйте позже или напишите разработчикам на info@remissionsoft.com."
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: "Произошла ошибка при обработке вашего запроса" }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
   }
 });

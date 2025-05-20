@@ -165,11 +165,53 @@ export interface CommonTranslations {
   cancel: string;
   create: string;
   save: string;
+  saving?: string;
   delete: string;
   edit: string;
   back: string;
   next: string;
   submit: string;
+}
+
+export interface ErrorTranslations {
+  invalidName?: string;
+  nameRequired?: string;
+  updateFailed?: string;
+  nameUpdateFailed?: string;
+  birthDateUpdateFailed?: string;
+  invalidEmail?: string;
+  messageMinLength?: string;
+  emailError?: string;
+  emailErrorDesc?: string;
+  assistantError?: string;
+  assistantErrorDesc?: string;
+}
+
+export interface SuccessTranslations {
+  nameUpdated?: string;
+  birthDateUpdated?: string;
+  profileSaved?: string;
+}
+
+export interface SupportTranslations {
+  title?: string;
+  chatTab?: string;
+  contactTab?: string;
+  chatTitle?: string;
+  chatDescription?: string;
+  contactTitle?: string;
+  contactDescription?: string;
+  welcomeMessage?: string;
+  fallbackMessage?: string;
+  inputPlaceholder?: string;
+  sendButton?: string;
+  nameLabel?: string;
+  emailLabel?: string;
+  messageLabel?: string;
+  sending?: string;
+  send?: string;
+  emailSent?: string;
+  emailSentDesc?: string;
 }
 
 export interface MeditationTranslations {
@@ -208,5 +250,8 @@ export interface Translations {
   legal?: LegalTranslations;
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
-  affirmations?: AffirmationsTranslations;  // Add this new field to support affirmations
+  affirmations?: AffirmationsTranslations;
+  support?: SupportTranslations;
+  errors?: ErrorTranslations;
+  success?: SuccessTranslations;
 }
