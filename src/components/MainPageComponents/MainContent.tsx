@@ -11,7 +11,7 @@ import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock
 import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
-import { CosmicMissionsBlock } from '@/components/MainPageComponents/CosmicMissionsBlock';
+import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -65,8 +65,8 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 2. Daily Advice with User Greeting */}
       <DailyAdviceDisplay />
       
-      {/* 3. Cosmic Missions Block - right after Daily Advice */}
-      <CosmicMissionsBlock />
+      {/* 3. Cosmic Missions Entry Point - right after Daily Advice */}
+      <CosmicMissionsEntryPoint />
       
       {/* 4. Universe Message Block */}
       <div className="w-full max-w-lg mx-auto">

@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id?: string;
   name: string;
@@ -91,6 +90,12 @@ export interface MissionReward {
   achievement?: string;
 }
 
+export interface MissionProgress {
+  day: number;
+  completed: boolean;
+  date: string;
+}
+
 export interface Mission {
   id: string;
   title: string;
@@ -99,6 +104,8 @@ export interface Mission {
   reward: MissionReward;
   completed: boolean;
   completedDate?: string;
+  type?: 'single' | 'multi-day' | 'chain';
+  progress?: MissionProgress[];
 }
 
 export interface Meditation {

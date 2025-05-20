@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Mission } from '@/types';
 import { Badge } from './ui/badge';
@@ -10,6 +10,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { Progress } from './ui/progress';
 import { Checkbox } from './ui/checkbox';
 import { toast } from 'sonner';
+import { format, isToday } from 'date-fns';
 
 interface MissionCardProps {
   mission?: Mission;
@@ -26,8 +27,36 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   const [progress, setProgress] = useState(0);
   const [acceptedMission, setAcceptedMission] = useState(userProfile?.activeMission?.id === mission?.id);
   const [requirementStatus, setRequirementStatus] = useState<boolean[]>([]);
+  const [lastCompletedDate, setLastCompletedDate] = useState<Date | null>(null);
   
   if (!mission) return null;
+  
+  // Check if we've already completed today's requirement
+  const canCompleteToday = !lastCompletedDate || !isToday(lastCompletedDate);
+  
+  useEffect(() => {
+    // Initialize requirement status based on mission progress if accepted
+    if (acceptedMission && mission.progress) {
+      setRequirementStatus(mission.progress.map(p => p.completed));
+      
+      // Find the last completed date if any
+      const lastCompleted = mission.progress
+        .filter(p => p.completed)
+        .map(p => new Date(p.date))
+        .sort((a, b) => b.getTime() - a.getTime())[0];
+      
+      if (lastCompleted) {
+        setLastCompletedDate(lastCompleted);
+      }
+      
+      // Calculate initial progress
+      const completedCount = mission.progress.filter(p => p.completed).length;
+      const totalRequirements = mission.progress.length;
+      if (totalRequirements > 0) {
+        setProgress(Math.floor((completedCount / totalRequirements) * 100));
+      }
+    }
+  }, [acceptedMission, mission]);
   
   const handleCompleteMission = () => {
     toast.success(
@@ -46,14 +75,38 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       language === 'es' ? '¡Has aceptado una nueva misión!' : 
       'You accepted a new mission!'
     );
-    // Initialize requirement status array with false values
-    setRequirementStatus(new Array(mission.requirements.length).fill(false));
+    
+    // For multi-day missions, initialize progress array
+    if (Array.isArray(mission.requirements)) {
+      const initialProgress = mission.requirements.map((_, index) => ({
+        day: index + 1,
+        completed: false,
+        date: format(new Date(), 'yyyy-MM-dd')
+      }));
+      
+      setRequirementStatus(initialProgress.map(p => p.completed));
+    }
   };
   
   const toggleRequirement = (index: number) => {
+    // For multi-day missions, only allow checking today's requirement
+    if (mission.type === 'multi-day' && !canCompleteToday) {
+      toast.error(
+        language === 'ru' ? 'Вы уже выполнили задачу сегодня. Возвращайтесь завтра!' : 
+        language === 'es' ? '¡Ya has completado la tarea hoy. ¡Vuelve mañana!' : 
+        'You already completed today\'s task. Come back tomorrow!'
+      );
+      return;
+    }
+    
     const newStatus = [...requirementStatus];
     newStatus[index] = !newStatus[index];
     setRequirementStatus(newStatus);
+    
+    // If we're checking a requirement, update the last completed date
+    if (newStatus[index]) {
+      setLastCompletedDate(new Date());
+    }
     
     // Calculate progress
     const completedCount = newStatus.filter(status => status).length;
@@ -108,6 +161,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
                     checked={requirementStatus[i] || false}
                     onCheckedChange={() => toggleRequirement(i)}
                     className="border-cosmic-gold data-[state=checked]:bg-cosmic-gold data-[state=checked]:text-cosmic-dark"
+                    disabled={mission.type === 'multi-day' && !canCompleteToday && !requirementStatus[i]}
                   />
                 </div>
                 <label 
@@ -134,6 +188,14 @@ export const MissionCard: React.FC<MissionCardProps> = ({
             </div>
             <Progress value={progress} className="h-2" />
           </div>
+          
+          {mission.type === 'multi-day' && lastCompletedDate && isToday(lastCompletedDate) && (
+            <div className="text-xs text-cosmic-secondary mb-3">
+              {language === 'ru' ? 'Задача на сегодня выполнена' : 
+               language === 'es' ? 'Tarea de hoy completada' : 
+               'Today\'s task completed'}
+            </div>
+          )}
         </>
       ) : (
         <ul className="space-y-2 mb-4">
@@ -189,3 +251,4 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     </div>
   );
 };
+

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +25,7 @@ import UniverseChatPage from "./pages/UniverseChatPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
+import CosmicMissionsPage from "./pages/CosmicMissionsPage";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -163,6 +163,7 @@ const App = () => {
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
+            <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
