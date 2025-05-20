@@ -48,7 +48,6 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//slse.png')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    backgroundBlendMode: 'lighten',
     position: 'relative',
   } as React.CSSProperties : {};
   
@@ -62,7 +61,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       style={backgroundStyle}
     >
       {isSilenceChallenge && (
-        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/80 to-cosmic-indigo/60 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/60 to-cosmic-indigo/40"></div>
       )}
       
       <div className={cn("relative z-10", isSilenceChallenge && "animate-fade-in")}>
