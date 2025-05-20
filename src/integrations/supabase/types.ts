@@ -129,6 +129,47 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_progress: {
+        Row: {
+          accepted_at: string
+          completed: boolean
+          completed_at: string | null
+          id: string
+          last_updated_at: string
+          mission_id: string
+          progress: Json
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          last_updated_at?: string
+          mission_id: string
+          progress?: Json
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          last_updated_at?: string
+          mission_id?: string
+          progress?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_progress_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       missions: {
         Row: {
           completed: boolean
@@ -226,6 +267,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_mission: string | null
           avatar_url: string | null
           birth_date: string | null
           created_at: string
@@ -238,6 +280,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active_mission?: string | null
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
@@ -250,6 +293,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active_mission?: string | null
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
@@ -261,7 +305,15 @@ export type Database = {
           total_days?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_active_mission_fkey"
+            columns: ["active_mission"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       raw_horoscopes: {
         Row: {

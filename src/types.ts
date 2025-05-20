@@ -1,123 +1,98 @@
-export interface UserProfile {
-  id?: string;
-  name: string;
-  email: string;
-  age: number | null;
-  rank: string;
-  energyPoints: number;
-  zodiacSign: string;
-  isPro: boolean;
-  birthDate?: Date | null;
-  avatar_url?: string | null;
-  goal?: string;
-  totalDays?: number;
-  achievements?: Achievement[];
-  activeMission?: Mission;
-}
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export interface User {
-  id: string;
-  email: string;
-  user_metadata: {
-    name: string;
-  };
-}
+export type SpiritualRank =
+  | 'seeker'
+  | 'apprentice'
+  | 'adept'
+  | 'master'
+  | 'grandmaster';
 
-export interface ZodiacSign {
-  name: string;
-  dates: string;
-  element: string;
-  quality: string;
-  traits: string[];
-  symbol: string;
-}
-
-export interface Horoscope {
-  date: string;
-  horoscope: string;
-  zodiacSign: string;
-}
-
-export interface Pact {
-  id: string;
-  title: string;
-  description: string;
-  created_at: string;
-  start_date: string;
-  end_date: string;
-  days_total: number;
-  days_completed: number;
-  last_completed_date?: string;
-  rejection: string;
-  penalty?: string;
-  status: 'active' | 'completed' | 'failed' | 'planned';
-  type?: string;
-  targetDate?: string;
-  duration: number;
-  reward?: string;
-  days: Array<{
-    id: string;
-    date: string;
-    completed: boolean;
-  }>;
-}
-
-export interface UniverseQuestion {
-  id: string;
-  question: string;
-  created_at: string;
-  answer?: string;
-  answered_at?: string;
-  date?: string;
-}
-
-export interface Achievement {
+export type Achievement = {
   id: string;
   title: string;
   description: string;
   icon: string;
   unlocked: boolean;
-  unlockedDate?: string;
-}
+};
 
-export interface MissionRequirement {
+export type Pact = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  duration: number;
+  reward: string | null;
+  status: string;
+  created_at: string;
+  start_date: string;
+  end_date: string;
+  days: PactDay[];
+  days_total: number;
+  days_completed: number;
+  last_completed_date: string | null;
+  rejection: string | null;
+};
+
+export type PactDay = {
+  id: string;
+  pact_id: string;
+  date: string;
+  completed: boolean;
+  created_at: string;
+};
+
+export type UniverseQuestion = {
+  id: string;
+  user_id: string;
+  question: string;
+  answer: string;
+  created_at: string;
+};
+
+export type MissionRequirement = {
   type: string;
-  count: number;
-}
-
-export interface MissionReward {
-  energyPoints?: number;
-  achievement?: string;
-}
+  description?: string;
+};
 
 export interface MissionProgress {
   day: number;
   completed: boolean;
-  date: string;
+  date: string | null;
 }
 
-export interface Mission {
+export type Mission = {
   id: string;
   title: string;
   description: string;
-  requirements: MissionRequirement[] | string[];
-  reward: MissionReward;
+  requirements: string[] | MissionRequirement[];
+  reward: {
+    energyPoints: number;
+    achievement?: string;
+  };
   completed: boolean;
-  completedDate?: string;
   type?: 'single' | 'multi-day' | 'chain';
   progress?: MissionProgress[];
-}
+};
 
-export interface Meditation {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  category: string;
-  image: string;
-  audioSrc?: string;
-  locked?: boolean;
-  requiresPro?: boolean;
+export interface UserProfile {
+  name: string;
+  email: string;
+  age: number | null;
+  energyPoints: number;
+  goal: string;
+  isPro: boolean;
+  rank: SpiritualRank;
+  zodiacSign: string;
+  totalDays: number;
+  achievements: Achievement[];
+  birthDate: string | null;
+  avatar_url: string | null;
+  activeMission?: Mission | null;
+  id?: string;
 }
-
-export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';

@@ -21,7 +21,7 @@ export const MissionActions: React.FC<MissionActionsProps> = ({
   if (acceptedMission) {
     return (
       <CosmicButton 
-        className="w-full mt-2 opacity-20 hover:opacity-100 transition-opacity" 
+        className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20 opacity-20 hover:opacity-100 transition-opacity" 
         onClick={onComplete}
         disabled={!allCompleted}
       >
@@ -32,7 +32,7 @@ export const MissionActions: React.FC<MissionActionsProps> = ({
   
   return (
     <CosmicButton 
-      className="w-full mt-2 opacity-20 hover:opacity-100 transition-opacity" 
+      className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20 opacity-20 hover:opacity-100 transition-opacity" 
       onClick={onAccept}
     >
       {language === 'ru' ? 'Принять миссию' : language === 'es' ? 'Aceptar misión' : 'Accept mission'}
