@@ -1,17 +1,16 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
-import { useTranslations } from '@/hooks/useTranslations';
-import { MissionCard } from '@/components/MissionCard';
 import { Mission } from '@/types';
+import { MissionsTabBar } from '@/components/missions/MissionsTabBar';
+import { MissionsList } from '@/components/missions/MissionsList';
+import { getPageTitle, filterMissions } from '@/components/missions/MissionsUtils';
 import { Flag, Star, CheckCircle } from 'lucide-react';
 
 const CosmicMissionsPage: React.FC = () => {
   const { language, userProfile } = useAppStore();
-  const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
   
   // Example missions data - in a real app, this would come from the store/backend
@@ -127,31 +126,8 @@ const CosmicMissionsPage: React.FC = () => {
     }
   ];
 
-  const getPageTitle = () => {
-    switch(language) {
-      case 'ru': return 'Космические миссии';
-      case 'es': return 'Misiones cósmicas';
-      default: return 'Cosmic missions';
-    }
-  };
-
-  const getTabText = (tab: 'all' | 'active' | 'completed') => {
-    if (tab === 'all') {
-      return language === 'ru' ? 'Все' : language === 'es' ? 'Todos' : 'All';
-    } else if (tab === 'active') {
-      return language === 'ru' ? 'Активные' : language === 'es' ? 'Activos' : 'Active';
-    } else {
-      return language === 'ru' ? 'Завершённые' : language === 'es' ? 'Completados' : 'Completed';
-    }
-  };
-
   // Filter missions based on active tab
-  const filteredMissions = missions.filter(mission => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'active') return !mission.completed;
-    if (activeTab === 'completed') return mission.completed;
-    return true;
-  });
+  const filteredMissions = filterMissions(missions, activeTab);
 
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -161,54 +137,17 @@ const CosmicMissionsPage: React.FC = () => {
       
       <main className="flex-1 container mx-auto px-4 py-6">
         <h1 className={`text-2xl ${language === 'en' ? 'font-serif' : ''} mb-6 text-cosmic-gold`}>
-          {getPageTitle()}
+          {getPageTitle(language)}
         </h1>
         
         {/* Tabs for filtering missions */}
-        <div className="flex space-x-2 mb-6 overflow-x-auto">
-          {(['all', 'active', 'completed'] as const).map((tab) => (
-            <button
-              key={tab}
-              className={`px-3 py-2 rounded-md text-sm whitespace-nowrap ${
-                activeTab === tab 
-                  ? 'bg-cosmic-gold/20 text-cosmic-gold border border-cosmic-gold/30'
-                  : 'bg-cosmic-dark/30 text-cosmic-secondary border border-cosmic-accent/10'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {getTabText(tab)}
-            </button>
-          ))}
-        </div>
+        <MissionsTabBar 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
         
-        <div className="space-y-6">
-          {filteredMissions.length > 0 ? (
-            filteredMissions.map(mission => (
-              <div key={mission.id} className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg overflow-hidden relative">
-                {/* Background with slight gradient overlay */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-40 z-0"
-                  style={{ 
-                    backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
-                    filter: 'brightness(1.3) contrast(1.2)',
-                  }}
-                />
-                
-                <div className="relative z-10">
-                  <MissionCard 
-                    mission={mission}
-                  />
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-10 text-cosmic-secondary">
-              {language === 'ru' ? 'Нет доступных миссий' : 
-               language === 'es' ? 'No hay misiones disponibles' : 
-               'No missions available'}
-            </div>
-          )}
-        </div>
+        {/* Missions list */}
+        <MissionsList missions={filteredMissions} />
       </main>
       
       <BottomNavigation />
