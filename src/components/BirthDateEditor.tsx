@@ -18,9 +18,7 @@ interface BirthDateEditorProps {
 const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange }) => {
   const { t } = useTranslations();
   const { userProfile, updateUserProfile, user, language } = useAppStore();
-  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(
-    userProfile?.birthDate ? new Date(userProfile.birthDate) : null
-  );
+  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(userProfile?.birthDate || null);
   
   // Save the new birth date
   const handleSaveBirthDate = async () => {
@@ -48,7 +46,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
       // Also update the local store
       await updateUserProfile({
         ...userProfile,
-        birthDate: formattedBirthDate
+        birthDate: tempBirthDate
       });
       
       toast({
@@ -82,7 +80,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange })
         <div className="py-4">
           <Calendar
             mode="single"
-            selected={tempBirthDate}
+            selected={tempBirthDate || undefined}
             onSelect={(date) => setTempBirthDate(date)}
             disabled={(date) =>
               date > new Date() || date < new Date("1900-01-01")

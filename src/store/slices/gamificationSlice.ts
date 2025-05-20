@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -45,15 +44,15 @@ export const createGamificationSlice: StateCreator<AppState, [], [], Gamificatio
   },
   
   // Check rank progress
-  checkRankProgress: (): SpiritualRank => {
+  checkRankProgress: () => {
     const { userProfile } = get();
     const { totalDays } = userProfile;
     
-    if (totalDays >= rankRequirements.enlightened) return 'enlightened' as SpiritualRank;
-    if (totalDays >= rankRequirements.master) return 'master' as SpiritualRank;
-    if (totalDays >= rankRequirements.warrior) return 'warrior' as SpiritualRank;
-    if (totalDays >= rankRequirements.pilgrim) return 'pilgrim' as SpiritualRank;
-    return 'seeker' as SpiritualRank;
+    if (totalDays >= rankRequirements.enlightened) return 'enlightened';
+    if (totalDays >= rankRequirements.master) return 'master';
+    if (totalDays >= rankRequirements.warrior) return 'warrior';
+    if (totalDays >= rankRequirements.pilgrim) return 'pilgrim';
+    return 'seeker';
   },
   
   // Unlock achievement
@@ -114,7 +113,7 @@ export const createGamificationSlice: StateCreator<AppState, [], [], Gamificatio
       set((state) => {
         const updatedAchievements = state.userProfile.achievements.map(a => 
           a.id === achievementId 
-            ? { ...a, unlocked: true, unlockedDate: new Date().toISOString() } 
+            ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() } 
             : a
         );
         

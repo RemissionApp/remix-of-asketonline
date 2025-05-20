@@ -10,7 +10,7 @@ const ZodiacInfo: React.FC = () => {
   
   if (!userProfile?.birthDate) return null;
   
-  const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
+  const zodiacSign = getZodiacSign(userProfile.birthDate);
   if (!zodiacSign) return null;
   
   const zodiacInfo = zodiacData[zodiacSign];
