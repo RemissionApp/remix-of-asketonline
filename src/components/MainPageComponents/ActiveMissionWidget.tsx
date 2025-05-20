@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Progress, Clock } from 'lucide-react';
+import { Star, Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
-import { Progress as ProgressBar } from '@/components/ui/progress';
+import { Progress } from '@/components/ui/progress';
 import { isToday } from 'date-fns';
 
 export const ActiveMissionWidget: React.FC = () => {
@@ -81,7 +80,7 @@ export const ActiveMissionWidget: React.FC = () => {
               </span>
               <span>{progress}%</span>
             </div>
-            <ProgressBar value={progress} className="h-2" />
+            <Progress value={progress} className="h-2" />
           </div>
         </div>
       </div>
