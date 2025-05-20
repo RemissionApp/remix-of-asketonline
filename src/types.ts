@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -95,4 +96,34 @@ export interface UserProfile {
   avatar_url: string | null;
   activeMission?: Mission | null;
   id?: string;
+}
+
+// Добавим интерфейс для медитаций
+export interface Meditation {
+  id: string;
+  title: string;
+  description: string;
+  duration: string; // Длительность в виде строки, напр. "5 мин"
+  category: string;
+  image: string;
+  audioSrc?: string;
+  locked: boolean;
+  requiresPro: boolean;
+}
+
+// Добавим интерфейс для настроек уведомлений
+export interface NotificationSettings {
+  meditationReminders: boolean;
+  meditationReminderTime: { hours: number; minutes: number };
+  ascesisReminders: boolean;
+  achievementNotifications: boolean;
+}
+
+declare global {
+  interface Window {
+    Capacitor?: {
+      isNativePlatform: () => boolean;
+      getPlatform: () => 'android' | 'ios' | 'web';
+    };
+  }
 }

@@ -8,6 +8,8 @@ import { LogoutButton } from './LogoutButton';
 import UserProfileForm from '@/components/UserProfileForm';
 import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { SupportSection } from './SupportSection';
+import { NotificationsSettings } from './NotificationsSettings';
+import { WidgetSettings } from './WidgetSettings';
 
 export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
@@ -27,12 +29,20 @@ export const ProfileSection: React.FC = () => {
         <h2 className="text-2xl text-white font-serif mb-4">{t.subscription?.title || "Subscription"}</h2>
         <SubscriptionManager />
         
+        {/* Блок уведомлений */}
+        <h2 className="text-2xl text-white font-serif mb-4">Уведомления</h2>
+        <NotificationsSettings />
+        
+        {/* Блок виджетов */}
+        <h2 className="text-2xl text-white font-serif mb-4">Виджеты</h2>
+        <WidgetSettings />
+        
         {/* Add Developer Switch here to replace the one from MainPage */}
         <h2 className="text-2xl text-white font-serif mb-4">Developer Mode</h2>
         <DeveloperSwitch />
         
         {/* Блок службы поддержки */}
-        <h2 className="text-2xl text-white font-serif mb-4">Поддержка</h2>
+        <h2 className="text-2xl text-white font-serif mb-4">{t.support?.title || "Поддержка"}</h2>
         <SupportSection />
         
         <LegalDocuments />

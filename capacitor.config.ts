@@ -14,6 +14,13 @@ const config: CapacitorConfig = {
       launchShowDuration: 3000,
       backgroundColor: "#131217",
       androidScaleType: "CENTER_CROP"
+    },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    },
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon_config_sample",
+      iconColor: "#131217"
     }
   },
   android: {
