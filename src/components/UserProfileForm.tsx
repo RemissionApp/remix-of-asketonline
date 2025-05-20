@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -60,13 +61,13 @@ const UserProfileForm: React.FC = () => {
           // Update the store and local form data
           await updateUserProfile({
             name: profileData.name || userProfile.name,
-            birthDate: birthDate || userProfile.birthDate,
+            birthDate: profileData.birth_date || null,
             avatar_url: profileData.avatar_url || userProfile.avatar_url
           });
           
           setFormData({
             name: profileData.name || userProfile.name || '',
-            birthDate: birthDate || userProfile.birthDate || new Date()
+            birthDate: birthDate || new Date()
           });
           
           // Calculate and set age
@@ -122,7 +123,7 @@ const UserProfileForm: React.FC = () => {
       // Also update the local store
       await updateUserProfile({
         name: values.name,
-        birthDate: values.birthDate
+        birthDate: formattedBirthDate
       });
       
       // Update local form data
@@ -179,7 +180,7 @@ const UserProfileForm: React.FC = () => {
           isSaving={isSaving}
           defaultValues={{
             name: userProfile.name !== 'Искатель' ? userProfile.name : '',
-            birthDate: userProfile.birthDate || new Date()
+            birthDate: userProfile.birthDate ? new Date(userProfile.birthDate) : new Date()
           }}
         />
       )}

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
@@ -20,7 +21,7 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
   size = 'md'
 }) => {
   const { userProfile, language } = useAppStore();
-  const currentRank = rank || userProfile.rank as SpiritualRank;
+  const currentRank = rank || userProfile.rank;
   
   const getRankName = (rank: SpiritualRank) => {
     if (language === 'ru') {
