@@ -26,11 +26,11 @@ serve(async (req) => {
     // Set the prompt based on language
     let prompt = '';
     if (language === 'ru') {
-      prompt = 'Сгенерируй пользователю гороскоп/совет дня состоящий из 2х предложений';
+      prompt = 'Сгенерируй короткий гороскоп/совет дня, состоящий СТРОГО из 2-х предложений. Не больше и не меньше.';
     } else if (language === 'es') {
-      prompt = 'Genera un horóscopo/consejo del día para el usuario que conste de 2 frases';
+      prompt = 'Genera un horóscopo/consejo del día corto que conste ESTRICTAMENTE de 2 frases. Ni más ni menos.';
     } else {
-      prompt = 'Generate a horoscope/advice of the day for the user consisting of 2 sentences';
+      prompt = 'Generate a short horoscope/advice of the day consisting of EXACTLY 2 sentences. No more, no less.';
     }
 
     // Call OpenAI to generate the advice
@@ -45,15 +45,15 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a wise cosmic advisor providing brief, insightful daily advice. Keep your response poetic, meaningful, and exactly two sentences long."
+            content: "You are a cosmic advisor providing daily advice. Your response MUST be EXACTLY two sentences long - no more, no less. Make each sentence meaningful and concise. Do not include any additional text, greetings, or explanations."
           },
           {
             role: "user",
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 150
+        temperature: 0.6,
+        max_tokens: 100  // Limiting token count for brevity
       }),
     });
 
@@ -64,6 +64,14 @@ serve(async (req) => {
     }
 
     const adviceText = data.choices[0].message.content.trim();
+    
+    // Validate that we have exactly 2 sentences by counting periods
+    const sentences = adviceText.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    if (sentences.length !== 2) {
+      console.warn("OpenAI didn't return exactly 2 sentences, got:", sentences.length);
+      // We'll still return what we got, the system prompt should handle this most of the time
+    }
     
     return new Response(JSON.stringify({ advice: adviceText }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
