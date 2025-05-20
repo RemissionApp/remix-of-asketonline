@@ -39,32 +39,51 @@ export const MissionCard: React.FC<MissionCardProps> = ({
     handleAcceptMission
   } = useMissionCard(mission, onComplete);
   
-  // Определим, является ли это "Космический челлендж тишины"
+  // Определим специальные миссии с фоновыми изображениями
   const isSilenceChallenge = mission.title.includes('тишины') || 
                             mission.title.includes('silence') || 
                             mission.title.includes('silencio');
+                            
+  const isGratitudeChain = mission.title.includes('благодарности') || 
+                          mission.title.includes('gratitude') || 
+                          mission.title.includes('gratitud');
   
-  const backgroundStyle = isSilenceChallenge ? {
-    backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//slse.png')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    position: 'relative',
-  } as React.CSSProperties : {};
+  // Выбор фонового изображения в зависимости от миссии
+  let backgroundStyle = {} as React.CSSProperties;
+  
+  if (isSilenceChallenge) {
+    backgroundStyle = {
+      backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//slse.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+    };
+  } else if (isGratitudeChain) {
+    backgroundStyle = {
+      backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Thanks.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+    };
+  }
+  
+  // Определение, нужен ли градиент поверх фона
+  const needsOverlay = isSilenceChallenge || isGratitudeChain;
   
   return (
     <div 
       className={cn(
         'p-4 rounded-lg',
-        isSilenceChallenge && 'relative overflow-hidden',
+        needsOverlay && 'relative overflow-hidden',
         className
       )}
       style={backgroundStyle}
     >
-      {isSilenceChallenge && (
+      {needsOverlay && (
         <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/60 to-cosmic-indigo/40"></div>
       )}
       
-      <div className={cn("relative z-10", isSilenceChallenge && "animate-fade-in")}>
+      <div className={cn("relative z-10", needsOverlay && "animate-fade-in")}>
         <MissionHeader 
           title={mission.title}
           description={mission.description}
