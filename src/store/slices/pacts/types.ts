@@ -9,4 +9,6 @@ export interface AddPactParams {
   title: string;
   duration: number;
   reward?: string;
+  status?: string;
+  user_id: string;
 }

@@ -45,7 +45,7 @@ export const createLoadPactsSlice = (
         // Transform to our app's format
         return {
           id: pact.id,
-          user_id: pact.user_id, // Include user_id field
+          user_id: pact.user_id,
           title: pact.title,
           description: '',
           created_at: pact.created_at,
@@ -61,7 +61,7 @@ export const createLoadPactsSlice = (
           reward: pact.reward || '',
           days: days?.map(d => ({
             id: d.id,
-            pact_id: d.pact_id, // Include pact_id field
+            pact_id: d.pact_id,
             date: d.date,
             completed: d.completed,
             created_at: d.created_at
