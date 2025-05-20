@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/CosmicButton';
 import { Separator } from '@/components/ui/separator';
 import { translateSection } from '@/utils/zodiacTranslations';
 
@@ -33,12 +33,12 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
       ))}
 
       <div className="flex justify-center pt-8 pb-12">
-        <Button 
+        <CosmicButton 
           onClick={onRegenerate}
           className="bg-amber-500/80 hover:bg-amber-600/90 text-black backdrop-blur-sm"
         >
           {uiText.regenerateButton}
-        </Button>
+        </CosmicButton>
       </div>
     </div>
   );

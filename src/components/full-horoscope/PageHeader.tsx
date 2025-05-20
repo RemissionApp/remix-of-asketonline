@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/CosmicButton';
 import { formatDateLong } from '@/utils/dateFormatUtils';
 import { ZodiacSignDisplay } from '@/components/ZodiacSignDisplay';
 
@@ -48,13 +48,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           </p>
         )}
       </div>
-      <Button 
+      <CosmicButton 
         variant="outline" 
         onClick={() => navigate(-1)}
-        className="border-amber-400/70 text-amber-400 hover:bg-amber-400/10 backdrop-blur-sm"
+        className="border-amber-400/70 text-amber-400 hover:bg-amber-400/10"
       >
         {uiText.backButton}
-      </Button>
+      </CosmicButton>
     </div>
   );
 };

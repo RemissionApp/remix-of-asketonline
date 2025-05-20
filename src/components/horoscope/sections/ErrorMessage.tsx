@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/CosmicButton';
 import { HoroscopeHeader } from './HoroscopeHeader';
 
 interface ErrorMessageProps {
@@ -35,13 +35,13 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
             ? 'Не удалось получить данные гороскопа. Пожалуйста, попробуйте еще раз.'
             : 'Failed to retrieve horoscope data. Please try again.'}
         </p>
-        <Button 
+        <CosmicButton 
           variant="outline" 
-          className="mt-4 border-cosmic-accent text-cosmic-accent hover:bg-cosmic-accent/20"
+          className="mt-4"
           onClick={onRetry}
         >
           {language === 'ru' ? 'Попробовать снова' : 'Try again'}
-        </Button>
+        </CosmicButton>
       </CardContent>
     </Card>
   );

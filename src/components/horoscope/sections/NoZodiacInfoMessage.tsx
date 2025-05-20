@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/CosmicButton';
 import { useNavigate } from 'react-router-dom';
 import { HoroscopeHeader } from './HoroscopeHeader';
 
@@ -35,13 +35,12 @@ export const NoZodiacInfoMessage: React.FC<NoZodiacInfoMessageProps> = ({
               ? 'Пожалуйста, укажите дату рождения в профиле, чтобы увидеть свой гороскоп.'
               : 'Please set your birth date in your profile to see your horoscope.'}
           </p>
-          <Button 
-            variant="outline" 
-            className="border-cosmic-accent text-cosmic-accent hover:bg-cosmic-accent/20"
+          <CosmicButton 
+            variant="outline"
             onClick={() => navigate('/profile')}
           >
             {language === 'ru' ? 'Перейти в профиль' : 'Go to profile'}
-          </Button>
+          </CosmicButton>
         </div>
       </CardContent>
     </Card>

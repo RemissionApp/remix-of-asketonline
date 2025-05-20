@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { CosmicButton } from '@/components/CosmicButton';
 import { ZodiacSignDisplay } from '@/components/ZodiacSignDisplay';
 
 interface GenerateHoroscopeCardProps {
@@ -34,12 +34,9 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
         />
       </div>
       <p className="mb-6">{uiText.generateDescription}</p>
-      <Button 
-        onClick={onGenerate}
-        className="bg-amber-500/80 hover:bg-amber-600/90 text-black backdrop-blur-sm"
-      >
+      <CosmicButton onClick={onGenerate}>
         {uiText.generateButton}
-      </Button>
+      </CosmicButton>
     </Card>
   );
 };

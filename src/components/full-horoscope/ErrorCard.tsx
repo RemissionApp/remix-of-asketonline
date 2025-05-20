@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/CosmicButton';
 import { AlertCircle } from 'lucide-react';
 
 interface ErrorCardProps {
@@ -25,12 +25,12 @@ export const ErrorCard: React.FC<ErrorCardProps> = ({
         <h2 className="text-xl font-semibold">{uiText.errorTitle}</h2>
       </div>
       <p className="mb-4">{error}</p>
-      <Button 
+      <CosmicButton 
         onClick={onRetry}
         className="bg-amber-500/80 hover:bg-amber-600/90 text-black backdrop-blur-sm"
       >
         {uiText.tryAgainButton}
-      </Button>
+      </CosmicButton>
     </Card>
   );
 };
