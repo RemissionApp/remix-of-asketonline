@@ -1,81 +1,14 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { LightbulbIcon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/lib/supabase';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
+import { useDailyAdvice } from '@/hooks/useDailyAdvice';
 
 export const DailyAdviceDisplay: React.FC = () => {
-  const { userProfile, language } = useAppStore();
-  const [dailyAdvice, setDailyAdvice] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchDailyAdvice = async () => {
-      setIsLoading(true);
-      try {
-        // Check if we have cached advice for today
-        const today = new Date().toISOString().split('T')[0];
-        const cachedAdviceKey = `daily_advice_${today}_${language}`;
-        const cachedAdvice = localStorage.getItem(cachedAdviceKey);
-        
-        if (cachedAdvice) {
-          setDailyAdvice(cachedAdvice);
-          setIsLoading(false);
-          return;
-        }
-
-        // Generate new advice using edge function
-        const name = userProfile?.name || 'Искатель';
-        let prompt = '';
-        
-        if (language === 'ru') {
-          prompt = `сгенерируй гороскоп пользователя на день из 3 предложений`;
-        } else if (language === 'es') {
-          prompt = `genera un horóscopo de usuario para el día en 3 oraciones`;
-        } else {
-          prompt = `generate a user's horoscope for today in 3 sentences`;
-        }
-
-        // Call universe-answer function to generate advice
-        const { data, error } = await supabase.functions.invoke('universe-answer', {
-          body: { question: prompt, language }
-        });
-
-        if (error) {
-          console.error("Error generating daily advice:", error);
-          throw new Error(error.message);
-        }
-
-        let generatedAdvice = '';
-        if (data && typeof data === 'object' && 'answer' in data) {
-          generatedAdvice = data.answer;
-        } else if (typeof data === 'string') {
-          generatedAdvice = data;
-        } else {
-          throw new Error('Invalid response format from universe-answer function');
-        }
-
-        // Save to local storage
-        localStorage.setItem(cachedAdviceKey, generatedAdvice);
-        setDailyAdvice(generatedAdvice);
-      } catch (error) {
-        console.error("Error:", error);
-        // Fallback advice
-        const fallbackAdvice = language === 'ru' 
-          ? 'Сегодня хороший день, чтобы сделать шаг к своей цели. Даже маленький прогресс — это всё равно прогресс.' 
-          : language === 'es'
-            ? 'Hoy es un buen día para dar un paso hacia tu meta. Incluso un pequeño progreso sigue siendo progreso.'
-            : 'Today is a good day to take a step towards your goal. Even small progress is still progress.';
-        setDailyAdvice(fallbackAdvice);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDailyAdvice();
-  }, [language, userProfile?.name]);
+  const { language } = useAppStore();
+  const { dailyAdvice, isLoading } = useDailyAdvice(language);
 
   return (
     <div className="w-full max-w-lg mx-auto">
