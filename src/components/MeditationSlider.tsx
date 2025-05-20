@@ -41,6 +41,11 @@ export const MeditationSlider: React.FC<MeditationSliderProps> = ({ meditations 
     }
   };
   
+  // Format duration as a string with minutes
+  const formatDuration = (duration: number): string => {
+    return `${duration} мин`;
+  };
+  
   return (
     <div className="w-full">
       {activeMeditation ? (
@@ -63,7 +68,7 @@ export const MeditationSlider: React.FC<MeditationSliderProps> = ({ meditations 
               <MeditationCard 
                 title={meditation.title}
                 description={meditation.description}
-                duration={meditation.duration}
+                duration={formatDuration(meditation.duration)}
                 image={meditation.image}
                 locked={meditation.locked}
                 requiresPro={meditation.requiresPro}

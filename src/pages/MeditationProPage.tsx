@@ -26,6 +26,11 @@ const MeditationProPage: React.FC = () => {
   // Get meditation data
   const proMeditations = useProMeditations(isPro);
   
+  // Format duration as a string with minutes
+  const formatDuration = (duration: number): string => {
+    return `${duration} мин`;
+  };
+  
   const handleUpgrade = () => {
     // For demo purposes, upgrade the user immediately
     upgradeToPro();
@@ -87,7 +92,7 @@ const MeditationProPage: React.FC = () => {
                           key={meditation.id || index}
                           title={meditation.title}
                           description={meditation.description}
-                          duration={meditation.duration}
+                          duration={formatDuration(meditation.duration)}
                           image={meditation.image}
                         />
                       ))}

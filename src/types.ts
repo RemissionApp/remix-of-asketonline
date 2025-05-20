@@ -106,7 +106,7 @@ export interface Meditation {
   title: string;
   description: string;
   category: string;
-  duration: number;
+  duration: number; // Changed from string to number
   image: string;
   audioSrc?: string;
   locked?: boolean;
