@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Mission } from '@/types';
+import { Mission, MissionRequirement } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { format, isToday } from 'date-fns';
 import { toast } from 'sonner';
@@ -58,8 +58,9 @@ export const useMissionCard = (mission: Mission, onComplete?: () => void) => {
     );
     
     // For multi-day missions, initialize progress array
-    if (Array.isArray(mission.requirements)) {
-      const initialProgress = mission.requirements.map((_, index) => ({
+    if (mission.requirements) {
+      const requirementsCount = mission.requirements.length;
+      const initialProgress = Array(requirementsCount).fill(0).map((_, index) => ({
         day: index + 1,
         completed: false,
         date: format(new Date(), 'yyyy-MM-dd')
@@ -81,7 +82,8 @@ export const useMissionCard = (mission: Mission, onComplete?: () => void) => {
     
     // Calculate progress
     const completedCount = newStatus.filter(status => status).length;
-    const newProgress = Math.floor((completedCount / mission.requirements.length) * 100);
+    const requirementsLength = mission.requirements ? mission.requirements.length : 0;
+    const newProgress = requirementsLength > 0 ? Math.floor((completedCount / requirementsLength) * 100) : 0;
     setProgress(newProgress);
   };
   

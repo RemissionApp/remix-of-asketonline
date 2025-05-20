@@ -5,10 +5,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppStore } from '@/store/useAppStore';
-import { isToday } from 'date-fns';
+import { MissionRequirement } from '@/types';
 
 interface MissionRequirementsProps {
-  requirements: string[];
+  requirements: string[] | MissionRequirement[];
   requirementStatus: boolean[];
   toggleRequirement: (index: number) => void;
   acceptedMission: boolean;
@@ -25,6 +25,9 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   canCompleteToday
 }) => {
   const { language } = useAppStore();
+
+  // Convert requirements to string array if they are MissionRequirement objects
+  const requirementStrings = requirements.map(req => typeof req === 'string' ? req : req.type);
 
   const handleToggle = (index: number) => {
     // For multi-day missions, only allow checking today's requirement
@@ -43,7 +46,7 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   if (acceptedMission) {
     return (
       <ul className="space-y-3 mb-4">
-        {requirements.map((req, i) => (
+        {requirementStrings.map((req, i) => (
           <li key={i} className="flex items-start">
             <div className="flex items-center h-5 mr-2">
               <Checkbox
@@ -71,7 +74,7 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   
   return (
     <ul className="space-y-2 mb-4">
-      {requirements.map((req, i) => (
+      {requirementStrings.map((req, i) => (
         <li key={i} className="flex items-start">
           <ArrowRight className="w-4 h-4 text-cosmic-gold mr-2 mt-0.5" />
           <span className="text-sm text-white">{req}</span>
