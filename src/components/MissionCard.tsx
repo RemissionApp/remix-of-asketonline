@@ -1,16 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import { Mission } from '@/types';
-import { Badge } from './ui/badge';
-import { Flag, ArrowRight, Award, CheckCircle } from 'lucide-react';
-import { CosmicButton } from './CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
-import { useTranslations } from '@/hooks/useTranslations';
-import { Progress } from './ui/progress';
-import { Checkbox } from './ui/checkbox';
-import { toast } from 'sonner';
-import { format, isToday } from 'date-fns';
+import { MissionHeader } from './missions/cards/MissionHeader';
+import { MissionRequirements } from './missions/cards/MissionRequirements';
+import { MissionProgress } from './missions/cards/MissionProgress';
+import { MissionReward } from './missions/cards/MissionReward';
+import { MissionActions } from './missions/cards/MissionActions';
+import { useMissionCard } from './missions/cards/useMissionCard';
 
 interface MissionCardProps {
   mission?: Mission;
@@ -23,235 +21,58 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   className,
   onComplete
 }) => {
-  const { language, completeMission, userProfile } = useAppStore();
-  const [progress, setProgress] = useState(0);
-  const [acceptedMission, setAcceptedMission] = useState(userProfile?.activeMission?.id === mission?.id);
-  const [requirementStatus, setRequirementStatus] = useState<boolean[]>([]);
-  const [lastCompletedDate, setLastCompletedDate] = useState<Date | null>(null);
+  const { language } = useAppStore();
   
   if (!mission) return null;
   
-  // Check if we've already completed today's requirement
-  const canCompleteToday = !lastCompletedDate || !isToday(lastCompletedDate);
-  
-  useEffect(() => {
-    // Initialize requirement status based on mission progress if accepted
-    if (acceptedMission && mission.progress) {
-      setRequirementStatus(mission.progress.map(p => p.completed));
-      
-      // Find the last completed date if any
-      const lastCompleted = mission.progress
-        .filter(p => p.completed)
-        .map(p => new Date(p.date))
-        .sort((a, b) => b.getTime() - a.getTime())[0];
-      
-      if (lastCompleted) {
-        setLastCompletedDate(lastCompleted);
-      }
-      
-      // Calculate initial progress
-      const completedCount = mission.progress.filter(p => p.completed).length;
-      const totalRequirements = mission.progress.length;
-      if (totalRequirements > 0) {
-        setProgress(Math.floor((completedCount / totalRequirements) * 100));
-      }
-    }
-  }, [acceptedMission, mission]);
-  
-  const handleCompleteMission = () => {
-    toast.success(
-      language === 'ru' ? 'Миссия выполнена! Вы получили награду.' : 
-      language === 'es' ? '¡Misión completada! Has recibido tu recompensa.' : 
-      'Mission completed! You received your reward.'
-    );
-    completeMission();
-    if (onComplete) onComplete();
-  };
-  
-  const handleAcceptMission = () => {
-    setAcceptedMission(true);
-    toast.success(
-      language === 'ru' ? 'Вы приняли новую миссию!' : 
-      language === 'es' ? '¡Has aceptado una nueva misión!' : 
-      'You accepted a new mission!'
-    );
-    
-    // For multi-day missions, initialize progress array
-    if (Array.isArray(mission.requirements)) {
-      const initialProgress = mission.requirements.map((_, index) => ({
-        day: index + 1,
-        completed: false,
-        date: format(new Date(), 'yyyy-MM-dd')
-      }));
-      
-      setRequirementStatus(initialProgress.map(p => p.completed));
-    }
-  };
-  
-  const toggleRequirement = (index: number) => {
-    // For multi-day missions, only allow checking today's requirement
-    if (mission.type === 'multi-day' && !canCompleteToday) {
-      toast.error(
-        language === 'ru' ? 'Вы уже выполнили задачу сегодня. Возвращайтесь завтра!' : 
-        language === 'es' ? '¡Ya has completado la tarea hoy. ¡Vuelve mañana!' : 
-        'You already completed today\'s task. Come back tomorrow!'
-      );
-      return;
-    }
-    
-    const newStatus = [...requirementStatus];
-    newStatus[index] = !newStatus[index];
-    setRequirementStatus(newStatus);
-    
-    // If we're checking a requirement, update the last completed date
-    if (newStatus[index]) {
-      setLastCompletedDate(new Date());
-    }
-    
-    // Calculate progress
-    const completedCount = newStatus.filter(status => status).length;
-    const newProgress = Math.floor((completedCount / mission.requirements.length) * 100);
-    setProgress(newProgress);
-  };
-  
-  const getTitle = () => {
-    switch(language) {
-      case 'ru': return 'Космическая миссия';
-      case 'es': return 'Misión cósmica';
-      default: return 'Cosmic mission';
-    }
-  };
-  
-  const allCompleted = requirementStatus.length > 0 && requirementStatus.every(status => status);
+  const {
+    progress,
+    acceptedMission,
+    requirementStatus,
+    lastCompletedDate,
+    canCompleteToday,
+    allCompleted,
+    toggleRequirement,
+    handleCompleteMission,
+    handleAcceptMission
+  } = useMissionCard(mission, onComplete);
   
   return (
     <div className={cn(
       'p-4 rounded-lg',
       className
     )}>
-      <div className="flex items-center mb-3">
-        <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
-          <Flag className="w-5 h-5 text-cosmic-gold" />
-        </div>
-        <h3 className={language === 'en' ? "font-serif text-lg text-white" : "font-sans text-lg text-white"}>
-          {getTitle()}
-        </h3>
-      </div>
+      <MissionHeader 
+        title={mission.title}
+        description={mission.description}
+        language={language}
+      />
       
-      <h4 className={cn(
-        "font-medium mb-1", 
-        language === 'en' ? "font-serif text-cosmic-gold" : "text-cosmic-gold"
-      )}>
-        {mission.title}
-      </h4>
+      <MissionRequirements
+        requirements={mission.requirements}
+        requirementStatus={requirementStatus}
+        toggleRequirement={toggleRequirement}
+        acceptedMission={acceptedMission}
+        missionType={mission.type}
+        canCompleteToday={canCompleteToday}
+      />
       
-      <p className={cn(
-        "text-sm mb-4 text-shadow",
-        language === 'en' ? "font-serif text-cosmic-secondary" : "text-cosmic-secondary"
-      )}>
-        {mission.description}
-      </p>
-      
-      {acceptedMission ? (
-        <>
-          <ul className="space-y-3 mb-4">
-            {mission.requirements.map((req, i) => (
-              <li key={i} className="flex items-start">
-                <div className="flex items-center h-5 mr-2">
-                  <Checkbox
-                    id={`req-${i}`}
-                    checked={requirementStatus[i] || false}
-                    onCheckedChange={() => toggleRequirement(i)}
-                    className="border-cosmic-gold data-[state=checked]:bg-cosmic-gold data-[state=checked]:text-cosmic-dark"
-                    disabled={mission.type === 'multi-day' && !canCompleteToday && !requirementStatus[i]}
-                  />
-                </div>
-                <label 
-                  htmlFor={`req-${i}`}
-                  className={cn(
-                    "text-sm text-white cursor-pointer",
-                    requirementStatus[i] && "line-through opacity-70"
-                  )}
-                >
-                  {req}
-                </label>
-              </li>
-            ))}
-          </ul>
-          
-          <div className="mb-4">
-            <div className="flex justify-between text-xs text-cosmic-gold mb-1">
-              <span>
-                {language === 'ru' ? 'Прогресс' : 
-                 language === 'es' ? 'Progreso' : 
-                 'Progress'}
-              </span>
-              <span>{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-          
-          {mission.type === 'multi-day' && lastCompletedDate && isToday(lastCompletedDate) && (
-            <div className="text-xs text-cosmic-secondary mb-3">
-              {language === 'ru' ? 'Задача на сегодня выполнена' : 
-               language === 'es' ? 'Tarea de hoy completada' : 
-               'Today\'s task completed'}
-            </div>
-          )}
-        </>
-      ) : (
-        <ul className="space-y-2 mb-4">
-          {mission.requirements.map((req, i) => (
-            <li key={i} className="flex items-start">
-              <ArrowRight className="w-4 h-4 text-cosmic-gold mr-2 mt-0.5" />
-              <span className="text-sm text-white">{req}</span>
-            </li>
-          ))}
-        </ul>
+      {acceptedMission && (
+        <MissionProgress
+          progress={progress}
+          lastCompletedDate={lastCompletedDate}
+          missionType={mission.type}
+        />
       )}
       
-      <div className="border-t border-cosmic-gold/20 pt-3 mb-3">
-        <div className="flex items-center">
-          <Award className="w-4 h-4 text-cosmic-gold mr-2" />
-          <span className={cn(
-            "text-sm text-cosmic-gold",
-            language === 'en' ? "font-serif" : ""
-          )}>
-            {language === 'ru' ? 'Награда' : language === 'es' ? 'Recompensa' : 'Reward'}:
-          </span>
-        </div>
-        <div className="flex items-center mt-2">
-          <Badge variant="outline" className="bg-cosmic-gold/10 text-cosmic-gold border-cosmic-gold/30">
-            +{mission.reward.energyPoints} {language === 'ru' ? 'очков' : language === 'es' ? 'puntos' : 'points'}
-          </Badge>
-          
-          {mission.reward.achievement && (
-            <Badge variant="outline" className="ml-2 bg-cosmic-accent/10 text-cosmic-accent border-cosmic-accent/30">
-              {language === 'ru' ? 'Достижение' : language === 'es' ? 'Logro' : 'Achievement'}
-            </Badge>
-          )}
-        </div>
-      </div>
+      <MissionReward reward={mission.reward} />
       
-      {acceptedMission ? (
-        <CosmicButton 
-          className="w-full mt-2" 
-          onClick={handleCompleteMission}
-          disabled={!allCompleted}
-          variant="default"
-        >
-          <CheckCircle className="w-4 h-4 mr-1" />
-          {language === 'ru' ? 'Завершить миссию' : language === 'es' ? 'Completar misión' : 'Complete mission'}
-        </CosmicButton>
-      ) : (
-        <CosmicButton 
-          className="w-full mt-2 bg-gradient-to-r from-cosmic-accent/60 to-cosmic-indigo/50 hover:from-cosmic-accent/70 hover:to-cosmic-indigo/60 backdrop-blur-md border border-white/20" 
-          onClick={handleAcceptMission}
-          variant="default"
-        >
-          {language === 'ru' ? 'Принять миссию' : language === 'es' ? 'Aceptar misión' : 'Accept mission'}
-        </CosmicButton>
-      )}
+      <MissionActions
+        acceptedMission={acceptedMission}
+        allCompleted={allCompleted}
+        onComplete={handleCompleteMission}
+        onAccept={handleAcceptMission}
+      />
     </div>
   );
 };
