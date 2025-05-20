@@ -51,6 +51,10 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   const isMorningRitual = mission.title.includes('Утренний ритуал') || 
                          mission.title.includes('Morning mindfulness') || 
                          mission.title.includes('Ritual matutino');
+                         
+  const isCleansingRitual = mission.title.includes('очищения пространства') ||
+                           mission.title.includes('Space cleansing') ||
+                           mission.title.includes('limpieza de espacio');
   
   // Выбор фонового изображения в зависимости от миссии
   let backgroundStyle = {} as React.CSSProperties;
@@ -76,10 +80,17 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       backgroundPosition: 'center',
       position: 'relative',
     };
+  } else if (isCleansingRitual) {
+    backgroundStyle = {
+      backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//ritual.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+    };
   }
   
   // Определение, нужен ли градиент поверх фона
-  const needsOverlay = isSilenceChallenge || isGratitudeChain || isMorningRitual;
+  const needsOverlay = isSilenceChallenge || isGratitudeChain || isMorningRitual || isCleansingRitual;
   
   return (
     <div 
