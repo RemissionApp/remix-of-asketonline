@@ -47,6 +47,10 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   const isGratitudeChain = mission.title.includes('благодарности') || 
                           mission.title.includes('gratitude') || 
                           mission.title.includes('gratitud');
+                          
+  const isMorningRitual = mission.title.includes('Утренний ритуал') || 
+                         mission.title.includes('Morning mindfulness') || 
+                         mission.title.includes('Ritual matutino');
   
   // Выбор фонового изображения в зависимости от миссии
   let backgroundStyle = {} as React.CSSProperties;
@@ -65,10 +69,17 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       backgroundPosition: 'center',
       position: 'relative',
     };
+  } else if (isMorningRitual) {
+    backgroundStyle = {
+      backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//morning.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      position: 'relative',
+    };
   }
   
   // Определение, нужен ли градиент поверх фона
-  const needsOverlay = isSilenceChallenge || isGratitudeChain;
+  const needsOverlay = isSilenceChallenge || isGratitudeChain || isMorningRitual;
   
   return (
     <div 
@@ -80,7 +91,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
       style={backgroundStyle}
     >
       {needsOverlay && (
-        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/60 to-cosmic-indigo/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-cosmic-dark/40 to-cosmic-indigo/30"></div>
       )}
       
       <div className={cn("relative z-10", needsOverlay && "animate-fade-in")}>
@@ -88,6 +99,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           title={mission.title}
           description={mission.description}
           language={language}
+          hasBackground={needsOverlay}
         />
         
         <MissionRequirements
