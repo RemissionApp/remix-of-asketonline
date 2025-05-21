@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,20 +27,36 @@ import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
 import CosmicMissionsPage from "./pages/CosmicMissionsPage";
+import LegalPage from "./pages/LegalPage";
+import { loadUserProfileFromSupabase } from "./utils/profile";
+import { loadUserMissions } from "./utils/missions";
+import { loadUniverseQuestions } from "./utils/universeQuestions";
+import { loadUserAchievements } from "./utils/achievements";
+import { loadTranslations } from "./utils/translations";
+import type Language from "./types/Language";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
-  const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
+  const { 
+    checkOnboardingStatus, 
+    user, 
+    loadUserProfile, 
+    setUser,
+    loadPacts,
+    updateUserProfile,
+    loadMissions,
+    loadUniverseQuestions: loadUniQuestions
+  } = useAppStore();
   
   useEffect(() => {
     // Проверяем состояние onboarding при загрузке приложения
     checkOnboardingStatus();
     
     // Настраиваем слушатель изменений состояния аутентификации
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.id);
         
@@ -78,7 +95,7 @@ const AppInitializer = () => {
     
     // Отписываемся при размонтировании
     return () => {
-      subscription.unsubscribe();
+      data?.subscription.unsubscribe();
     };
   }, [checkOnboardingStatus, loadUserProfile, setUser]);
   
@@ -159,6 +176,7 @@ const App = () => {
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
             <Route path="/full-horoscope" element={<FullHoroscopePage />} />
             <Route path="/affirmations" element={<AffirmationsPage />} />
+            <Route path="/legal" element={<LegalPage />} />
             {/* Pro features routes */}
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />

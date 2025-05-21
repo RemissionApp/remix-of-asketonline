@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -39,6 +40,19 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   // Добавляем новый метод для установки пользователя
   setUser: (user) => set({ user }),
   
+  // Методы для установки данных
+  setPacts: (pacts) => set({ pacts }),
+  setUserProfile: (userProfile) => set({ userProfile }),
+  setMissions: (missions) => set({ missions }),
+  setUniverseQuestions: (questions) => set({ activeQuestions: questions }),
+  setAchievements: (achievements) => set({ 
+    userProfile: { 
+      ...get().userProfile, 
+      achievements 
+    } 
+  }),
+  setTranslations: (translations) => set({ translations }),
+  
   // Состояние чата
   chatSessions: [],
   isLoadingChatSessions: false,
@@ -47,6 +61,18 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   isLoadingChat: false,
   isSendingMessage: false,
   isUniverseTyping: false,
+  
+  // Загрузка миссий
+  loadMissions: async () => {
+    try {
+      const { user } = get();
+      if (!user) return;
+      
+      // Здесь должна быть реализация загрузки миссий из Supabase
+    } catch (error) {
+      console.error('Error loading missions:', error);
+    }
+  },
   
   // Комбинируем все срезы
   ...createUISlice(set, get, api),

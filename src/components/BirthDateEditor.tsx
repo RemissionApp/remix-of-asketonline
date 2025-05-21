@@ -18,7 +18,15 @@ interface BirthDateEditorProps {
 const BirthDateEditor: React.FC<BirthDateEditorProps> = ({ open, onOpenChange }) => {
   const { t } = useTranslations();
   const { userProfile, updateUserProfile, user, language } = useAppStore();
-  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(userProfile?.birthDate || null);
+  
+  // Преобразуем birthDate в Date объект, если это строка
+  const initialDate = userProfile?.birthDate 
+    ? (typeof userProfile.birthDate === 'string' 
+        ? new Date(userProfile.birthDate) 
+        : userProfile.birthDate) 
+    : null;
+    
+  const [tempBirthDate, setTempBirthDate] = useState<Date | null>(initialDate);
   
   // Save the new birth date
   const handleSaveBirthDate = async () => {

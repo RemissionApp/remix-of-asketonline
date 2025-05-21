@@ -8,9 +8,10 @@ import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { toast } from 'react-toastify';
 
 const CreatePactPage: React.FC = () => {
-  const { addPact, setActiveScreen, language } = useAppStore();
+  const { addPact, setActiveScreen, language, user } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   
@@ -84,12 +85,23 @@ const CreatePactPage: React.FC = () => {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
+      if (!user) {
+        toast({
+          title: "Требуется вход",
+          description: "Войдите в систему для создания договора",
+          variant: "destructive"
+        });
+        navigate('/login');
+        return;
+      }
+      
       const pactTitle = selectedItems.length > 0 ? selectedItems.join(', ') : title;
       addPact({
         title: pactTitle,
         duration,
         reward,
-        status: 'active'
+        status: 'active',
+        user_id: user.id
       });
       setActiveScreen('main');
       navigate('/main');

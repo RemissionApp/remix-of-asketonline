@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
@@ -103,8 +104,13 @@ const UserProfileForm: React.FC = () => {
     try {
       console.log("Saving profile data:", values);
       
+      // Ensure birthDate is a Date object
+      const birthDateObj = typeof values.birthDate === 'string' 
+        ? new Date(values.birthDate)
+        : values.birthDate;
+      
       // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = formatDate(values.birthDate, 'en', false).split('/').reverse().join('-');
+      const formattedBirthDate = formatDate(birthDateObj, 'en', false).split('/').reverse().join('-');
       
       // Update directly in Supabase
       const { error } = await supabase
@@ -122,17 +128,17 @@ const UserProfileForm: React.FC = () => {
       // Also update the local store
       await updateUserProfile({
         name: values.name,
-        birthDate: values.birthDate
+        birthDate: birthDateObj
       });
       
       // Update local form data
       setFormData({
         name: values.name,
-        birthDate: values.birthDate
+        birthDate: birthDateObj
       });
       
       // Calculate and set age
-      const calculatedAge = differenceInYears(new Date(), values.birthDate);
+      const calculatedAge = differenceInYears(new Date(), birthDateObj);
       setAge(calculatedAge);
       
       toast({
@@ -153,6 +159,15 @@ const UserProfileForm: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Установить начальное значение даты
+  const defaultBirthDate = () => {
+    if (!userProfile.birthDate) return new Date();
+    
+    return typeof userProfile.birthDate === 'string'
+      ? new Date(userProfile.birthDate)
+      : userProfile.birthDate;
   };
 
   return (
@@ -179,7 +194,7 @@ const UserProfileForm: React.FC = () => {
           isSaving={isSaving}
           defaultValues={{
             name: userProfile.name !== 'Искатель' ? userProfile.name : '',
-            birthDate: userProfile.birthDate || new Date()
+            birthDate: defaultBirthDate()
           }}
         />
       )}

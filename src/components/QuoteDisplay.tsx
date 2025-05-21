@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
@@ -57,8 +58,13 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
           throw new Error('Birth date not available');
         }
         
+        // Преобразуем birthDate в Date объект, если это строка
+        const birthDate = typeof userProfile.birthDate === 'string'
+          ? new Date(userProfile.birthDate)
+          : userProfile.birthDate;
+        
         // Determine zodiac sign based on birth date
-        const sign = getZodiacSign(userProfile.birthDate);
+        const sign = getZodiacSign(birthDate);
         
         if (!sign) {
           throw new Error('Could not determine zodiac sign');
@@ -80,7 +86,7 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
         // Save to localStorage
         localStorage.setItem('dailyHoroscope', JSON.stringify(fallbackData));
         localStorage.setItem('horoscopeDate', today);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching horoscope:', error);
         setError(error.message);
         // Fallback to default quote
@@ -103,7 +109,12 @@ export const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, className }) 
                     'Today is';
                    
   // Get zodiac sign symbol and name if available
-  const zodiacSign = userProfile?.birthDate ? getZodiacSign(userProfile.birthDate) : null;
+  const zodiacSign = userProfile?.birthDate ? getZodiacSign(
+    typeof userProfile.birthDate === 'string' 
+      ? new Date(userProfile.birthDate)
+      : userProfile.birthDate
+  ) : null;
+  
   const zodiacInfo = zodiacSign ? zodiacData[zodiacSign] : null;
   
   const renderHoroscope = () => {
@@ -163,7 +174,7 @@ function getRandomHoroscopeText(language: string = 'en'): string {
       'Звезды благоволят смелым решениям. Прислушайтесь к интуиции, она ведет вас по верному пути.',
       'Сегодня благоприятный день для начинаний. Вселенная открывает перед вами новые горизонты.',
       'Время перемен наступило. Отпустите старое, чтобы освободить место для нового.',
-      'Космические энергии поддерживают вас. Двигайтесь вперед с уверенностью и благода��ностью.',
+      'Космические энергии поддерживают вас. Двигайтесь вперед с уверенностью и благодарностью.',
       'Внутренний голос подскажет решение. Найдите тихий момент для глубокого размышления.'
     ],
     en: [

@@ -10,7 +10,12 @@ const ZodiacInfo: React.FC = () => {
   
   if (!userProfile?.birthDate) return null;
   
-  const zodiacSign = getZodiacSign(userProfile.birthDate);
+  // Преобразуем birthDate в Date объект, если это строка
+  const birthDate = typeof userProfile.birthDate === 'string' 
+    ? new Date(userProfile.birthDate) 
+    : userProfile.birthDate;
+    
+  const zodiacSign = getZodiacSign(birthDate);
   if (!zodiacSign) return null;
   
   const zodiacInfo = zodiacData[zodiacSign];
