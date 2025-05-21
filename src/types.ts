@@ -103,3 +103,17 @@ export interface UserProfile {
   activeMission?: Mission | null;
   id?: string;
 }
+
+// Add Meditation type for meditation components
+export type Meditation = {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  audioUrl: string;
+  imageUrl: string;
+  isPro: boolean;
+  category: string;
+  type: string;
+  author?: string;
+};

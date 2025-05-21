@@ -1,88 +1,61 @@
 
-import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
-import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat/types';
+import { User } from '@supabase/supabase-js';
+import { Achievement, Mission, Pact, UniverseQuestion, UserProfile } from '@/types';
+import type Language from '@/types/Language';
 
-export type AppLanguage = 'ru' | 'en' | 'es';
+// Interface for UI state
+export interface UIState {
+  onboardingCompleted: boolean;
+  activeScreen: string;
+  language: Language;
+  isDeveloperMode: boolean;
+  checkOnboardingStatus: () => void;
+  setOnboardingCompleted: (completed: boolean) => void;
+  setActiveScreen: (screen: string) => void;
+  setLanguage: (language: Language) => void;
+  setDeveloperMode: (enabled: boolean) => void;
+}
 
-// Define the available screens in the application
-export type ActiveScreen = 
-  | 'welcome' 
-  | 'language' 
-  | 'onboarding' 
-  | 'main' 
-  | 'create-pact' 
-  | 'universe' 
-  | 'profile' 
-  | 'comparison' 
-  | 'meditation'
-  | 'login'
-  | 'signup'
-  | 'universe-chat'
-  | 'full-horoscope'
-  | 'numerology';
-
-export interface AppState {
+// The complete app state
+export interface AppState extends UIState {
   pacts: Pact[];
+  missions: Mission[];
   activeQuestions: UniverseQuestion[];
   dailyQuote: string;
   userProfile: UserProfile;
-  user: any | null;
+  user: User | null;
   loading: boolean;
   emailConfirmed: boolean;
+  translations: any;
   
-  addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
-  markDayComplete: (pactId: string) => Promise<void>;
-  breakAscesis: (pactId: string) => Promise<void>;
-  askUniverse: (question: string) => Promise<UniverseQuestion>;
-  setActiveScreen: (screen: ActiveScreen) => void;
-  activeScreen: ActiveScreen;
-  onboardingComplete: boolean;
-  setOnboardingComplete: (completed: boolean) => void;
-  language: AppLanguage;
-  setLanguage: (language: AppLanguage) => void;
-  updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
-  syncPactsWithCurrentDate: () => Promise<void>;
-  checkOnboardingStatus: () => boolean;
+  // Методы установки данных
+  setUser: (user: User | null) => void;
+  setPacts: (pacts: Pact[]) => void;
+  setUserProfile: (userProfile: UserProfile) => void;
+  setMissions: (missions: Mission[]) => void;
+  setUniverseQuestions: (questions: UniverseQuestion[]) => void;
+  setAchievements: (achievements: Achievement[]) => void;
+  setTranslations: (translations: any) => void;
   
-  // Auth methods
-  signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  checkEmailConfirmation: () => Promise<boolean>;
-  setUser: (user: any) => void;
+  // Загрузка миссий
+  loadMissions: () => Promise<void>;
   
-  // Data loading methods
-  loadUserProfile: () => Promise<void>;
-  loadPacts: () => Promise<void>;
-  loadUniverseQuestions: () => Promise<void>;
-  
-  // Functions for gamification
-  addEnergyPoints: (points: number) => Promise<void>;
-  checkRankProgress: () => SpiritualRank;
-  unlockAchievement: (achievementId: string) => Promise<void>;
-  assignMission: () => Promise<void>;
-  completeMission: () => Promise<void>;
-  
-  // PRO features functions
-  upgradeToPro: () => Promise<void>;
-  cancelProSubscription: () => Promise<void>;
-  
-  // Additional methods needed
-  saveUniverseQuestion: (question: UniverseQuestion) => Promise<void>;
-  
-  // Chat related state and methods
-  chatSessions: UniverseChatSession[];
-  isLoadingChatSessions: boolean; 
-  currentChatSession: string | null;
-  chatMessages: UniverseChatMessage[];
+  // Чат
+  chatSessions: any[];
+  isLoadingChatSessions: boolean;
+  currentChatSession: any;
+  chatMessages: any[];
   isLoadingChat: boolean;
   isSendingMessage: boolean;
   isUniverseTyping: boolean;
-  loadChatSessions: () => Promise<void>;
-  createChatSession: (title: string) => Promise<string | null>;
-  setCurrentChatSession: (sessionId: string | null) => Promise<void>;
-  loadChatMessages: (sessionId: string) => Promise<void>;
-  sendChatMessage: (message: string) => Promise<void>;
-  subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
-  handleNewChatMessage: (payload: any) => void;
+  
+  // Методы из срезов
+  loadUserProfile: () => Promise<void>;
+  updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
+  
+  // Методы для работы с пактами
+  loadPacts: () => Promise<void>;
+  addPact: (pact: any) => void;
+  markDayComplete: (pactId: string, date: string) => Promise<void>;
+  breakAscesis: (pactId: string) => Promise<void>;
 }

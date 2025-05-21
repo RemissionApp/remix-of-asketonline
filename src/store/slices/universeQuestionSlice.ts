@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -11,6 +10,19 @@ export interface UniverseQuestionSlice {
   loadUniverseQuestions: () => Promise<void>;
   saveUniverseQuestion: (question: UniverseQuestion) => Promise<void>;
 }
+
+// Update the questionTransform function to correctly map to UniverseQuestion type
+export const questionTransform = (data: any): UniverseQuestion[] => {
+  if (!data || !Array.isArray(data)) return [];
+
+  return data.map(item => ({
+    id: item.id,
+    user_id: item.user_id || '',
+    question: item.question,
+    answer: item.answer,
+    created_at: item.created_at,
+  }));
+};
 
 export const createUniverseQuestionSlice: StateCreator<AppState, [], [], UniverseQuestionSlice> = (set, get) => ({
   activeQuestions: [],

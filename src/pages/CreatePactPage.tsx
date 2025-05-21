@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -8,12 +9,13 @@ import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { toast } from 'react-toastify';
+import { useToast } from "@/hooks/use-toast";
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language, user } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');

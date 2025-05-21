@@ -10,6 +10,7 @@ import { createProFeaturesSlice } from './slices/proFeaturesSlice';
 import { createAuthSlice } from './slices/authSlice';
 import { defaultAchievements } from './data/constants';
 import { supabase } from '@/lib/supabase';
+import { Mission, UserProfile, Achievement, UniverseQuestion, Pact } from '@/types';
 
 // Создание хранилища со всеми срезами
 export const useAppStore = create<AppState>()((set, get, api) => ({
@@ -33,19 +34,21 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     activeMission: undefined,
     id: undefined
   },
+  missions: [],
   user: null,
   loading: false,
   emailConfirmed: false,
+  translations: {},
   
   // Добавляем новый метод для установки пользователя
   setUser: (user) => set({ user }),
   
   // Методы для установки данных
-  setPacts: (pacts) => set({ pacts }),
-  setUserProfile: (userProfile) => set({ userProfile }),
-  setMissions: (missions) => set({ missions }),
-  setUniverseQuestions: (questions) => set({ activeQuestions: questions }),
-  setAchievements: (achievements) => set({ 
+  setPacts: (pacts: Pact[]) => set({ pacts }),
+  setUserProfile: (userProfile: UserProfile) => set({ userProfile }),
+  setMissions: (missions: Mission[]) => set({ missions }),
+  setUniverseQuestions: (questions: UniverseQuestion[]) => set({ activeQuestions: questions }),
+  setAchievements: (achievements: Achievement[]) => set({ 
     userProfile: { 
       ...get().userProfile, 
       achievements 
@@ -69,6 +72,16 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       if (!user) return;
       
       // Здесь должна быть реализация загрузки миссий из Supabase
+      const { data, error } = await supabase
+        .from('missions')
+        .select('*')
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      if (data) {
+        set({ missions: data });
+      }
     } catch (error) {
       console.error('Error loading missions:', error);
     }

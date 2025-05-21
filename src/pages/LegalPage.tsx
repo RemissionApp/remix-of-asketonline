@@ -1,14 +1,20 @@
 
 import React from 'react';
 import { StarField } from '@/components/StarField';
-import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
+import { ArrowLeft } from 'lucide-react';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { useNavigate } from 'react-router-dom';
 
 const LegalPage: React.FC = () => {
-  const navigate = useNavigate();
+  const { language } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate('/profile');
+  };
   
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -18,66 +24,71 @@ const LegalPage: React.FC = () => {
       <div className="relative z-10 px-4 py-4 flex items-center">
         <button
           className="p-2 text-cosmic-accent"
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
         >
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-          {t.legal?.title || "Правовая информация"}
+          {t.legal?.title || "Legal Information"}
         </h1>
       </div>
       
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full">
-        <div className="space-y-6 text-white">
-          <section>
-            <h2 className="text-2xl font-serif text-cosmic-accent mb-4">
-              {t.legal?.termsTitle || "Условия использования"}
+      <div className="relative z-10 flex-1 px-4 py-2 overflow-y-auto">
+        <div className="max-w-lg mx-auto space-y-8 pb-8">
+          {/* Terms of Service */}
+          <section className="cosmic-card p-4">
+            <h2 className="text-xl font-serif text-white mb-3">
+              {t.legal?.terms || "Terms of Service"}
             </h2>
-            <div className="prose prose-invert max-w-none">
-              <p>
-                {t.legal?.termsText || 
-                  "Используя это приложение, вы соглашаетесь с нашими условиями использования. Мы оставляем за собой право изменять условия в любое время."}
+            <div className="text-cosmic-secondary text-sm space-y-2">
+              <p className="whitespace-pre-line">
+                {t.legal?.termsContent || "By using our application, you agree to these terms..."}
               </p>
             </div>
           </section>
           
-          <section>
-            <h2 className="text-2xl font-serif text-cosmic-accent mb-4">
-              {t.legal?.privacyTitle || "Политика конфиденциальности"}
+          {/* Privacy Policy */}
+          <section className="cosmic-card p-4">
+            <h2 className="text-xl font-serif text-white mb-3">
+              {t.legal?.privacy || "Privacy Policy"}
             </h2>
-            <div className="prose prose-invert max-w-none">
-              <p>
-                {t.legal?.privacyText || 
-                  "Мы уважаем вашу конфиденциальность и обрабатываем только те данные, которые необходимы для функционирования приложения."}
+            <div className="text-cosmic-secondary text-sm space-y-2">
+              <p className="whitespace-pre-line">
+                {t.legal?.privacyContent || "We protect your data and privacy..."}
               </p>
+              <h3 className="text-md text-white mt-4">
+                {t.legal?.dataCollected || "Data We Collect"}
+              </h3>
               <p>
-                {t.legal?.dataCollectionText || 
-                  "Мы собираем только те данные, которые вы добровольно предоставляете, такие как информация профиля и данные, необходимые для функциональности приложения."}
-              </p>
-            </div>
-          </section>
-          
-          <section>
-            <h2 className="text-2xl font-serif text-cosmic-accent mb-4">
-              {t.legal?.contactTitle || "Контактная информация"}
-            </h2>
-            <div className="prose prose-invert max-w-none">
-              <p>
-                {t.legal?.contactText || 
-                  "По всем вопросам, пожалуйста, свяжитесь с нами по электронной почте: support@asket-app.com"}
+                {t.legal?.dataCollectedText || "We collect minimal information required to provide our services..."}
               </p>
             </div>
           </section>
           
-          <section>
-            <h2 className="text-2xl font-serif text-cosmic-accent mb-4">
-              {t.legal?.disclaimerTitle || "Отказ от ответственности"}
+          {/* Contact Information */}
+          <section className="cosmic-card p-4">
+            <h2 className="text-xl font-serif text-white mb-3">
+              {t.legal?.contact || "Contact Us"}
             </h2>
-            <div className="prose prose-invert max-w-none">
-              <p>
-                {t.legal?.disclaimerText || 
-                  "Приложение предоставляется 'как есть', без каких-либо гарантий. Мы не несем ответственности за любые последствия использования приложения."}
+            <div className="text-cosmic-secondary text-sm">
+              <p className="whitespace-pre-line">
+                {t.legal?.contactText || "For any inquiries or concerns, please contact us at:"}
+              </p>
+              <p className="mt-2">
+                <span className="text-cosmic-accent">email@cosmicascension.com</span>
+              </p>
+            </div>
+          </section>
+          
+          {/* Disclaimers */}
+          <section className="cosmic-card p-4">
+            <h2 className="text-xl font-serif text-white mb-3">
+              {t.legal?.disclaimers || "Disclaimers"}
+            </h2>
+            <div className="text-cosmic-secondary text-sm space-y-2">
+              <p className="whitespace-pre-line">
+                {t.legal?.disclaimersText || "The information provided in this application is for general guidance and entertainment purposes only..."}
               </p>
             </div>
           </section>
