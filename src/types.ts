@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -12,10 +11,7 @@ export type SpiritualRank =
   | 'apprentice'
   | 'adept'
   | 'master'
-  | 'grandmaster'
-  | 'pilgrim'  // Added missing ranks
-  | 'warrior'
-  | 'enlightened';
+  | 'grandmaster';
 
 export type Achievement = {
   id: string;
@@ -23,7 +19,6 @@ export type Achievement = {
   description: string;
   icon: string;
   unlocked: boolean;
-  unlockedDate?: string;  // Added missing property
 };
 
 export type Pact = {
@@ -96,38 +91,8 @@ export interface UserProfile {
   zodiacSign: string;
   totalDays: number;
   achievements: Achievement[];
-  birthDate: Date | string | null;  // Allow both Date and string
+  birthDate: string | null;
   avatar_url: string | null;
   activeMission?: Mission | null;
   id?: string;
-}
-
-// Добавим интерфейс для медитаций
-export interface Meditation {
-  id: string;
-  title: string;
-  description: string;
-  duration: string; // Длительность в виде строки, напр. "5 мин"
-  category: string;
-  image: string;
-  audioSrc?: string;
-  locked: boolean;
-  requiresPro: boolean;
-}
-
-// Добавим интерфейс для настроек уведомлений
-export interface NotificationSettings {
-  meditationReminders: boolean;
-  meditationReminderTime: { hours: number; minutes: number };
-  ascesisReminders: boolean;
-  achievementNotifications: boolean;
-}
-
-declare global {
-  interface Window {
-    Capacitor?: {
-      isNativePlatform: () => boolean;
-      getPlatform: () => 'android' | 'ios' | 'web';
-    };
-  }
 }

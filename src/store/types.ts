@@ -30,14 +30,6 @@ export interface AppState {
   loading: boolean;
   emailConfirmed: boolean;
   
-  // Add missing properties
-  setUserProfile: (profile: UserProfile | null) => void;
-  setPacts: (pacts: Pact[]) => void;
-  setMissions: (missions: Mission[]) => void;
-  setUniverseQuestions: (questions: UniverseQuestion[]) => void;
-  setAchievements: (achievements: Achievement[]) => void;
-  setTranslations: (translations: any) => void;
-  
   addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
   breakAscesis: (pactId: string) => Promise<void>;
