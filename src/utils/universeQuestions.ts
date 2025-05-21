@@ -2,8 +2,8 @@
 import { UniverseQuestion } from '@/types';
 import { supabase } from '@/lib/supabase';
 
-// Функция для загрузки вопросов пользователя Вселенной
-export const loadUniverseQuestions = async (userId: string): Promise<UniverseQuestion[]> => {
+// Load universe questions for a user
+export const loadUniverseQuestionsFromSupabase = async (userId: string): Promise<UniverseQuestion[]> => {
   try {
     const { data, error } = await supabase
       .from('universe_questions')
@@ -11,54 +11,43 @@ export const loadUniverseQuestions = async (userId: string): Promise<UniverseQue
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
       
-    if (error) throw error;
+    if (error) {
+      console.error('Error loading universe questions:', error);
+      return [];
+    }
     
-    if (!data) return [];
-    
-    // Преобразуем из формата БД в формат приложения
-    return data.map(q => ({
-      id: q.id,
-      user_id: q.user_id,
-      question: q.question,
-      answer: q.answer,
-      created_at: q.created_at
+    return data.map(item => ({
+      id: item.id,
+      user_id: item.user_id,
+      question: item.question,
+      answer: item.answer,
+      created_at: item.created_at,
+      date: item.created_at
     }));
   } catch (error) {
-    console.error('Error loading universe questions:', error);
+    console.error('Exception loading universe questions:', error);
     return [];
   }
 };
 
-// Функция для сохранения нового вопроса к Вселенной
-export const saveUniverseQuestion = async (
-  userId: string,
-  question: string,
-  answer: string
-): Promise<UniverseQuestion | null> => {
+// Save a universe question to Supabase
+export const saveUniverseQuestionToSupabase = async (question: UniverseQuestion): Promise<boolean> => {
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('universe_questions')
       .insert({
-        user_id: userId,
-        question,
-        answer
-      })
-      .select()
-      .single();
+        id: question.id,
+        user_id: question.user_id,
+        question: question.question,
+        answer: question.answer,
+        created_at: question.created_at
+      });
       
     if (error) throw error;
     
-    if (!data) return null;
-    
-    return {
-      id: data.id,
-      user_id: data.user_id,
-      question: data.question,
-      answer: data.answer,
-      created_at: data.created_at
-    };
+    return true;
   } catch (error) {
     console.error('Error saving universe question:', error);
-    return null;
+    return false;
   }
 };

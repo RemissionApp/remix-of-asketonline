@@ -1,13 +1,13 @@
 
 import { translations, SupportedLanguage } from '@/i18n/translations';
 
-// Функция для загрузки переводов для определенного языка
+// Function to load translations for a specific language
 export const loadTranslations = (language: string): any => {
   const supportedLanguage = language as SupportedLanguage || 'en';
   return translations[supportedLanguage] || translations.en;
 };
 
-// Функция для получения перевода конкретного текста
+// Function to get translation for a specific text
 export const translate = (key: string, language: string, defaultText: string = ''): string => {
   const parts = key.split('.');
   if (parts.length === 0) return defaultText;

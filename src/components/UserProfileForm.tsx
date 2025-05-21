@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -6,18 +7,19 @@ import { Label } from "@/components/ui/label";
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
-import { DatePicker } from "@/components/ui/date-picker"
-import { format } from 'date-fns';
+import { DatePicker } from "@/components/ui/date-picker";
 import { useTranslations } from '@/hooks/useTranslations';
+import { useToast } from '@/hooks/use-toast';
 
 interface UserProfileFormProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
-const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
+const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess = () => {} }) => {
   const { updateUserProfile, userProfile } = useAppStore();
   const navigate = useNavigate();
   const { t } = useTranslations();
+  const { toast } = useToast();
   
   const initialBirthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
   
@@ -33,18 +35,18 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .min(2, t.profileSetup?.nameValidationShort || 'Must be at least 2 characters')
-        .max(50, t.profileSetup?.nameValidationLong || 'Must be 50 characters or less')
-        .required(t.profileSetup?.nameValidationRequired || 'Required'),
+        .min(2, t.userProfile?.nameRequired || "Name must be at least 2 characters")
+        .max(50, t.userProfile?.nameMaxLength || "Name must be 50 characters or less")
+        .required(t.userProfile?.nameRequired || "Name is required"),
       age: Yup.number()
-        .integer(t.profileSetup?.ageValidationInteger || 'Must be an integer')
-        .min(5, t.profileSetup?.ageValidationTooYoung || 'Too young')
-        .max(120, t.profileSetup?.ageValidationTooOld || 'Too old')
+        .integer(t.userProfile?.ageValidationInteger || 'Must be an integer')
+        .min(5, t.userProfile?.ageValidationTooYoung || 'Too young')
+        .max(120, t.userProfile?.ageValidationTooOld || 'Too old')
         .nullable(),
       goal: Yup.string()
-        .min(10, t.profileSetup?.goalValidationShort || 'Must be at least 10 characters')
-        .max(200,  t.profileSetup?.goalValidationLong || 'Must be 200 characters or less')
-        .required(t.profileSetup?.goalValidationRequired || 'Required'),
+        .min(10, t.userProfile?.goalValidationShort || 'Must be at least 10 characters')
+        .max(200, t.userProfile?.goalValidationLong || 'Must be 200 characters or less')
+        .required(t.userProfile?.goalValidationRequired || 'Required'),
       zodiacSign: Yup.string(),
       birthDate: Yup.date().nullable(),
     }),
@@ -55,9 +57,22 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
         birthDate: values.birthDate ? values.birthDate.toISOString() : null,
       };
       
-      await updateUserProfile(profileData);
-      onSuccess();
-      navigate('/main');
+      try {
+        await updateUserProfile(profileData);
+        toast({
+          title: t.userProfile?.profileUpdated || "Profile updated",
+          description: t.userProfile?.profileUpdatedDesc || "Your profile has been updated successfully",
+        });
+        
+        if (onSuccess) onSuccess();
+        navigate('/main');
+      } catch (error) {
+        toast({
+          title: t.userProfile?.profileUpdateFailed || "Update failed",
+          description: t.userProfile?.profileUpdateFailedDesc || "There was a problem updating your profile",
+          variant: "destructive",
+        });
+      }
     },
   });
   
@@ -74,7 +89,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
   return (
     <form onSubmit={formik.handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">{t.profileSetup?.nameLabel || 'Name'}</Label>
+        <Label htmlFor="name">{t.userProfile?.nameLabel || 'Name'}</Label>
         <Input
           type="text"
           id="name"
@@ -86,7 +101,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
       </div>
       
       <div>
-        <Label htmlFor="age">{t.profileSetup?.ageLabel || 'Age'}</Label>
+        <Label htmlFor="age">{t.userProfile?.ageLabel || 'Age'}</Label>
         <Input
           type="number"
           id="age"
@@ -98,7 +113,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
       </div>
       
       <div>
-        <Label htmlFor="goal">{t.profileSetup?.goalLabel || 'Life Goal'}</Label>
+        <Label htmlFor="goal">{t.userProfile?.goalLabel || 'Life Goal'}</Label>
         <Input
           type="text"
           id="goal"
@@ -110,7 +125,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
       </div>
       
       <div>
-        <Label htmlFor="birthDate">{t.profileSetup?.birthDateLabel || 'Birth Date'}</Label>
+        <Label htmlFor="birthDate">{t.userProfile?.birthDateLabel || 'Birth Date'}</Label>
         <DatePicker
           id="birthDate"
           onSelect={handleBirthDateChange}
@@ -122,7 +137,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess }) => {
       </div>
       
       <CosmicButton type="submit" disabled={formik.isSubmitting}>
-        {t.profileSetup?.submitButton || 'Submit'}
+        {t.userProfile?.submitButton || 'Submit'}
       </CosmicButton>
     </form>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -327,37 +326,31 @@ const CreatePactPage: React.FC = () => {
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-              {t.createPact?.title || "Create Ascesis"}
+              {t.createPact?.title || "Create Pact"}
             </h1>
           </div>
           
           {/* Main content */}
-          <div className="relative z-10 flex-1 flex flex-col px-4 py-4 mx-auto w-full items-center justify-center">
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 py-4">
             {renderStep()}
           </div>
           
-          {/* Bottom */}
-          <div className="relative z-10 p-4 max-w-lg mx-auto w-full text-center mb-4">
-            <div className="flex justify-between items-center mb-6">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`flex-1 h-1 rounded-full mx-1 ${
-                    i <= step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'
-                  }`}
-                />
-              ))}
-            </div>
+          {/* Footer */}
+          <div className="relative z-10 px-4 py-4 flex justify-between">
+            <button 
+              onClick={handleBack}
+              className="text-cosmic-secondary"
+            >
+              {t.createPact?.back || "Back"}
+            </button>
             
-            {step < 3 && (
-              <CosmicButton 
-                onClick={handleNext} 
-                className="w-full"
-                disabled={isNextDisabled()}
-              >
-                {t.createPact?.nextButton || "Next"}
-              </CosmicButton>
-            )}
+            <CosmicButton 
+              onClick={handleNext} 
+              className="w-full"
+              disabled={isNextDisabled()}
+            >
+              {step < 3 ? (t.createPact?.next || "Next") : (t.createPact?.create || "Create")}
+            </CosmicButton>
           </div>
         </>
       )}

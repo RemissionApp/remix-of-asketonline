@@ -1,46 +1,27 @@
 
 import { User } from '@supabase/supabase-js';
-import { Achievement, Mission, Pact, UniverseQuestion, UserProfile } from '@/types';
+import { Achievement, Mission, Pact, UniverseQuestion, UserProfile, Meditation, SpiritualRank } from '@/types';
 import type Language from '@/types/Language';
 
 // Interface for UI state
-export interface UIState {
-  onboardingCompleted: boolean;
+export interface UISlice {
   activeScreen: string;
+  onboardingComplete: boolean;
+  loading: boolean;
   language: Language;
+  dailyQuote: string;
   isDeveloperMode: boolean;
-  checkOnboardingStatus: () => void;
+  
+  checkOnboardingStatus: () => boolean;
   setOnboardingCompleted: (completed: boolean) => void;
   setActiveScreen: (screen: string) => void;
   setLanguage: (language: Language) => void;
   setDeveloperMode: (enabled: boolean) => void;
+  setDailyQuote: (quote: string) => void;
 }
 
-// The complete app state
-export interface AppState extends UIState {
-  pacts: Pact[];
-  missions: Mission[];
-  activeQuestions: UniverseQuestion[];
-  dailyQuote: string;
-  userProfile: UserProfile;
-  user: User | null;
-  loading: boolean;
-  emailConfirmed: boolean;
-  translations: any;
-  
-  // Методы установки данных
-  setUser: (user: User | null) => void;
-  setPacts: (pacts: Pact[]) => void;
-  setUserProfile: (userProfile: UserProfile) => void;
-  setMissions: (missions: Mission[]) => void;
-  setUniverseQuestions: (questions: UniverseQuestion[]) => void;
-  setAchievements: (achievements: Achievement[]) => void;
-  setTranslations: (translations: any) => void;
-  
-  // Загрузка миссий
-  loadMissions: () => Promise<void>;
-  
-  // Чат
+// ChatSlice interface for chat functionality
+export interface ChatSlice {
   chatSessions: any[];
   isLoadingChatSessions: boolean;
   currentChatSession: any;
@@ -48,12 +29,63 @@ export interface AppState extends UIState {
   isLoadingChat: boolean;
   isSendingMessage: boolean;
   isUniverseTyping: boolean;
+}
+
+// ProFeaturesSlice interface for pro features
+export interface ProFeaturesSlice {
+  upgradeToPro: () => Promise<void>;
+  cancelProSubscription: () => Promise<void>;
+}
+
+// AuthSlice interface for authentication functionality
+export interface AuthSlice {
+  user: User | null;
+  emailConfirmed: boolean;
+  signOut: () => Promise<void>;
+  checkEmailConfirmation: () => Promise<boolean>;
+  setUser: (user: User | null) => void;
+}
+
+// GamificationSlice interface for achievements and missions
+export interface GamificationSlice {
+  completeMission: (missionId: string) => Promise<void>;
+  setMissions: (missions: Mission[]) => void;
+  loadMissions: () => Promise<void>;
+  setAchievements: (achievements: Achievement[]) => void;
+}
+
+// UniverseSlice interface for universe questions
+export interface UniverseSlice {
+  activeQuestions: UniverseQuestion[];
+  setUniverseQuestions: (questions: UniverseQuestion[]) => void;
+  loadUniverseQuestions: () => Promise<void>;
+}
+
+// The complete app state
+export interface AppState extends 
+  UISlice,
+  ChatSlice,
+  ProFeaturesSlice,
+  AuthSlice,
+  GamificationSlice,
+  UniverseSlice {
   
-  // Методы из срезов
+  pacts: Pact[];
+  missions: Mission[];
+  dailyQuote: string;
+  userProfile: UserProfile;
+  loading: boolean;
+  translations: any;
+  
+  setPacts: (pacts: Pact[]) => void;
+  setUserProfile: (userProfile: UserProfile) => void;
+  setTranslations: (translations: any) => void;
+  
+  // User profile methods
   loadUserProfile: () => Promise<void>;
   updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
   
-  // Методы для работы с пактами
+  // Pact methods
   loadPacts: () => Promise<void>;
   addPact: (pact: any) => void;
   markDayComplete: (pactId: string, date: string) => Promise<void>;

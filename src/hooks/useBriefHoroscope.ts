@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -68,3 +69,4 @@ const useBriefHoroscope = () => {
 };
 
 export default useBriefHoroscope;
+export { useBriefHoroscope };

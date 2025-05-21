@@ -58,6 +58,7 @@ export type UniverseQuestion = {
   question: string;
   answer: string;
   created_at: string;
+  date?: string;
 };
 
 export type MissionRequirement = {
@@ -71,6 +72,11 @@ export interface MissionProgress {
   date: string | null;
 }
 
+export interface MissionReward {
+  energyPoints: number;
+  achievement?: string;
+}
+
 export type Mission = {
   id: string;
   title: string;
@@ -81,11 +87,6 @@ export type Mission = {
   type?: 'single' | 'multi-day' | 'chain';
   progress?: MissionProgress[];
 };
-
-export interface MissionReward {
-  energyPoints: number;
-  achievement?: string;
-}
 
 export interface UserProfile {
   name: string;
@@ -104,7 +105,7 @@ export interface UserProfile {
   id?: string;
 }
 
-// Add Meditation type for meditation components
+// Update Meditation type to match what's being used in MeditationSlider
 export type Meditation = {
   id: string;
   title: string;
@@ -116,4 +117,8 @@ export type Meditation = {
   category: string;
   type: string;
   author?: string;
+  audioSrc?: string;
+  image?: string;
+  locked?: boolean;
+  requiresPro?: boolean;
 };
