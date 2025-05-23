@@ -1,124 +1,123 @@
+export interface UserProfile {
+  id?: string;
+  name: string;
+  email: string;
+  age: number | null;
+  rank: string;
+  energyPoints: number;
+  zodiacSign: string;
+  isPro: boolean;
+  birthDate?: Date | null;
+  avatar_url?: string | null;
+  goal?: string;
+  totalDays?: number;
+  achievements?: Achievement[];
+  activeMission?: Mission;
+}
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export interface User {
+  id: string;
+  email: string;
+  user_metadata: {
+    name: string;
+  };
+}
 
-export type SpiritualRank =
-  | 'seeker'
-  | 'apprentice'
-  | 'adept'
-  | 'master'
-  | 'grandmaster'
-  | 'pilgrim'
-  | 'warrior'
-  | 'enlightened';
+export interface ZodiacSign {
+  name: string;
+  dates: string;
+  element: string;
+  quality: string;
+  traits: string[];
+  symbol: string;
+}
 
-export type Achievement = {
+export interface Horoscope {
+  date: string;
+  horoscope: string;
+  zodiacSign: string;
+}
+
+export interface Pact {
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+  start_date: string;
+  end_date: string;
+  days_total: number;
+  days_completed: number;
+  last_completed_date?: string;
+  rejection: string;
+  penalty?: string;
+  status: 'active' | 'completed' | 'failed' | 'planned';
+  type?: string;
+  targetDate?: string;
+  duration: number;
+  reward?: string;
+  days: Array<{
+    id: string;
+    date: string;
+    completed: boolean;
+  }>;
+}
+
+export interface UniverseQuestion {
+  id: string;
+  question: string;
+  created_at: string;
+  answer?: string;
+  answered_at?: string;
+  date?: string;
+}
+
+export interface Achievement {
   id: string;
   title: string;
   description: string;
   icon: string;
   unlocked: boolean;
   unlockedDate?: string;
-};
+}
 
-export type Pact = {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  duration: number;
-  reward: string | null;
-  status: string;
-  created_at: string;
-  start_date: string;
-  end_date: string;
-  days: PactDay[];
-  days_total: number;
-  days_completed: number;
-  last_completed_date: string | null;
-  rejection: string | null;
-};
-
-export type PactDay = {
-  id: string;
-  pact_id: string;
-  date: string;
-  completed: boolean;
-  created_at: string;
-};
-
-export type UniverseQuestion = {
-  id: string;
-  user_id: string;
-  question: string;
-  answer: string;
-  created_at: string;
-  date?: string;
-};
-
-export type MissionRequirement = {
+export interface MissionRequirement {
   type: string;
-  description?: string;
-};
+  count: number;
+}
+
+export interface MissionReward {
+  energyPoints?: number;
+  achievement?: string;
+}
 
 export interface MissionProgress {
   day: number;
   completed: boolean;
-  date: string | null;
+  date: string;
 }
 
-export interface MissionReward {
-  energyPoints: number;
-  achievement?: string;
-}
-
-export type Mission = {
+export interface Mission {
   id: string;
   title: string;
   description: string;
-  requirements: string[] | MissionRequirement[];
+  requirements: MissionRequirement[] | string[];
   reward: MissionReward;
   completed: boolean;
+  completedDate?: string;
   type?: 'single' | 'multi-day' | 'chain';
   progress?: MissionProgress[];
-};
-
-export interface UserProfile {
-  name: string;
-  email: string;
-  age: number | null;
-  energyPoints: number;
-  goal: string;
-  isPro: boolean;
-  rank: SpiritualRank;
-  zodiacSign: string;
-  totalDays: number;
-  achievements: Achievement[];
-  birthDate: Date | string | null;
-  avatar_url: string | null;
-  activeMission?: Mission | null;
-  id?: string;
 }
 
-// Update Meditation type to match what's being used in MeditationSlider
-export type Meditation = {
+export interface Meditation {
   id: string;
   title: string;
   description: string;
-  duration: number;
-  audioUrl: string;
-  imageUrl: string;
-  isPro: boolean;
+  duration: string;
   category: string;
-  type: string;
-  author?: string;
+  image: string;
   audioSrc?: string;
-  image?: string;
   locked?: boolean;
   requiresPro?: boolean;
-};
+}
+
+export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';

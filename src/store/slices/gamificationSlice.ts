@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase } from '@/lib/supabase';
@@ -134,65 +135,103 @@ export const createGamificationSlice: StateCreator<AppState, [], [], Gamificatio
     }
   },
   
-  // Assign a mission to the user
+  // Assign mission
   assignMission: async () => {
+    const { user, userProfile } = get();
+    
+    if (!user) return;
+    
     try {
-      const { userProfile, user } = get();
+      // Check if user already has an active mission
+      if (userProfile.activeMission) return;
       
-      if (!user || !userProfile) return;
-      
-      const { data: missionData, error: missionError } = await supabase
+      // Get all completed missions
+      const { data: completedMissions, error: missionsError } = await supabase
         .from('missions')
-        .select('*')
+        .select('title')
         .eq('user_id', user.id)
-        .eq('completed', false)
-        .limit(1)
-        .single();
+        .eq('completed', true);
       
-      if (missionError && missionError.code !== 'PGRST116') {
-        console.error('Error fetching active mission:', missionError);
-        return;
-      }
+      if (missionsError) throw missionsError;
       
-      if (missionData) {
-        set({ userProfile: { ...userProfile, activeMission: missionData } });
-      }
+      // Filter available missions that haven't been completed
+      const completedTitles = completedMissions?.map(m => m.title) || [];
+      const availableMissionsCopy = availableMissions.filter(
+        m => !completedTitles.includes(m.title)
+      );
+      
+      if (availableMissionsCopy.length === 0) return; // No available missions
+      
+      // Select a random mission
+      const randomIndex = Math.floor(Math.random() * availableMissionsCopy.length);
+      const selectedMission = { ...availableMissionsCopy[randomIndex] };
+      
+      // Save to database
+      const { error } = await supabase
+        .from('missions')
+        .insert({
+          user_id: user.id,
+          title: selectedMission.title,
+          description: selectedMission.description,
+          requirements: selectedMission.requirements,
+          reward: selectedMission.reward,
+          completed: false
+        });
+      
+      if (error) throw error;
+      
+      // Update local state
+      set((state) => ({
+        userProfile: {
+          ...state.userProfile,
+          activeMission: selectedMission
+        }
+      }));
     } catch (error) {
-      console.error('Error assigning mission:', error);
+      console.error("Error assigning mission:", error);
     }
   },
   
-  // Complete the active mission
+  // Complete mission
   completeMission: async () => {
+    const { user, userProfile } = get();
+    
+    if (!user || !userProfile.activeMission) return;
+    
     try {
-      const { userProfile, user, addEnergyPoints } = get();
+      const { reward } = userProfile.activeMission;
       
-      if (!user || !userProfile?.activeMission) return;
-      
-      // Update mission in database
-      const { error: updateError } = await supabase
+      // Mark mission as completed in database
+      const { error } = await supabase
         .from('missions')
         .update({ completed: true })
-        .eq('id', userProfile.activeMission.id);
+        .eq('user_id', user.id)
+        .eq('title', userProfile.activeMission.title);
       
-      if (updateError) {
-        console.error('Error updating mission:', updateError);
-        return;
+      if (error) throw error;
+      
+      // Add energy points
+      await get().addEnergyPoints(reward.energyPoints);
+      
+      // If mission gives an achievement, unlock it
+      if (reward.achievement) {
+        await get().unlockAchievement(reward.achievement);
       }
       
-      // Add energy points from completed mission
-      const energyPoints = userProfile.activeMission.reward.energyPoints || 0;
-      await addEnergyPoints(energyPoints);
+      // Update local state
+      set((state) => ({
+        userProfile: {
+          ...state.userProfile,
+          activeMission: undefined
+        }
+      }));
       
-      // If mission has an achievement, unlock it
-      if (userProfile.activeMission.reward.achievement) {
-        await get().unlockAchievement(userProfile.activeMission.reward.achievement);
-      }
-      
-      // Clear active mission
-      set({ userProfile: { ...userProfile, activeMission: null } });
+      toast({
+        title: "Миссия выполнена!",
+        description: `Вы получили ${reward.energyPoints} энергетических очков`
+      });
     } catch (error) {
-      console.error('Error completing mission:', error);
+      console.error("Error completing mission:", error);
     }
   }
 });

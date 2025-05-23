@@ -1,142 +1,202 @@
-
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CosmicButton } from '@/components/CosmicButton';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
-import { useNavigate } from 'react-router-dom';
-import { DatePicker } from "@/components/ui/date-picker";
+import { differenceInYears } from 'date-fns';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { formatDate } from '@/utils/dateFormatUtils';
+import AvatarUpload from './AvatarUpload';
+import ZodiacInfo from './ZodiacInfo';
+import BirthDateEditor from './BirthDateEditor';
+import ProfileForm from './ProfileForm';
+import ProfileDataDisplay from './ProfileDataDisplay';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useToast } from '@/hooks/use-toast';
+import * as z from 'zod';
 
-interface UserProfileFormProps {
-  onSuccess?: () => void;
-}
-
-const UserProfileForm: React.FC<UserProfileFormProps> = ({ onSuccess = () => {} }) => {
-  const { updateUserProfile, userProfile } = useAppStore();
+const UserProfileForm: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete, user, loadUserProfile } = useAppStore();
   const { t } = useTranslations();
-  const { toast } = useToast();
-  
-  const initialBirthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
-  
-  const [birthDate, setBirthDate] = React.useState<Date | null>(initialBirthDate);
-  
-  const formSchema = z.object({
-    name: z.string()
-      .min(2, t.userProfile?.nameRequired || "Name must be at least 2 characters")
-      .max(50, t.userProfile?.nameMaxLength || "Name must be 50 characters or less"),
-    age: z.number()
-      .int(t.userProfile?.ageValidationInteger || 'Must be an integer')
-      .min(5, t.userProfile?.ageValidationTooYoung || 'Too young')
-      .max(120, t.userProfile?.ageValidationTooOld || 'Too old')
-      .nullable()
-      .optional(),
-    goal: z.string()
-      .min(10, t.userProfile?.goalValidationShort || 'Must be at least 10 characters')
-      .max(200, t.userProfile?.goalValidationLong || 'Must be 200 characters or less'),
-    zodiacSign: z.string().optional(),
-    birthDate: z.date().nullable().optional(),
+  const [age, setAge] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingBirthDate, setEditingBirthDate] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    birthDate: new Date()
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: userProfile?.name || '',
-      age: userProfile?.age || undefined,
-      goal: userProfile?.goal || '',
-      zodiacSign: userProfile?.zodiacSign || '',
-      birthDate: initialBirthDate || undefined,
-    },
-  });
-  
-  const handleBirthDateChange = (date: Date | null) => {
-    setBirthDate(date);
-    form.setValue('birthDate', date);
-  };
-  
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const profileData = {
-      ...values,
-      birthDate: values.birthDate ? values.birthDate.toISOString() : null,
+  // Load user profile data when component mounts
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      try {
+        // First, try to load from the store
+        await loadUserProfile();
+        
+        console.log("Profile loaded from store:", userProfile);
+        
+        // Then fetch the latest data from Supabase
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('name, birth_date, avatar_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error("Error fetching profile:", error);
+          return;
+        }
+        
+        console.log("Profile data from Supabase:", profileData);
+        
+        if (profileData) {
+          // Convert birth_date string from Supabase to a Date object
+          const birthDate = profileData.birth_date ? new Date(profileData.birth_date) : null;
+          
+          // Update the store and local form data
+          await updateUserProfile({
+            name: profileData.name || userProfile.name,
+            birthDate: birthDate || userProfile.birthDate,
+            avatar_url: profileData.avatar_url || userProfile.avatar_url
+          });
+          
+          setFormData({
+            name: profileData.name || userProfile.name || '',
+            birthDate: birthDate || userProfile.birthDate || new Date()
+          });
+          
+          // Calculate and set age
+          if (birthDate) {
+            const calculatedAge = differenceInYears(new Date(), birthDate);
+            setAge(calculatedAge);
+          }
+        }
+      } catch (err) {
+        console.error("Exception fetching profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
-    try {
-      await updateUserProfile(profileData);
+    if (user) {
+      loadProfile();
+    }
+  }, [user, userProfile.avatar_url, loadUserProfile, updateUserProfile]);
+  
+  // Handle form submission
+  const onSubmit = async (values: z.infer<any>) => {
+    if (!user) {
       toast({
-        title: t.userProfile?.profileUpdated || "Profile updated",
-        description: t.userProfile?.profileUpdatedDesc || "Your profile has been updated successfully",
+        title: "Ошибка",
+        description: "Вы должны войти в систему для обновления профиля",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    try {
+      console.log("Saving profile data:", values);
+      
+      // Format birthDate to YYYY-MM-DD for Supabase
+      const formattedBirthDate = formatDate(values.birthDate, 'en', false).split('/').reverse().join('-');
+      
+      // Update directly in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: values.name,
+          birth_date: formattedBirthDate
+        })
+        .eq('id', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Also update the local store
+      await updateUserProfile({
+        name: values.name,
+        birthDate: values.birthDate
       });
       
-      if (onSuccess) onSuccess();
-      navigate('/main');
-    } catch (error) {
-      toast({
-        title: t.userProfile?.profileUpdateFailed || "Update failed",
-        description: t.userProfile?.profileUpdateFailedDesc || "There was a problem updating your profile",
-        variant: "destructive",
+      // Update local form data
+      setFormData({
+        name: values.name,
+        birthDate: values.birthDate
       });
+      
+      // Calculate and set age
+      const calculatedAge = differenceInYears(new Date(), values.birthDate);
+      setAge(calculatedAge);
+      
+      toast({
+        title: "Профиль обновлен",
+        description: "Ваши данные успешно сохранены"
+      });
+      
+      // Always navigate to main when clicking continue
+      navigate('/main');
+      
+    } catch (error: any) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Ошибка",
+        description: error.message || "Не удалось сохранить профиль",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
-  
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <Label htmlFor="name">{t.userProfile?.nameLabel || 'Name'}</Label>
-        <Input
-          type="text"
-          id="name"
-          {...form.register('name')}
-        />
-        {form.formState.errors.name && (
-          <div className="text-red-500">{form.formState.errors.name.message}</div>
-        )}
+    <div className="w-full max-w-md mx-auto text-center">
+      <div className="flex justify-center mb-4 relative">
+        <AvatarUpload />
       </div>
       
-      <div>
-        <Label htmlFor="age">{t.userProfile?.ageLabel || 'Age'}</Label>
-        <Input
-          type="number"
-          id="age"
-          {...form.register('age', { valueAsNumber: true })}
-        />
-        {form.formState.errors.age && (
-          <div className="text-red-500">{form.formState.errors.age.message}</div>
-        )}
-      </div>
+      {location.pathname !== '/profile' && (
+        <h2 className="text-3xl font-serif text-white mb-6">
+          {t.userProfile?.title || "О тебе"}
+        </h2>
+      )}
       
-      <div>
-        <Label htmlFor="goal">{t.userProfile?.goalLabel || 'Life Goal'}</Label>
-        <Input
-          type="text"
-          id="goal"
-          {...form.register('goal')}
-        />
-        {form.formState.errors.goal && (
-          <div className="text-red-500">{form.formState.errors.goal.message}</div>
-        )}
-      </div>
+      <ProfileDataDisplay age={age} />
       
-      <div>
-        <Label htmlFor="birthDate">{t.userProfile?.birthDateLabel || 'Birth Date'}</Label>
-        <DatePicker
-          id="birthDate"
-          onSelect={handleBirthDateChange}
-          date={birthDate}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full"></div>
+        </div>
+      ) : (
+        <ProfileForm 
+          onSubmit={onSubmit} 
+          isSaving={isSaving}
+          defaultValues={{
+            name: userProfile.name !== 'Искатель' ? userProfile.name : '',
+            birthDate: userProfile.birthDate || new Date()
+          }}
         />
-        {form.formState.errors.birthDate && (
-          <div className="text-red-500">{form.formState.errors.birthDate.message}</div>
-        )}
-      </div>
+      )}
       
-      <CosmicButton type="submit" disabled={form.formState.isSubmitting}>
-        {t.userProfile?.submitButton || 'Submit'}
-      </CosmicButton>
-    </form>
+      {userProfile?.birthDate && (
+        <div className="mt-8">
+          <h3 className="text-xl font-serif text-white mb-4">Знак зодиака</h3>
+          <ZodiacInfo />
+        </div>
+      )}
+      
+      {/* Birth Date Edit Dialog */}
+      <BirthDateEditor 
+        open={editingBirthDate}
+        onOpenChange={setEditingBirthDate}
+      />
+    </div>
   );
 };
 

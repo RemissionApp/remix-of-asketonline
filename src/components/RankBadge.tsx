@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
@@ -27,34 +26,25 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
     if (language === 'ru') {
       switch(rank) {
         case 'seeker': return 'Искатель';
-        case 'apprentice': return 'Ученик';
-        case 'adept': return 'Адепт';
-        case 'master': return 'Мастер';
-        case 'grandmaster': return 'Грандмастер';
         case 'pilgrim': return 'Пилигрим';
         case 'warrior': return 'Воин Света';
+        case 'master': return 'Мастер';
         case 'enlightened': return 'Просветлённый';
       }
     } else if (language === 'es') {
       switch(rank) {
         case 'seeker': return 'Buscador';
-        case 'apprentice': return 'Aprendiz';
-        case 'adept': return 'Adepto';
-        case 'master': return 'Maestro';
-        case 'grandmaster': return 'Gran Maestro';
         case 'pilgrim': return 'Peregrino';
         case 'warrior': return 'Guerrero de Luz';
+        case 'master': return 'Maestro';
         case 'enlightened': return 'Iluminado';
       }
     } else {
       switch(rank) {
         case 'seeker': return 'Seeker';
-        case 'apprentice': return 'Apprentice';
-        case 'adept': return 'Adept';
-        case 'master': return 'Master';
-        case 'grandmaster': return 'Grandmaster';
         case 'pilgrim': return 'Pilgrim';
         case 'warrior': return 'Light Warrior';
+        case 'master': return 'Master';
         case 'enlightened': return 'Enlightened';
       }
     }
@@ -63,12 +53,9 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
   const getRankColor = (rank: SpiritualRank) => {
     switch(rank) {
       case 'seeker': return 'bg-blue-500/20 text-blue-400 border-blue-500/40';
-      case 'apprentice': return 'bg-green-500/20 text-green-400 border-green-500/40';
-      case 'adept': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
-      case 'master': return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
-      case 'grandmaster': return 'bg-cosmic-gold/20 text-cosmic-gold border-cosmic-gold/40';
       case 'pilgrim': return 'bg-green-500/20 text-green-400 border-green-500/40';
       case 'warrior': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+      case 'master': return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
       case 'enlightened': return 'bg-cosmic-gold/20 text-cosmic-gold border-cosmic-gold/40';
     }
   };

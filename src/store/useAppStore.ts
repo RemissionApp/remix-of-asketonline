@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -8,8 +9,6 @@ import { createGamificationSlice } from './slices/gamificationSlice';
 import { createProFeaturesSlice } from './slices/proFeaturesSlice';
 import { createAuthSlice } from './slices/authSlice';
 import { defaultAchievements } from './data/constants';
-import { supabase } from '@/lib/supabase';
-import { Mission, UserProfile, Achievement, UniverseQuestion, Pact } from '@/types';
 
 // Создание хранилища со всеми срезами
 export const useAppStore = create<AppState>()((set, get, api) => ({
@@ -30,30 +29,14 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     achievements: [...defaultAchievements],
     birthDate: null,
     avatar_url: null,
-    activeMission: undefined,
-    id: undefined
+    activeMission: undefined
   },
-  missions: [],
   user: null,
   loading: false,
   emailConfirmed: false,
-  translations: {},
   
   // Добавляем новый метод для установки пользователя
   setUser: (user) => set({ user }),
-  
-  // Методы для установки данных
-  setPacts: (pacts: Pact[]) => set({ pacts }),
-  setUserProfile: (userProfile: UserProfile) => set({ userProfile }),
-  setMissions: (missions: Mission[]) => set({ missions }),
-  setUniverseQuestions: (questions: UniverseQuestion[]) => set({ activeQuestions: questions }),
-  setAchievements: (achievements: Achievement[]) => set({ 
-    userProfile: { 
-      ...get().userProfile, 
-      achievements 
-    } 
-  }),
-  setTranslations: (translations) => set({ translations }),
   
   // Состояние чата
   chatSessions: [],
@@ -64,118 +47,11 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   isSendingMessage: false,
   isUniverseTyping: false,
   
-  // Загрузка миссий
-  loadMissions: async () => {
-    try {
-      const { user } = get();
-      if (!user) return;
-      
-      // Здесь должна быть реализация загрузки миссий из Supabase
-      const { data, error } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('user_id', user.id);
-        
-      if (error) throw error;
-      
-      if (data) {
-        set({ missions: data });
-      }
-    } catch (error) {
-      console.error('Error loading missions:', error);
-    }
-  },
-  
   // Комбинируем все срезы
   ...createUISlice(set, get, api),
   ...createPactsSlice(set, get, api),
   ...createUniverseSlice(set, get, api),
   ...createGamificationSlice(set, get, api),
   ...createProFeaturesSlice(set, get, api),
-  ...createAuthSlice(set, get, api),
-  
-  // Update the userProfile method to handle updating the active mission
-  updateUserProfile: async (profileData) => {
-    try {
-      set({ loading: true });
-      
-      const { user, userProfile } = get();
-      
-      if (!user) {
-        console.error("No user found, can't update profile");
-        return;
-      }
-      
-      // Extract active mission
-      const { activeMission, ...profileUpdates } = profileData;
-      
-      // Update profile data in Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          ...profileUpdates,
-          active_mission: activeMission?.id || userProfile.activeMission?.id || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-      
-      if (error) {
-        console.error('Error updating profile:', error);
-        return;
-      }
-      
-      // Update local state
-      set({
-        userProfile: {
-          ...userProfile,
-          ...profileData
-        }
-      });
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    } finally {
-      set({ loading: false });
-    }
-  },
-  isDeveloperMode: false,
-  
-  // Add missing methods
-  setOnboardingCompleted: (completed: boolean) => set({ onboardingComplete: completed }),
-  setDeveloperMode: (enabled: boolean) => set({ isDeveloperMode: enabled }),
-  
-  // Update the loadUserProfile method to handle date conversion properly
-  loadUserProfile: async () => {
-    try {
-      set({ loading: true });
-      
-      const { user } = get();
-      if (!user) return;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-        
-      if (error) throw error;
-      
-      if (data) {
-        const profile: UserProfile = {
-          ...data,
-          birthDate: data.birth_date || null,
-          energyPoints: data.energy_points || 0,
-          totalDays: data.total_days || 0,
-          isPro: false, // This should come from subscriptions table
-          achievements: [],
-          activeMission: data.active_mission ? { id: data.active_mission } : undefined
-        };
-        
-        set({ userProfile: profile });
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      set({ loading: false });
-    }
-  },
+  ...createAuthSlice(set, get, api)
 }));

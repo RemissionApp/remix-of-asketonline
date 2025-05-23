@@ -33,12 +33,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   // Define border color based on rank
   const rankBorderColor = {
     'seeker': 'border-amber-400',
-    'apprentice': 'border-emerald-400',
-    'adept': 'border-indigo-400',
-    'master': 'border-purple-500',
-    'grandmaster': 'border-cosmic-gold',
     'pilgrim': 'border-emerald-400',
     'warrior': 'border-indigo-400',
+    'master': 'border-purple-500',
     'enlightened': 'border-cosmic-gold'
   };
   
@@ -60,17 +57,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     switch (rank) {
       case 'seeker':
         return '/avatars/seeker.png';
-      case 'apprentice':
-        return '/avatars/seeker.png';
-      case 'adept':
-        return '/avatars/seeker.png';
       case 'pilgrim':
         return '/avatars/pilgrim.png';
       case 'warrior':
         return '/avatars/warrior.png';
       case 'master':
-        return '/avatars/master.png';
-      case 'grandmaster':
         return '/avatars/master.png';
       case 'enlightened':
         return '/avatars/enlightened.png';

@@ -45,7 +45,6 @@ export const createLoadPactsSlice = (
         // Transform to our app's format
         return {
           id: pact.id,
-          user_id: pact.user_id,
           title: pact.title,
           description: '',
           created_at: pact.created_at,
@@ -56,14 +55,13 @@ export const createLoadPactsSlice = (
           last_completed_date: '',
           rejection: pact.title,
           status: pact.status as 'active' | 'completed' | 'failed' | 'planned',
+          type: '',
           duration: pact.duration,
           reward: pact.reward || '',
           days: days?.map(d => ({
             id: d.id,
-            pact_id: d.pact_id,
             date: d.date,
-            completed: d.completed,
-            created_at: d.created_at
+            completed: d.completed
           })) || []
         };
       }));
