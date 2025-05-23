@@ -30,6 +30,9 @@ export const loadUniverseQuestionsFromSupabase = async (userId: string): Promise
   }
 };
 
+// Export the function with the expected name
+export const loadUniverseQuestions = loadUniverseQuestionsFromSupabase;
+
 // Save a universe question to Supabase
 export const saveUniverseQuestionToSupabase = async (question: UniverseQuestion): Promise<boolean> => {
   try {

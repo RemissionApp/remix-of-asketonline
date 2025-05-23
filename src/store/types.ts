@@ -14,6 +14,7 @@ export interface UISlice {
   
   checkOnboardingStatus: () => boolean;
   setOnboardingCompleted: (completed: boolean) => void;
+  setOnboardingComplete: (completed: boolean) => void;
   setActiveScreen: (screen: string) => void;
   setLanguage: (language: Language) => void;
   setDeveloperMode: (enabled: boolean) => void;
@@ -29,6 +30,12 @@ export interface ChatSlice {
   isLoadingChat: boolean;
   isSendingMessage: boolean;
   isUniverseTyping: boolean;
+  
+  loadChatSessions: () => Promise<void>;
+  createChatSession: (title: string) => Promise<void>;
+  setCurrentChatSession: (session: any) => void;
+  sendChatMessage: (message: string) => Promise<void>;
+  loadChatMessages: (sessionId: string) => Promise<void>;
 }
 
 // ProFeaturesSlice interface for pro features
@@ -44,6 +51,8 @@ export interface AuthSlice {
   signOut: () => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
   setUser: (user: User | null) => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
 }
 
 // GamificationSlice interface for achievements and missions
@@ -52,6 +61,9 @@ export interface GamificationSlice {
   setMissions: (missions: Mission[]) => void;
   loadMissions: () => Promise<void>;
   setAchievements: (achievements: Achievement[]) => void;
+  addEnergyPoints: (points: number) => void;
+  unlockAchievement: (achievementId: string) => void;
+  checkRankProgress: () => void;
 }
 
 // UniverseSlice interface for universe questions
@@ -59,6 +71,12 @@ export interface UniverseSlice {
   activeQuestions: UniverseQuestion[];
   setUniverseQuestions: (questions: UniverseQuestion[]) => void;
   loadUniverseQuestions: () => Promise<void>;
+  askUniverse: (question: string) => Promise<void>;
+}
+
+// PactsSlice interface for pact functionality
+export interface PactsSlice {
+  syncPactsWithCurrentDate: () => Promise<void>;
 }
 
 // The complete app state
@@ -68,7 +86,8 @@ export interface AppState extends
   ProFeaturesSlice,
   AuthSlice,
   GamificationSlice,
-  UniverseSlice {
+  UniverseSlice,
+  PactsSlice {
   
   pacts: Pact[];
   missions: Mission[];

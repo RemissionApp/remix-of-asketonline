@@ -29,6 +29,9 @@ export const loadAchievementsFromSupabase = async (userId: string): Promise<Achi
   }
 };
 
+// Export the function with the expected name
+export const loadUserAchievements = loadAchievementsFromSupabase;
+
 // Save achievement to Supabase
 export const saveAchievementToSupabase = async (userId: string, achievement: Achievement): Promise<boolean> => {
   try {
