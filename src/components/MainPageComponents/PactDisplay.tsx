@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -7,6 +7,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { PactNavigation } from '@/components/PactNavigation';
+import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -25,12 +26,12 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   currentPact,
   handlePrevPact,
   handleNextPact,
-  handleBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
+  const [showBreakDialog, setShowBreakDialog] = useState(false);
   
   if (!currentPact) return null;
   
@@ -65,12 +66,19 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
             className="mt-4" 
             variant="destructive"
             size="sm"
-            onClick={handleBreakAscesis}
+            onClick={() => setShowBreakDialog(true)}
           >
             {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
           </CosmicButton>
         </div>
       </EnergyCircle>
+
+      <BreakAscesisDialog
+        isOpen={showBreakDialog}
+        onClose={() => setShowBreakDialog(false)}
+        pactTitle={currentPact.title}
+        pactId={currentPact.id}
+      />
     </div>
   );
 };
