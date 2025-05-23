@@ -3,6 +3,10 @@ import { User } from '@supabase/supabase-js';
 import { Achievement, Mission, Pact, UniverseQuestion, UserProfile, Meditation, SpiritualRank } from '@/types';
 import type Language from '@/types/Language';
 
+// Missing type definitions
+export type ActiveScreen = 'main' | 'profile' | 'create-pact' | 'onboarding';
+export type AppLanguage = 'en' | 'ru' | 'es';
+
 // Interface for UI state
 export interface UISlice {
   activeScreen: string;

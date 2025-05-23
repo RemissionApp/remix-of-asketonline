@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -134,6 +133,47 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       });
     } catch (error) {
       console.error('Error updating profile:', error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  isDeveloperMode: false,
+  
+  // Add missing methods
+  setOnboardingCompleted: (completed: boolean) => set({ onboardingComplete: completed }),
+  setDeveloperMode: (enabled: boolean) => set({ isDeveloperMode: enabled }),
+  
+  // Update the loadUserProfile method to handle date conversion properly
+  loadUserProfile: async () => {
+    try {
+      set({ loading: true });
+      
+      const { user } = get();
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (error) throw error;
+      
+      if (data) {
+        const profile: UserProfile = {
+          ...data,
+          birthDate: data.birth_date || null,
+          energyPoints: data.energy_points || 0,
+          totalDays: data.total_days || 0,
+          isPro: false, // This should come from subscriptions table
+          achievements: [],
+          activeMission: data.active_mission ? { id: data.active_mission } : undefined
+        };
+        
+        set({ userProfile: profile });
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
     } finally {
       set({ loading: false });
     }
