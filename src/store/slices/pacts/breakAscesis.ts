@@ -12,7 +12,7 @@ export const createBreakAscesisSlice = (
   set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): BreakAscesisSlice => ({
-  breakAscesis: async (pactId, reason = '') => {
+  breakAscesis: async (pactId: string, reason?: string) => {
     const { user, loadPacts, addEnergyPoints, language } = get();
     
     if (!user) {
