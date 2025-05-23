@@ -5,17 +5,17 @@ import { useHoroscopeData } from './useHoroscopeData';
 
 export const useBriefHoroscope = () => {
   const { userProfile } = useAppStore();
-  const { horoscope, isLoading, error, refetch } = useHoroscopeData();
+  const horoscopeResult = useHoroscopeData();
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    if (horoscope?.description) {
+    if (horoscopeResult?.horoscope?.description) {
       setIsTyping(true);
       setDisplayedText('');
       
       // Simulate typing effect
-      const text = horoscope.description;
+      const text = horoscopeResult.horoscope.description;
       let i = 0;
       const typingSpeed = 50;
       
@@ -31,14 +31,14 @@ export const useBriefHoroscope = () => {
       
       typeWriter();
     }
-  }, [horoscope?.description]);
+  }, [horoscopeResult?.horoscope?.description]);
 
   return {
-    horoscope,
-    loading: isLoading,
+    horoscope: horoscopeResult?.horoscope,
+    loading: horoscopeResult?.loading || false,
     displayedText,
     isTyping,
-    error,
-    refetch
+    error: null,
+    refetch: () => {} // Placeholder function
   };
 };

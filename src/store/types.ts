@@ -1,10 +1,9 @@
-
 import { User } from '@supabase/supabase-js';
 import { Achievement, Mission, Pact, UniverseQuestion, UserProfile, Meditation, SpiritualRank } from '@/types';
 import type Language from '@/types/Language';
 
 // Missing type definitions
-export type ActiveScreen = 'main' | 'profile' | 'create-pact' | 'onboarding';
+export type ActiveScreen = 'main' | 'profile' | 'create-pact' | 'onboarding' | 'welcome';
 export type AppLanguage = 'en' | 'ru' | 'es';
 
 // Interface for UI state
@@ -76,11 +75,30 @@ export interface UniverseSlice {
   setUniverseQuestions: (questions: UniverseQuestion[]) => void;
   loadUniverseQuestions: () => Promise<void>;
   askUniverse: (question: string) => Promise<void>;
+  
+  // Chat functionality
+  chatSessions: any[];
+  isLoadingChatSessions: boolean;
+  currentChatSession: any;
+  chatMessages: any[];
+  isLoadingChat: boolean;
+  isSendingMessage: boolean;
+  isUniverseTyping: boolean;
+  
+  loadChatSessions: () => Promise<void>;
+  createChatSession: (title: string) => Promise<void>;
+  setCurrentChatSession: (session: any) => void;
+  sendChatMessage: (message: string) => Promise<void>;
+  loadChatMessages: (sessionId: string) => Promise<void>;
 }
 
 // PactsSlice interface for pact functionality
 export interface PactsSlice {
   syncPactsWithCurrentDate: () => Promise<void>;
+  loadPacts: () => Promise<void>;
+  addPact: (pact: any) => void;
+  markDayComplete: (pactId: string, date: string) => Promise<void>;
+  breakAscesis: (pactId: string) => Promise<void>;
 }
 
 // The complete app state

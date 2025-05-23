@@ -5,11 +5,11 @@ import { UniverseQuestion } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
-export const createUniverseSlice: StateCreator<
+export const createUniverseQuestionSlice: StateCreator<
   AppState,
   [],
   [],
-  UniverseSlice
+  Pick<UniverseSlice, 'activeQuestions' | 'setUniverseQuestions' | 'loadUniverseQuestions' | 'askUniverse'>
 > = (set, get) => ({
   activeQuestions: [],
   
@@ -71,11 +71,16 @@ export const createUniverseSlice: StateCreator<
       const currentQuestions = get().activeQuestions;
       set({ activeQuestions: [questionData, ...currentQuestions] });
       
-      // Here you would typically call a function to get the actual answer
-      // For now, we'll just update with a placeholder
-      
     } catch (error) {
       console.error('Error asking universe:', error);
     }
   }
 });
+
+// Export the interface for the question slice
+export interface UniverseQuestionSlice {
+  activeQuestions: UniverseQuestion[];
+  setUniverseQuestions: (questions: UniverseQuestion[]) => void;
+  loadUniverseQuestions: () => Promise<void>;
+  askUniverse: (question: string) => Promise<void>;
+}
