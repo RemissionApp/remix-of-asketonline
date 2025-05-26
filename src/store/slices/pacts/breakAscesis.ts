@@ -5,14 +5,14 @@ import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 export interface BreakAscesisSlice {
-  breakAscesis: (pactId: string, reason?: string) => Promise<void>;
+  breakAscesis: (pactId: string) => Promise<void>;
 }
 
 export const createBreakAscesisSlice = (
   set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): BreakAscesisSlice => ({
-  breakAscesis: async (pactId: string, reason?: string) => {
+  breakAscesis: async (pactId) => {
     const { user, loadPacts, addEnergyPoints, language } = get();
     
     if (!user) {
@@ -27,13 +27,10 @@ export const createBreakAscesisSlice = (
     set({ loading: true });
     
     try {
-      // Update pact status to failed with reason
+      // Update pact status to failed
       const { error: pactError } = await supabase
         .from('pacts')
-        .update({ 
-          status: 'failed',
-          reason: reason || null
-        })
+        .update({ status: 'failed' })
         .eq('id', pactId);
       
       if (pactError) throw pactError;
@@ -41,31 +38,31 @@ export const createBreakAscesisSlice = (
       // Subtract 100 energy points as a penalty
       await addEnergyPoints(-100);
       
+      // Update the profile to reflect the broken ascesis
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (profileError) throw profileError;
+      
       // Reload pacts to reflect changes
       await loadPacts();
       
-      // Show confirmation message
-      const messages = {
-        ru: {
-          title: "Аскеза прервана",
-          description: "Не расстраивайтесь, каждая попытка — это шаг к росту"
-        },
-        en: {
-          title: "Ascesis broken",
-          description: "Don't be discouraged, every attempt is a step towards growth"
-        },
-        es: {
-          title: "Ascesis interrumpida", 
-          description: "No te desanimes, cada intento es un paso hacia el crecimiento"
-        }
-      };
-      
-      const currentMessages = messages[language] || messages.ru;
-      
+      // Show message to the user
       toast({
-        title: currentMessages.title,
-        description: currentMessages.description,
-        variant: "default"
+        title: language === 'ru' 
+          ? "Аскеза прервана" 
+          : language === 'es'
+            ? "Ascesis interrumpida"
+            : "Ascesis broken",
+        description: language === 'ru' 
+          ? "Вы потеряли 100 энергетических очков" 
+          : language === 'es'
+            ? "Has perdido 100 puntos de energía"
+            : "You lost 100 energy points",
+        variant: "destructive"
       });
     } catch (error: any) {
       toast({
