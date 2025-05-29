@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Star, Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAppStore } from '@/store/useAppStore';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MeditationSession {
   id: string;
@@ -24,6 +26,7 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
   currentIndex,
   onSessionChange
 }) => {
+  const { userProfile } = useAppStore();
   const currentSession = sessions[currentIndex];
 
   const handlePrevious = () => {
@@ -37,8 +40,34 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
   };
 
   return (
-    <div className="bg-cosmic-dark/80 backdrop-blur-md border-b border-cosmic-accent/20 px-4 py-3">
-      <div className="flex items-center justify-between">
+    <div className="bg-cosmic-dark/80 backdrop-blur-md border-b border-cosmic-accent/20">
+      {/* User Info Bar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-cosmic-accent/10">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={userProfile.avatar_url || ''} />
+            <AvatarFallback className="bg-cosmic-accent/20 text-cosmic-accent text-sm">
+              {userProfile.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <span className="text-white text-sm font-medium">{userProfile.name}</span>
+            <div className="flex items-center gap-1">
+              <Star size={12} className="text-cosmic-gold" />
+              <span className="text-cosmic-gold text-xs">{userProfile.energyPoints} энергии</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <div className="bg-cosmic-accent/20 px-2 py-1 rounded-full">
+            <span className="text-cosmic-accent text-xs capitalize">{userProfile.rank}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Session Navigation */}
+      <div className="flex items-center justify-between px-4 py-3">
         <Button
           variant="ghost"
           size="icon"
