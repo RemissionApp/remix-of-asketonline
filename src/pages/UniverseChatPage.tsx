@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -74,8 +75,8 @@ const UniverseChatPage = () => {
           // Create welcome message from universe (not from user)
           const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Fix: Removed the second argument as sendChatMessage only accepts one argument
-          await sendChatMessage(welcomeMessage);
+          // Send welcome message as universe message
+          await sendChatMessage(welcomeMessage, 'universe');
         } catch (error) {
           console.error('Error adding welcome message:', error);
         }
@@ -102,12 +103,12 @@ const UniverseChatPage = () => {
           
           // Wait a bit for state to update before sending
           setTimeout(() => {
-            sendChatMessage(message);
+            sendChatMessage(message, 'user');
           }, 200);
         }
       } else {
-        // Session exists, send message
-        await sendChatMessage(message);
+        // Session exists, send message as user message
+        await sendChatMessage(message, 'user');
       }
     } catch (error) {
       console.error('Error in send message flow:', error);
