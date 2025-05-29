@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Music, User, Leaf } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Music, User, Leaf, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -22,9 +22,48 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
   const [selectedMusic, setSelectedMusic] = useState(backgroundMusic[0]);
   const [selectedVoice, setSelectedVoice] = useState(voiceOptions[0]);
   const [feelings, setFeelings] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playingMusic, setPlayingMusic] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const musicUrls: { [key: string]: string } = {
+    'Лес': 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3'
+  };
+
+  const handleMusicPreview = (music: string) => {
+    if (audioRef.current) {
+      if (playingMusic === music && isPlaying) {
+        // Останавливаем воспроизведение
+        audioRef.current.pause();
+        setIsPlaying(false);
+        setPlayingMusic(null);
+      } else {
+        // Начинаем воспроизведение
+        const audioUrl = musicUrls[music];
+        if (audioUrl) {
+          audioRef.current.src = audioUrl;
+          audioRef.current.play();
+          setIsPlaying(true);
+          setPlayingMusic(music);
+        }
+      }
+    }
+  };
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+    setPlayingMusic(null);
+  };
 
   return (
     <div className="p-6 space-y-6">
+      <audio
+        ref={audioRef}
+        onEnded={handleAudioEnded}
+        onPause={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+      />
+
       {/* Curator Message */}
       <div className="bg-cosmic-dark/40 backdrop-blur-sm border border-cosmic-accent/20 rounded-lg p-4">
         <div className="flex items-start gap-3">
@@ -46,21 +85,36 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
         </div>
         <div className="grid grid-cols-2 gap-2">
           {backgroundMusic.map((music) => (
-            <Button
-              key={music}
-              variant={selectedMusic === music ? "default" : "outline"}
-              size="sm"
-              onClick={() => {
-                setSelectedMusic(music);
-                onMusicChange(music);
-              }}
-              className={selectedMusic === music 
-                ? "bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent" 
-                : "border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent"
-              }
-            >
-              {music}
-            </Button>
+            <div key={music} className="flex items-center gap-2">
+              <Button
+                variant={selectedMusic === music ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedMusic(music);
+                  onMusicChange(music);
+                }}
+                className={`flex-1 ${selectedMusic === music 
+                  ? "bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent" 
+                  : "border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent"
+                }`}
+              >
+                {music}
+              </Button>
+              {musicUrls[music] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleMusicPreview(music)}
+                  className="w-8 h-8 text-cosmic-accent hover:bg-cosmic-accent/20"
+                >
+                  {playingMusic === music && isPlaying ? (
+                    <Pause size={16} />
+                  ) : (
+                    <Play size={16} />
+                  )}
+                </Button>
+              )}
+            </div>
           ))}
         </div>
       </div>
