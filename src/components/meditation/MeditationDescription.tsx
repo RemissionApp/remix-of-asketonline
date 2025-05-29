@@ -30,7 +30,7 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
     'Лес': 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3'
   };
 
-  const handleMusicPreview = (music: string) => {
+  const handleMusicPreview = async (music: string) => {
     if (audioRef.current) {
       if (playingMusic === music && isPlaying) {
         // Останавливаем воспроизведение
@@ -41,16 +41,29 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
         // Начинаем воспроизведение
         const audioUrl = musicUrls[music];
         if (audioUrl) {
-          audioRef.current.src = audioUrl;
-          audioRef.current.play();
-          setIsPlaying(true);
-          setPlayingMusic(music);
+          try {
+            audioRef.current.src = audioUrl;
+            audioRef.current.volume = 0.5; // Устанавливаем громкость на 50%
+            await audioRef.current.play();
+            setIsPlaying(true);
+            setPlayingMusic(music);
+          } catch (error) {
+            console.error('Ошибка воспроизведения аудио:', error);
+            setIsPlaying(false);
+            setPlayingMusic(null);
+          }
         }
       }
     }
   };
 
   const handleAudioEnded = () => {
+    setIsPlaying(false);
+    setPlayingMusic(null);
+  };
+
+  const handleAudioError = () => {
+    console.error('Ошибка загрузки аудиофайла');
     setIsPlaying(false);
     setPlayingMusic(null);
   };
@@ -62,6 +75,8 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
         onEnded={handleAudioEnded}
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
+        onError={handleAudioError}
+        preload="none"
       />
 
       {/* Curator Message */}
@@ -106,6 +121,7 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
                   size="icon"
                   onClick={() => handleMusicPreview(music)}
                   className="w-8 h-8 text-cosmic-accent hover:bg-cosmic-accent/20"
+                  disabled={!musicUrls[music]}
                 >
                   {playingMusic === music && isPlaying ? (
                     <Pause size={16} />
