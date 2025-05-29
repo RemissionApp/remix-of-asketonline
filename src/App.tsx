@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import ComparisonPage from "./pages/ComparisonPage";
 import MeditationPage from "./pages/MeditationPage";
+import NewMeditationPage from "./pages/NewMeditationPage";
 import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
 import FullHoroscopePage from "./pages/FullHoroscopePage";
 import UniverseChatPage from "./pages/UniverseChatPage";
@@ -156,6 +157,7 @@ const App = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/comparison" element={<ComparisonPage />} />
             <Route path="/meditation" element={<MeditationPage />} />
+            <Route path="/meditation/session" element={<NewMeditationPage />} />
             <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
             <Route path="/full-horoscope" element={<FullHoroscopePage />} />
             <Route path="/affirmations" element={<AffirmationsPage />} />
