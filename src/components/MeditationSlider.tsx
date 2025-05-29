@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MeditationCard } from './MeditationCard';
 import { MeditationPlayer } from './MeditationPlayer';
@@ -13,14 +12,23 @@ import { Meditation } from '@/types';
 
 interface MeditationSliderProps {
   meditations: Meditation[];
+  onMeditationClick?: (meditation: Meditation) => void;
 }
 
-export const MeditationSlider: React.FC<MeditationSliderProps> = ({ meditations }) => {
+export const MeditationSlider: React.FC<MeditationSliderProps> = ({ 
+  meditations, 
+  onMeditationClick 
+}) => {
   const [activeMeditationId, setActiveMeditationId] = useState<string | null>(null);
   const activeMeditation = meditations.find(m => m.id === activeMeditationId);
 
   const handlePlayMeditation = (id: string) => {
-    setActiveMeditationId(id);
+    const meditation = meditations.find(m => m.id === id);
+    if (meditation && onMeditationClick) {
+      onMeditationClick(meditation);
+    } else {
+      setActiveMeditationId(id);
+    }
   };
 
   const handleNextMeditation = () => {
