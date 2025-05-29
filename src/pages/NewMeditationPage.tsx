@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -95,6 +94,7 @@ const NewMeditationPage: React.FC = () => {
           <AdvancedMeditationPlayer
             audioSrc="/meditations/demo.mp3"
             title={mockSessions[currentSessionIndex].title}
+            selectedMusic={selectedMusic}
             onNext={() => {
               const nextIndex = currentSessionIndex < mockSessions.length - 1 
                 ? currentSessionIndex + 1 

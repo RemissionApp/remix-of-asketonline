@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 interface AdvancedMeditationPlayerProps {
   audioSrc: string;
   title: string;
+  selectedMusic?: string;
   onFinish?: () => void;
   onNext?: () => void;
   onPrevious?: () => void;
@@ -17,6 +18,7 @@ interface AdvancedMeditationPlayerProps {
 export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> = ({
   audioSrc,
   title,
+  selectedMusic = 'Лес',
   onFinish,
   onNext,
   onPrevious,
@@ -29,41 +31,93 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
   const [musicVolume, setMusicVolume] = useState(0.5);
   const [isFavorite, setIsFavorite] = useState(false);
   const [remindTomorrow, setRemindTomorrow] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const voiceAudioRef = useRef<HTMLAudioElement>(null);
+  const musicAudioRef = useRef<HTMLAudioElement>(null);
 
-  const togglePlayPause = () => {
-    if (audioRef.current) {
+  const musicUrls: { [key: string]: string } = {
+    'Лес': 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3',
+    'Дождь': '',
+    'Тибетские чаши': '',
+    'Океан': '',
+    'Тишина': ''
+  };
+
+  const togglePlayPause = async () => {
+    try {
       if (isPlaying) {
-        audioRef.current.pause();
+        // Останавливаем все аудио
+        if (voiceAudioRef.current) {
+          voiceAudioRef.current.pause();
+        }
+        if (musicAudioRef.current) {
+          musicAudioRef.current.pause();
+        }
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        // Запускаем аудио
+        if (voiceAudioRef.current) {
+          await voiceAudioRef.current.play();
+        }
+        
+        // Запускаем фоновую музыку если выбрана
+        if (selectedMusic !== 'Тишина' && musicUrls[selectedMusic]) {
+          if (musicAudioRef.current) {
+            musicAudioRef.current.src = musicUrls[selectedMusic];
+            musicAudioRef.current.volume = musicVolume;
+            musicAudioRef.current.loop = true;
+            await musicAudioRef.current.play();
+          }
+        }
+        
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Ошибка воспроизведения:', error);
+      setIsPlaying(false);
     }
   };
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-      if (audioRef.current.currentTime >= audioRef.current.duration) {
+    if (voiceAudioRef.current) {
+      setCurrentTime(voiceAudioRef.current.currentTime);
+      if (voiceAudioRef.current.currentTime >= voiceAudioRef.current.duration) {
         setIsPlaying(false);
         setCurrentTime(0);
+        if (musicAudioRef.current) {
+          musicAudioRef.current.pause();
+        }
         if (onFinish) onFinish();
       }
     }
   };
 
   const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+    if (voiceAudioRef.current) {
+      setDuration(voiceAudioRef.current.duration);
     }
   };
 
   const handleSeek = (value: number[]) => {
-    if (audioRef.current) {
+    if (voiceAudioRef.current) {
       const newTime = value[0];
-      audioRef.current.currentTime = newTime;
+      voiceAudioRef.current.currentTime = newTime;
       setCurrentTime(newTime);
+    }
+  };
+
+  const handleVoiceVolumeChange = (value: number[]) => {
+    const newVolume = value[0];
+    setVoiceVolume(newVolume);
+    if (voiceAudioRef.current) {
+      voiceAudioRef.current.volume = newVolume;
+    }
+  };
+
+  const handleMusicVolumeChange = (value: number[]) => {
+    const newVolume = value[0];
+    setMusicVolume(newVolume);
+    if (musicAudioRef.current) {
+      musicAudioRef.current.volume = newVolume;
     }
   };
 
@@ -75,14 +129,35 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // Синхронизируем громкость при изменении
+  useEffect(() => {
+    if (voiceAudioRef.current) {
+      voiceAudioRef.current.volume = voiceVolume;
+    }
+  }, [voiceVolume]);
+
+  useEffect(() => {
+    if (musicAudioRef.current) {
+      musicAudioRef.current.volume = musicVolume;
+    }
+  }, [musicVolume]);
+
   return (
     <div className="bg-cosmic-dark/80 backdrop-blur-md border border-cosmic-accent/20 rounded-lg p-6 mx-4">
+      {/* Основное аудио (голос) */}
       <audio
-        ref={audioRef}
+        ref={voiceAudioRef}
         src={audioSrc}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         hidden
+      />
+      
+      {/* Фоновая музыка */}
+      <audio
+        ref={musicAudioRef}
+        hidden
+        loop
       />
       
       {/* Progress Bar with Breathing Wave Effect */}
@@ -146,7 +221,7 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
             value={[voiceVolume]}
             max={1}
             step={0.01}
-            onValueChange={(value) => setVoiceVolume(value[0])}
+            onValueChange={handleVoiceVolumeChange}
           />
         </div>
         
@@ -159,7 +234,7 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
             value={[musicVolume]}
             max={1}
             step={0.01}
-            onValueChange={(value) => setMusicVolume(value[0])}
+            onValueChange={handleMusicVolumeChange}
           />
         </div>
       </div>
