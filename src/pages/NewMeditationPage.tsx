@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { MeditationHeroSection } from '@/components/meditation/MeditationHeroSec
 import { AdvancedMeditationPlayer } from '@/components/meditation/AdvancedMeditationPlayer';
 import { MeditationDescription } from '@/components/meditation/MeditationDescription';
 import { UserProgress } from '@/components/meditation/UserProgress';
+import { BottomNavigation } from '@/components/BottomNavigation';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -62,7 +64,7 @@ const NewMeditationPage: React.FC = () => {
     <div className="min-h-screen bg-cosmic-dark relative">
       <StarField starCount={100} />
       
-      <div className="relative z-10">
+      <div className="relative z-10 pb-20">
         {/* Back Button */}
         <div className="absolute top-4 left-4 z-20">
           <Button
@@ -147,6 +149,9 @@ const NewMeditationPage: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 };
