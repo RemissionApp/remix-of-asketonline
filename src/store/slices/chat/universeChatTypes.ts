@@ -21,7 +21,7 @@ export interface UniverseChatState {
   loadChatMessages: (sessionId: string) => Promise<void>;
   createChatSession: (title: string) => Promise<string | null>;
   setCurrentChatSession: (sessionId: string | null) => Promise<void>;
-  sendChatMessage: (message: string, messageType?: 'user' | 'system') => Promise<void>;
+  sendChatMessage: (message: string, messageType?: 'user' | 'universe') => Promise<void>;
   subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
   handleNewChatMessage: (payload: any) => void;
 }
