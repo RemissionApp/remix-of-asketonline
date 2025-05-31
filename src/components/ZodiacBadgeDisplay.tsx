@@ -6,11 +6,13 @@ import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { useNavigate } from 'react-router-dom';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   
   console.log("ZodiacBadgeDisplay rendering, userProfile:", userProfile);
   
@@ -20,9 +22,29 @@ export const ZodiacBadgeDisplay: React.FC = () => {
     return null;
   }
   
-  const handleZodiacClick = () => {
+  const handleZodiacClick = async () => {
     if (userProfile?.isPro) {
+      // Переходим сразу
       navigate('/full-horoscope');
+      
+      // Воспроизводим фразу в фоновом режиме
+      const horoscopePhrase = getHoroscopePhrase();
+      try {
+        generateAndPlaySpeech(horoscopePhrase, { 
+          voice: 'Custom', 
+          model: 'eleven_multilingual_v2' 
+        });
+      } catch (error) {
+        console.error('Error playing horoscope phrase:', error);
+      }
+    }
+  };
+
+  const getHoroscopePhrase = () => {
+    switch(language) {
+      case 'ru': return 'Переходим к полному гороскопу. Узнайте что говорят звезды о вашем будущем.';
+      case 'es': return 'Vamos al horóscopo completo. Descubre lo que las estrellas dicen sobre tu futuro.';
+      default: return 'Let us go to the full horoscope. Discover what the stars say about your future.';
     }
   };
   
