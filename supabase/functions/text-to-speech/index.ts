@@ -40,7 +40,7 @@ serve(async (req) => {
     console.log('Generating speech with Eleven Labs for text:', text.substring(0, 50) + '...');
     console.log('Using voice ID:', voiceId);
 
-    // Generate speech using Eleven Labs API
+    // Generate speech using Eleven Labs API with enhanced voice settings
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
       headers: {
@@ -52,10 +52,10 @@ serve(async (req) => {
         text,
         model_id: model,
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.5,
-          style: 0.0,
-          use_speaker_boost: true
+          stability: 0.75,        // Увеличена стабильность для более последовательного звучания
+          similarity_boost: 0.85, // Увеличено сходство с оригинальным голосом
+          style: 0.35,           // Добавлен стиль для более выразительной речи
+          use_speaker_boost: true // Включено улучшение динамика
         }
       }),
     });
