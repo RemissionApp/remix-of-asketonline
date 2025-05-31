@@ -10,6 +10,7 @@ import { GenerateHoroscopeCard } from '@/components/full-horoscope/GenerateHoros
 import { LoadingState } from '@/components/full-horoscope/LoadingState';
 import { HoroscopeContent } from '@/components/full-horoscope/HoroscopeContent';
 import { MovingStarField } from '@/components/full-horoscope/MovingStarField';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 export default function FullHoroscopePage() {
   const { userProfile, language } = useAppStore();
@@ -27,7 +28,7 @@ export default function FullHoroscopePage() {
 
   return (
     <div 
-      className="min-h-screen text-white p-4 md:p-8 relative" 
+      className="min-h-screen text-white p-4 md:p-8 relative pb-20" 
       style={{
         backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.3)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
         backgroundSize: 'cover',
@@ -85,6 +86,9 @@ export default function FullHoroscopePage() {
           />
         )}
       </div>
+      
+      {/* Add bottom navigation */}
+      <BottomNavigation />
     </div>
   );
 }
