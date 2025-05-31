@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -5,7 +6,7 @@ import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPrevie
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { UniverseHeader } from '@/components/universe/UniverseHeader';
-import { UserGreeting } from '@/components/universe/UserGreeting';
+import { VoiceGreeting } from '@/components/universe/VoiceGreeting';
 import { QuestionForm } from '@/components/universe/QuestionForm';
 import { ThinkingAnimation } from '@/components/universe/ThinkingAnimation';
 import { UniverseAnswer } from '@/components/universe/UniverseAnswer';
@@ -52,8 +53,8 @@ const UniversePage: React.FC = () => {
       {/* Header */}
       <UniverseHeader />
       
-      {/* User Greeting */}
-      <UserGreeting userProfile={userProfile} language={language} />
+      {/* Voice Greeting instead of regular UserGreeting */}
+      <VoiceGreeting userProfile={userProfile} language={language} />
       
       {/* Show countdown timer if there are active pacts */}
       {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}

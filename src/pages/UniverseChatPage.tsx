@@ -103,12 +103,12 @@ const UniverseChatPage = () => {
           
           // Wait a bit for state to update before sending
           setTimeout(() => {
-            sendChatMessage(message, 'user');
+            sendChatMessage(message);
           }, 200);
         }
       } else {
         // Session exists, send message as user message
-        await sendChatMessage(message, 'user');
+        await sendChatMessage(message);
       }
     } catch (error) {
       console.error('Error in send message flow:', error);
