@@ -21,6 +21,13 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
   // Получаем имя пользователя, по умолчанию "искатель"
   const userName = userProfile?.name || 'искатель';
 
+  // Останавливаем воспроизведение при размонтировании компонента
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, [stopSpeech]);
+
   // Генерируем персонализированное приветствие
   const getGreetingText = () => {
     if (language === 'ru') {

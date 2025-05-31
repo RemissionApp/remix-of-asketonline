@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -18,6 +18,13 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
 }) => {
   const { t } = useTranslations();
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  
+  // Останавливаем воспроизведение при размонтировании компонента
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, [stopSpeech]);
   
   // Функция для воспроизведения ответа
   const handlePlayAnswer = () => {

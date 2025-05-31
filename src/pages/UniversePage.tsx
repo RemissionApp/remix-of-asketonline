@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
@@ -15,12 +14,19 @@ import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, userProfile, language, pacts } = useAppStore();
-  const { generateAndPlaySpeech } = useTextToSpeech();
+  const { generateAndPlaySpeech, stopSpeech } = useTextToSpeech();
   const [isAsking, setIsAsking] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState<null | {
     question: string;
     answer: string;
   }>(null);
+  
+  // Останавливаем воспроизведение при размонтировании компонента
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, [stopSpeech]);
   
   // Check if there are active pacts
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
