@@ -1,6 +1,18 @@
 
 import { StateCreator } from 'zustand';
-import { AppState, ActiveScreen, AppLanguage } from '../types';
+
+export type ActiveScreen = 'welcome' | 'onboarding' | 'main' | 'profile' | 'meditation' | 'universe' | 'affirmations' | 'missions' | 'pacts' | 'create-pact' | 'horoscope' | 'numerology' | 'comparison' | 'universe-chat';
+export type AppLanguage = 'en' | 'ru' | 'es';
+
+export interface AppState {
+  activeScreen: ActiveScreen;
+  onboardingComplete: boolean;
+  loading: boolean;
+  language: AppLanguage;
+  dailyQuote: string;
+  soundEnabled: boolean;
+  soundVolume: number;
+}
 
 export interface UISlice {
   activeScreen: ActiveScreen;
