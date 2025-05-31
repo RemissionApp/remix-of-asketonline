@@ -36,11 +36,34 @@ const CreatePactPage: React.FC = () => {
     }
   }, []);
 
+  // Воспроизведение инструкций при переходе на шаг формулировки цели
+  useEffect(() => {
+    if (step === 2) {
+      const goalInstructionsPhrase = getGoalInstructionsPhrase();
+      try {
+        generateAndPlaySpeech(goalInstructionsPhrase, { 
+          voice: 'Custom', 
+          model: 'eleven_multilingual_v2' 
+        });
+      } catch (error) {
+        console.error('Error playing goal instructions phrase:', error);
+      }
+    }
+  }, [step]);
+
   const getWelcomePhrase = () => {
     switch(language) {
       case 'ru': return 'Добро пожаловать в создание аскезы. Здесь вы сможете выбрать свой путь духовного роста и заключить договор с Вселенной.';
       case 'es': return 'Bienvenido a la creación de ascesis. Aquí podrás elegir tu camino de crecimiento espiritual y hacer un contrato con el Universo.';
       default: return 'Welcome to ascesis creation. Here you can choose your path of spiritual growth and make a contract with the Universe.';
+    }
+  };
+
+  const getGoalInstructionsPhrase = () => {
+    switch(language) {
+      case 'ru': return 'Теперь сформулируйте свою цель. Помните: цель должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы опишете конечный результат, тем больше вероятность получить желаемое.';
+      case 'es': return 'Ahora formula tu objetivo. Recuerda: el objetivo debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describas el resultado final, mayor será la probabilidad de obtener lo que deseas.';
+      default: return 'Now formulate your goal. Remember: the goal must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you describe the end result, the more likely you are to get what you want.';
     }
   };
   
