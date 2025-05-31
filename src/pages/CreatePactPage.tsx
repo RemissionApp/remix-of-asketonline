@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -8,11 +8,13 @@ import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -20,6 +22,27 @@ const CreatePactPage: React.FC = () => {
   const [durationText, setDurationText] = useState('30');
   const [reward, setReward] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Воспроизведение приветственной фразы при загрузке страницы
+  useEffect(() => {
+    const welcomePhrase = getWelcomePhrase();
+    try {
+      generateAndPlaySpeech(welcomePhrase, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+    } catch (error) {
+      console.error('Error playing welcome phrase:', error);
+    }
+  }, []);
+
+  const getWelcomePhrase = () => {
+    switch(language) {
+      case 'ru': return 'Добро пожаловать в создание аскезы. Здесь вы сможете выбрать свой путь духовного роста и заключить договор с Вселенной.';
+      case 'es': return 'Bienvenido a la creación de ascesis. Aquí podrás elegir tu camino de crecimiento espiritual y hacer un contrato con el Universo.';
+      default: return 'Welcome to ascesis creation. Here you can choose your path of spiritual growth and make a contract with the Universe.';
+    }
+  };
   
   // Функция для правильного склонения в русском языке
   const getDaysText = (count: number): string => {
