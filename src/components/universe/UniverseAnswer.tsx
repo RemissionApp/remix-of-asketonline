@@ -1,7 +1,9 @@
 
 import React from 'react';
+import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 interface UniverseAnswerProps {
   question: string;
@@ -15,6 +17,19 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
   onNewQuestion
 }) => {
   const { t } = useTranslations();
+  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  
+  // Функция для воспроизведения ответа
+  const handlePlayAnswer = () => {
+    if (isPlaying) {
+      stopSpeech();
+    } else {
+      generateAndPlaySpeech(answer, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+    }
+  };
   
   // Функция для форматирования ответа с разделением на абзацы
   const formatUniverseAnswer = (answer: string) => {
@@ -65,9 +80,26 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
       </div>
       
       <div className="cosmic-card bg-cosmic-accent/10">
-        <h2 className="text-2xl font-serif font-medium text-cosmic-gold mb-6 text-center">
-          {t.universe.universeAnswer}
-        </h2>
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <h2 className="text-2xl font-serif font-medium text-cosmic-gold text-center">
+            {t.universe.universeAnswer}
+          </h2>
+          
+          <button
+            onClick={handlePlayAnswer}
+            disabled={isGenerating}
+            className="p-2 rounded-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 transition-colors border border-cosmic-accent/30"
+            title={isPlaying ? 'Остановить' : 'Воспроизвести ответ'}
+          >
+            {isGenerating ? (
+              <Loader2 size={20} className="text-cosmic-accent animate-spin" />
+            ) : isPlaying ? (
+              <VolumeX size={20} className="text-cosmic-accent" />
+            ) : (
+              <Volume2 size={20} className="text-cosmic-accent" />
+            )}
+          </button>
+        </div>
         
         {formatUniverseAnswer(answer)}
         
