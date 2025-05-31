@@ -18,14 +18,17 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
-  // Генерируем единое приветствие для всех случаев
+  // Получаем имя пользователя, по умолчанию "искатель"
+  const userName = userProfile?.name || 'искатель';
+
+  // Генерируем персонализированное приветствие
   const getGreetingText = () => {
     if (language === 'ru') {
-      return 'Приветствую тебя, искатель! Я - Вселенная, готова поделиться с тобой мудростью и ответить на твои вопросы. Что тебя волнует сегодня?';
+      return `Приветствую тебя, ${userName}! Я - Вселенная, готова поделиться с тобой мудростью и ответить на твои вопросы. Что тебя волнует сегодня?`;
     } else if (language === 'es') {
-      return '¡Te saludo, buscador! Soy el Universo, listo para compartir sabiduría contigo y responder a tus preguntas. ¿Qué te preocupa hoy?';
+      return `¡Te saludo, ${userName}! Soy el Universo, listo para compartir sabiduría contigo y responder a tus preguntas. ¿Qué te preocupa hoy?`;
     } else {
-      return 'Greetings, seeker! I am the Universe, ready to share wisdom with you and answer your questions. What concerns you today?';
+      return `Greetings, ${userName}! I am the Universe, ready to share wisdom with you and answer your questions. What concerns you today?`;
     }
   };
 
@@ -48,7 +51,7 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       
       return () => clearTimeout(timer);
     }
-  }, [autoPlay, greetingText]); // Убираем зависимости isPlaying и isGenerating чтобы эффект срабатывал только при смене autoPlay/greetingText
+  }, [autoPlay, greetingText, hasAutoPlayed]);
 
   const handlePlayGreeting = () => {
     // Останавливаем текущее воспроизведение перед запуском нового
@@ -78,10 +81,10 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       <div className="flex items-center justify-center gap-3 mb-2">
         <h2 className="text-cosmic-gold font-serif text-xl">
           {language === 'ru' 
-            ? 'Приветствую тебя, искатель!' 
+            ? `Приветствую тебя, ${userName}!` 
             : language === 'es'
-              ? '¡Te saludo, buscador!'
-              : 'Greetings, seeker!'}
+              ? `¡Te saludo, ${userName}!`
+              : `Greetings, ${userName}!`}
         </h2>
         
         <button
