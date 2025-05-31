@@ -53,8 +53,8 @@ const UniversePage: React.FC = () => {
       {/* Header */}
       <UniverseHeader />
       
-      {/* Voice Greeting instead of regular UserGreeting */}
-      <VoiceGreeting userProfile={userProfile} language={language} />
+      {/* Voice Greeting с отключенным автозапуском */}
+      <VoiceGreeting userProfile={userProfile} language={language} autoPlay={false} />
       
       {/* Show countdown timer if there are active pacts */}
       {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}

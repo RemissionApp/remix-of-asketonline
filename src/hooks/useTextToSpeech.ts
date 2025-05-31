@@ -19,11 +19,14 @@ export const useTextToSpeech = () => {
       setIsGenerating(true);
       console.log('Starting speech generation...', { text: text.substring(0, 50), options });
 
-      // Stop current audio if playing
+      // Принудительно останавливаем текущее аудио если оно играет
       if (currentAudio) {
+        console.log('Stopping current audio before starting new one');
         currentAudio.pause();
         currentAudio.currentTime = 0;
+        currentAudio.src = '';
         setIsPlaying(false);
+        setCurrentAudio(null);
       }
 
       console.log('Generating speech for text:', text.substring(0, 50) + '...');
@@ -65,12 +68,14 @@ export const useTextToSpeech = () => {
         console.log('Audio object created, setting up event listeners...');
 
         // Set up audio event listeners
-        audio.onloadeddata = () => {
-          console.log('Audio loaded, starting playback');
+        audio.oncanplaythrough = () => {
+          console.log('Audio can play through, starting playback');
           setIsPlaying(true);
           audio.play().catch(error => {
             console.error('Error playing audio:', error);
             setIsPlaying(false);
+            URL.revokeObjectURL(audioUrl);
+            setCurrentAudio(null);
           });
         };
 
@@ -88,11 +93,11 @@ export const useTextToSpeech = () => {
           setCurrentAudio(null);
         };
 
-        audio.oncanplay = () => {
-          console.log('Audio can start playing');
-        };
-
+        // Устанавливаем текущее аудио сразу
         setCurrentAudio(audio);
+
+        // Начинаем загрузку аудио
+        audio.load();
 
       } catch (audioError) {
         console.error('Error creating audio from base64:', audioError);
@@ -102,16 +107,20 @@ export const useTextToSpeech = () => {
     } catch (error) {
       console.error('Error generating or playing speech:', error);
       setIsPlaying(false);
+      setCurrentAudio(null);
     } finally {
       setIsGenerating(false);
     }
   };
 
   const stopSpeech = () => {
+    console.log('Stopping speech playback');
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.currentTime = 0;
+      currentAudio.src = '';
       setIsPlaying(false);
+      setCurrentAudio(null);
     }
   };
 

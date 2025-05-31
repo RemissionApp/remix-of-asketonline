@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { UserProfile } from '@/types';
@@ -13,45 +13,43 @@ interface VoiceGreetingProps {
 export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({ 
   userProfile, 
   language, 
-  autoPlay = true 
+  autoPlay = false // Изменено на false, чтобы избежать автозапуска
 }) => {
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
-  // Generate greeting text based on language and user name
+  // Генерируем единое приветствие для всех случаев
   const getGreetingText = () => {
-    const userName = userProfile?.name || '';
-    
     if (language === 'ru') {
-      return userName 
-        ? `Приветствую тебя, ${userName}! Я - Вселенная, готова поделиться с тобой мудростью и ответить на твои вопросы. Что тебя волнует сегодня?`
-        : 'Приветствую тебя, искатель! Я - Вселенная, готова поделиться с тобой мудростью и ответить на твои вопросы. Что тебя волнует сегодня?';
+      return 'Приветствую тебя, искатель! Я - Вселенная, готова поделиться с тобой мудростью и ответить на твои вопросы. Что тебя волнует сегодня?';
     } else if (language === 'es') {
-      return userName
-        ? `¡Te saludo, ${userName}! Soy el Universo, listo para compartir sabiduría contigo y responder a tus preguntas. ¿Qué te preocupa hoy?`
-        : '¡Te saludo, buscador! Soy el Universo, listo para compartir sabiduría contigo y responder a tus preguntas. ¿Qué te preocupa hoy?';
+      return '¡Te saludo, buscador! Soy el Universo, listo para compartir sabiduría contigo y responder a tus preguntas. ¿Qué te preocupa hoy?';
     } else {
-      return userName
-        ? `Greetings, ${userName}! I am the Universe, ready to share wisdom with you and answer your questions. What concerns you today?`
-        : 'Greetings, seeker! I am the Universe, ready to share wisdom with you and answer your questions. What concerns you today?';
+      return 'Greetings, seeker! I am the Universe, ready to share wisdom with you and answer your questions. What concerns you today?';
     }
   };
 
   const greetingText = getGreetingText();
 
-  // Auto-play greeting when component mounts
+  // Автозапуск только один раз и только если включен
   useEffect(() => {
-    if (autoPlay && greetingText) {
-      // Small delay to ensure the component is fully rendered
+    if (autoPlay && greetingText && !hasAutoPlayed && !isPlaying) {
       const timer = setTimeout(() => {
         handlePlayGreeting();
+        setHasAutoPlayed(true);
       }, 1000);
       
       return () => clearTimeout(timer);
     }
-  }, [autoPlay, greetingText]);
+  }, [autoPlay, greetingText, hasAutoPlayed, isPlaying]);
 
   const handlePlayGreeting = () => {
-    // Use your custom voice for all languages
+    // Останавливаем текущее воспроизведение перед запуском нового
+    if (isPlaying) {
+      stopSpeech();
+      return;
+    }
+    
     generateAndPlaySpeech(greetingText, { 
       voice: 'Custom', 
       model: 'eleven_multilingual_v2' 
@@ -72,17 +70,11 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
     <div className="relative z-10 text-center mb-6">
       <div className="flex items-center justify-center gap-3 mb-2">
         <h2 className="text-cosmic-gold font-serif text-xl">
-          {userProfile?.name 
-            ? (language === 'ru' 
-                ? `Приветствую тебя, ${userProfile.name}!` 
-                : language === 'es'
-                  ? `¡Te saludo, ${userProfile.name}!`
-                  : `Greetings, ${userProfile.name}!`)
-            : (language === 'ru' 
-                ? 'Приветствую тебя, искатель!' 
-                : language === 'es'
-                  ? '¡Te saludo, buscador!'
-                  : 'Greetings, seeker!')}
+          {language === 'ru' 
+            ? 'Приветствую тебя, искатель!' 
+            : language === 'es'
+              ? '¡Te saludo, buscador!'
+              : 'Greetings, seeker!'}
         </h2>
         
         <button
