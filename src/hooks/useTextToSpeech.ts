@@ -40,6 +40,7 @@ export const useTextToSpeech = () => {
       console.log('Edge function response:', { data: data ? 'received' : 'null', error });
 
       if (error) {
+        console.error('Supabase function error:', error);
         throw new Error(`Text-to-speech error: ${error.message}`);
       }
 
@@ -49,48 +50,54 @@ export const useTextToSpeech = () => {
 
       console.log('Audio content received, creating blob...');
 
-      // Create audio blob from base64
-      const binaryString = atob(data.audioContent);
-      const audioArray = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        audioArray[i] = binaryString.charCodeAt(i);
-      }
-      
-      const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
+      // Create audio blob from base64 more efficiently
+      try {
+        const binaryString = atob(data.audioContent);
+        const audioArray = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          audioArray[i] = binaryString.charCodeAt(i);
+        }
+        
+        const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
 
-      console.log('Audio object created, setting up event listeners...');
+        console.log('Audio object created, setting up event listeners...');
 
-      // Set up audio event listeners
-      audio.onloadeddata = () => {
-        console.log('Audio loaded, starting playback');
-        setIsPlaying(true);
-        audio.play().catch(error => {
-          console.error('Error playing audio:', error);
+        // Set up audio event listeners
+        audio.onloadeddata = () => {
+          console.log('Audio loaded, starting playback');
+          setIsPlaying(true);
+          audio.play().catch(error => {
+            console.error('Error playing audio:', error);
+            setIsPlaying(false);
+          });
+        };
+
+        audio.onended = () => {
+          console.log('Audio playback finished');
           setIsPlaying(false);
-        });
-      };
+          URL.revokeObjectURL(audioUrl);
+          setCurrentAudio(null);
+        };
 
-      audio.onended = () => {
-        console.log('Audio playback finished');
-        setIsPlaying(false);
-        URL.revokeObjectURL(audioUrl);
-        setCurrentAudio(null);
-      };
+        audio.onerror = (error) => {
+          console.error('Audio playback error:', error);
+          setIsPlaying(false);
+          URL.revokeObjectURL(audioUrl);
+          setCurrentAudio(null);
+        };
 
-      audio.onerror = (error) => {
-        console.error('Audio playback error:', error);
-        setIsPlaying(false);
-        URL.revokeObjectURL(audioUrl);
-        setCurrentAudio(null);
-      };
+        audio.oncanplay = () => {
+          console.log('Audio can start playing');
+        };
 
-      audio.oncanplay = () => {
-        console.log('Audio can start playing');
-      };
+        setCurrentAudio(audio);
 
-      setCurrentAudio(audio);
+      } catch (audioError) {
+        console.error('Error creating audio from base64:', audioError);
+        throw new Error('Failed to create audio from response');
+      }
 
     } catch (error) {
       console.error('Error generating or playing speech:', error);

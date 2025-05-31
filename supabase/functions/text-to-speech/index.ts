@@ -38,6 +38,7 @@ serve(async (req) => {
     const voiceId = voiceIds[voice] || voiceIds['Custom'];
 
     console.log('Generating speech with Eleven Labs for text:', text.substring(0, 50) + '...');
+    console.log('Using voice ID:', voiceId);
 
     // Generate speech using Eleven Labs API
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
@@ -61,17 +62,22 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Eleven Labs API error:', errorText);
+      console.error('Eleven Labs API error:', response.status, errorText);
       throw new Error(`Eleven Labs API error: ${response.status} ${errorText}`);
     }
 
-    // Convert audio to base64
-    const arrayBuffer = await response.arrayBuffer();
-    const base64Audio = btoa(
-      String.fromCharCode(...new Uint8Array(arrayBuffer))
-    );
+    console.log('Eleven Labs API response successful, processing audio...');
 
-    console.log('Successfully generated speech audio');
+    // Get audio as array buffer
+    const arrayBuffer = await response.arrayBuffer();
+    console.log('Audio buffer size:', arrayBuffer.byteLength);
+
+    // Convert to base64 efficiently
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const binaryString = Array.from(uint8Array, byte => String.fromCharCode(byte)).join('');
+    const base64Audio = btoa(binaryString);
+
+    console.log('Successfully generated speech audio, base64 length:', base64Audio.length);
 
     return new Response(
       JSON.stringify({ 
@@ -83,7 +89,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in text-to-speech function:', error);
+    console.error('Error in text-to-speech function:', error.message);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
