@@ -13,7 +13,7 @@ interface VoiceGreetingProps {
 export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({ 
   userProfile, 
   language, 
-  autoPlay = false // Изменено на false, чтобы избежать автозапуска
+  autoPlay = false
 }) => {
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
@@ -33,7 +33,7 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
 
   // Автозапуск только один раз и только если включен
   useEffect(() => {
-    if (autoPlay && greetingText && !hasAutoPlayed && !isPlaying) {
+    if (autoPlay && greetingText && !hasAutoPlayed && !isPlaying && !isGenerating) {
       const timer = setTimeout(() => {
         handlePlayGreeting();
         setHasAutoPlayed(true);
@@ -41,7 +41,7 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       
       return () => clearTimeout(timer);
     }
-  }, [autoPlay, greetingText, hasAutoPlayed, isPlaying]);
+  }, [autoPlay, greetingText, hasAutoPlayed, isPlaying, isGenerating]);
 
   const handlePlayGreeting = () => {
     // Останавливаем текущее воспроизведение перед запуском нового
