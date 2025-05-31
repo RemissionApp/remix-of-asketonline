@@ -16,45 +16,63 @@ export const LoginVoiceGreeting: React.FC = () => {
     };
   }, [stopSpeech]);
 
-  // Автозапуск приветствия при загрузке страницы с отладкой
+  // Автозапуск приветствия при загрузке страницы с детальным логированием
   useEffect(() => {
+    console.log('LoginVoiceGreeting useEffect triggered:', { hasAutoPlayed, isPlaying, isGenerating });
+    
     if (!hasAutoPlayed) {
       const timer = setTimeout(async () => {
+        console.log('Timer fired, checking conditions:', { isPlaying, isGenerating });
+        
         if (!isPlaying && !isGenerating) {
-          console.log('Attempting to play login greeting:', greetingText);
+          console.log('Starting auto-play greeting for login page');
+          
           try {
-            await generateAndPlaySpeech(greetingText, { 
+            const result = await generateAndPlaySpeech(greetingText, { 
               voice: 'Custom', 
               model: 'eleven_multilingual_v2' 
             });
-            console.log('Login greeting started successfully');
+            console.log('generateAndPlaySpeech result:', result);
+            console.log('Login greeting auto-play initiated successfully');
             setHasAutoPlayed(true);
           } catch (error) {
-            console.error('Error playing login greeting:', error);
+            console.error('Error during auto-play greeting:', error);
+            console.error('Error details:', error.message, error.stack);
           }
+        } else {
+          console.log('Skipping auto-play due to conditions:', { isPlaying, isGenerating });
         }
-      }, 1000);
+      }, 1500); // Увеличил задержку до 1.5 секунд
       
-      return () => clearTimeout(timer);
+      return () => {
+        console.log('Clearing auto-play timer');
+        clearTimeout(timer);
+      };
     }
   }, [hasAutoPlayed, generateAndPlaySpeech, isPlaying, isGenerating, greetingText]);
 
   const handleToggleAudio = async () => {
-    console.log('Toggle audio clicked, isPlaying:', isPlaying);
+    console.log('Manual toggle clicked:', { isPlaying, isGenerating });
+    
     if (isPlaying) {
+      console.log('Stopping current audio playback');
       stopSpeech();
     } else {
       try {
-        console.log('Starting manual greeting playback');
-        await generateAndPlaySpeech(greetingText, { 
+        console.log('Starting manual greeting playback with text:', greetingText);
+        const result = await generateAndPlaySpeech(greetingText, { 
           voice: 'Custom', 
           model: 'eleven_multilingual_v2' 
         });
+        console.log('Manual playback result:', result);
       } catch (error) {
         console.error('Error in manual greeting playback:', error);
+        console.error('Manual playback error details:', error.message, error.stack);
       }
     }
   };
+
+  console.log('LoginVoiceGreeting render:', { isGenerating, isPlaying, hasAutoPlayed });
 
   return (
     <div className="absolute top-4 right-4 z-20">

@@ -32,6 +32,7 @@ export const useTextToSpeech = () => {
   const generateAudioForParagraph = async (text: string, options: TextToSpeechOptions = {}): Promise<HTMLAudioElement | null> => {
     try {
       console.log('Generating audio for paragraph:', text.substring(0, 50) + '...');
+      console.log('Using options:', options);
 
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
@@ -47,8 +48,11 @@ export const useTextToSpeech = () => {
       }
 
       if (!data?.audioContent) {
+        console.error('No audio content received from API');
         throw new Error('No audio content received');
       }
+
+      console.log('Received audio content, length:', data.audioContent.length);
 
       // Create audio blob from base64
       const binaryString = atob(data.audioContent);
@@ -59,7 +63,17 @@ export const useTextToSpeech = () => {
       
       const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
       const audioUrl = URL.createObjectURL(audioBlob);
+      console.log('Created audio URL:', audioUrl);
+      
       const audio = new Audio(audioUrl);
+      
+      // Добавляем обработчики событий для отладки
+      audio.addEventListener('loadstart', () => console.log('Audio load started'));
+      audio.addEventListener('canplay', () => console.log('Audio can play'));
+      audio.addEventListener('play', () => console.log('Audio play event'));
+      audio.addEventListener('playing', () => console.log('Audio playing event'));
+      audio.addEventListener('ended', () => console.log('Audio ended event'));
+      audio.addEventListener('error', (e) => console.error('Audio error event:', e));
 
       return audio;
     } catch (error) {
@@ -70,7 +84,10 @@ export const useTextToSpeech = () => {
 
   // Функция для воспроизведения очереди аудио
   const playAudioQueue = async (audioQueue: HTMLAudioElement[]) => {
+    console.log('Starting to play audio queue, length:', audioQueue.length);
+    
     if (audioQueue.length === 0) {
+      console.log('Audio queue is empty, stopping playback');
       setIsPlaying(false);
       setIsProcessingQueue(false);
       return;
@@ -80,28 +97,67 @@ export const useTextToSpeech = () => {
     
     for (let i = 0; i < audioQueue.length; i++) {
       const audio = audioQueue[i];
+      console.log(`Playing audio segment ${i + 1}/${audioQueue.length}`);
       
-      if (!audio) continue;
+      if (!audio) {
+        console.warn(`Audio segment ${i} is null, skipping`);
+        continue;
+      }
 
       try {
         setCurrentAudio(audio);
         setIsPlaying(true);
 
         // Ждем загрузки аудио
+        console.log('Waiting for audio to load...');
         await new Promise<void>((resolve, reject) => {
-          audio.oncanplaythrough = () => resolve();
-          audio.onerror = reject;
+          const timeout = setTimeout(() => {
+            console.error('Audio load timeout');
+            reject(new Error('Audio load timeout'));
+          }, 10000);
+
+          audio.oncanplaythrough = () => {
+            console.log('Audio can play through');
+            clearTimeout(timeout);
+            resolve();
+          };
+          audio.onerror = (e) => {
+            console.error('Audio load error:', e);
+            clearTimeout(timeout);
+            reject(new Error('Audio load failed'));
+          };
+          
+          console.log('Loading audio...');
           audio.load();
         });
 
         // Воспроизводим аудио
+        console.log('Starting audio playback...');
         await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.error('Audio play timeout');
+            reject(new Error('Audio play timeout'));
+          }, 30000);
+
           audio.onended = () => {
+            console.log('Audio playback ended');
+            clearTimeout(timeout);
             URL.revokeObjectURL(audio.src);
             resolve();
           };
-          audio.onerror = reject;
-          audio.play().catch(reject);
+          audio.onerror = (e) => {
+            console.error('Audio playback error:', e);
+            clearTimeout(timeout);
+            reject(new Error('Audio playback failed'));
+          };
+          
+          audio.play().then(() => {
+            console.log('Audio.play() succeeded');
+          }).catch((playError) => {
+            console.error('Audio.play() failed:', playError);
+            clearTimeout(timeout);
+            reject(playError);
+          });
         });
 
       } catch (error) {
@@ -110,6 +166,7 @@ export const useTextToSpeech = () => {
       }
     }
 
+    console.log('Finished playing audio queue');
     setCurrentAudio(null);
     setIsPlaying(false);
     setIsProcessingQueue(false);
@@ -117,21 +174,26 @@ export const useTextToSpeech = () => {
   };
 
   const generateAndPlaySpeech = async (text: string, options: TextToSpeechOptions = {}) => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      console.warn('Empty text provided to generateAndPlaySpeech');
+      return;
+    }
 
     try {
       setIsGenerating(true);
-      console.log('Starting streaming speech generation...');
+      console.log('Starting speech generation for text:', text);
+      console.log('Using options:', options);
 
       // Принудительно останавливаем текущее аудио
       if (currentAudio || isProcessingQueue) {
+        console.log('Stopping current audio before starting new one');
         stopSpeech();
-        await new Promise(resolve => setTimeout(resolve, 100)); // Небольшая задержка
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       // Разбиваем текст на абзацы
       const paragraphs = splitTextIntoParagraphs(text);
-      console.log('Split text into', paragraphs.length, 'paragraphs');
+      console.log('Split text into paragraphs:', paragraphs);
 
       const audioSegments: HTMLAudioElement[] = [];
 
@@ -154,11 +216,11 @@ export const useTextToSpeech = () => {
         throw new Error('Failed to generate any audio segments');
       }
 
-      console.log('Generated', audioSegments.length, 'audio segments');
+      console.log('Generated audio segments:', audioSegments.length);
 
       // Обновляем очередь и начинаем воспроизведение
       setAudioQueue(audioSegments);
-      playAudioQueue(audioSegments);
+      await playAudioQueue(audioSegments);
 
     } catch (error) {
       console.error('Error generating or playing speech:', error);
