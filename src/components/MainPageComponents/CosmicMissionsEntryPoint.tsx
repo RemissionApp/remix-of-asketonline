@@ -1,16 +1,36 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 export const CosmicMissionsEntryPoint: React.FC = () => {
   const { language } = useAppStore();
   const navigate = useNavigate();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   
-  const handleViewMissions = () => {
+  const handleViewMissions = async () => {
+    // Воспроизводим фразу перед переходом
+    const missionPhrase = getMissionPhrase();
+    try {
+      await generateAndPlaySpeech(missionPhrase, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+    } catch (error) {
+      console.error('Error playing mission phrase:', error);
+    }
+    
     navigate('/cosmic-missions');
+  };
+  
+  const getMissionPhrase = () => {
+    switch(language) {
+      case 'ru': return 'Отправляемся исследовать космические миссии! Выполняй ритуалы и челленджи для получения энергетических очков.';
+      case 'es': return 'Vamos a explorar las misiones cósmicas. Completa rituales y desafíos para ganar puntos de energía.';
+      default: return 'Let us explore the cosmic missions! Complete rituals and challenges to earn energy points.';
+    }
   };
   
   const getTitle = () => {
