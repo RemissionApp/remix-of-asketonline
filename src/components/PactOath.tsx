@@ -4,6 +4,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations, SupportedLanguage } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ export const PactOath: React.FC<PactOathProps> = ({
   const { t } = useTranslations();
   const { language, userProfile } = useAppStore();
   const { toast } = useToast();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   const userName = userProfile?.name || '';
 
   const getOathText = () => {
@@ -170,9 +172,76 @@ For my good, for the good of the world. So be it. Thank you. Thank you. Thank yo
     }
   };
 
-  const handleReadAloud = () => {
+  const getRepeatInstructionPhrase = () => {
+    if (language === 'ru') {
+      return 'Повторите клятву за мной. Я буду читать с паузами, чтобы вы могли повторить каждую строку.';
+    } else if (language === 'es') {
+      return 'Repite el juramento después de mí. Leeré con pausas para que puedas repetir cada línea.';
+    } else {
+      return 'Repeat the oath after me. I will read with pauses so you can repeat each line.';
+    }
+  };
+
+  const getOathLines = () => {
+    if (language === 'ru') {
+      return [
+        `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${formatRejection(title)} на ${duration} ${getDaysText(duration)}.`,
+        'Я осознанно отказываюсь от временного, чтобы открыть путь вечному.',
+        `Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания ${formatReward(reward)}.`,
+        'Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.'
+      ];
+    } else if (language === 'es') {
+      return [
+        `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${getDaysText(duration)}.`,
+        'Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.',
+        `Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo ${formatReward(reward)}.`,
+        'Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.'
+      ];
+    } else {
+      return [
+        `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${getDaysText(duration)}.`,
+        'I consciously reject the temporary to open the path to the eternal.',
+        `I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire ${formatReward(reward)}.`,
+        'For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.'
+      ];
+    }
+  };
+
+  const getOathText = () => {
+    return getOathLines().join('\n\n');
+  };
+
+  const handleReadAloud = async () => {
     setDialogOpen(true);
-    setReadConfirmed(false); // Reset the confirmation when dialog opens
+    setReadConfirmed(false);
+
+    try {
+      // Сначала говорим инструкцию
+      const instructionPhrase = getRepeatInstructionPhrase();
+      await generateAndPlaySpeech(instructionPhrase, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+
+      // Ждем немного перед началом чтения клятвы
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Читаем клятву по строкам с паузами
+      const oathLines = getOathLines();
+      for (let i = 0; i < oathLines.length; i++) {
+        await generateAndPlaySpeech(oathLines[i], { 
+          voice: 'Custom', 
+          model: 'eleven_multilingual_v2' 
+        });
+        
+        // Пауза между строками для повторения (кроме последней строки)
+        if (i < oathLines.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 4000));
+        }
+      }
+    } catch (error) {
+      console.error('Error during oath reading:', error);
+    }
   };
 
   const handleConfirmReading = () => {
