@@ -14,18 +14,19 @@ export const MeditationBlock: React.FC = () => {
   const { generateAndPlaySpeech } = useTextToSpeech();
   
   const handleMeditationClick = async () => {
-    // Воспроизводим фразу перед переходом
+    // Переходим сразу
+    navigate('/meditation');
+    
+    // Воспроизводим фразу в фоновом режиме
     const meditationPhrase = getMeditationPhrase();
     try {
-      await generateAndPlaySpeech(meditationPhrase, { 
+      generateAndPlaySpeech(meditationPhrase, { 
         voice: 'Custom', 
         model: 'eleven_multilingual_v2' 
       });
     } catch (error) {
       console.error('Error playing meditation phrase:', error);
     }
-    
-    navigate('/meditation');
   };
 
   const getMeditationPhrase = () => {

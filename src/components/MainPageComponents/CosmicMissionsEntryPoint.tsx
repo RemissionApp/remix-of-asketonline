@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
@@ -11,18 +12,19 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
   const { generateAndPlaySpeech } = useTextToSpeech();
   
   const handleViewMissions = async () => {
-    // Воспроизводим фразу перед переходом
+    // Переходим сразу
+    navigate('/cosmic-missions');
+    
+    // Воспроизводим фразу в фоновом режиме
     const missionPhrase = getMissionPhrase();
     try {
-      await generateAndPlaySpeech(missionPhrase, { 
+      generateAndPlaySpeech(missionPhrase, { 
         voice: 'Custom', 
         model: 'eleven_multilingual_v2' 
       });
     } catch (error) {
       console.error('Error playing mission phrase:', error);
     }
-    
-    navigate('/cosmic-missions');
   };
   
   const getMissionPhrase = () => {
