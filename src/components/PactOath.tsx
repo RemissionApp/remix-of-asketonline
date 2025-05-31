@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -39,34 +40,6 @@ export const PactOath: React.FC<PactOathProps> = ({
   const { toast } = useToast();
   const { generateAndPlaySpeech } = useTextToSpeech();
   const userName = userProfile?.name || '';
-
-  const getOathText = () => {
-    if (language === 'ru') {
-      return `Я, ${userName}, заявляю перед Вселенной, Землёй и Небом о своём намерении взять аскезу от ${formatRejection(title)} на ${duration} ${getDaysText(duration)}.
-
-Я осознанно отказываюсь от временного, чтобы открыть путь вечному.
-
-Всю освободившуюся энергию и плоды моей аскезы я направляю на исполнение моего желания ${formatReward(reward)}.
-
-Во благо себе, во благо миру. Да будет так. Благодарю. Благодарю. Благодарю.`;
-    } else if (language === 'es') {
-      return `Yo, ${userName}, declaro ante el Universo, la Tierra y el Cielo mi intención de tomar ascesis de ${formatRejection(title)} durante ${duration} ${getDaysText(duration)}.
-
-Renuncio conscientemente a lo temporal para abrir el camino a lo eterno.
-
-Dirijo toda la energía liberada y los frutos de mi ascesis hacia el cumplimiento de mi deseo ${formatReward(reward)}.
-
-Por mi bien, por el bien del mundo. Que así sea. Gracias. Gracias. Gracias.`;
-    } else {
-      return `I, ${userName}, declare before the Universe, Earth, and Sky my intention to take ascesis from ${formatRejection(title)} for ${duration} ${getDaysText(duration)}.
-
-I consciously reject the temporary to open the path to the eternal.
-
-I direct all the freed energy and fruits of my ascesis toward the fulfillment of my desire ${formatReward(reward)}.
-
-For my good, for the good of the world. So be it. Thank you. Thank you. Thank you.`;
-    }
-  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
