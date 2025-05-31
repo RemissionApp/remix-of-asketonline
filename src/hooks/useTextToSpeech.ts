@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export interface TextToSpeechOptions {
-  voice?: 'Aria' | 'Sarah' | 'Laura' | 'Charlie' | 'Charlotte' | 'Alice';
+  voice?: 'Custom' | 'Aria' | 'Sarah' | 'Laura' | 'Charlie' | 'Charlotte' | 'Alice';
   model?: 'eleven_turbo_v2' | 'eleven_multilingual_v2';
 }
 
@@ -31,7 +31,7 @@ export const useTextToSpeech = () => {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text,
-          voice: options.voice || 'Aria',
+          voice: options.voice || 'Custom',
           model: options.model || 'eleven_turbo_v2'
         }
       });

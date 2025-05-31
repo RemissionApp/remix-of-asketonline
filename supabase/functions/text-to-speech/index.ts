@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, voice = 'Aria', model = 'eleven_turbo_v2' } = await req.json();
+    const { text, voice = 'Custom', model = 'eleven_turbo_v2' } = await req.json();
 
     if (!text) {
       throw new Error('Text is required');
@@ -26,6 +26,7 @@ serve(async (req) => {
 
     // Voice ID mapping for popular voices
     const voiceIds: Record<string, string> = {
+      'Custom': 'X0jd19oPQ0cVJcbpmAuX', // Your custom voice ID
       'Aria': '9BWtsMINqrJLrRacOk9x',
       'Sarah': 'EXAVITQu4vr4xnSDxMaL',
       'Laura': 'FGY2WhTYpPnrIDTdsKH5',
@@ -34,7 +35,7 @@ serve(async (req) => {
       'Alice': 'Xb7hH8MSUJpSbSDYk0k2'
     };
 
-    const voiceId = voiceIds[voice] || voiceIds['Aria'];
+    const voiceId = voiceIds[voice] || voiceIds['Custom'];
 
     console.log('Generating speech with Eleven Labs for text:', text.substring(0, 50) + '...');
 

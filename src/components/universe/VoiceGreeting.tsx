@@ -51,10 +51,11 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
   }, [autoPlay, greetingText]);
 
   const handlePlayGreeting = () => {
-    const voice = language === 'ru' ? 'Alice' : language === 'es' ? 'Laura' : 'Aria';
-    const model = language === 'ru' ? 'eleven_multilingual_v2' : 'eleven_turbo_v2';
-    
-    generateAndPlaySpeech(greetingText, { voice, model });
+    // Use your custom voice for all languages
+    generateAndPlaySpeech(greetingText, { 
+      voice: 'Custom', 
+      model: 'eleven_multilingual_v2' 
+    });
   };
 
   const handleToggleAudio = () => {
