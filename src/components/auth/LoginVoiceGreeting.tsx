@@ -16,16 +16,22 @@ export const LoginVoiceGreeting: React.FC = () => {
     };
   }, [stopSpeech]);
 
-  // Автозапуск приветствия при загрузке страницы
+  // Автозапуск приветствия при загрузке страницы с отладкой
   useEffect(() => {
     if (!hasAutoPlayed) {
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
         if (!isPlaying && !isGenerating) {
-          generateAndPlaySpeech(greetingText, { 
-            voice: 'Custom', 
-            model: 'eleven_multilingual_v2' 
-          });
-          setHasAutoPlayed(true);
+          console.log('Attempting to play login greeting:', greetingText);
+          try {
+            await generateAndPlaySpeech(greetingText, { 
+              voice: 'Custom', 
+              model: 'eleven_multilingual_v2' 
+            });
+            console.log('Login greeting started successfully');
+            setHasAutoPlayed(true);
+          } catch (error) {
+            console.error('Error playing login greeting:', error);
+          }
         }
       }, 1000);
       
@@ -33,14 +39,20 @@ export const LoginVoiceGreeting: React.FC = () => {
     }
   }, [hasAutoPlayed, generateAndPlaySpeech, isPlaying, isGenerating, greetingText]);
 
-  const handleToggleAudio = () => {
+  const handleToggleAudio = async () => {
+    console.log('Toggle audio clicked, isPlaying:', isPlaying);
     if (isPlaying) {
       stopSpeech();
     } else {
-      generateAndPlaySpeech(greetingText, { 
-        voice: 'Custom', 
-        model: 'eleven_multilingual_v2' 
-      });
+      try {
+        console.log('Starting manual greeting playback');
+        await generateAndPlaySpeech(greetingText, { 
+          voice: 'Custom', 
+          model: 'eleven_multilingual_v2' 
+        });
+      } catch (error) {
+        console.error('Error in manual greeting playback:', error);
+      }
     }
   };
 
