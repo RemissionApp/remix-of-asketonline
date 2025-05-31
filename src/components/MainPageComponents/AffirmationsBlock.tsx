@@ -5,14 +5,36 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 export const AffirmationsBlock: React.FC = () => {
   const { language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   
-  const handleAffirmationsClick = () => {
+  const handleAffirmationsClick = async () => {
+    // Переходим сразу
     navigate('/affirmations');
+    
+    // Воспроизводим фразу в фоновом режиме
+    const affirmationPhrase = getAffirmationPhrase();
+    try {
+      generateAndPlaySpeech(affirmationPhrase, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+    } catch (error) {
+      console.error('Error playing affirmation phrase:', error);
+    }
+  };
+
+  const getAffirmationPhrase = () => {
+    switch(language) {
+      case 'ru': return 'Переходим к аффирмациям. Позитивные утверждения для вдохновения и личностного роста.';
+      case 'es': return 'Vamos a las afirmaciones. Afirmaciones positivas para inspiración y crecimiento personal.';
+      default: return 'Let us go to affirmations. Positive affirmations for inspiration and personal growth.';
+    }
   };
 
   // Determine the correct font class based on language - matching other headings in the app
