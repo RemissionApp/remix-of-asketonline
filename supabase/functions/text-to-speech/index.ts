@@ -26,7 +26,7 @@ serve(async (req) => {
 
     // Voice ID mapping for popular voices
     const voiceIds: Record<string, string> = {
-      'Custom': 'X0jd19oPQ0cVJcbpmAuX', // Your custom voice ID
+      'Custom': 'Atp5cNFg1Wj5gyKD7HWV', // Updated custom voice ID
       'Aria': '9BWtsMINqrJLrRacOk9x',
       'Sarah': 'EXAVITQu4vr4xnSDxMaL',
       'Laura': 'FGY2WhTYpPnrIDTdsKH5',
