@@ -5,14 +5,35 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 export const MeditationBlock: React.FC = () => {
   const { language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   
-  const handleMeditationClick = () => {
+  const handleMeditationClick = async () => {
+    // Воспроизводим фразу перед переходом
+    const meditationPhrase = getMeditationPhrase();
+    try {
+      await generateAndPlaySpeech(meditationPhrase, { 
+        voice: 'Custom', 
+        model: 'eleven_multilingual_v2' 
+      });
+    } catch (error) {
+      console.error('Error playing meditation phrase:', error);
+    }
+    
     navigate('/meditation');
+  };
+
+  const getMeditationPhrase = () => {
+    switch(language) {
+      case 'ru': return 'Переходим к медитациям. Найдите гармонию и покой через практики осознанности.';
+      case 'es': return 'Vamos a las meditaciones. Encuentra armonía y paz a través de prácticas de atención plena.';
+      default: return 'Let us go to meditations. Find harmony and peace through mindfulness practices.';
+    }
   };
 
   // Determine the correct font class based on language - matching other headings in the app
