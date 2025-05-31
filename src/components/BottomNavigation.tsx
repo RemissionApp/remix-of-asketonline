@@ -39,11 +39,8 @@ export const BottomNavigation: React.FC = () => {
           default: return 'Going to the main page. Here you will find your spiritual path.';
         }
       case '/create-pact':
-        switch(language) {
-          case 'ru': return 'Переходим к созданию аскезы. Выберите свой путь духовного роста.';
-          case 'es': return 'Vamos a la creación de ascesis. Elige tu camino de crecimiento espiritual.';
-          default: return 'Going to ascesis creation. Choose your path of spiritual growth.';
-        }
+        // Отключаем голосовое сопровождение для навигации на страницу создания аскезы
+        return '';
       case '/universe-chat':
         switch(language) {
           case 'ru': return 'Переходим к чату с Вселенной. Задайте свои вопросы высшим силам.';
@@ -80,7 +77,7 @@ export const BottomNavigation: React.FC = () => {
     // Navigate to the corresponding route
     navigate(path);
     
-    // Play navigation phrase in background
+    // Play navigation phrase in background (только если фраза не пустая)
     const phrase = getNavigationPhrase(path);
     if (phrase) {
       try {
