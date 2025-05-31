@@ -31,17 +31,24 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
 
   const greetingText = getGreetingText();
 
-  // Автозапуск только один раз и только если включен
+  // Автозапуск только один раз при входе на страницу
   useEffect(() => {
-    if (autoPlay && greetingText && !hasAutoPlayed && !isPlaying && !isGenerating) {
+    if (autoPlay && greetingText && !hasAutoPlayed) {
+      // Небольшая задержка для загрузки страницы
       const timer = setTimeout(() => {
-        handlePlayGreeting();
-        setHasAutoPlayed(true);
-      }, 1000);
+        // Проверяем еще раз перед запуском
+        if (!isPlaying && !isGenerating && !hasAutoPlayed) {
+          generateAndPlaySpeech(greetingText, { 
+            voice: 'Custom', 
+            model: 'eleven_multilingual_v2' 
+          });
+          setHasAutoPlayed(true);
+        }
+      }, 1500);
       
       return () => clearTimeout(timer);
     }
-  }, [autoPlay, greetingText, hasAutoPlayed, isPlaying, isGenerating]);
+  }, [autoPlay, greetingText]); // Убираем зависимости isPlaying и isGenerating чтобы эффект срабатывал только при смене autoPlay/greetingText
 
   const handlePlayGreeting = () => {
     // Останавливаем текущее воспроизведение перед запуском нового
