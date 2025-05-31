@@ -11,9 +11,11 @@ import { QuestionForm } from '@/components/universe/QuestionForm';
 import { ThinkingAnimation } from '@/components/universe/ThinkingAnimation';
 import { UniverseAnswer } from '@/components/universe/UniverseAnswer';
 import { PreviousQuestions } from '@/components/universe/PreviousQuestions';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, userProfile, language, pacts } = useAppStore();
+  const { generateAndPlaySpeech } = useTextToSpeech();
   const [isAsking, setIsAsking] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState<null | {
     question: string;
@@ -38,6 +40,19 @@ const UniversePage: React.FC = () => {
           question: response.question,
           answer: response.answer
         });
+        
+        // Автоматически произносим фразу при получении ответа
+        const announcementText = language === 'ru' 
+          ? 'Вот тебе мой ответ! Если ты хочешь услышать его, нажми на кнопку воспроизведение.'
+          : language === 'es'
+            ? '¡Aquí tienes mi respuesta! Si quieres escucharla, presiona el botón de reproducción.'
+            : 'Here is my answer! If you want to hear it, press the play button.';
+            
+        generateAndPlaySpeech(announcementText, { 
+          voice: 'Custom', 
+          model: 'eleven_multilingual_v2' 
+        });
+        
       } catch (error) {
         console.error("Error asking universe:", error);
       } finally {

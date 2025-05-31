@@ -33,15 +33,18 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
   
   // Функция для форматирования ответа с разделением на абзацы
   const formatUniverseAnswer = (answer: string) => {
+    // Убираем хештеги и очищаем текст
+    const cleanedAnswer = answer.replace(/#{1,6}\s*/g, '');
+    
     // Разделяем текст на абзацы по двойным переносам строк
-    const paragraphs = answer.split(/\n\s*\n/);
+    const paragraphs = cleanedAnswer.split(/\n\s*\n/);
     
     return (
       <div className="space-y-6">
         {paragraphs.map((paragraph, index) => (
           <div key={index} className="space-y-2">
             {paragraph.split('\n').map((line, lineIdx) => {
-              // Выделяем заголовки (числа в начале строки или фразы, похожие на заголовки)
+              // Проверяем, является ли строка заголовком
               if (/^\d+[\.\)]\s/.test(line.trim()) || 
                   line.includes("Сегодня я буду в этой роли") ||
                   line.includes("Хочу дополнить") ||
@@ -55,11 +58,13 @@ export const UniverseAnswer: React.FC<UniverseAnswerProps> = ({
                   line.includes("Критический анализ") ||
                   line.includes("Простыми словами") ||
                   line.includes("Нестандартные решения") ||
-                  line.includes("Литература по теме")) {
+                  line.includes("Литература по теме") ||
+                  line.includes("Перспектива специалистов") ||
+                  line.includes("Практические рекомендации")) {
                 return (
-                  <h3 key={lineIdx} className="text-cosmic-gold font-serif text-xl font-bold mt-4">
+                  <p key={lineIdx} className="text-white font-sans font-bold text-lg leading-relaxed mt-4">
                     {line}
-                  </h3>
+                  </p>
                 );
               }
               return <p key={lineIdx} className="text-white font-sans leading-relaxed">{line}</p>;
