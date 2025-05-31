@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,12 +12,13 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { LoginVoiceGreeting } from '@/components/auth/LoginVoiceGreeting';
+import { LoginVoiceGreeting, LoginVoiceGreetingRef } from '@/components/auth/LoginVoiceGreeting';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { signIn, signUp, loading, user, userProfile, checkEmailConfirmation, emailConfirmed } = useAppStore();
   const { t } = useTranslations();
+  const voiceGreetingRef = useRef<LoginVoiceGreetingRef>(null);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,6 +82,9 @@ const LoginPage: React.FC = () => {
       });
       return;
     }
+    
+    // Воспроизводим приветствие при нажатии кнопки входа
+    voiceGreetingRef.current?.playGreeting();
     
     // Очищаем состояние аутентификации перед входом в систему
     cleanupAuthState();
@@ -201,7 +205,7 @@ const LoginPage: React.FC = () => {
       <StarField starCount={150} />
       
       {/* Voice greeting component */}
-      <LoginVoiceGreeting />
+      <LoginVoiceGreeting ref={voiceGreetingRef} />
       
       {/* Cosmic background image */}
       <div className="fixed inset-0 z-0">
