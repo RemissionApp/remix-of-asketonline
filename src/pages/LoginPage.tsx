@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
@@ -13,6 +12,7 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { LoginVoiceGreeting } from '@/components/auth/LoginVoiceGreeting';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -199,6 +199,9 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
+      
+      {/* Voice greeting component */}
+      <LoginVoiceGreeting />
       
       {/* Cosmic background image */}
       <div className="fixed inset-0 z-0">
