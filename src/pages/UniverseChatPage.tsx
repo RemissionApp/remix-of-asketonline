@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -75,8 +74,8 @@ const UniverseChatPage = () => {
           // Create welcome message from universe (not from user)
           const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
           
-          // Send welcome message as universe message
-          await sendChatMessage(welcomeMessage, 'universe');
+          // Send welcome message - removed the second parameter as it's not supported
+          await sendChatMessage(welcomeMessage);
         } catch (error) {
           console.error('Error adding welcome message:', error);
         }
