@@ -1,6 +1,6 @@
+
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useAppStore } from '@/store/useAppStore';
 
 export interface TextToSpeechOptions {
   voice?: 'Custom' | 'Aria' | 'Sarah' | 'Laura' | 'Charlie' | 'Charlotte' | 'Alice';
@@ -13,9 +13,6 @@ export const useTextToSpeech = () => {
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [audioQueue, setAudioQueue] = useState<HTMLAudioElement[]>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
-  
-  // Получаем настройки звука из store
-  const { soundEnabled, soundVolume } = useAppStore();
 
   // Функция для разбивки текста на абзацы
   const splitTextIntoParagraphs = (text: string): string[] => {
@@ -33,12 +30,6 @@ export const useTextToSpeech = () => {
 
   // Функция для генерации аудио для одного абзаца
   const generateAudioForParagraph = async (text: string, options: TextToSpeechOptions = {}): Promise<HTMLAudioElement | null> => {
-    // Проверяем, включен ли звук перед отправкой запроса
-    if (!soundEnabled) {
-      console.log('Sound is disabled, skipping audio generation');
-      return null;
-    }
-
     try {
       console.log('Generating audio for paragraph:', text.substring(0, 50) + '...');
       console.log('Using options:', options);
@@ -75,9 +66,6 @@ export const useTextToSpeech = () => {
       console.log('Created audio URL:', audioUrl);
       
       const audio = new Audio(audioUrl);
-      
-      // Устанавливаем громкость из настроек
-      audio.volume = soundVolume;
       
       // Добавляем обработчики событий для отладки
       audio.addEventListener('loadstart', () => console.log('Audio load started'));
@@ -186,12 +174,6 @@ export const useTextToSpeech = () => {
   };
 
   const generateAndPlaySpeech = async (text: string, options: TextToSpeechOptions = {}) => {
-    // Проверяем, включен ли звук перед началом генерации
-    if (!soundEnabled) {
-      console.log('Sound is disabled, skipping speech generation');
-      return;
-    }
-
     if (!text.trim()) {
       console.warn('Empty text provided to generateAndPlaySpeech');
       return;
@@ -226,8 +208,6 @@ export const useTextToSpeech = () => {
       // Фильтруем успешные результаты
       for (const audio of results) {
         if (audio) {
-          // Устанавливаем текущую громкость для каждого аудио сегмента
-          audio.volume = soundVolume;
           audioSegments.push(audio);
         }
       }

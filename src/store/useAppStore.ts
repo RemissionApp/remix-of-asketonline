@@ -1,38 +1,57 @@
 
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { UISlice, createUISlice } from './slices/uiSlice';
+import { quotes } from './data/constants';
+import { AppState } from './types';
+import { createUISlice } from './slices/uiSlice';
+import { createPactsSlice } from './slices/pactsSlice';
+import { createUniverseSlice } from './slices/universeSlice';
+import { createGamificationSlice } from './slices/gamificationSlice';
+import { createProFeaturesSlice } from './slices/proFeaturesSlice';
+import { createAuthSlice } from './slices/authSlice';
+import { defaultAchievements } from './data/constants';
 
-export type AppState = UISlice;
-
-const useAppStore = create<AppState>()(
-  devtools(
-    persist(
-      (...a) => ({
-        ...createUISlice(...a),
-      }),
-      {
-        name: 'cosmic-storage',
-        partialize: (state) => ({
-          activeScreen: state.activeScreen,
-          onboardingComplete: state.onboardingComplete,
-          language: state.language,
-          soundEnabled: state.soundEnabled,
-          soundVolume: state.soundVolume
-        }),
-      }
-    )
-  )
-);
-
-// Load stored settings on app initialization
-const initializeStore = () => {
-  const store = useAppStore.getState();
-  store.checkOnboardingStatus();
-  store.loadSoundSettings();
-};
-
-// Call this function when your app starts
-initializeStore();
-
-export { useAppStore };
+// Создание хранилища со всеми срезами
+export const useAppStore = create<AppState>()((set, get, api) => ({
+  // Начальное состояние
+  pacts: [],
+  activeQuestions: [],
+  dailyQuote: quotes[Math.floor(Math.random() * quotes.length)],
+  userProfile: {
+    name: 'Искатель',
+    email: '',
+    age: null,
+    energyPoints: 0,
+    goal: 'Познать свою истинную силу',
+    isPro: false,
+    rank: 'seeker',
+    zodiacSign: '',
+    totalDays: 0,
+    achievements: [...defaultAchievements],
+    birthDate: null,
+    avatar_url: null,
+    activeMission: undefined
+  },
+  user: null,
+  loading: false,
+  emailConfirmed: false,
+  
+  // Добавляем новый метод для установки пользователя
+  setUser: (user) => set({ user }),
+  
+  // Состояние чата
+  chatSessions: [],
+  isLoadingChatSessions: false,
+  currentChatSession: null,
+  chatMessages: [],
+  isLoadingChat: false,
+  isSendingMessage: false,
+  isUniverseTyping: false,
+  
+  // Комбинируем все срезы
+  ...createUISlice(set, get, api),
+  ...createPactsSlice(set, get, api),
+  ...createUniverseSlice(set, get, api),
+  ...createGamificationSlice(set, get, api),
+  ...createProFeaturesSlice(set, get, api),
+  ...createAuthSlice(set, get, api)
+}));
