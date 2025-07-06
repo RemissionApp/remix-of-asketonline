@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
-import { createUISlice } from './slices/uiSlice';
+import { createOptimizedUISlice } from './slices/optimizedUISlice';
 import { createPactsSlice } from './slices/pactsSlice';
 import { createUniverseSlice } from './slices/universeSlice';
 import { createGamificationSlice } from './slices/gamificationSlice';
@@ -48,7 +48,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   isUniverseTyping: false,
   
   // Комбинируем все срезы
-  ...createUISlice(set, get, api),
+  ...createOptimizedUISlice(set, get, api),
   ...createPactsSlice(set, get, api),
   ...createUniverseSlice(set, get, api),
   ...createGamificationSlice(set, get, api),

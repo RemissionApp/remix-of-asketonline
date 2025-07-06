@@ -1,5 +1,5 @@
 
-import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile } from '@/types';
+import { Achievement, Mission, Pact, SpiritualRank, UniverseQuestion, UserProfile, User } from '@/types';
 import { UniverseChatMessage, UniverseChatSession } from '@/utils/universeChat/types';
 
 export type AppLanguage = 'ru' | 'en' | 'es';
@@ -26,7 +26,7 @@ export interface AppState {
   activeQuestions: UniverseQuestion[];
   dailyQuote: string;
   userProfile: UserProfile;
-  user: any | null;
+  user: User | null;
   loading: boolean;
   emailConfirmed: boolean;
   
@@ -49,7 +49,7 @@ export interface AppState {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
-  setUser: (user: any) => void;
+  setUser: (user: User | null) => void;
   
   // Data loading methods
   loadUserProfile: () => Promise<void>;
@@ -84,7 +84,7 @@ export interface AppState {
   loadChatMessages: (sessionId: string) => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
   subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
-  handleNewChatMessage: (payload: any) => void;
+  handleNewChatMessage: (payload: UniverseChatMessage) => void;
   
   // Audio settings
   soundEnabled: boolean;

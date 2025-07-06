@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { CircleDot } from 'lucide-react';
 import { RankBadge } from './RankBadge';
 import { useAppStore } from '@/store/useAppStore';
@@ -10,7 +10,7 @@ import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 import { SoundToggle } from '@/components/ui/SoundToggle';
 import { useNavigate } from 'react-router-dom';
 
-export const TopBar: React.FC = () => {
+export const TopBar: React.FC = memo(() => {
   const { userProfile } = useAppStore();
   const navigate = useNavigate();
   
@@ -53,4 +53,4 @@ export const TopBar: React.FC = () => {
       </div>
     </>
   );
-};
+});

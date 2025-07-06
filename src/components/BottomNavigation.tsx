@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Home, Sparkles, MessageSquare, UserRound, Stars } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -19,7 +19,7 @@ const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding'
   '/numerology': 'numerology'
 };
 
-export const BottomNavigation: React.FC = () => {
+export const BottomNavigation: React.FC = memo(() => {
   const { setActiveScreen, activeScreen, userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
@@ -164,4 +164,4 @@ export const BottomNavigation: React.FC = () => {
       </div>
     </div>
   );
-};
+});

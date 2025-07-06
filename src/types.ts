@@ -17,10 +17,12 @@ export interface UserProfile {
 
 export interface User {
   id: string;
-  email: string;
-  user_metadata: {
-    name: string;
+  email?: string;
+  user_metadata?: {
+    name?: string;
   };
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ZodiacSign {
