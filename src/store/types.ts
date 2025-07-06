@@ -85,4 +85,11 @@ export interface AppState {
   sendChatMessage: (message: string) => Promise<void>;
   subscribeToChatMessages: (sessionId: string) => Promise<() => void>;
   handleNewChatMessage: (payload: any) => void;
+  
+  // Audio settings
+  soundEnabled: boolean;
+  soundVolume: number;
+  setSoundEnabled: (enabled: boolean) => void;
+  setSoundVolume: (volume: number) => void;
+  loadSoundSettings: () => void;
 }

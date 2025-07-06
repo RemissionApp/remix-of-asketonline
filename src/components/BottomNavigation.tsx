@@ -4,7 +4,7 @@ import { Home, Sparkles, MessageSquare, UserRound, Stars } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 
 // Define a mapping between route paths and ActiveScreen values
 const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology'> = {
@@ -24,7 +24,7 @@ export const BottomNavigation: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   const location = useLocation();
-  const { generateAndPlaySpeech } = useTextToSpeech();
+  const { generateAndPlaySpeech } = useOptimizedTextToSpeech();
   
   // Helper to determine which screen is active based on URL
   const isActive = (path: string) => location.pathname === path;

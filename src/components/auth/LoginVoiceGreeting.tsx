@@ -1,14 +1,14 @@
 
 import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
-import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 
 export interface LoginVoiceGreetingRef {
   playGreeting: () => void;
 }
 
 export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref) => {
-  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useOptimizedTextToSpeech();
   const [userInteracted, setUserInteracted] = useState(false);
 
   const greetingText = "Приветствую тебя в Asket";

@@ -86,7 +86,7 @@ export const StarField: React.FC<StarFieldProps> = ({
             }`;
             
         return (
-          <React.Fragment key={star.id}>
+          <div key={star.id}>
             <style>
               {moveKeyframes}
             </style>
@@ -104,7 +104,7 @@ export const StarField: React.FC<StarFieldProps> = ({
                 animationDelay: star.animationDelay,
               }}
             />
-          </React.Fragment>
+          </div>
         );
       })}
     </div>

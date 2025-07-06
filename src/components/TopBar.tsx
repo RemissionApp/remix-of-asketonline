@@ -6,6 +6,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { ProBadge } from './ProBadge';
 import { ZodiacBadge } from './ZodiacBadge';
 import { UserAvatar } from './UserAvatar';
+import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
+import { SoundToggle } from '@/components/ui/SoundToggle';
 import { useNavigate } from 'react-router-dom';
 
 export const TopBar: React.FC = () => {
@@ -20,8 +22,11 @@ export const TopBar: React.FC = () => {
   
   return (
     <>
-      {/* Energy points and Zodiac badges group */}
+      {/* Energy points and controls group */}
       <div className="absolute top-4 right-4 z-10 flex items-center space-x-2">
+        {/* Sound toggle */}
+        <SoundToggle />
+        
         {/* Zodiac badge - now positioned to the left of energy points */}
         <div onClick={handleZodiacClick} className={userProfile?.isPro && userProfile?.birthDate ? "cursor-pointer" : ""}>
           <ZodiacBadge size="sm" />

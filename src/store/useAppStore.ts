@@ -53,5 +53,35 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   ...createUniverseSlice(set, get, api),
   ...createGamificationSlice(set, get, api),
   ...createProFeaturesSlice(set, get, api),
-  ...createAuthSlice(set, get, api)
+  ...createAuthSlice(set, get, api),
+  
+  // Audio settings
+  soundEnabled: true,
+  soundVolume: 0.8,
+  
+  setSoundEnabled: (enabled) => {
+    set({ soundEnabled: enabled });
+    localStorage.setItem('soundEnabled', String(enabled));
+  },
+  
+  setSoundVolume: (volume) => {
+    set({ soundVolume: volume });
+    localStorage.setItem('soundVolume', String(volume));
+  },
+  
+  loadSoundSettings: () => {
+    const storedEnabled = localStorage.getItem('soundEnabled');
+    const storedVolume = localStorage.getItem('soundVolume');
+    
+    if (storedEnabled !== null) {
+      set({ soundEnabled: storedEnabled === 'true' });
+    }
+    
+    if (storedVolume !== null) {
+      const volume = parseFloat(storedVolume);
+      if (!isNaN(volume) && volume >= 0 && volume <= 1) {
+        set({ soundVolume: volume });
+      }
+    }
+  }
 }));
