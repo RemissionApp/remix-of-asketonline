@@ -1,0 +1,228 @@
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Vibrate, Bell, Wifi, WifiOff, Download, Trash2 } from 'lucide-react';
+import { usePWAFeatures } from '@/hooks/usePWAFeatures';
+import { useAppStore } from '@/store/useAppStore';
+
+export const PWASettingsPanel: React.FC = () => {
+  const {
+    isInitialized,
+    hapticEnabled,
+    notificationsEnabled,
+    backgroundSyncStatus,
+    toggleHaptic,
+    sync
+  } = usePWAFeatures();
+  const { language } = useAppStore();
+
+  const getTitle = () => {
+    switch (language) {
+      case 'ru': return 'Настройки PWA';
+      case 'es': return 'Configuración PWA';
+      default: return 'PWA Settings';
+    }
+  };
+
+  const getDescription = () => {
+    switch (language) {
+      case 'ru': return 'Управление функциями приложения';
+      case 'es': return 'Gestionar características de la aplicación';
+      default: return 'Manage app features';
+    }
+  };
+
+  const getHapticTitle = () => {
+    switch (language) {
+      case 'ru': return 'Тактильная обратная связь';
+      case 'es': return 'Retroalimentación táctil';
+      default: return 'Haptic Feedback';
+    }
+  };
+
+  const getHapticDescription = () => {
+    switch (language) {
+      case 'ru': return 'Вибрация при взаимодействии с приложением';
+      case 'es': return 'Vibración al interactuar con la aplicación';
+      default: return 'Vibration when interacting with the app';
+    }
+  };
+
+  const getNotificationsTitle = () => {
+    switch (language) {
+      case 'ru': return 'Уведомления';
+      case 'es': return 'Notificaciones';
+      default: return 'Notifications';
+    }
+  };
+
+  const getNotificationsDescription = () => {
+    switch (language) {
+      case 'ru': return 'Push-уведомления о событиях приложения';
+      case 'es': return 'Notificaciones push sobre eventos de la aplicación';
+      default: return 'Push notifications about app events';
+    }
+  };
+
+  const getSyncTitle = () => {
+    switch (language) {
+      case 'ru': return 'Фоновая синхронизация';
+      case 'es': return 'Sincronización en segundo plano';
+      default: return 'Background Sync';
+    }
+  };
+
+  const getSyncDescription = () => {
+    switch (language) {
+      case 'ru': return 'Синхронизация данных в фоновом режиме';
+      case 'es': return 'Sincronización de datos en segundo plano';
+      default: return 'Background data synchronization';
+    }
+  };
+
+  const getOnlineText = () => {
+    switch (language) {
+      case 'ru': return 'Онлайн';
+      case 'es': return 'En línea';
+      default: return 'Online';
+    }
+  };
+
+  const getOfflineText = () => {
+    switch (language) {
+      case 'ru': return 'Офлайн';
+      case 'es': return 'Fuera de línea';
+      default: return 'Offline';
+    }
+  };
+
+  const getPendingTasksText = () => {
+    const count = backgroundSyncStatus.pendingCount;
+    switch (language) {
+      case 'ru': return `Отложенных задач: ${count}`;
+      case 'es': return `Tareas pendientes: ${count}`;
+      default: return `Pending tasks: ${count}`;
+    }
+  };
+
+  const getClearTasksText = () => {
+    switch (language) {
+      case 'ru': return 'Очистить задачи';
+      case 'es': return 'Limpiar tareas';
+      default: return 'Clear tasks';
+    }
+  };
+
+  const getSupportedText = () => {
+    switch (language) {
+      case 'ru': return 'Поддерживается';
+      case 'es': return 'Compatible';
+      default: return 'Supported';
+    }
+  };
+
+  const getNotSupportedText = () => {
+    switch (language) {
+      case 'ru': return 'Не поддерживается';
+      case 'es': return 'No compatible';
+      default: return 'Not supported';
+    }
+  };
+
+  if (!isInitialized) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cosmic-accent"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Download className="w-5 h-5" />
+          {getTitle()}
+        </CardTitle>
+        <CardDescription>{getDescription()}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Haptic Feedback */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <Vibrate className="w-4 h-4" />
+              <span className="text-sm font-medium">{getHapticTitle()}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">{getHapticDescription()}</p>
+          </div>
+          <Switch
+            checked={hapticEnabled}
+            onCheckedChange={toggleHaptic}
+          />
+        </div>
+
+        {/* Notifications */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              <span className="text-sm font-medium">{getNotificationsTitle()}</span>
+              <Badge variant={notificationsEnabled ? "default" : "secondary"}>
+                {notificationsEnabled ? getSupportedText() : getNotSupportedText()}
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground">{getNotificationsDescription()}</p>
+          </div>
+        </div>
+
+        {/* Background Sync */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                {backgroundSyncStatus.isOnline ? (
+                  <Wifi className="w-4 h-4 text-green-500" />
+                ) : (
+                  <WifiOff className="w-4 h-4 text-red-500" />
+                )}
+                <span className="text-sm font-medium">{getSyncTitle()}</span>
+                <Badge variant={backgroundSyncStatus.isSupported ? "default" : "secondary"}>
+                  {backgroundSyncStatus.isSupported ? getSupportedText() : getNotSupportedText()}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">{getSyncDescription()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              {backgroundSyncStatus.isOnline ? getOnlineText() : getOfflineText()}
+            </span>
+            <span className="text-muted-foreground">
+              {getPendingTasksText()}
+            </span>
+          </div>
+
+          {backgroundSyncStatus.pendingCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => sync.clearPendingTasks()}
+              className="w-full"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              {getClearTasksText()}
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
