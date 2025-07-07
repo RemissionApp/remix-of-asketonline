@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
+import { firebaseConfig } from '@/utils/firebaseConfig';
 
 interface NotificationSettings {
   dailyReminder: boolean;
@@ -95,12 +96,10 @@ export const PushNotificationManager: React.FC = () => {
     try {
       const registration = await navigator.serviceWorker.ready;
       
-      // Пока используем заглушку для VAPID ключа
-      const vapidKey = 'YOUR_VAPID_KEY_HERE';
-      
+      // Используем реальный VAPID ключ из конфигурации
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: vapidKey,
+        applicationServerKey: firebaseConfig.vapidKey,
       });
 
       // Сохраняем подписку в Supabase

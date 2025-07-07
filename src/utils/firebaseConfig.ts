@@ -1,12 +1,6 @@
-// Firebase конфигурация для push-уведомлений
+// Firebase VAPID ключ для push-уведомлений
 export const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com", 
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  vapidKey: "YOUR_VAPID_KEY" // Для web push
+  vapidKey: "BPYkWNsm7DXW8hb9VWNOaRiv1a2zTccfiSGprwGyYbOq1w02alpSlSMXPgt0YLAPrgz5Jb2rKA_qHFF9MHQspUc"
 };
 
 // Инициализация Firebase (будет заменено на реальные значения)
