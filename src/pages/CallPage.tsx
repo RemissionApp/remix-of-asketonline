@@ -1,15 +1,24 @@
 import React from 'react';
 import { VoiceCallInterface } from '@/components/voice/VoiceCallInterface';
 import { StarField } from '@/components/StarField';
+import { TopBar } from '@/components/TopBar';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const CallPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cosmic-dark via-purple-900/20 to-cosmic-dark relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative pb-16">
       <StarField />
       
-      <div className="relative z-10 container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
+      {/* Top bar */}
+      <TopBar />
+      
+      {/* Main content */}
+      <div className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
         <VoiceCallInterface />
       </div>
+      
+      {/* Bottom navigation */}
+      <BottomNavigation />
     </div>
   );
 };
