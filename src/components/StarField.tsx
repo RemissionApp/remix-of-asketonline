@@ -37,7 +37,7 @@ export const StarField: React.FC<StarFieldProps> = ({
   }, [galaxyCount]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div className="main-background fixed inset-0 overflow-hidden pointer-events-none z-0">
       {/* Background image optimized for mobile */}
       <div 
         className="absolute inset-0" 
