@@ -7,6 +7,7 @@ import { ChatInput } from '@/components/chat/ChatInput';
 import { ChatTabContent } from '@/components/chat/ChatTabContent';
 import { UniverseChatProWrapper } from '@/components/chat/UniverseChatProWrapper';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { toast } from 'sonner';
 
 const UniverseChatPage = () => {
@@ -135,12 +136,14 @@ const UniverseChatPage = () => {
   // Wrap content with PRO check
   return (
     <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
-      <div className="min-h-screen flex flex-col bg-cosmic">
+      <div className="min-h-screen flex flex-col bg-cosmic pb-20">
         <StarField starCount={100} />
         
-        <ChatHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
+        <PageHeader 
+          title={t.universe?.chatTitle || 'Диалог со Вселенной'}
+        />
         
-        <div className="w-full max-w-2xl mx-auto mt-20">
+        <div className="w-full max-w-2xl mx-auto pt-20">
           <div className="px-4 mb-24">
             <ChatTabContent 
               isLoadingChat={isLoadingChat}

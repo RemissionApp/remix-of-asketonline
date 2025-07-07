@@ -1,23 +1,25 @@
 import React from 'react';
 import { VoiceCallInterface } from '@/components/voice/VoiceCallInterface';
 import { StarField } from '@/components/StarField';
-import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useAppStore } from '@/store/useAppStore';
 
 const CallPage: React.FC = () => {
+  const { language } = useAppStore();
+  
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-20">
         <StarField />
         
-        {/* Top bar - Fixed with safe area */}
-        <div className="fixed top-0 left-0 right-0 z-30 pt-safe-top">
-          <TopBar />
-        </div>
+        <PageHeader 
+          title={language === 'ru' ? 'Звонок Вселенной' : language === 'es' ? 'Llamada al Universo' : 'Universe Call'}
+        />
         
         {/* Main content - Adjusted for fixed headers */}
-        <div className="flex-1 flex items-center justify-center relative z-10 px-4 pt-20 pb-24">
+        <div className="flex-1 flex items-center justify-center relative z-10 px-4 pt-20">
           <VoiceCallInterface />
         </div>
         

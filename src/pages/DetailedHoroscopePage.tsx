@@ -1,21 +1,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { StarField } from '@/components/StarField';
-import { TopBar } from '@/components/TopBar';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 import { DetailedHoroscopeContent } from '@/components/horoscope/DetailedHoroscopeContent';
 import { useHoroscopeData } from '@/hooks/useHoroscopeData';
 import { getHoroscopeTranslations } from '@/utils/horoscopeUtils';
 import { useToast } from '@/hooks/use-toast';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const DetailedHoroscopePage: React.FC = () => {
   const { userProfile, language } = useAppStore();
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [shouldFetchHoroscope, setShouldFetchHoroscope] = useState(false);
   
@@ -107,18 +103,12 @@ const DetailedHoroscopePage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col relative pb-16 bg-gradient-to-b from-cosmic-dark to-[#1a0b2e]">
       <StarField starCount={200} />
-      <TopBar />
       
-      <Button
-        variant="ghost"
-        className="absolute top-20 left-4 z-20 text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20"
-        onClick={() => navigate('/main')}
-      >
-        <ArrowLeft size={16} className="mr-2" />
-        {translations.backButton[language] || translations.backButton.en}
-      </Button>
+      <PageHeader 
+        title={language === 'ru' ? 'Подробный гороскоп' : language === 'es' ? 'Horóscopo detallado' : 'Detailed Horoscope'}
+      />
       
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 mt-14">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 pt-20">
         <div className="w-full max-w-lg">
           <DetailedHoroscopeContent
             horoscope={horoscope}

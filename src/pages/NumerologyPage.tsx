@@ -1,15 +1,13 @@
 
 import React from 'react';
-import { TopBar } from '@/components/TopBar';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, List } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { UserAvatar } from '@/components/UserAvatar';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const NumerologyPage = () => {
   const { userProfile } = useAppStore();
@@ -60,26 +58,11 @@ const NumerologyPage = () => {
   
   const numerologyContent = (
     <div className="min-h-screen flex flex-col bg-cosmic pb-20">
-      <div className="bg-cosmic-dark text-white py-2 px-4 flex items-center z-20 fixed top-0 left-0 right-0">
-        <Button 
-          variant="ghost" 
-          className="text-cosmic-secondary mr-2 p-2" 
-          onClick={handleBack}
-        >
-          <ChevronLeft size={24} />
-        </Button>
-        
-        <div className="flex items-center flex-1">
-          <List size={24} className="text-cosmic-accent mr-3" />
-          <div>
-            <h2 className="text-cosmic-accent font-serif">Нумерологический анализ</h2>
-          </div>
-        </div>
-      </div>
+      <PageHeader title="Нумерологический анализ" />
       
       <StarField starCount={50} />
       
-      <div className="flex-1 px-4 py-4 mt-16 max-w-md mx-auto w-full">
+      <div className="flex-1 px-4 py-4 pt-20 max-w-md mx-auto w-full">
         <div className="flex items-center justify-center mb-6">
           <UserAvatar size="lg" />
           <div className="ml-4">
@@ -182,10 +165,12 @@ const NumerologyPage = () => {
   
   if (!userProfile?.isPro) {
     return (
-      <div className="min-h-screen flex flex-col bg-cosmic">
+      <div className="min-h-screen flex flex-col bg-cosmic pb-20">
         <StarField starCount={50} />
-        <TopBar />
-        <div className="flex-1 flex items-center justify-center p-4">
+        
+        <PageHeader title="Нумерологический анализ" />
+        
+        <div className="flex-1 flex items-center justify-center p-4 pt-20">
           <Card className="max-w-md w-full bg-cosmic-dark/80 backdrop-blur-md border-cosmic-accent/20">
             <ProFeatureOverlay
               title="Нумерологический анализ"
