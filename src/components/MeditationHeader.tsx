@@ -63,23 +63,21 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
         </button>
         
         {showProButton ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="flex items-center gap-2 text-cosmic-gold bg-cosmic-dark/60 hover:bg-cosmic-accent/20"
-                  onClick={onProButtonClick}
-                >
-                  <Crown size={18} className="text-cosmic-gold" />
-                  <span>PRO медитации</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Перейти к PRO медитациям</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="flex items-center gap-2 text-cosmic-gold bg-cosmic-dark/60 hover:bg-cosmic-accent/20"
+                onClick={onProButtonClick}
+              >
+                <Crown size={18} className="text-cosmic-gold" />
+                <span>PRO медитации</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Перейти к PRO медитациям</p>
+            </TooltipContent>
+          </Tooltip>
         ) : isPro && <ProBadge size="md" />}
       </div>
     </div>
