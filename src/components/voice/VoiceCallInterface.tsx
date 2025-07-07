@@ -5,25 +5,18 @@ import { Card } from '@/components/ui/card';
 import { WaveVisualization } from './WaveVisualization';
 import { UniverseAvatar } from './UniverseAvatar';
 import { CallStatus } from './CallStatus';
-import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppStore } from '@/store/useAppStore';
 
 export const VoiceCallInterface: React.FC = () => {
   const { language } = useAppStore();
   const { toast } = useToast();
+  const [isConnected, setIsConnected] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-
-  const {
-    startConversation,
-    endConversation,
-    setVolume,
-    isConnected,
-    isSpeaking,
-    status
-  } = useElevenLabsConversation();
 
   // Simulate call duration
   useEffect(() => {
@@ -38,16 +31,20 @@ export const VoiceCallInterface: React.FC = () => {
     return () => clearInterval(interval);
   }, [isConnected]);
 
-  // Update volume when speaker state changes
-  useEffect(() => {
-    if (isConnected) {
-      setVolume(isSpeakerOn ? 0.8 : 0);
-    }
-  }, [isSpeakerOn, isConnected, setVolume]);
-
   const handleStartCall = async () => {
     try {
-      await startConversation();
+      setIsConnected(true);
+      setCallDuration(0);
+      
+      // Simulate connection and speaking
+      setTimeout(() => {
+        setIsSpeaking(true);
+        setTimeout(() => {
+          setIsSpeaking(false);
+          setIsListening(true);
+        }, 3000);
+      }, 2000);
+      
       toast({
         title: language === 'ru' ? "Соединение установлено" : 
                language === 'es' ? "Conexión establecida" : "Connection established",
@@ -68,8 +65,10 @@ export const VoiceCallInterface: React.FC = () => {
 
   const handleEndCall = async () => {
     try {
-      await endConversation();
+      setIsConnected(false);
       setCallDuration(0);
+      setIsSpeaking(false);
+      setIsListening(false);
     } catch (error) {
       console.error('Failed to end call:', error);
     }
@@ -77,7 +76,6 @@ export const VoiceCallInterface: React.FC = () => {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
-    // Note: ElevenLabs muting would need to be implemented based on their API
   };
 
   const toggleSpeaker = () => {
@@ -138,7 +136,7 @@ export const VoiceCallInterface: React.FC = () => {
           <CallStatus 
             isConnected={isConnected} 
             duration={formatDuration(callDuration)}
-            isListening={isConnected && !isSpeaking}
+            isListening={isListening}
             isSpeaking={isSpeaking}
           />
         </div>
@@ -147,8 +145,8 @@ export const VoiceCallInterface: React.FC = () => {
         {isConnected && (
           <div className="mb-6">
             <WaveVisualization 
-              isActive={isSpeaking || (isConnected && !isSpeaking)} 
-              intensity={isSpeaking ? 0.8 : 0.4}
+              isActive={isSpeaking || isListening} 
+              intensity={isSpeaking ? 0.8 : isListening ? 0.4 : 0.1}
             />
           </div>
         )}
