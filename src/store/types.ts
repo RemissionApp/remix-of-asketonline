@@ -17,7 +17,7 @@ export type ActiveScreen =
   | 'meditation'
   | 'login'
   | 'signup'
-  | 'universe-call'
+  | 'universe-chat'
   | 'full-horoscope'
   | 'numerology';
 

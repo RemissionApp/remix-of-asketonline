@@ -18,8 +18,8 @@ export const UniverseMessageBlock: React.FC = () => {
   
   console.log("UniverseMessageBlock rendering, userProfile:", userProfile);
   
-  const handleCallClick = () => {
-    navigate('/universe-call');
+  const handleChatClick = () => {
+    navigate('/universe-chat');
   };
   
   const handleQuestionClick = () => {
@@ -78,13 +78,13 @@ export const UniverseMessageBlock: React.FC = () => {
             </CosmicButton>
             
             <CosmicButton 
-              onClick={handleCallClick} 
+              onClick={handleChatClick} 
               size="md" 
               variant="default"
               className="flex-1 bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/10"
             >
-              {language === 'ru' ? 'Позвонить Вселенной' : 
-               language === 'es' ? 'Llamar al Universo' : 'Call Universe'}
+              {language === 'ru' ? 'Перейти в чат' : 
+               language === 'es' ? 'Ir al chat' : 'Enter chat'}
             </CosmicButton>
           </div>
         ) : (

@@ -1,17 +1,17 @@
 
 import React, { memo } from 'react';
-import { Home, Sparkles, MessageSquare, UserRound, Stars, Phone } from 'lucide-react';
+import { Home, Sparkles, MessageSquare, UserRound, Stars } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 
 // Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-call' | 'full-horoscope' | 'numerology'> = {
+const routeToScreenMapping: Record<string, 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology'> = {
   '/main': 'main',
   '/create-pact': 'create-pact',
   '/universe': 'universe',
-  '/universe-call': 'universe-call',
+  '/universe-chat': 'universe-chat',
   '/profile': 'profile',
   '/comparison': 'comparison',
   '/meditation': 'meditation',
@@ -41,11 +41,11 @@ export const BottomNavigation: React.FC = memo(() => {
       case '/create-pact':
         // Отключаем голосовое сопровождение для навигации на страницу создания аскезы
         return '';
-      case '/universe-call':
+      case '/universe-chat':
         switch(language) {
-          case 'ru': return 'Переходим к звонку со Вселенной. Поговорите с космической мудростью голосом.';
-          case 'es': return 'Vamos a la llamada con el Universo. Habla con la sabiduría cósmica por voz.';
-          default: return 'Going to Universe call. Speak with cosmic wisdom by voice.';
+          case 'ru': return 'Переходим к чату с Вселенной. Задайте свои вопросы высшим силам.';
+          case 'es': return 'Vamos al chat con el Universo. Haz tus preguntas a las fuerzas superiores.';
+          default: return 'Going to Universe chat. Ask your questions to the higher forces.';
         }
       case '/universe':
         switch(language) {
@@ -71,7 +71,7 @@ export const BottomNavigation: React.FC = memo(() => {
   };
   
   // Updated to match the ActiveScreen type
-  const handleNavigation = async (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-call' | 'full-horoscope' | 'numerology', path: string) => {
+  const handleNavigation = async (screen: 'welcome' | 'language' | 'onboarding' | 'main' | 'create-pact' | 'universe' | 'profile' | 'comparison' | 'meditation' | 'login' | 'signup' | 'universe-chat' | 'full-horoscope' | 'numerology', path: string) => {
     // Update the active screen in the store
     setActiveScreen(screen);
     // Navigate to the corresponding route
@@ -120,13 +120,13 @@ export const BottomNavigation: React.FC = memo(() => {
             {/* Different navigation options based on PRO status */}
             {isPro ? (
               <>
-                {/* Call button - Only visible for PRO users */}
+                {/* Chat button - Only visible for PRO users */}
                 <button 
-                  className={`flex flex-col items-center p-1 ${isActive('/universe-call') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                  onClick={() => handleNavigation('universe-call', '/universe-call')}
+                  className={`flex flex-col items-center p-1 ${isActive('/universe-chat') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                  onClick={() => handleNavigation('universe-chat', '/universe-chat')}
                 >
-                  <Phone size={18} />
-                  <span className="text-xs">{t.main.nav.universeCall || 'Call'}</span>
+                  <MessageSquare size={18} />
+                  <span className="text-xs">{t.main.nav.universeChat || 'Chat'}</span>
                 </button>
                 
                 {/* Full Horoscope button - Only visible for PRO users */}
