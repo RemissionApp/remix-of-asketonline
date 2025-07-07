@@ -27,6 +27,8 @@ import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
 import CosmicMissionsPage from "./pages/CosmicMissionsPage";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { PWAUpdateNotification } from "./components/PWAUpdateNotification";
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -169,6 +171,8 @@ const App = () => {
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <PWAInstallPrompt />
+          <PWAUpdateNotification />
           <Toaster />
           <Sonner />
         </BrowserRouter>

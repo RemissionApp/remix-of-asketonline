@@ -1,0 +1,57 @@
+{
+  "name": "Cosmic Ascension Path",
+  "short_name": "Cosmic Path",
+  "description": "Путь космического восхождения - приложение для духовного роста и саморазвития",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0B19",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ru",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["lifestyle", "health", "wellness"],
+  "shortcuts": [
+    {
+      "name": "Создать пакт",
+      "short_name": "Пакт",
+      "description": "Создать новый духовный пакт",
+      "url": "/create-pact",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Вселенная",
+      "short_name": "Вселенная", 
+      "description": "Задать вопрос Вселенной",
+      "url": "/universe",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Медитация",
+      "short_name": "Медитация",
+      "description": "Медитативные практики",
+      "url": "/meditation", 
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}
