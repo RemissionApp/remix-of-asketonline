@@ -64,7 +64,7 @@ const MainPage: React.FC = () => {
     };
     
     initializeUserData();
-  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate, handleAsyncError, logger]);
+  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate, handleAsyncError]);
   
   // Filter active pacts
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
