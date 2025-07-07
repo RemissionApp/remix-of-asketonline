@@ -7,6 +7,71 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
+// Функция для получения OAuth токена для FCM V1 API
+async function getAccessToken(serviceAccount: any): Promise<string> {
+  const jwtHeader = {
+    alg: 'RS256',
+    typ: 'JWT'
+  }
+
+  const now = Math.floor(Date.now() / 1000)
+  const jwtPayload = {
+    iss: serviceAccount.client_email,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600,
+    iat: now
+  }
+
+  // Создаем JWT
+  const encoder = new TextEncoder()
+  const headerB64 = btoa(JSON.stringify(jwtHeader)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+  const payloadB64 = btoa(JSON.stringify(jwtPayload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+  
+  const signatureInput = `${headerB64}.${payloadB64}`
+  
+  // Импортируем приватный ключ
+  const privateKey = await crypto.subtle.importKey(
+    'pkcs8',
+    encoder.encode(serviceAccount.private_key.replace(/\\n/g, '\n')),
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      hash: 'SHA-256'
+    },
+    false,
+    ['sign']
+  )
+
+  // Создаем подпись
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    privateKey,
+    encoder.encode(signatureInput)
+  )
+
+  const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+
+  const jwt = `${signatureInput}.${signatureB64}`
+
+  // Получаем access token
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  })
+
+  const tokenData = await tokenResponse.json()
+  
+  if (!tokenResponse.ok) {
+    throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`)
+  }
+
+  return tokenData.access_token
+}
+
 interface NotificationPayload {
   userId?: string;
   userIds?: string[];
@@ -61,11 +126,16 @@ serve(async (req) => {
       throw new Error('Missing required fields: type, title, body')
     }
 
-    // Получаем Firebase Server Key из секретов
-    const firebaseServerKey = Deno.env.get('FIREBASE_SERVER_KEY')
-    if (!firebaseServerKey) {
-      throw new Error('Firebase Server Key not configured')
+    // Получаем Firebase Service Account из секретов
+    const firebaseServiceAccount = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
+    if (!firebaseServiceAccount) {
+      throw new Error('Firebase Service Account not configured')
     }
+
+    const serviceAccount = JSON.parse(firebaseServiceAccount)
+    
+    // Получаем OAuth токен для FCM V1 API
+    const accessToken = await getAccessToken(serviceAccount)
 
     // Определяем пользователей для отправки
     let targetUserIds: string[] = []
@@ -122,44 +192,58 @@ serve(async (req) => {
       }
     })
 
-    // Отправляем push-уведомления
+    // Отправляем push-уведомления через FCM V1 API
     const results = []
     for (const subscription of filteredSubscriptions) {
       try {
-        const pushPayload = {
-          to: subscription.subscription.endpoint.includes('fcm.googleapis.com') 
-            ? subscription.subscription.endpoint.split('/').pop()
-            : null,
-          notification: {
-            title: payload.title,
-            body: payload.body,
-            icon: payload.icon || '/icon-192.png',
-            badge: payload.badge || '/icon-72.png',
-            image: payload.image,
-            requireInteraction: payload.requireInteraction || false,
-            silent: payload.silent || false,
+        // Извлекаем FCM токен из endpoint
+        let fcmToken = null
+        if (subscription.subscription.endpoint.includes('fcm.googleapis.com')) {
+          const urlParts = subscription.subscription.endpoint.split('/')
+          fcmToken = urlParts[urlParts.length - 1]
+        }
+
+        if (!fcmToken) {
+          throw new Error('Invalid FCM token')
+        }
+
+        // Формируем payload для FCM V1 API
+        const fcmMessage = {
+          message: {
+            token: fcmToken,
+            notification: {
+              title: payload.title,
+              body: payload.body,
+              image: payload.image
+            },
             data: {
-              ...payload.data,
               type: payload.type,
               userId: subscription.user_id,
               url: getNotificationUrl(payload.type, payload.data),
+              ...payload.data ? Object.fromEntries(
+                Object.entries(payload.data).map(([k, v]) => [k, String(v)])
+              ) : {}
             },
-            click_action: getNotificationUrl(payload.type, payload.data),
-          },
-          data: {
-            type: payload.type,
-            userId: subscription.user_id,
-            ...payload.data,
+            webpush: {
+              notification: {
+                icon: payload.icon || '/icon-192.png',
+                badge: payload.badge || '/icon-72.png',
+                requireInteraction: payload.requireInteraction || false,
+                silent: payload.silent || false,
+                click_action: getNotificationUrl(payload.type, payload.data)
+              }
+            }
           }
         }
 
-        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+        // Отправляем через FCM V1 API
+        const response = await fetch(`https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`, {
           method: 'POST',
           headers: {
-            'Authorization': `key=${firebaseServerKey}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(pushPayload),
+          body: JSON.stringify(fcmMessage),
         })
 
         const result = await response.json()
