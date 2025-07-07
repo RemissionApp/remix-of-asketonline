@@ -23,6 +23,7 @@ import NewMeditationPage from "./pages/NewMeditationPage";
 import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
 import FullHoroscopePage from "./pages/FullHoroscopePage";
 import UniverseChatPage from "./pages/UniverseChatPage";
+import CallPage from "./pages/CallPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
@@ -171,6 +172,7 @@ const App = () => {
             {/* Pro features routes */}
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
+            <Route path="/universe-call" element={<CallPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
             <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
