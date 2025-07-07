@@ -75,13 +75,53 @@ export const VoiceCallInterface: React.FC = () => {
     }
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    // Note: ElevenLabs muting would need to be implemented based on their API
+  const toggleMute = async () => {
+    if (!isConnected) return;
+    
+    try {
+      // Для PWA нужно проверить доступность микрофона
+      if (!isMuted) {
+        // Отключаем микрофон через ElevenLabs API если доступно
+        setIsMuted(true);
+      } else {
+        // Включаем микрофон - запрашиваем доступ для PWA
+        if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+        setIsMuted(false);
+      }
+    } catch (error) {
+      console.error('Error toggling microphone:', error);
+      toast({
+        title: language === 'ru' ? "Ошибка микрофона" :
+               language === 'es' ? "Error de micrófono" : "Microphone error",  
+        description: language === 'ru' ? "Не удалось переключить микрофон" :
+                    language === 'es' ? "No se pudo alternar el micrófono" : "Failed to toggle microphone",
+        variant: "destructive"
+      });
+    }
   };
 
-  const toggleSpeaker = () => {
-    setIsSpeakerOn(!isSpeakerOn);
+  const toggleSpeaker = async () => {
+    if (!isConnected) return;
+    
+    try {
+      const newSpeakerState = !isSpeakerOn;
+      setIsSpeakerOn(newSpeakerState);
+      
+      // Устанавливаем громкость через ElevenLabs
+      await setVolume(newSpeakerState ? 0.8 : 0);
+      
+    } catch (error) {
+      console.error('Error toggling speaker:', error);
+      toast({
+        title: language === 'ru' ? "Ошибка динамика" :
+               language === 'es' ? "Error de altavoz" : "Speaker error",
+        description: language === 'ru' ? "Не удалось переключить динамик" :
+                    language === 'es' ? "No se pudo alternar el altavoz" : "Failed to toggle speaker", 
+        variant: "destructive"
+      });
+    }
   };
 
   const formatDuration = (seconds: number) => {

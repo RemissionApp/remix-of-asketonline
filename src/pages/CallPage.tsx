@@ -9,11 +9,6 @@ const CallPage: React.FC = () => {
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField />
       
-      {/* Полупрозрачный фон */}
-      <div className="fixed inset-0 z-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/40 to-cosmic-dark/60" />
-      </div>
-      
       {/* Top bar */}
       <TopBar />
       
