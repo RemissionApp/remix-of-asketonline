@@ -11,6 +11,8 @@ import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils'
 import { useToast } from '@/hooks/use-toast';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { MissionReminder } from '@/components/missions/MissionReminder';
+import { createLogger } from '@/utils/logger';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 const MainPage: React.FC = () => {
   const { 
@@ -30,30 +32,39 @@ const MainPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
+  const { handleAsyncError } = useErrorHandler();
   
-  console.log("MainPage rendering - initial render");
+  const logger = createLogger('MainPage');
   
   // Check if user is logged in and load user profile if needed
   useEffect(() => {
     const initializeUserData = async () => {
-      console.log("MainPage: initializeUserData started");
+      logger.debug("Initializing user data");
       setIsLoading(true);
       
-      // If user is logged in but we don't have profile data yet, load it
-      if (user && !userProfile) {
-        console.log("MainPage: loading user profile");
-        await loadUserProfile();
+      try {
+        // If user is logged in but we don't have profile data yet, load it
+        if (user && !userProfile) {
+          logger.debug("Loading user profile");
+          await handleAsyncError(
+            () => loadUserProfile(),
+            { component: 'MainPage', action: 'loadUserProfile' }
+          );
+        }
+        
+        // Then sync pacts with current date
+        logger.debug("Syncing pacts with current date");
+        syncPactsWithCurrentDate();
+      } catch (error) {
+        logger.error("Failed to initialize user data", error);
+      } finally {
+        setIsLoading(false);
+        logger.debug("User data initialization complete");
       }
-      
-      // Then sync pacts with current date
-      console.log("MainPage: syncing pacts");
-      syncPactsWithCurrentDate();
-      setIsLoading(false);
-      console.log("MainPage: initializeUserData complete, isLoading set to false");
     };
     
     initializeUserData();
-  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate]);
+  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate, handleAsyncError, logger]);
   
   // Filter active pacts
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
@@ -105,8 +116,8 @@ const MainPage: React.FC = () => {
   // Empty string for dailyQuote since we're removing QuoteDisplay
   const dailyQuote = '';
   
-  // Log visibility information
-  console.log("MainPage rendering with visibility information:", {
+  // Log visibility information in development
+  logger.debug("MainPage render state", {
     hasUserProfile: !!userProfile,
     hasBirthDate: !!userProfile?.birthDate,
     isPro: userProfile?.isPro,

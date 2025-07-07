@@ -1,13 +1,18 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
 import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
+import { AuthUser } from '@/types/api';
+import { createLogger } from '@/utils/logger';
+
+const logger = createLogger('AuthSlice');
 
 export interface AuthSlice {
-  user: any | null;
+  user: AuthUser | null;
+  loading: boolean;
   emailConfirmed: boolean;
+  setUser: (user: AuthUser | null) => void;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -18,21 +23,21 @@ export interface AuthSlice {
 
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
   user: null,
+  loading: false,
   emailConfirmed: false,
+  
+  setUser: (user: AuthUser | null) => set({ user }),
   
   signIn: async (email, password) => {
     set({ loading: true });
     
     try {
-      // Очищаем состояние аутентификации перед входом для предотвращения проблем
       cleanupAuthState();
       
-      // Пытаемся глобально выйти перед новым входом
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (error) {
-        // Продолжаем даже при ошибке
-        console.log("Ошибка при глобальном выходе перед входом:", error);
+        logger.warn("Error during global signout before signin", error);
       }
       
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -44,16 +49,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ user: data.user });
       
-      // Загружаем данные пользователя
       await get().loadUserProfile();
       
-      // Загружаем остальные данные с небольшой задержкой
       setTimeout(async () => {
         try {
           await get().loadPacts();
           await get().loadUniverseQuestions();
         } catch (err) {
-          console.error("Ошибка при загрузке данных:", err);
+          logger.error("Error loading user data after signin", err);
         }
       }, 0);
       
@@ -62,14 +65,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         description: "Вы успешно вошли в систему"
       });
       
-      return true; // Возвращаем true при успешном входе
-    } catch (error: any) {
+      return true;
+    } catch (error) {
+      logger.error("Sign in failed", error);
       toast({
         title: "Ошибка входа",
-        description: error.message || "Не удалось войти в систему",
+        description: error instanceof Error ? error.message : "Не удалось войти в систему",
         variant: "destructive"
       });
-      return false; // Возвращаем false при ошибке
+      return false;
     } finally {
       set({ loading: false });
     }
@@ -79,7 +83,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Очищаем состояние аутентификации перед регистрацией
       cleanupAuthState();
       
       const { data, error } = await supabase.auth.signUp({
@@ -91,28 +94,25 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       set({ user: data.user });
       
-      // Проверяем, требуется ли подтверждение email
       if (data.session) {
-        // Подтверждение email не требуется, пользователь вошел в систему
         toast({
           title: "Регистрация выполнена",
           description: "Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль."
         });
         
-        // Устанавливаем активный экран на настройку профиля
         set({ activeScreen: 'profile', emailConfirmed: true });
       } else {
-        // Требуется подтверждение email
         set({ emailConfirmed: false });
         toast({
           title: "Регистрация выполнена",
           description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Sign up failed", error);
       toast({
         title: "Ошибка регистрации",
-        description: error.message || "Не удалось создать аккаунт",
+        description: error instanceof Error ? error.message : "Не удалось создать аккаунт",
         variant: "destructive"
       });
     } finally {
@@ -124,13 +124,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Очищаем состояние аутентификации
       cleanupAuthState();
-      
-      // Пытаемся глобально выйти
       await supabase.auth.signOut({ scope: 'global' });
       
-      // Сбрасываем состояние приложения
       set({ 
         user: null,
         pacts: [],
@@ -165,10 +161,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         title: "Выход выполнен",
         description: "Вы успешно вышли из системы"
       });
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Sign out failed", error);
       toast({
         title: "Ошибка выхода",
-        description: error.message || "Не удалось выйти из системы",
+        description: error instanceof Error ? error.message : "Не удалось выйти из системы",
         variant: "destructive"
       });
     } finally {
@@ -176,14 +173,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     }
   },
   
-  // Проверка подтверждения email пользователя
   checkEmailConfirmation: async () => {
     const { user } = get();
     
     if (!user) return false;
     
     try {
-      // Получаем данные пользователя для проверки статуса подтверждения email
       const { data, error } = await supabase.auth.getUser();
       
       if (error) throw error;
@@ -191,16 +186,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       const isConfirmed = data.user?.email_confirmed_at != null;
       set({ emailConfirmed: isConfirmed });
       
-      console.log("Статус подтверждения email:", isConfirmed, data.user);
+      logger.debug("Email confirmation status", { isConfirmed, user: data.user });
       
       return isConfirmed;
     } catch (error) {
-      console.error("Ошибка при проверке подтверждения email:", error);
+      logger.error("Error checking email confirmation", error);
       return false;
     }
   },
   
-  // Обновление профиля пользователя
   updateUserProfile: async (profileData) => {
     const { user } = get();
     
@@ -216,8 +210,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({ loading: true });
     
     try {
-      // Подготавливаем объект обновления только с определенными полями
-      const updateFields: any = {};
+      const updateFields: Record<string, any> = {};
       if (profileData.name) updateFields.name = profileData.name;
       if (profileData.birthDate) updateFields.birth_date = profileData.birthDate;
       if (profileData.goal) updateFields.goal = profileData.goal;
@@ -226,7 +219,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       if (profileData.rank) updateFields.rank = profileData.rank;
       if (profileData.avatar_url) updateFields.avatar_url = profileData.avatar_url;
 
-      console.log("Обновление профиля со следующими полями:", updateFields);
+      logger.debug("Updating profile with fields", updateFields);
       
       const { error } = await supabase
         .from('profiles')
@@ -244,7 +237,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         description: "Ваш профиль был успешно обновлен"
       });
       
-      // После обновления профиля и если была установлена дата рождения, предварительно загружаем данные гороскопа
+      // Предварительная загрузка гороскопа если установлена дата рождения
       if (profileData.birthDate) {
         try {
           const { language } = get();
@@ -259,15 +252,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
             });
           }
         } catch (e) {
-          console.error("Не удалось предварительно загрузить гороскоп:", e);
-          // Не показываем пользователю ошибку для этой попытки предварительной загрузки
+          logger.warn("Failed to preload horoscope", e);
         }
       }
       
-    } catch (error: any) {
+    } catch (error) {
+      logger.error("Profile update failed", error);
       toast({
         title: "Ошибка",
-        description: error.message || "Не удалось обновить профиль",
+        description: error instanceof Error ? error.message : "Не удалось обновить профиль",
         variant: "destructive"
       });
     } finally {
@@ -275,15 +268,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     }
   },
   
-  // Загрузка профиля пользователя
   loadUserProfile: async () => {
     const { user } = get();
     
     if (!user) return;
     
-    console.log("Загрузка профиля пользователя для:", user.id);
+    logger.debug("Loading user profile", { userId: user.id });
+    
     try {
-      // Получаем данные профиля
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -291,13 +283,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .single();
       
       if (error) {
-        console.error("Ошибка загрузки данных профиля:", error);
+        logger.error("Error loading profile data", error);
         throw error;
       }
       
-      console.log("Получены данные профиля:", data);
+      logger.debug("Profile data loaded", data);
       
-      // Проверяем статус подписки
+      // Check subscription status
       const { data: subscription } = await supabase
         .from('subscriptions')
         .select('is_pro, subscription_end')
@@ -307,7 +299,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       const isPro = subscription?.is_pro && 
         new Date(subscription.subscription_end) > new Date();
       
-      // Получаем достижения
+      // Get achievements
       const { data: achievements, error: achievementsError } = await supabase
         .from('achievements')
         .select('*')
@@ -315,7 +307,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       
       if (achievementsError) throw achievementsError;
       
-      // Преобразуем достижения в формат нашего приложения
+      // Map achievements to app format
       const mappedAchievements = defaultAchievements.map(defaultAch => {
         const foundAch = achievements?.find(a => a.achievement_type === defaultAch.id);
         return foundAch ? {
@@ -328,7 +320,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         } : defaultAch;
       });
       
-      // Получаем активную миссию
+      // Get active mission
       const { data: missions, error: missionsError } = await supabase
         .from('missions')
         .select('*')
@@ -343,12 +335,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         id: missions[0].id,
         title: missions[0].title,
         description: missions[0].description,
-        requirements: missions[0].requirements as any,
-        reward: missions[0].reward as any,
+        requirements: missions[0].requirements as string[],
+        reward: missions[0].reward as { energyPoints?: number; achievement?: string },
         completed: false
       } : undefined;
       
-      // Обновляем локальное состояние полными данными профиля
+      // Update local state with full profile data
       set({
         userProfile: {
           name: data.name || 'Искатель',
@@ -367,13 +359,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         }
       });
       
-      console.log("Профиль пользователя успешно загружен");
+      logger.debug("User profile loaded successfully");
       
-      // После загрузки профиля предварительно загружаем данные гороскопа, если есть дата рождения
+      // Preload horoscope data if birth date exists
       if (data.birth_date) {
         try {
           const { language } = get();
-          // Вспомогательная функция для получения знака зодиака используется здесь
           const sign = getZodiacSign(new Date(data.birth_date));
           if (sign) {
             await supabase.functions.invoke('fetch-horoscope', {
@@ -385,18 +376,17 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
             });
           }
         } catch (e) {
-          console.error("Не удалось предварительно загрузить гороскоп:", e);
-          // Не показываем пользователю ошибку для этой попытки предварительной загрузки
+          logger.warn("Failed to preload horoscope data", e);
         }
       }
       
     } catch (error) {
-      console.error("Ошибка загрузки профиля пользователя:", error);
+      logger.error("Error loading user profile", error);
     }
   }
 });
 
-// Вспомогательная функция для расчета возраста
+// Helper function to calculate age
 function calculateAge(birthDate: Date): number | null {
   if (!birthDate) return null;
   const today = new Date();
@@ -408,7 +398,7 @@ function calculateAge(birthDate: Date): number | null {
   return age;
 }
 
-// Вспомогательная функция для получения знака зодиака (упрощенная версия только для предварительной загрузки)
+// Helper function to get zodiac sign (simplified version for preloading only)
 function getZodiacSign(birthDate: Date): string | null {
   if (!birthDate) return null;
   
