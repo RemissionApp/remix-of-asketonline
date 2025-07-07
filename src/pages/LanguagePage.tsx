@@ -62,11 +62,7 @@ const LanguagePage = () => {
     <div className="min-h-screen overflow-hidden flex flex-col items-center justify-center relative p-4">
       <StarField starCount={100} />
       
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
-        style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80 z-0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/10 to-cosmic-dark z-0" />
       
       <div className="relative z-10 w-full max-w-md">
         <div className={`text-center transition-all duration-1000 ${

@@ -276,14 +276,8 @@ export const PactOath: React.FC<PactOathProps> = ({
     <div className="relative min-h-screen flex flex-col items-center justify-center">
       <StarField starCount={150} />
       
-      {/* Background image with overlay */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center opacity-60"
-          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/90" />
-      </div>
+      {/* Cosmic background */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/10 to-cosmic-dark opacity-80" />
       
       <div className="relative z-10 w-full max-w-lg p-4">
         <button

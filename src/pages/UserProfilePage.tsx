@@ -94,14 +94,8 @@ const UserProfilePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
       
-      {/* Cosmic background image */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
-      </div>
+      {/* Cosmic background */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark" />
       
       <div className="relative z-10 max-w-md w-full mx-auto">
         <Card className="cosmic-card backdrop-blur-[5px] bg-cosmic-dark/10 border-cosmic-accent/20">

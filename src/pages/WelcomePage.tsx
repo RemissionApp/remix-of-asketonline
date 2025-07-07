@@ -56,14 +56,8 @@ const WelcomePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
       
-      {/* Космическое фоновое изображение */}
-      <div className="fixed inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center opacity-90"
-          style={{ backgroundImage: "url('/lovable-uploads/1fab6aac-8009-418b-8685-51057869b4ad.png')" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-cosmic-dark/20 to-cosmic-dark/80" />
-      </div>
+      {/* Космический фон */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark" />
       
       <div className={`relative z-10 text-center transition-all duration-1000 ${
         isAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
