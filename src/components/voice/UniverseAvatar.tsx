@@ -13,27 +13,53 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
     <div className="relative w-32 h-32 mx-auto">
       {/* Main avatar circle */}
       <div 
-        className={`w-full h-full rounded-full bg-gradient-to-br from-cosmic-accent via-purple-500 to-blue-500 border-4 transition-all duration-500 ${
+        className={`w-full h-full rounded-full border-4 transition-all duration-500 relative overflow-hidden ${
           isActive 
             ? 'border-cosmic-accent shadow-lg shadow-cosmic-accent/50 animate-pulse' 
             : 'border-cosmic-accent/30 shadow-sm'
         }`}
       >
-        {/* Inner gradient */}
-        <div className="w-full h-full rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent">
-          {/* Central cosmic symbol */}
-          <div className="w-full h-full rounded-full flex items-center justify-center">
-            <div 
-              className={`text-4xl transition-all duration-300 ${
-                isSpeaking 
-                  ? 'animate-spin text-white' 
-                  : 'text-white/80'
+        {/* Universe Avatar Image */}
+        <img 
+          src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png"
+          alt="Universe Avatar"
+          className="w-full h-full object-cover rounded-full"
+        />
+        
+        {/* Twinkling stars overlay */}
+        <div className="absolute inset-0 rounded-full">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-1 h-1 bg-white rounded-full ${
+                isActive ? 'animate-pulse' : ''
               }`}
-            >
-              ✨
-            </div>
-          </div>
+              style={{
+                top: `${15 + (i * 10)}%`,
+                left: `${20 + (i * 8)}%`,
+                animationDelay: `${i * 0.3}s`,
+                opacity: isActive ? 1 : 0.3,
+              }}
+            />
+          ))}
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i + 8}
+              className={`absolute w-0.5 h-0.5 bg-cosmic-accent rounded-full ${
+                isActive ? 'animate-ping' : ''
+              }`}
+              style={{
+                top: `${30 + (i * 12)}%`,
+                right: `${15 + (i * 10)}%`,
+                animationDelay: `${i * 0.5}s`,
+                opacity: isActive ? 0.8 : 0.2,
+              }}
+            />
+          ))}
         </div>
+        
+        {/* Gradient overlay for better visibility */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/5 to-transparent" />
       </div>
 
       {/* Outer glow rings */}
