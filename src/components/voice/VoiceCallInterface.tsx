@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, PhoneOff, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { WaveVisualization } from './WaveVisualization';
 import { UniverseAvatar } from './UniverseAvatar';
 import { CallStatus } from './CallStatus';
+import { CallStatusIndicator } from './CallStatusIndicator';
+import { SwipeGestureHandler } from './SwipeGestureHandler';
 import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppStore } from '@/store/useAppStore';
@@ -15,6 +16,8 @@ export const VoiceCallInterface: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const {
     startConversation,
@@ -46,8 +49,17 @@ export const VoiceCallInterface: React.FC = () => {
   }, [isSpeakerOn, isConnected, setVolume]);
 
   const handleStartCall = async () => {
+    setIsLoading(true);
+    setConnectionError(null);
+    
     try {
       await startConversation();
+      
+      // Haptic feedback for successful connection
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]);
+      }
+      
       toast({
         title: language === 'ru' ? "Соединение установлено" : 
                language === 'es' ? "Conexión establecida" : "Connection established",
@@ -56,13 +68,25 @@ export const VoiceCallInterface: React.FC = () => {
       });
     } catch (error) {
       console.error('Failed to start call:', error);
+      
+      const errorMessage = language === 'ru' ? "Не удалось соединиться с Вселенной" :
+                          language === 'es' ? "No se pudo conectar con el Universo" : "Failed to connect to the Universe";
+      
+      setConnectionError(errorMessage);
+      
+      // Haptic feedback for error
+      if ('vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200]);
+      }
+      
       toast({
         title: language === 'ru' ? "Ошибка соединения" :
                language === 'es' ? "Error de conexión" : "Connection error",
-        description: language === 'ru' ? "Не удалось соединиться с Вселенной" :
-                    language === 'es' ? "No se pudo conectar con el Universo" : "Failed to connect to the Universe",
+        description: errorMessage,
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -155,8 +179,9 @@ export const VoiceCallInterface: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto px-4">
-      <div className="bg-transparent p-4 text-center space-y-6">
+    <SwipeGestureHandler>
+      <div className="w-full max-w-sm mx-auto px-4">
+        <div className="bg-transparent p-4 text-center space-y-6">
         
         {/* Universe Avatar */}
         <div className="flex justify-center">
@@ -183,6 +208,15 @@ export const VoiceCallInterface: React.FC = () => {
           />
         </div>
 
+        {/* Status Indicator */}
+        <div className="flex justify-center">
+          <CallStatusIndicator 
+            isConnected={isConnected}
+            isLoading={isLoading}
+            error={connectionError}
+          />
+        </div>
+
         {/* Wave Visualization */}
         {isConnected && (
           <div className="flex justify-center">
@@ -198,10 +232,18 @@ export const VoiceCallInterface: React.FC = () => {
           {!isConnected ? (
             <Button
               onClick={handleStartCall}
+              disabled={isLoading}
               size="lg"
-              className="w-24 h-24 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400/50 shadow-lg shadow-green-500/25 transition-all duration-300 hover:scale-105 hover:shadow-green-500/50 active:scale-95"
+              className="w-24 h-24 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400/50 shadow-lg shadow-green-500/25 transition-all duration-300 hover:scale-105 hover:shadow-green-500/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
             >
-              <Phone className="w-10 h-10 sm:w-8 sm:h-8" />
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              ) : (
+                <Phone className="w-10 h-10 sm:w-8 sm:h-8" />
+              )}
+              {isLoading && (
+                <div className="absolute inset-0 bg-green-500/20 animate-pulse rounded-full"></div>
+              )}
             </Button>
           ) : (
             <Button
@@ -253,7 +295,8 @@ export const VoiceCallInterface: React.FC = () => {
             </p>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </SwipeGestureHandler>
   );
 };
