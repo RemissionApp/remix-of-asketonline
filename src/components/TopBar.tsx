@@ -21,7 +21,7 @@ export const TopBar: React.FC = memo(() => {
   };
   
   return (
-    <div className="w-full bg-cosmic-dark/20 backdrop-blur-sm border-b border-cosmic-accent/10">
+    <div className="w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 h-16">
       {/* Energy points and controls group */}
       <div className="absolute top-4 right-4 z-10 flex items-center space-x-2">
         {/* Sound toggle */}

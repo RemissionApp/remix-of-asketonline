@@ -7,6 +7,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { PactNavigation } from '@/components/PactNavigation';
+import { CountdownTimer } from '@/components/CountdownTimer';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -39,6 +40,11 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center">
+      {/* Countdown timer moved here to scroll with content */}
+      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm rounded-lg mb-4">
+        <CountdownTimer pactId={currentPact.id} />
+      </div>
+      
       {/* Use PactNavigation component instead of inline navigation */}
       {activePacts.length > 1 && (
         <PactNavigation 

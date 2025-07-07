@@ -130,15 +130,10 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col relative pb-16">
       <StarField starCount={100} />
       
-      {/* Use the TopBar component */}
-      <TopBar />
-      
-      {/* Always show the countdown timer when there's an active pact - fixed at top */}
-      {activePacts.length > 0 && 
-        <div className="sticky top-16 z-20 w-full bg-cosmic-dark/70 backdrop-blur-md shadow-md">
-          <CountdownTimer pactId={currentPact?.id} />
-        </div>
-      }
+      {/* Fixed TopBar at the top */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <TopBar />
+      </div>
       
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
