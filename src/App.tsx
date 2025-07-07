@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { createLogger } from '@/utils/logger';
 
 import { useAppStore } from "./store/useAppStore";
 import { supabase, cleanupAuthState } from "./lib/supabase";
@@ -38,6 +39,8 @@ const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
+  const logger = createLogger('AppInitializer');
+  
   try {
     const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
     
@@ -51,7 +54,7 @@ const AppInitializer = () => {
       // Настраиваем слушатель изменений состояния аутентификации
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          console.log("Auth state changed:", event, session?.user?.id);
+          logger.info("Auth state changed", { event, userId: session?.user?.id });
           
           if (event === 'SIGNED_IN' && session) {
             setUser(session.user);
@@ -71,7 +74,7 @@ const AppInitializer = () => {
         try {
           const { data, error } = await supabase.auth.getSession();
           if (error) {
-            console.error("Ошибка получения сессии:", error);
+            logger.error("Ошибка получения сессии", error);
             return;
           }
           
@@ -80,7 +83,7 @@ const AppInitializer = () => {
             await loadUserProfile();
           }
         } catch (error) {
-          console.error("Не удалось проверить сессию:", error);
+          logger.error("Не удалось проверить сессию", error);
         }
       };
       
@@ -94,13 +97,14 @@ const AppInitializer = () => {
     
     return null;
   } catch (error) {
-    console.error("Error in AppInitializer:", error);
+    logger.error("Error in AppInitializer", error);
     return null;
   }
 };
 
 // Компонент для обработки перенаправлений OAuth
 const AuthCallback = () => {
+  const logger = createLogger('AuthCallback');
   const navigate = useNavigate();
   const location = useLocation();
   const { updateUserProfile, user, loadUserProfile } = useAppStore();
@@ -130,7 +134,7 @@ const AuthCallback = () => {
             navigate('/profile-setup');
           }
         } catch (error) {
-          console.error('Ошибка обратного вызова аутентификации:', error);
+          logger.error('Ошибка обратного вызова аутентификации', error);
           navigate('/login');
         }
       } else {

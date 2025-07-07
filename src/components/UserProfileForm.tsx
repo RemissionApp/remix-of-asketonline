@@ -5,6 +5,7 @@ import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
+import { createLogger } from '@/utils/logger';
 import AvatarUpload from './AvatarUpload';
 import ZodiacInfo from './ZodiacInfo';
 import BirthDateEditor from './BirthDateEditor';
@@ -14,6 +15,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import * as z from 'zod';
 
 const UserProfileForm: React.FC = () => {
+  const logger = createLogger('UserProfileForm');
   const navigate = useNavigate();
   const location = useLocation();
   const { updateUserProfile, userProfile, language, onboardingComplete, setOnboardingComplete, user, loadUserProfile } = useAppStore();
@@ -37,7 +39,7 @@ const UserProfileForm: React.FC = () => {
         // First, try to load from the store
         await loadUserProfile();
         
-        console.log("Profile loaded from store:", userProfile);
+        logger.debug("Profile loaded from store", { profileName: userProfile.name });
         
         // Then fetch the latest data from Supabase
         const { data: profileData, error } = await supabase
@@ -47,11 +49,11 @@ const UserProfileForm: React.FC = () => {
           .single();
         
         if (error) {
-          console.error("Error fetching profile:", error);
+          logger.error("Error fetching profile", error);
           return;
         }
         
-        console.log("Profile data from Supabase:", profileData);
+        logger.debug("Profile data from Supabase", { profileData });
         
         if (profileData) {
           // Convert birth_date string from Supabase to a Date object
@@ -76,7 +78,7 @@ const UserProfileForm: React.FC = () => {
           }
         }
       } catch (err) {
-        console.error("Exception fetching profile:", err);
+        logger.error("Exception fetching profile", err);
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +103,7 @@ const UserProfileForm: React.FC = () => {
     setIsSaving(true);
     
     try {
-      console.log("Saving profile data:", values);
+      logger.info("Saving profile data", { name: values.name, hasBirthDate: !!values.birthDate });
       
       // Format birthDate to YYYY-MM-DD for Supabase
       const formattedBirthDate = formatDate(values.birthDate, 'en', false).split('/').reverse().join('-');
@@ -144,7 +146,7 @@ const UserProfileForm: React.FC = () => {
       navigate('/main');
       
     } catch (error: any) {
-      console.error("Error saving profile:", error);
+      logger.error("Error saving profile", error);
       toast({
         title: "Ошибка",
         description: error.message || "Не удалось сохранить профиль",

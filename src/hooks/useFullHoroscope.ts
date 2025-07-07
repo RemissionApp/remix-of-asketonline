@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { ZodiacSign, getZodiacSign } from '@/utils/zodiac';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
+import { createLogger } from '@/utils/logger';
 
 interface FullHoroscopeData {
   personalityAnalysis: string;
@@ -15,6 +16,7 @@ interface FullHoroscopeData {
 }
 
 export function useFullHoroscope() {
+  const logger = createLogger('useFullHoroscope');
   const { user, userProfile, language } = useAppStore();
   const [horoscope, setHoroscope] = useState<FullHoroscopeData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ export function useFullHoroscope() {
       const birthDate = new Date(userProfile.birthDate);
       const sign = getZodiacSign(birthDate);
       setZodiacSign(sign);
-      console.log("Set zodiac sign:", sign, "from birthDate:", userProfile.birthDate);
+      logger.debug("Set zodiac sign", { sign, birthDate: userProfile.birthDate });
     }
   }, [userProfile?.birthDate]);
 
@@ -50,7 +52,7 @@ export function useFullHoroscope() {
       setLoading(true);
       setError(null);
 
-      console.log("Checking for existing horoscope for user", user.id, "with zodiac sign", zodiacSign);
+      logger.debug("Checking for existing horoscope", { userId: user.id, zodiacSign });
       
       // Query the full_horoscopes table
       const { data, error } = await supabase
@@ -63,21 +65,21 @@ export function useFullHoroscope() {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching horoscope:", error);
+        logger.error("Error fetching horoscope", error);
         throw new Error(error.message || 'Failed to fetch existing horoscope');
-      } 
+      }
       
       if (data) {
         // Existing horoscope found
-        console.log("Found existing horoscope:", data);
+        logger.info("Found existing horoscope", { horoscopeId: data.id });
         setHoroscope(data.content);
       } else {
         // No records found
-        console.log("No existing horoscope found");
+        logger.debug("No existing horoscope found");
         setHoroscope(null);
       }
     } catch (error: any) {
-      console.error("Error in fetchExistingHoroscope:", error);
+      logger.error("Error in fetchExistingHoroscope", error);
       setError(error.message || "An error occurred while retrieving your horoscope");
     } finally {
       setLoading(false);
@@ -98,7 +100,7 @@ export function useFullHoroscope() {
       setLoading(true);
       setError(null);
       
-      console.log("Calling generateFullHoroscope edge function with params:", { 
+      logger.info("Calling generateFullHoroscope edge function", { 
         userId: user.id,
         zodiacSign,
         birthDate: userProfile?.birthDate || null,
@@ -116,11 +118,11 @@ export function useFullHoroscope() {
       });
 
       if (error) {
-        console.error("Edge function error:", error);
+        logger.error("Edge function error", error);
         throw new Error(error.message || 'Failed to generate full horoscope');
       }
 
-      console.log("Received horoscope data:", data);
+      logger.info("Received horoscope data", { dataKeys: Object.keys(data || {}) });
       setHoroscope(data);
       
       toast({
@@ -129,7 +131,7 @@ export function useFullHoroscope() {
         variant: 'default'
       });
     } catch (error: any) {
-      console.error('Error generating full horoscope:', error);
+      logger.error('Error generating full horoscope', error);
       setError(error.message || "Failed to generate horoscope. Please try again later.");
       toast({
         title: 'Error',

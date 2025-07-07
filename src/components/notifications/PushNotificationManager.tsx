@@ -6,6 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { firebaseConfig } from '@/utils/firebaseConfig';
+import { createLogger } from '@/utils/logger';
 
 interface NotificationSettings {
   dailyReminder: boolean;
@@ -17,6 +18,7 @@ interface NotificationSettings {
 }
 
 export const PushNotificationManager: React.FC = () => {
+  const logger = createLogger('PushNotificationManager');
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -53,7 +55,7 @@ export const PushNotificationManager: React.FC = () => {
       const subscription = await registration.pushManager.getSubscription();
       setIsSubscribed(!!subscription);
     } catch (error) {
-      console.error('Ошибка проверки подписки:', error);
+      logger.error('Ошибка проверки подписки', error);
     }
   };
 
@@ -80,7 +82,7 @@ export const PushNotificationManager: React.FC = () => {
         return false;
       }
     } catch (error) {
-      console.error('Ошибка запроса разрешения:', error);
+      logger.error('Ошибка запроса разрешения', error);
       toast({
         title: "Ошибка",
         description: "Не удалось запросить разрешение на уведомления",
@@ -117,9 +119,9 @@ export const PushNotificationManager: React.FC = () => {
       if (error) throw error;
 
       setIsSubscribed(true);
-      console.log('Подписка на push-уведомления создана');
+      logger.info('Подписка на push-уведомления создана');
     } catch (error) {
-      console.error('Ошибка создания подписки:', error);
+      logger.error('Ошибка создания подписки', error);
       toast({
         title: "Ошибка подписки",
         description: "Не удалось подписаться на уведомления",
@@ -154,7 +156,7 @@ export const PushNotificationManager: React.FC = () => {
         description: "Вы больше не будете получать push-уведомления",
       });
     } catch (error) {
-      console.error('Ошибка отмены подписки:', error);
+      logger.error('Ошибка отмены подписки', error);
       toast({
         title: "Ошибка",
         description: "Не удалось отменить подписку",
@@ -213,7 +215,7 @@ export const PushNotificationManager: React.FC = () => {
         description: "Проверьте, получили ли вы push-уведомление",
       });
     } catch (error) {
-      console.error('Ошибка отправки тестового уведомления:', error);
+      logger.error('Ошибка отправки тестового уведомления', error);
       toast({
         title: "Ошибка",
         description: "Не удалось отправить тестовое уведомление",

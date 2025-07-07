@@ -2,6 +2,7 @@ import { useConversation } from '@11labs/react';
 import { useAppStore } from '@/store/useAppStore';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { createLogger } from '@/utils/logger';
 
 // Агенты для разных языков
 const AGENTS = {
@@ -11,25 +12,26 @@ const AGENTS = {
 };
 
 export const useElevenLabsConversation = () => {
+  const logger = createLogger('useElevenLabsConversation');
   const { language } = useAppStore();
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
-      console.log('ElevenLabs conversation connected');
+      logger.info('ElevenLabs conversation connected');
       setIsConnected(true);
     },
     onDisconnect: () => {
-      console.log('ElevenLabs conversation disconnected');
+      logger.info('ElevenLabs conversation disconnected');
       setIsConnected(false);
       setConversationId(null);
     },
     onMessage: (message) => {
-      console.log('Received message:', message);
+      logger.debug('Received message', { messageContent: message.message, source: message.source });
     },
     onError: (error) => {
-      console.error('ElevenLabs conversation error:', error);
+      logger.error('ElevenLabs conversation error', error);
     }
   });
 
@@ -55,7 +57,7 @@ export const useElevenLabsConversation = () => {
       
       return id;
     } catch (error) {
-      console.error('Error starting ElevenLabs conversation:', error);
+      logger.error('Error starting ElevenLabs conversation', error);
       throw error;
     }
   }, [conversation, language]);
@@ -64,7 +66,7 @@ export const useElevenLabsConversation = () => {
     try {
       await conversation.endSession();
     } catch (error) {
-      console.error('Error ending conversation:', error);
+      logger.error('Error ending conversation', error);
     }
   }, [conversation]);
 
@@ -72,7 +74,7 @@ export const useElevenLabsConversation = () => {
     try {
       await conversation.setVolume({ volume: Math.max(0, Math.min(1, volume)) });
     } catch (error) {
-      console.error('Error setting volume:', error);
+      logger.error('Error setting volume', error);
     }
   }, [conversation]);
 
