@@ -21,7 +21,7 @@ export const MissionsList: React.FC<MissionsListProps> = ({ missions }) => {
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-40 z-0"
             style={{ 
-              backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
+              backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics/mission-banner.jpg')",
               filter: 'brightness(1.3) contrast(1.2)',
             }}
           />

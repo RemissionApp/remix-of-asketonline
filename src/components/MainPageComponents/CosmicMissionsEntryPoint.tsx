@@ -68,7 +68,7 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-70 z-0 animate-image-brighten"
         style={{ 
-          backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//mission-banner.jpg')",
+          backgroundImage: "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics/mission-banner.jpg')",
           filter: 'brightness(1.6) contrast(1.2)',
           transform: 'scaleX(-1)' // This creates the reflection effect (mirror)
         }}
