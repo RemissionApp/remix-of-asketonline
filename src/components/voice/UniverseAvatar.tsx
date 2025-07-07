@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface UniverseAvatarProps {
   isActive: boolean;
@@ -9,6 +9,20 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   isActive, 
   isSpeaking 
 }) => {
+  // Создаем звезды для анимации как в StarField
+  const stars = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 80 + 10, // избегаем краев
+      y: Math.random() * 80 + 10,
+      size: Math.random() * 1.5 + 0.5, // размер 0.5-2px
+      animationDelay: `${Math.random() * 3}s`,
+      animationDuration: `${Math.random() * 2 + 3}s`, // 3-5s
+      moveDirection: Math.random() > 0.5 ? 'horizontal' : 'vertical',
+      moveDistance: Math.random() * 8 + 4, // небольшое движение для аватара
+    }));
+  }, []);
+
   return (
     <div className="relative w-32 h-32 mx-auto">
       {/* Main avatar circle */}
@@ -26,36 +40,41 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
           className="w-full h-full object-cover rounded-full"
         />
         
-        {/* Twinkling stars overlay */}
+        {/* Animated stars overlay */}
         <div className="absolute inset-0 rounded-full">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-1 h-1 bg-white rounded-full ${
-                isActive ? 'animate-pulse' : ''
-              }`}
-              style={{
-                top: `${15 + (i * 10)}%`,
-                left: `${20 + (i * 8)}%`,
-                animationDelay: `${i * 0.3}s`,
-                opacity: isActive ? 1 : 0.3,
-              }}
-            />
-          ))}
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i + 8}
-              className={`absolute w-0.5 h-0.5 bg-cosmic-accent rounded-full ${
-                isActive ? 'animate-ping' : ''
-              }`}
-              style={{
-                top: `${30 + (i * 12)}%`,
-                right: `${15 + (i * 10)}%`,
-                animationDelay: `${i * 0.5}s`,
-                opacity: isActive ? 0.8 : 0.2,
-              }}
-            />
-          ))}
+          {stars.map((star) => {
+            const moveKeyframes = star.moveDirection === 'horizontal' 
+              ? `@keyframes move-avatar-${star.id} {
+                  0%, 100% { transform: translateX(0); }
+                  50% { transform: translateX(${star.moveDistance}px); }
+                }`
+              : `@keyframes move-avatar-${star.id} {
+                  0%, 100% { transform: translateY(0); }
+                  50% { transform: translateY(${star.moveDistance}px); }
+                }`;
+                
+            return (
+              <div key={star.id}>
+                <style>
+                  {moveKeyframes}
+                </style>
+                <div
+                  className="absolute rounded-full"
+                  style={{
+                    left: `${star.x}%`,
+                    top: `${star.y}%`,
+                    width: `${star.size}px`,
+                    height: `${star.size}px`,
+                    opacity: isActive ? 0.9 : 0.4,
+                    background: 'white',
+                    boxShadow: `0 0 ${star.size * 3}px ${star.size}px rgba(255, 255, 255, 0.6)`,
+                    animation: `star-shine ${star.animationDuration} infinite, move-avatar-${star.id} ${star.animationDuration} infinite ease-in-out`,
+                    animationDelay: star.animationDelay,
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
         
         {/* Gradient overlay for better visibility */}

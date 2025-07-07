@@ -5,14 +5,25 @@ import { Card } from '@/components/ui/card';
 import { WaveVisualization } from './WaveVisualization';
 import { UniverseAvatar } from './UniverseAvatar';
 import { CallStatus } from './CallStatus';
+import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
+import { useToast } from '@/components/ui/use-toast';
+import { useAppStore } from '@/store/useAppStore';
 
 export const VoiceCallInterface: React.FC = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const { language } = useAppStore();
+  const { toast } = useToast();
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+
+  const {
+    startConversation,
+    endConversation,
+    setVolume,
+    isConnected,
+    isSpeaking,
+    status
+  } = useElevenLabsConversation();
 
   // Simulate call duration
   useEffect(() => {
@@ -21,29 +32,52 @@ export const VoiceCallInterface: React.FC = () => {
       interval = setInterval(() => {
         setCallDuration(prev => prev + 1);
       }, 1000);
+    } else {
+      setCallDuration(0);
     }
     return () => clearInterval(interval);
   }, [isConnected]);
 
-  const handleStartCall = () => {
-    setIsConnected(true);
-    setCallDuration(0);
-    // Simulate connection delay
-    setTimeout(() => {
-      setIsSpeaking(true);
-      setTimeout(() => setIsSpeaking(false), 3000);
-    }, 2000);
+  // Update volume when speaker state changes
+  useEffect(() => {
+    if (isConnected) {
+      setVolume(isSpeakerOn ? 0.8 : 0);
+    }
+  }, [isSpeakerOn, isConnected, setVolume]);
+
+  const handleStartCall = async () => {
+    try {
+      await startConversation();
+      toast({
+        title: language === 'ru' ? "Соединение установлено" : 
+               language === 'es' ? "Conexión establecida" : "Connection established",
+        description: language === 'ru' ? "Вы соединились с Вселенной" :
+                    language === 'es' ? "Estás conectado con el Universo" : "You are connected to the Universe"
+      });
+    } catch (error) {
+      console.error('Failed to start call:', error);
+      toast({
+        title: language === 'ru' ? "Ошибка соединения" :
+               language === 'es' ? "Error de conexión" : "Connection error",
+        description: language === 'ru' ? "Не удалось соединиться с Вселенной" :
+                    language === 'es' ? "No se pudo conectar con el Universo" : "Failed to connect to the Universe",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleEndCall = () => {
-    setIsConnected(false);
-    setCallDuration(0);
-    setIsSpeaking(false);
-    setIsListening(false);
+  const handleEndCall = async () => {
+    try {
+      await endConversation();
+      setCallDuration(0);
+    } catch (error) {
+      console.error('Failed to end call:', error);
+    }
   };
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
+    // Note: ElevenLabs muting would need to be implemented based on their API
   };
 
   const toggleSpeaker = () => {
@@ -54,6 +88,30 @@ export const VoiceCallInterface: React.FC = () => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getTitle = () => {
+    switch (language) {
+      case 'ru': return 'Звонок Вселенной';
+      case 'es': return 'Llamada al Universo';
+      default: return 'Universe Call';
+    }
+  };
+
+  const getSubtitle = () => {
+    switch (language) {
+      case 'ru': return 'Соединитесь с космической мудростью';
+      case 'es': return 'Conéctate con la sabiduría cósmica';
+      default: return 'Connect with cosmic wisdom';
+    }
+  };
+
+  const getTipText = () => {
+    switch (language) {
+      case 'ru': return 'Нажмите на кнопку звонка, чтобы соединиться с космической мудростью Вселенной';
+      case 'es': return 'Presiona el botón de llamada para conectarte con la sabiduría cósmica del Universo';
+      default: return 'Press the call button to connect with the cosmic wisdom of the Universe';
+    }
   };
 
   return (
@@ -68,10 +126,10 @@ export const VoiceCallInterface: React.FC = () => {
         {/* Call Title */}
         <div className="mb-4">
           <h1 className="text-2xl font-serif text-white mb-2">
-            Звонок Вселенной
+            {getTitle()}
           </h1>
           <p className="text-cosmic-muted text-sm">
-            Соединитесь с космической мудростью
+            {getSubtitle()}
           </p>
         </div>
 
@@ -80,7 +138,7 @@ export const VoiceCallInterface: React.FC = () => {
           <CallStatus 
             isConnected={isConnected} 
             duration={formatDuration(callDuration)}
-            isListening={isListening}
+            isListening={isConnected && !isSpeaking}
             isSpeaking={isSpeaking}
           />
         </div>
@@ -89,8 +147,8 @@ export const VoiceCallInterface: React.FC = () => {
         {isConnected && (
           <div className="mb-6">
             <WaveVisualization 
-              isActive={isSpeaking || isListening} 
-              intensity={isSpeaking ? 0.8 : isListening ? 0.4 : 0.1}
+              isActive={isSpeaking || (isConnected && !isSpeaking)} 
+              intensity={isSpeaking ? 0.8 : 0.4}
             />
           </div>
         )}
@@ -151,7 +209,7 @@ export const VoiceCallInterface: React.FC = () => {
         {!isConnected && (
           <div className="mt-6 p-4 bg-cosmic-accent/10 border border-cosmic-accent/20 rounded-lg">
             <p className="text-xs text-cosmic-muted">
-              ✨ Нажмите на кнопку звонка, чтобы соединиться с космической мудростью Вселенной
+              ✨ {getTipText()}
             </p>
           </div>
         )}
