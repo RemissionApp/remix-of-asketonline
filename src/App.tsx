@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 import { useAppStore } from "./store/useAppStore";
 import { supabase, cleanupAuthState } from "./lib/supabase";
@@ -37,60 +38,65 @@ const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
-  const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
-  
-  useEffect(() => {
-    // Проверяем состояние onboarding при загрузке приложения
-    checkOnboardingStatus();
+  try {
+    const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
     
-    // Инициализируем push-уведомления
-    NotificationIntegrations.initializeAll();
-    
-    // Настраиваем слушатель изменений состояния аутентификации
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.id);
-        
-        if (event === 'SIGNED_IN' && session) {
-          setUser(session.user);
+    useEffect(() => {
+      // Проверяем состояние onboarding при загрузке приложения
+      checkOnboardingStatus();
+      
+      // Инициализируем push-уведомления
+      NotificationIntegrations.initializeAll();
+      
+      // Настраиваем слушатель изменений состояния аутентификации
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log("Auth state changed:", event, session?.user?.id);
           
-          // Отложенная загрузка данных пользователя для предотвращения deadlock
-          setTimeout(() => {
-            loadUserProfile();
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
+          if (event === 'SIGNED_IN' && session) {
+            setUser(session.user);
+            
+            // Отложенная загрузка данных пользователя для предотвращения deadlock
+            setTimeout(() => {
+              loadUserProfile();
+            }, 0);
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null);
+          }
         }
-      }
-    );
-    
-    // Проверяем текущую сессию при инициализации
-    const checkSession = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Ошибка получения сессии:", error);
-          return;
+      );
+      
+      // Проверяем текущую сессию при инициализации
+      const checkSession = async () => {
+        try {
+          const { data, error } = await supabase.auth.getSession();
+          if (error) {
+            console.error("Ошибка получения сессии:", error);
+            return;
+          }
+          
+          if (data.session?.user) {
+            setUser(data.session.user);
+            await loadUserProfile();
+          }
+        } catch (error) {
+          console.error("Не удалось проверить сессию:", error);
         }
-        
-        if (data.session?.user) {
-          setUser(data.session.user);
-          await loadUserProfile();
-        }
-      } catch (error) {
-        console.error("Не удалось проверить сессию:", error);
-      }
-    };
+      };
+      
+      checkSession();
+      
+      // Отписываемся при размонтировании
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, [checkOnboardingStatus, loadUserProfile, setUser]);
     
-    checkSession();
-    
-    // Отписываемся при размонтировании
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [checkOnboardingStatus, loadUserProfile, setUser]);
-  
-  return null;
+    return null;
+  } catch (error) {
+    console.error("Error in AppInitializer:", error);
+    return null;
+  }
 };
 
 // Компонент для обработки перенаправлений OAuth
@@ -148,40 +154,42 @@ const AuthCallback = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppInitializer />
-        <Routes>
-          <Route path="/" element={<WelcomePage />} />
-          <Route path="/language" element={<LanguagePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/profile-setup" element={<UserProfilePage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/main" element={<MainPage />} />
-          <Route path="/create-pact" element={<CreatePactPage />} />
-          <Route path="/universe" element={<UniversePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/comparison" element={<ComparisonPage />} />
-          <Route path="/meditation" element={<MeditationPage />} />
-          <Route path="/meditation/session" element={<NewMeditationPage />} />
-          <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
-          <Route path="/full-horoscope" element={<FullHoroscopePage />} />
-          <Route path="/affirmations" element={<AffirmationsPage />} />
-          {/* Pro features routes */}
-          <Route path="/meditation-pro" element={<MeditationProPage />} />
-          <Route path="/universe-chat" element={<UniverseChatPage />} />
-          <Route path="/universe-call" element={<CallPage />} />
-          <Route path="/numerology" element={<NumerologyPage />} />
-          <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <PWAInstallPrompt />
-        <PWAUpdateNotification />
-        <Toaster />
-        <Sonner />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AppInitializer />
+          <Routes>
+            <Route path="/" element={<WelcomePage />} />
+            <Route path="/language" element={<LanguagePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/profile-setup" element={<UserProfilePage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/main" element={<MainPage />} />
+            <Route path="/create-pact" element={<CreatePactPage />} />
+            <Route path="/universe" element={<UniversePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/comparison" element={<ComparisonPage />} />
+            <Route path="/meditation" element={<MeditationPage />} />
+            <Route path="/meditation/session" element={<NewMeditationPage />} />
+            <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
+            <Route path="/full-horoscope" element={<FullHoroscopePage />} />
+            <Route path="/affirmations" element={<AffirmationsPage />} />
+            {/* Pro features routes */}
+            <Route path="/meditation-pro" element={<MeditationProPage />} />
+            <Route path="/universe-chat" element={<UniverseChatPage />} />
+            <Route path="/universe-call" element={<CallPage />} />
+            <Route path="/numerology" element={<NumerologyPage />} />
+            <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <PWAInstallPrompt />
+          <PWAUpdateNotification />
+          <Toaster />
+          <Sonner />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
