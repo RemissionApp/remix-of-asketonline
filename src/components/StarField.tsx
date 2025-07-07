@@ -6,8 +6,8 @@ interface StarFieldProps {
 }
 
 export const StarField: React.FC<StarFieldProps> = ({ 
-  starCount = 100,
-  galaxyCount = 5
+  starCount = 60, // Reduced for mobile performance
+  galaxyCount = 3  // Reduced for mobile performance
 }) => {
   // Создаем массив с случайными позициями и размерами для звезд
   const stars = useMemo(() => {
@@ -38,21 +38,24 @@ export const StarField: React.FC<StarFieldProps> = ({
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Background image with increased brightness */}
+      {/* Background image optimized for mobile */}
       <div 
         className="absolute inset-0" 
         style={{
           backgroundImage: 'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
           zIndex: -1,
-          opacity: 1, // Increased from 0.8 to 1 for more brightness
-          filter: 'brightness(1.3)' // Added brightness filter to make image brighter
+          opacity: 1,
+          filter: 'brightness(1.3)',
+          width: '100vw',
+          height: '100vh'
         }}
       />
       
-      {/* Lighter semi-transparent overlay to ensure stars visibility while keeping image bright */}
-      <div className="absolute inset-0 bg-cosmic-dark/40 backdrop-blur-sm" style={{ zIndex: -1 }}></div>
+      {/* Mobile-optimized overlay */}
+      <div className="absolute inset-0 bg-cosmic-dark/40" style={{ zIndex: -1 }}></div>
       
       {/* Галактики */}
       {galaxies.map((galaxy) => (

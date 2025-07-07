@@ -6,19 +6,23 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 
 const CallPage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden">
       <StarField />
       
-      {/* Top bar */}
-      <TopBar />
+      {/* Top bar - Fixed with safe area */}
+      <div className="fixed top-0 left-0 right-0 z-30 pt-safe-top">
+        <TopBar />
+      </div>
       
-      {/* Main content */}
-      <div className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center relative z-10">
+      {/* Main content - Adjusted for fixed headers */}
+      <div className="flex-1 flex items-center justify-center relative z-10 px-4 pt-20 pb-24">
         <VoiceCallInterface />
       </div>
       
-      {/* Bottom navigation */}
-      <BottomNavigation />
+      {/* Bottom navigation - Fixed with safe area */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
+        <BottomNavigation />
+      </div>
     </div>
   );
 };

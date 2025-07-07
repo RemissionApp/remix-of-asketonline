@@ -155,26 +155,26 @@ export const VoiceCallInterface: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Card className="bg-transparent border-cosmic-accent/10 backdrop-blur-none p-8 text-center">
+    <div className="w-full max-w-sm mx-auto px-4">
+      <div className="bg-transparent p-4 text-center space-y-6">
         
         {/* Universe Avatar */}
-        <div className="mb-6">
+        <div className="flex justify-center">
           <UniverseAvatar isActive={isConnected} isSpeaking={isSpeaking} />
         </div>
 
         {/* Call Title */}
-        <div className="mb-4">
-          <h1 className="text-2xl font-serif text-white mb-2">
+        <div className="text-center">
+          <h1 className="text-xl sm:text-2xl font-serif text-white mb-2">
             {getTitle()}
           </h1>
-          <p className="text-cosmic-muted text-sm">
+          <p className="text-cosmic-secondary text-sm">
             {getSubtitle()}
           </p>
         </div>
 
         {/* Call Status */}
-        <div className="mb-6">
+        <div className="flex justify-center">
           <CallStatus 
             isConnected={isConnected} 
             duration={formatDuration(callDuration)}
@@ -185,7 +185,7 @@ export const VoiceCallInterface: React.FC = () => {
 
         {/* Wave Visualization */}
         {isConnected && (
-          <div className="mb-6">
+          <div className="flex justify-center">
             <WaveVisualization 
               isActive={isSpeaking || (isConnected && !isSpeaking)} 
               intensity={isSpeaking ? 0.8 : 0.4}
@@ -193,67 +193,67 @@ export const VoiceCallInterface: React.FC = () => {
           </div>
         )}
 
-        {/* Main Call Button */}
-        <div className="mb-6">
+        {/* Main Call Button - Larger for mobile */}
+        <div className="flex justify-center">
           {!isConnected ? (
             <Button
               onClick={handleStartCall}
               size="lg"
-              className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400/50 shadow-lg shadow-green-500/25 transition-all duration-300 hover:scale-105 hover:shadow-green-500/50"
+              className="w-24 h-24 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400/50 shadow-lg shadow-green-500/25 transition-all duration-300 hover:scale-105 hover:shadow-green-500/50 active:scale-95"
             >
-              <Phone className="w-8 h-8" />
+              <Phone className="w-10 h-10 sm:w-8 sm:h-8" />
             </Button>
           ) : (
             <Button
               onClick={handleEndCall}
               size="lg"
-              className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 border-2 border-red-400/50 shadow-lg shadow-red-500/25 transition-all duration-300 hover:scale-105 hover:shadow-red-500/50"
+              className="w-24 h-24 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 border-2 border-red-400/50 shadow-lg shadow-red-500/25 transition-all duration-300 hover:scale-105 hover:shadow-red-500/50 active:scale-95"
             >
-              <PhoneOff className="w-8 h-8" />
+              <PhoneOff className="w-10 h-10 sm:w-8 sm:h-8" />
             </Button>
           )}
         </div>
 
-        {/* Control Buttons */}
+        {/* Control Buttons - Larger for mobile */}
         {isConnected && (
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-6">
             <Button
               onClick={toggleMute}
               variant="outline"
               size="sm"
-              className={`w-12 h-12 rounded-full border-cosmic-accent/30 ${
+              className={`w-14 h-14 sm:w-12 sm:h-12 rounded-full border-cosmic-accent/30 ${
                 isMuted 
                   ? 'bg-red-500/20 border-red-500/50 text-red-400' 
                   : 'bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20'
-              } transition-all duration-300`}
+              } transition-all duration-300 active:scale-95`}
             >
-              {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isMuted ? <MicOff className="w-6 h-6 sm:w-5 sm:h-5" /> : <Mic className="w-6 h-6 sm:w-5 sm:h-5" />}
             </Button>
 
             <Button
               onClick={toggleSpeaker}
               variant="outline"
               size="sm"
-              className={`w-12 h-12 rounded-full border-cosmic-accent/30 ${
+              className={`w-14 h-14 sm:w-12 sm:h-12 rounded-full border-cosmic-accent/30 ${
                 !isSpeakerOn 
                   ? 'bg-gray-500/20 border-gray-500/50 text-gray-400' 
                   : 'bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20'
-              } transition-all duration-300`}
+              } transition-all duration-300 active:scale-95`}
             >
-              {isSpeakerOn ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {isSpeakerOn ? <Volume2 className="w-6 h-6 sm:w-5 sm:h-5" /> : <VolumeX className="w-6 h-6 sm:w-5 sm:h-5" />}
             </Button>
           </div>
         )}
 
-        {/* Tips */}
+        {/* Tips - Hidden on very small screens */}
         {!isConnected && (
-          <div className="mt-6 p-4 bg-cosmic-accent/10 border border-cosmic-accent/20 rounded-lg">
-            <p className="text-xs text-cosmic-muted">
+          <div className="p-3 bg-cosmic-accent/10 border border-cosmic-accent/20 rounded-lg">
+            <p className="text-xs text-cosmic-secondary leading-relaxed">
               ✨ {getTipText()}
             </p>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 };
