@@ -41,7 +41,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center">
       {/* Countdown timer moved here to scroll with content */}
-      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm rounded-lg mb-2">
+      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm rounded-lg mb-1">
         <CountdownTimer pactId={currentPact.id} />
       </div>
       
