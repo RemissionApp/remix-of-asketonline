@@ -116,7 +116,7 @@ export const VoiceCallInterface: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <Card className="bg-gradient-to-br from-cosmic-dark/10 via-purple-900/5 to-cosmic-dark/10 border-cosmic-accent/20 backdrop-blur-sm p-8 text-center">
+      <Card className="bg-transparent border-cosmic-accent/10 backdrop-blur-none p-8 text-center">
         
         {/* Universe Avatar */}
         <div className="mb-6">
