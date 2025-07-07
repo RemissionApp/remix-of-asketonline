@@ -30,6 +30,8 @@ import CosmicMissionsPage from "./pages/CosmicMissionsPage";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWAUpdateNotification } from "./components/PWAUpdateNotification";
 
+import { NotificationIntegrations } from "./utils/notifications/notificationIntegrations";
+
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
 
@@ -40,6 +42,9 @@ const AppInitializer = () => {
   useEffect(() => {
     // Проверяем состояние onboarding при загрузке приложения
     checkOnboardingStatus();
+    
+    // Инициализируем push-уведомления
+    NotificationIntegrations.initializeAll();
     
     // Настраиваем слушатель изменений состояния аутентификации
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

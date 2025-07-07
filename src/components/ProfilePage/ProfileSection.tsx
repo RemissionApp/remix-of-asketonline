@@ -7,6 +7,8 @@ import { LegalDocuments } from './LegalDocuments';
 import { LogoutButton } from './LogoutButton';
 import UserProfileForm from '@/components/UserProfileForm';
 import { DeveloperSwitch } from '@/components/DeveloperSwitch';
+import { PushNotificationManager } from '@/components/notifications/PushNotificationManager';
+import { NotificationTester } from '@/components/notifications/NotificationTester';
 
 export const ProfileSection: React.FC = () => {
   const { t } = useTranslations();
@@ -26,9 +28,16 @@ export const ProfileSection: React.FC = () => {
         <h2 className="text-2xl text-white font-serif mb-4">{t.subscription?.title || "Subscription"}</h2>
         <SubscriptionManager />
         
+        <h2 className="text-2xl text-white font-serif mb-4">Push-уведомления</h2>
+        <PushNotificationManager />
+        
         {/* Add Developer Switch here to replace the one from MainPage */}
         <h2 className="text-2xl text-white font-serif mb-4">Developer Mode</h2>
         <DeveloperSwitch />
+        
+        <div className="mt-6">
+          <NotificationTester />
+        </div>
         
         <LegalDocuments />
         <LogoutButton />
