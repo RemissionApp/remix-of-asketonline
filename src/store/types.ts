@@ -32,7 +32,7 @@ export interface AppState {
   
   addPact: (pact: Omit<Pact, 'id' | 'created_at' | 'days' | 'description' | 'start_date' | 'end_date' | 'days_total' | 'days_completed' | 'last_completed_date' | 'rejection'>) => Promise<void>;
   markDayComplete: (pactId: string) => Promise<void>;
-  breakAscesis: (pactId: string) => Promise<void>;
+  breakAscesis: (pactId: string, reason?: string) => Promise<void>;
   askUniverse: (question: string) => Promise<UniverseQuestion>;
   setActiveScreen: (screen: ActiveScreen) => void;
   activeScreen: ActiveScreen;

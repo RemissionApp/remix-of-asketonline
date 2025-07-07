@@ -5,15 +5,15 @@ import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
 export interface BreakAscesisSlice {
-  breakAscesis: (pactId: string) => Promise<void>;
+  breakAscesis: (pactId: string, reason?: string) => Promise<void>;
 }
 
 export const createBreakAscesisSlice = (
   set: (state: Partial<AppState>) => void,
   get: () => AppState
 ): BreakAscesisSlice => ({
-  breakAscesis: async (pactId) => {
-    const { user, loadPacts, addEnergyPoints, language } = get();
+  breakAscesis: async (pactId, reason) => {
+    const { user, loadPacts, addEnergyPoints, language, userProfile } = get();
     
     if (!user) {
       toast({
@@ -27,16 +27,35 @@ export const createBreakAscesisSlice = (
     set({ loading: true });
     
     try {
-      // Update pact status to failed
+      // Получаем информацию о аскезе для расчета штрафа
+      const { data: pactData, error: pactFetchError } = await supabase
+        .from('pacts')
+        .select('*, pact_days(*)')
+        .eq('id', pactId)
+        .single();
+      
+      if (pactFetchError) throw pactFetchError;
+
+      // Вычисляем штраф в зависимости от прогресса
+      const completedDays = pactData.pact_days?.filter((day: any) => day.completed).length || 0;
+      const basePenalty = 100;
+      const progressPenalty = Math.floor(completedDays * 10); // 10 очков за каждый пройденный день
+      const calculatedPenalty = basePenalty + progressPenalty;
+
+      // Update pact status to failed with reason
       const { error: pactError } = await supabase
         .from('pacts')
-        .update({ status: 'failed' })
+        .update({ 
+          status: 'failed',
+          // Сохраняем причину в поле reward (можно добавить отдельное поле в будущем)
+          reward: reason ? `Причина прерывания: ${reason}` : null
+        })
         .eq('id', pactId);
       
       if (pactError) throw pactError;
       
-      // Subtract 100 energy points as a penalty
-      await addEnergyPoints(-100);
+      // Subtract calculated penalty points
+      await addEnergyPoints(-calculatedPenalty);
       
       // Update the profile to reflect the broken ascesis
       const { data: profile, error: profileError } = await supabase
@@ -50,7 +69,7 @@ export const createBreakAscesisSlice = (
       // Reload pacts to reflect changes
       await loadPacts();
       
-      // Show message to the user
+      // Show detailed message to the user
       toast({
         title: language === 'ru' 
           ? "Аскеза прервана" 
@@ -58,10 +77,10 @@ export const createBreakAscesisSlice = (
             ? "Ascesis interrumpida"
             : "Ascesis broken",
         description: language === 'ru' 
-          ? "Вы потеряли 100 энергетических очков" 
+          ? `Вы потеряли ${calculatedPenalty} энергетических очков (${basePenalty} базовый штраф + ${progressPenalty} за прогресс)` 
           : language === 'es'
-            ? "Has perdido 100 puntos de energía"
-            : "You lost 100 energy points",
+            ? `Has perdido ${calculatedPenalty} puntos de energía (${basePenalty} penalización base + ${progressPenalty} por progreso)`
+            : `You lost ${calculatedPenalty} energy points (${basePenalty} base penalty + ${progressPenalty} for progress)`,
         variant: "destructive"
       });
     } catch (error: any) {
