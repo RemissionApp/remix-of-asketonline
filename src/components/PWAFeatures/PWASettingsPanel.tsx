@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Vibrate, Bell, Wifi, WifiOff, Download, Trash2 } from 'lucide-react';
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
+import { AdvancedPWAControls } from './AdvancedPWAControls';
 
 export const PWASettingsPanel: React.FC = () => {
   const {
@@ -223,6 +224,11 @@ export const PWASettingsPanel: React.FC = () => {
           )}
         </div>
       </CardContent>
+      
+      {/* Расширенные PWA функции */}
+      <div className="mt-4">
+        <AdvancedPWAControls />
+      </div>
     </Card>
   );
 };

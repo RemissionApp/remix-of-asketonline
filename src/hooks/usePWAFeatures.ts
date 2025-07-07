@@ -4,6 +4,11 @@ import { shareUtils } from '@/utils/webShare';
 import { hapticFeedback, createHapticManager } from '@/utils/hapticFeedback';
 import { createNotificationManager } from '@/utils/enhancedNotifications';
 import { backgroundSync } from '@/utils/backgroundSync';
+import { persistentStorage } from '@/utils/persistentStorage';
+import { screenWakeLock, meditationWakeLock } from '@/utils/screenWakeLock';
+import { deviceOrientation, meditationOrientation, responsiveOrientation } from '@/utils/deviceOrientation';
+import { badgeManager, notificationBadges, persistentBadge } from '@/utils/badgeAPI';
+import { advancedCache, cacheServiceWorker } from '@/utils/advancedCaching';
 import { useToast } from '@/hooks/use-toast';
 
 export const usePWAFeatures = () => {
@@ -11,6 +16,10 @@ export const usePWAFeatures = () => {
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [backgroundSyncStatus, setBackgroundSyncStatus] = useState(backgroundSync.getSyncStatus());
+  const [persistentStorageGranted, setPersistentStorageGranted] = useState(false);
+  const [wakeLockSupported, setWakeLockSupported] = useState(screenWakeLock.getStatus().supported);
+  const [orientationLocked, setOrientationLocked] = useState(false);
+  const [badgeCount, setBadgeCount] = useState(0);
   const { toast } = useToast();
 
   // Менеджеры для различных PWA функций
@@ -26,6 +35,22 @@ export const usePWAFeatures = () => {
       // Инициализация уведомлений
       const notificationPermission = await notificationManager.init();
       setNotificationsEnabled(notificationPermission);
+
+      // Инициализация Persistent Storage
+      const persistent = await persistentStorage.isPersistent();
+      setPersistentStorageGranted(persistent);
+
+      // Инициализация Advanced Caching
+      await advancedCache.initializeStrategies();
+      cacheServiceWorker.setupServiceWorkerCache();
+
+      // Инициализация Badge API
+      await persistentBadge.restoreBadge();
+      setBadgeCount(badgeManager.getCurrentCount());
+
+      // Инициализация Device Orientation
+      responsiveOrientation.setupResponsiveClasses();
+      setWakeLockSupported(screenWakeLock.getStatus().supported);
 
       // Загрузка настроек из localStorage
       const savedHapticSetting = localStorage.getItem('haptic-enabled');
@@ -73,6 +98,28 @@ export const usePWAFeatures = () => {
     if (enabled) {
       hapticManager.tap();
     }
+  };
+
+  const requestPersistentStorage = async () => {
+    const result = await persistentStorage.request();
+    setPersistentStorageGranted(result.persistent || false);
+    return result;
+  };
+
+  const updateBadgeCount = async (count: number) => {
+    const result = await persistentBadge.setBadgeAndSave(count);
+    if (result.success) {
+      setBadgeCount(count);
+    }
+    return result;
+  };
+
+  const clearBadge = async () => {
+    const result = await persistentBadge.clearBadgeAndSave();
+    if (result.success) {
+      setBadgeCount(0);
+    }
+    return result;
   };
 
   // Web Share функции
@@ -132,6 +179,57 @@ export const usePWAFeatures = () => {
     getStatus: () => backgroundSync.getSyncStatus()
   };
 
+  // Screen Wake Lock функции
+  const wakeLock = {
+    start: screenWakeLock.request.bind(screenWakeLock),
+    release: screenWakeLock.release.bind(screenWakeLock),
+    getStatus: screenWakeLock.getStatus.bind(screenWakeLock),
+    meditation: {
+      start: meditationWakeLock.startMeditation,
+      end: meditationWakeLock.endMeditation,
+      getStatus: meditationWakeLock.getMeditationStatus
+    }
+  };
+
+  // Device Orientation функции
+  const orientation = {
+    getCurrentOrientation: deviceOrientation.getCurrentOrientation.bind(deviceOrientation),
+    lockOrientation: deviceOrientation.lockOrientation.bind(deviceOrientation),
+    unlockOrientation: deviceOrientation.unlockOrientation.bind(deviceOrientation),
+    getStatus: deviceOrientation.getStatus.bind(deviceOrientation),
+    meditation: {
+      lock: meditationOrientation.lockForMeditation,
+      unlock: meditationOrientation.unlockAfterMeditation
+    }
+  };
+
+  // Persistent Storage функции
+  const storage = {
+    isSupported: persistentStorage.isSupported,
+    isPersistent: persistentStorage.isPersistent,
+    request: requestPersistentStorage,
+    getEstimate: persistentStorage.getEstimate,
+    formatSize: persistentStorage.formatSize
+  };
+
+  // Badge функции
+  const badge = {
+    set: updateBadgeCount,
+    clear: clearBadge,
+    increment: badgeManager.incrementBadge.bind(badgeManager),
+    decrement: badgeManager.decrementBadge.bind(badgeManager),
+    getCount: () => badgeCount,
+    notifications: notificationBadges
+  };
+
+  // Advanced Caching функции
+  const cache = {
+    handleRequest: advancedCache.handleRequest.bind(advancedCache),
+    preload: advancedCache.preloadCriticalResources.bind(advancedCache),
+    getStats: advancedCache.getCacheStats.bind(advancedCache),
+    clear: advancedCache.clearCache.bind(advancedCache)
+  };
+
   return {
     // Статус инициализации
     isInitialized,
@@ -140,6 +238,10 @@ export const usePWAFeatures = () => {
     hapticEnabled,
     notificationsEnabled,
     backgroundSyncStatus,
+    persistentStorageGranted,
+    wakeLockSupported,
+    orientationLocked,
+    badgeCount,
     toggleHaptic,
     
     // Функции PWA
@@ -147,6 +249,11 @@ export const usePWAFeatures = () => {
     haptic,
     notifications,
     sync,
+    wakeLock,
+    orientation,
+    storage,
+    badge,
+    cache,
     
     // Утилиты
     toast
