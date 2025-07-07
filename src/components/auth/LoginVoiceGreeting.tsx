@@ -2,12 +2,14 @@
 import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
+import { createLogger } from '@/utils/logger';
 
 export interface LoginVoiceGreetingRef {
   playGreeting: () => void;
 }
 
 export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref) => {
+  const logger = createLogger('LoginVoiceGreeting');
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useOptimizedTextToSpeech();
   const [userInteracted, setUserInteracted] = useState(false);
 
@@ -16,15 +18,15 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref)
   // Expose playGreeting method through ref
   useImperativeHandle(ref, () => ({
     playGreeting: async () => {
-      console.log('Playing greeting on login button click');
+      logger.info('Playing greeting on login button click');
       try {
         await generateAndPlaySpeech(greetingText, { 
           voice: 'Custom', 
           model: 'eleven_multilingual_v2' 
         });
-        console.log('Login greeting played successfully');
+        logger.info('Login greeting played successfully');
       } catch (error) {
-        console.error('Error playing login greeting:', error);
+        logger.error('Error playing login greeting', error);
       }
     }
   }));
@@ -32,7 +34,7 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref)
   // Отслеживаем взаимодействие пользователя со страницей
   useEffect(() => {
     const handleUserInteraction = () => {
-      console.log('User interaction detected on login page');
+      logger.debug('User interaction detected on login page');
       setUserInteracted(true);
     };
 
@@ -56,7 +58,7 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref)
   }, [stopSpeech]);
 
   const handleToggleAudio = async () => {
-    console.log('Manual toggle clicked on login page:', { isPlaying, isGenerating });
+    logger.debug('Manual toggle clicked on login page', { isPlaying, isGenerating });
     
     // Отмечаем взаимодействие пользователя при клике
     if (!userInteracted) {
@@ -64,24 +66,23 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>((props, ref)
     }
     
     if (isPlaying) {
-      console.log('Stopping current audio playback on login');
+      logger.debug('Stopping current audio playback on login');
       stopSpeech();
     } else {
       try {
-        console.log('Starting manual greeting playback on login with text:', greetingText);
+        logger.debug('Starting manual greeting playback on login', { greetingText });
         const result = await generateAndPlaySpeech(greetingText, { 
           voice: 'Custom', 
           model: 'eleven_multilingual_v2' 
         });
-        console.log('Manual playback result on login:', result);
+        logger.debug('Manual playback result on login', { result });
       } catch (error) {
-        console.error('Error in manual greeting playback on login:', error);
-        console.error('Manual playback error details:', error.message, error.stack);
+        logger.error('Error in manual greeting playback on login', error);
       }
     }
   };
 
-  console.log('LoginVoiceGreeting render:', { 
+  logger.debug('LoginVoiceGreeting render', { 
     isGenerating, 
     isPlaying, 
     userInteracted 

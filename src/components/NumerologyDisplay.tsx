@@ -6,16 +6,22 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { calculateLifePathNumber, getNumerologyMeaning, calculateExpressionNumber, calculatePersonalityNumber } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
 import { Calculator } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
 
 export const NumerologyDisplay: React.FC = () => {
+  const logger = createLogger('NumerologyDisplay');
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   
-  console.log("NumerologyDisplay rendering, userProfile:", userProfile);
+  logger.debug("Component rendering", { 
+    hasUserProfile: !!userProfile,
+    hasBirthDate: !!userProfile?.birthDate,
+    userName: userProfile?.name 
+  });
   
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
-    console.log("No birthdate found, not showing numerology");
+    logger.debug("No birthdate found, not showing numerology");
     return null;
   }
   

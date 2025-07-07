@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { TypingEffect } from '@/components/TypingEffect';
+import { createLogger } from '@/utils/logger';
 
 interface HoroscopeSectionProps {
   title: string;
@@ -15,7 +16,9 @@ export const HoroscopeSection: React.FC<HoroscopeSectionProps> = ({
   onComplete,
   className = ''
 }) => {
-  console.log(`Rendering section "${title}" with content length: ${content.length}`);
+  const logger = createLogger('HoroscopeSection');
+  
+  logger.debug(`Rendering section "${title}"`, { contentLength: content.length });
   
   return (
     <div className={`cosmic-section p-4 border border-cosmic-accent/30 rounded-lg shadow-lg ${className} transition-all duration-500 hover:border-cosmic-accent/50`}>

@@ -7,6 +7,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { ZodiacBadge } from './ZodiacBadge';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
+import { createLogger } from '@/utils/logger';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
@@ -21,6 +22,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   showRankBorder = true,
   showZodiacBadge = true
 }) => {
+  const logger = createLogger('UserAvatar');
   const { userProfile, user } = useAppStore();
   
   // Define size classes
@@ -40,15 +42,15 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
   
   // Get avatar URL from userProfile if available
-  const getAvatarUrl = () => {
+  const getAvatarUrl = (): string => {
     // Check if userProfile has an avatar_url
     if (userProfile?.avatar_url) {
-      console.log("Using avatar from userProfile:", userProfile.avatar_url);
+      logger.debug("Using avatar from userProfile", { avatar_url: userProfile.avatar_url });
       return userProfile.avatar_url;
     }
     
     // If no custom avatar, use rank-based default avatar
-    console.log("Using default avatar based on rank:", userProfile?.rank);
+    logger.debug("Using default avatar based on rank", { rank: userProfile?.rank });
     return getAvatarImagePath(userProfile.rank as SpiritualRank);
   };
   

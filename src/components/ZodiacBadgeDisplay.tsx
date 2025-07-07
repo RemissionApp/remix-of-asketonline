@@ -7,18 +7,24 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { useNavigate } from 'react-router-dom';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { createLogger } from '@/utils/logger';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
+  const logger = createLogger('ZodiacBadgeDisplay');
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
   
-  console.log("ZodiacBadgeDisplay rendering, userProfile:", userProfile);
+  logger.debug("Component rendering", { 
+    hasUserProfile: !!userProfile,
+    hasBirthDate: !!userProfile?.birthDate,
+    isPro: userProfile?.isPro 
+  });
   
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
-    console.log("No birthdate found, not showing zodiac badge");
+    logger.debug("No birthdate found, not showing zodiac badge");
     return null;
   }
   

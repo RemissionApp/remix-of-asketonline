@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { TypingEffect } from '@/components/TypingEffect';
 import { HoroscopeSection } from './HoroscopeSection';
-import { DetailedHoroscope } from '@/types/horoscope';
+import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { createLogger } from '@/utils/logger';
 
 interface HoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
-  translations: any;
+  translations: HoroscopeTranslations;
   language: string;
 }
 

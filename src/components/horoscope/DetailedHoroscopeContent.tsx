@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DetailedHoroscope } from '@/types/horoscope';
+import { DetailedHoroscope, ZodiacInfo, HoroscopeTranslations } from '@/types/horoscope';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
 import { HoroscopeProOverlay } from './HoroscopeProOverlay';
 import { GenerateButton } from './sections/GenerateButton';
@@ -12,12 +12,14 @@ import { RefreshCw, Stars } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createLogger } from '@/utils/logger';
 
+import { UserProfile } from '@/types';
+
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
   loading: boolean;
-  userProfile: any;
-  zodiacInfo: any;
-  translations: any;
+  userProfile: UserProfile;
+  zodiacInfo: ZodiacInfo | null;
+  translations: HoroscopeTranslations;
   language: string;
   onGenerateHoroscope?: () => void;
 }

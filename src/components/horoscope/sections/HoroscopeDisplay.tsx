@@ -1,17 +1,18 @@
 
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { DetailedHoroscope } from '@/types/horoscope';
+import { DetailedHoroscope, ZodiacInfo, HoroscopeTranslations } from '@/types/horoscope';
 import { HoroscopeHeader } from './HoroscopeHeader';
 import { HoroscopeContent } from './HoroscopeContent';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
 
 interface HoroscopeDisplayProps {
   horoscope: DetailedHoroscope;
-  translations: any;
+  translations: HoroscopeTranslations;
   language: string;
-  zodiacInfo: any;
+  zodiacInfo: ZodiacInfo;
   userName?: string;
   onRegenerate?: () => void;
 }
@@ -24,8 +25,10 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   userName,
   onRegenerate
 }) => {
+  const logger = createLogger('HoroscopeDisplay');
+  
   // Enhanced debugging logs
-  console.log("HoroscopeDisplay rendering with:", {
+  logger.debug("Component rendering", {
     horoscopeExists: !!horoscope,
     sections: horoscope?.sections ? Object.keys(horoscope.sections) : [],
     sectionValues: horoscope?.sections ? Object.entries(horoscope.sections).map(([key, value]) => 
@@ -37,12 +40,12 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   });
 
   const handleRegenerate = () => {
-    console.log("Regenerate button clicked in HoroscopeDisplay");
+    logger.info("Regenerate button clicked");
     if (onRegenerate) {
-      console.log("Calling onRegenerate function");
+      logger.info("Calling onRegenerate function");
       onRegenerate();
     } else {
-      console.log("No onRegenerate function provided to HoroscopeDisplay");
+      logger.warn("No onRegenerate function provided");
     }
   };
 
