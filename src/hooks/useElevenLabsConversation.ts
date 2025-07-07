@@ -47,10 +47,9 @@ export const useElevenLabsConversation = () => {
         throw new Error(error?.message || 'Failed to get signed URL');
       }
       
-      // Запускаем разговор с подписанной ссылкой
+      // Запускаем разговор с агентом
       const id = await conversation.startSession({ 
-        agentId: agentId,
-        authorization: data.signedUrl
+        agentId: agentId
       });
       setConversationId(id);
       
