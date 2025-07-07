@@ -13,7 +13,7 @@ export type ZodiacSign =
   | 'aquarius' 
   | 'pisces';
 
-interface ZodiacInfo {
+export interface ZodiacInfo {
   sign: ZodiacSign;
   name: {
     en: string;

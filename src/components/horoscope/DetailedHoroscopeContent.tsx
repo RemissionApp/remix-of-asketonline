@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DetailedHoroscope, ZodiacInfo, HoroscopeTranslations } from '@/types/horoscope';
+import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
+import { ZodiacInfo } from '@/utils/zodiac';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
 import { HoroscopeProOverlay } from './HoroscopeProOverlay';
 import { GenerateButton } from './sections/GenerateButton';

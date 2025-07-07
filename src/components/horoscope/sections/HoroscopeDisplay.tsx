@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { DetailedHoroscope, ZodiacInfo, HoroscopeTranslations } from '@/types/horoscope';
+import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
+import { ZodiacInfo } from '@/utils/zodiac';
 import { HoroscopeHeader } from './HoroscopeHeader';
 import { HoroscopeContent } from './HoroscopeContent';
 import { Button } from '@/components/ui/button';
