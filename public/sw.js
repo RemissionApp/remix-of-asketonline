@@ -63,8 +63,8 @@ self.addEventListener('fetch', (event) => {
         try {
           const networkResponse = await fetch(event.request);
           
-          // Кэшируем успешные ответы
-          if (networkResponse.status === 200) {
+          // Кэшируем только GET запросы с успешными ответами
+          if (networkResponse.status === 200 && event.request.method === 'GET') {
             cache.put(event.request, networkResponse.clone());
           }
           

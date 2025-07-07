@@ -280,14 +280,38 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         logger.error("Error loading profile data", error);
         throw error;
       }
       
-      logger.debug("Profile data loaded", data);
+      // Если профиля нет, создаем его
+      if (!data) {
+        logger.info("Profile not found, creating new profile");
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            name: 'Искатель',
+            rank: 'seeker',
+            total_days: 0,
+            energy_points: 0
+          })
+          .select('*')
+          .maybeSingle();
+          
+        if (createError) {
+          logger.error("Error creating profile", createError);
+          throw createError;
+        }
+        
+        logger.info("Profile created successfully", { profileId: newProfile?.id });
+        return newProfile;
+      }
+      
+      logger.debug("Profile data loaded", { profileData: data ? 'Found' : 'Not found' });
       
       // Check subscription status
       const { data: subscription } = await supabase
@@ -343,17 +367,17 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       // Update local state with full profile data
       set({
         userProfile: {
-          name: data.name || 'Искатель',
+          name: data?.name || 'Искатель',
           email: user.email || '',
-          age: data.birth_date ? calculateAge(new Date(data.birth_date)) : null,
-          birthDate: data.birth_date ? new Date(data.birth_date) : null,
-          totalDays: data.total_days || 0,
-          energyPoints: data.energy_points || 0,
-          goal: data.goal || 'Познать свою истинную силу',
+          age: data?.birth_date ? calculateAge(new Date(data.birth_date)) : null,
+          birthDate: data?.birth_date ? new Date(data.birth_date) : null,
+          totalDays: data?.total_days || 0,
+          energyPoints: data?.energy_points || 0,
+          goal: data?.goal || 'Познать свою истинную силу',
           isPro: isPro || false,
-          rank: data.rank || 'seeker',
-          avatar_url: data.avatar_url,
-          zodiacSign: data.birth_date ? getZodiacSign(new Date(data.birth_date)) || '' : '',
+          rank: data?.rank || 'seeker',
+          avatar_url: data?.avatar_url,
+          zodiacSign: data?.birth_date ? getZodiacSign(new Date(data.birth_date)) || '' : '',
           achievements: mappedAchievements,
           activeMission
         }
