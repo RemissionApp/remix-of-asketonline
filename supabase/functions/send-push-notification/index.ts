@@ -30,10 +30,20 @@ async function getAccessToken(serviceAccount: any): Promise<string> {
   
   const signatureInput = `${headerB64}.${payloadB64}`
   
+  // Парсим приватный ключ из PEM формата
+  const privateKeyPem = serviceAccount.private_key.replace(/\\n/g, '\n')
+  const privateKeyBase64 = privateKeyPem
+    .replace('-----BEGIN PRIVATE KEY-----', '')
+    .replace('-----END PRIVATE KEY-----', '')
+    .replace(/\s/g, '')
+  
+  // Декодируем base64 в ArrayBuffer
+  const privateKeyBuffer = Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0))
+  
   // Импортируем приватный ключ
   const privateKey = await crypto.subtle.importKey(
     'pkcs8',
-    encoder.encode(serviceAccount.private_key.replace(/\\n/g, '\n')),
+    privateKeyBuffer,
     {
       name: 'RSASSA-PKCS1-v1_5',
       hash: 'SHA-256'
