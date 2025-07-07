@@ -1,12 +1,9 @@
-
 import React, { useState } from 'react';
-import { TopBar } from '@/components/TopBar';
-import { BottomNavigation } from '@/components/BottomNavigation';
-import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { AffirmationCard } from '@/components/AffirmationCard';
-import { MeditationLayout } from '@/components/MeditationLayout';
-import { Sparkles } from 'lucide-react';
+import { PageHeader } from '@/components/PageHeader';
+import { StarField } from '@/components/StarField';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 const AffirmationsPage: React.FC = () => {
   const { language } = useAppStore();
@@ -26,41 +23,48 @@ const AffirmationsPage: React.FC = () => {
   ];
 
   return (
-    <MeditationLayout 
-      title={affirmationsTitle}
-      icon={<Sparkles size={24} className="text-purple-400 mr-3" />}
-    >
-      {/* Categories filter */}
-      <div className="w-full max-w-2xl mb-6 overflow-x-auto">
-        <div className="flex space-x-2 p-1 min-w-max">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
-                ${selectedCategory === category.id 
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' 
-                  : 'bg-cosmic-dark/60 text-white/70 hover:bg-cosmic-dark/80'}`}
-            >
-              {category.name}
-            </button>
-          ))}
+    <div className="min-h-screen flex flex-col relative pb-20">
+      <StarField starCount={100} />
+      
+      <PageHeader title={affirmationsTitle} />
+      
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-6">
+        <div className="w-full max-w-2xl flex flex-col items-center">
+          {/* Categories filter */}
+          <div className="w-full max-w-2xl mb-6 overflow-x-auto">
+            <div className="flex space-x-2 p-1 min-w-max">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                    ${selectedCategory === category.id 
+                      ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' 
+                      : 'bg-cosmic-dark/60 text-white/70 hover:bg-cosmic-dark/80'}`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Affirmations */}
+          <div className="w-full max-w-2xl space-y-4">
+            <p className="text-white/80 text-center mb-8 backdrop-blur-sm bg-cosmic-dark/30 p-4 rounded-lg border border-cosmic-accent/20 max-w-2xl mx-auto">
+              {language === 'ru' 
+                ? 'Выберите аффирмацию, медитируйте над ней и повторяйте ежедневно для трансформирующего эффекта.'
+                : language === 'es'
+                  ? 'Selecciona una afirmación, medita sobre ella y repítela diariamente para un efecto transformador.'
+                  : 'Choose an affirmation, meditate on it, and repeat it daily for transformative effect.'}
+            </p>
+            
+            <AffirmationsContent selectedCategory={selectedCategory} language={language} />
+          </div>
         </div>
       </div>
       
-      {/* Affirmations */}
-      <div className="w-full max-w-2xl space-y-4 pb-20">
-        <p className="text-white/80 text-center mb-8 backdrop-blur-sm bg-cosmic-dark/30 p-4 rounded-lg border border-cosmic-accent/20 max-w-2xl mx-auto">
-          {language === 'ru' 
-            ? 'Выберите аффирмацию, медитируйте над ней и повторяйте ежедневно для трансформирующего эффекта.'
-            : language === 'es'
-              ? 'Selecciona una afirmación, medita sobre ella y repítela diariamente para un efecto transformador.'
-              : 'Choose an affirmation, meditate on it, and repeat it daily for transformative effect.'}
-        </p>
-        
-        <AffirmationsContent selectedCategory={selectedCategory} language={language} />
-      </div>
-    </MeditationLayout>
+      <BottomNavigation />
+    </div>
   );
 };
 

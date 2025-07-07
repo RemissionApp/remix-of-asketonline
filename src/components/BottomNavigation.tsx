@@ -95,7 +95,7 @@ export const BottomNavigation: React.FC = memo(() => {
   const isPro = userProfile?.isPro || false;
   
   return (
-    <div className="w-full bg-cosmic-dark/40 backdrop-blur-md border-t border-cosmic-accent/15">
+    <div className="fixed bottom-0 left-0 right-0 z-30 w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20 pb-safe-bottom">
       <div className="flex justify-center">
         <div className="w-full px-2">
           <div className="flex justify-around items-center py-1 max-w-3xl mx-auto">

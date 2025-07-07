@@ -9,6 +9,7 @@ import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput'
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { PageHeader } from '@/components/PageHeader';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
@@ -346,26 +347,18 @@ const CreatePactPage: React.FC = () => {
   const showStandardLayout = step < 3;
   
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <StarField starCount={100} />
       
       {showStandardLayout && (
         <>
-          {/* Header */}
-          <div className="relative z-10 px-4 py-4 flex items-center">
-            <button
-              className="p-2 text-cosmic-accent"
-              onClick={handleBack}
-            >
-              <ArrowLeft size={24} />
-            </button>
-            <h1 className="text-xl font-serif text-white flex-1 text-center mr-8">
-              {t.createPact?.title || "Create Ascesis"}
-            </h1>
-          </div>
+          <PageHeader 
+            title={t.createPact?.title || "Create Ascesis"}
+            onBackClick={handleBack}
+          />
           
           {/* Main content */}
-          <div className="relative z-10 flex-1 flex flex-col px-4 py-4 mx-auto w-full items-center justify-center">
+          <div className="relative z-10 flex-1 flex flex-col px-4 pt-20 py-4 mx-auto w-full items-center justify-center">
             {renderStep()}
           </div>
           

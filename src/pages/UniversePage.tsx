@@ -11,6 +11,7 @@ import { ThinkingAnimation } from '@/components/universe/ThinkingAnimation';
 import { UniverseAnswer } from '@/components/universe/UniverseAnswer';
 import { PreviousQuestions } from '@/components/universe/PreviousQuestions';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { PageHeader } from '@/components/PageHeader';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, userProfile, language, pacts } = useAppStore();
@@ -68,11 +69,12 @@ const UniversePage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <StarField starCount={150} />
       
-      {/* Header */}
-      <UniverseHeader />
+      <PageHeader 
+        title={language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe'}
+      />
       
       {/* Voice Greeting с включенным автозапуском */}
       <VoiceGreeting userProfile={userProfile} language={language} autoPlay={true} />
@@ -81,7 +83,7 @@ const UniversePage: React.FC = () => {
       {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}
       
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-3xl mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-20 py-4 max-w-3xl mx-auto w-full">
         {currentAnswer ? (
           <UniverseAnswer 
             question={currentAnswer.question}

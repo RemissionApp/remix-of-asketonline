@@ -3,7 +3,7 @@ import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useFullHoroscope } from '@/hooks/useFullHoroscope';
 import { getFullHoroscopeUIText } from '@/utils/fullHoroscopeTranslations';
-import { PageHeader } from '@/components/full-horoscope/PageHeader';
+import { PageHeader as FullPageHeader } from '@/components/full-horoscope/PageHeader';
 import { SetBirthDateCard } from '@/components/full-horoscope/SetBirthDateCard';
 import { ErrorCard } from '@/components/full-horoscope/ErrorCard';
 import { GenerateHoroscopeCard } from '@/components/full-horoscope/GenerateHoroscopeCard';
@@ -11,6 +11,7 @@ import { LoadingState } from '@/components/full-horoscope/LoadingState';
 import { HoroscopeContent } from '@/components/full-horoscope/HoroscopeContent';
 import { MovingStarField } from '@/components/full-horoscope/MovingStarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function FullHoroscopePage() {
   const { userProfile, language } = useAppStore();
@@ -28,7 +29,7 @@ export default function FullHoroscopePage() {
 
   return (
     <div 
-      className="min-h-screen text-white p-4 md:p-8 relative pb-20" 
+      className="min-h-screen text-white relative pb-20" 
       style={{
         backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.3)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
         backgroundSize: 'cover',
@@ -40,16 +41,11 @@ export default function FullHoroscopePage() {
       {/* Add the moving star field overlay */}
       <MovingStarField />
       
-      <div className="max-w-4xl mx-auto relative z-10">
-        <PageHeader 
-          currentYear={currentYear}
-          userName={userProfile?.name}
-          birthDate={userProfile?.birthDate}
-          zodiacSign={zodiacSign}
-          language={language}
-          uiText={uiText}
-        />
-
+      <PageHeader 
+        title={language === 'ru' ? 'Полный гороскоп' : language === 'es' ? 'Horóscopo completo' : 'Full Horoscope'}
+      />
+      
+      <div className="max-w-4xl mx-auto relative z-10 pt-20 p-4 md:p-8">
         {!zodiacSign && (
           <SetBirthDateCard uiText={uiText} />
         )}
