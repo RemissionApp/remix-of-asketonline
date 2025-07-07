@@ -3,6 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import type { ButtonProps } from './ui/button';
+import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 
 interface CosmicButtonProps extends Omit<ButtonProps, 'variant' | 'size'> {
   variant?: 'default' | 'outline' | 'subtle' | 'destructive' | 'ghost';
@@ -15,8 +16,10 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
   variant = 'default',
   size = 'md',
   className,
+  onClick,
   ...props
 }) => {
+  const { haptic } = usePWAFeatures();
   const variantClasses = {
     default: 'bg-gradient-to-r from-cosmic-accent to-cosmic-indigo hover:from-purple-500 hover:to-blue-500 text-white shadow-md',
     outline: 'border border-cosmic-accent bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 shadow-sm',
@@ -31,11 +34,20 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
     lg: 'px-8 py-4 text-lg'
   };
   
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Haptic feedback на каждое нажатие
+    await haptic.buttonTap();
+    
+    if (onClick) {
+      onClick(event);
+    }
+  };
+
   return (
     <button
       type="button"
       disabled={props.disabled}
-      onClick={props.onClick}
+      onClick={handleClick}
       className={cn(
         'rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm',
         variantClasses[variant],
