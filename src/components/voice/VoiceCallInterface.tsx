@@ -65,12 +65,27 @@ export const VoiceCallInterface: React.FC = () => {
 
   const handleEndCall = async () => {
     try {
+      console.log('Ending call...');
       setIsConnected(false);
       setCallDuration(0);
       setIsSpeaking(false);
       setIsListening(false);
+      
+      toast({
+        title: language === 'ru' ? "Звонок завершен" :
+               language === 'es' ? "Llamada terminada" : "Call ended",
+        description: language === 'ru' ? "Соединение с Вселенной разорвано" :
+                    language === 'es' ? "Conexión con el Universo terminada" : "Connection to Universe ended"
+      });
     } catch (error) {
       console.error('Failed to end call:', error);
+      toast({
+        title: language === 'ru' ? "Ошибка" :
+               language === 'es' ? "Error" : "Error",
+        description: language === 'ru' ? "Не удалось завершить звонок" :
+                    language === 'es' ? "No se pudo terminar la llamada" : "Failed to end call",
+        variant: "destructive"
+      });
     }
   };
 
