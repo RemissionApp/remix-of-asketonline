@@ -94,29 +94,150 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Push уведомления (базовая настройка)
+// Push уведомления с детализированными типами
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'Уведомление от Cosmic Path',
+  const data = event.data ? event.data.json() : {};
+  
+  const defaultOptions = {
     icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    vibrate: [100, 50, 100],
+    badge: '/icon-72.png',
+    vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
-    }
+      primaryKey: data.id || 1,
+      type: data.type || 'default'
+    },
+    actions: [
+      {
+        action: 'open',
+        title: 'Открыть',
+        icon: '/icon-72.png'
+      },
+      {
+        action: 'close',
+        title: 'Закрыть'
+      }
+    ]
   };
+
+  let title = 'Asket App';
+  let body = 'У вас есть новое уведомление';
+  let customOptions = {};
+
+  // Типы уведомлений
+  switch (data.type) {
+    case 'daily_reminder':
+      title = 'Ежедневное напоминание';
+      body = 'Не забудьте подтвердить выполнение вашей аскезы';
+      customOptions = {
+        tag: 'daily-reminder',
+        renotify: true,
+        requireInteraction: true
+      };
+      break;
+      
+    case 'pact_start':
+      title = 'Начало аскезы';
+      body = `Ваша аскеза "${data.pactTitle}" начинается сегодня!`;
+      customOptions = {
+        tag: 'pact-start',
+        requireInteraction: true
+      };
+      break;
+      
+    case 'pact_complete':
+      title = 'Аскеза завершена!';
+      body = `Поздравляем! Вы успешно завершили "${data.pactTitle}"`;
+      customOptions = {
+        tag: 'pact-complete',
+        requireInteraction: true
+      };
+      break;
+      
+    case 'meditation_reminder':
+      title = 'Время медитации';
+      body = 'Найдите несколько минут для медитативной практики';
+      customOptions = {
+        tag: 'meditation-reminder'
+      };
+      break;
+      
+    case 'universe_message':
+      title = 'Сообщение от Вселенной';
+      body = data.message || 'У вас есть новое напутствие';
+      customOptions = {
+        tag: 'universe-message',
+        requireInteraction: true
+      };
+      break;
+      
+    case 'achievement':
+      title = 'Новое достижение!';
+      body = `Вы получили достижение: ${data.achievementTitle}`;
+      customOptions = {
+        tag: 'achievement',
+        requireInteraction: true
+      };
+      break;
+      
+    case 'subscription_reminder':
+      title = 'Напоминание о подписке';
+      body = data.message || 'Ваша PRO-подписка скоро истекает';
+      customOptions = {
+        tag: 'subscription'
+      };
+      break;
+  }
+  
+  const options = { ...defaultOptions, ...customOptions, body };
   
   event.waitUntil(
-    self.registration.showNotification('Cosmic Path', options)
+    self.registration.showNotification(title, options)
   );
 });
 
-// Обработка клика по уведомлению
+// Обработка клика по уведомлению с роутингом
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification click received.');
   event.notification.close();
+  
+  const { type, pactId, achievementId } = event.notification.data;
+  let url = '/';
+  
+  // Определяем URL для перехода
+  switch (type) {
+    case 'daily_reminder':
+    case 'pact_start':
+    case 'pact_complete':
+      url = pactId ? `/main?pact=${pactId}` : '/main';
+      break;
+    case 'meditation_reminder':
+      url = '/meditation';
+      break;
+    case 'universe_message':
+      url = '/universe';
+      break;
+    case 'achievement':
+      url = '/profile';
+      break;
+    case 'subscription_reminder':
+      url = '/comparison';
+      break;
+  }
+  
   event.waitUntil(
-    clients.openWindow('https://your-domain.com')
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      // Проверяем, есть ли уже открытая вкладка
+      for (const client of clientList) {
+        if (client.url.includes(url.split('?')[0]) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      
+      // Открываем новую вкладку
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
   );
 });
