@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 import { useAppStore } from "./store/useAppStore";
 import { supabase, cleanupAuthState } from "./lib/supabase";
@@ -23,6 +23,7 @@ import NewMeditationPage from "./pages/NewMeditationPage";
 import DetailedHoroscopePage from "./pages/DetailedHoroscopePage";
 import FullHoroscopePage from "./pages/FullHoroscopePage";
 import UniverseChatPage from "./pages/UniverseChatPage";
+import CallPage from "./pages/CallPage";
 import NumerologyPage from "./pages/NumerologyPage";
 import MeditationProPage from "./pages/MeditationProPage";
 import AffirmationsPage from "./pages/AffirmationsPage";
@@ -37,60 +38,65 @@ const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
-  const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
-  
-  useEffect(() => {
-    // Проверяем состояние onboarding при загрузке приложения
-    checkOnboardingStatus();
+  try {
+    const { checkOnboardingStatus, user, loadUserProfile, setUser } = useAppStore();
     
-    // Инициализируем push-уведомления
-    NotificationIntegrations.initializeAll();
-    
-    // Настраиваем слушатель изменений состояния аутентификации
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state changed:", event, session?.user?.id);
-        
-        if (event === 'SIGNED_IN' && session) {
-          setUser(session.user);
+    useEffect(() => {
+      // Проверяем состояние onboarding при загрузке приложения
+      checkOnboardingStatus();
+      
+      // Инициализируем push-уведомления
+      NotificationIntegrations.initializeAll();
+      
+      // Настраиваем слушатель изменений состояния аутентификации
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log("Auth state changed:", event, session?.user?.id);
           
-          // Отложенная загрузка данных пользователя для предотвращения deadlock
-          setTimeout(() => {
-            loadUserProfile();
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
+          if (event === 'SIGNED_IN' && session) {
+            setUser(session.user);
+            
+            // Отложенная загрузка данных пользователя для предотвращения deadlock
+            setTimeout(() => {
+              loadUserProfile();
+            }, 0);
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null);
+          }
         }
-      }
-    );
-    
-    // Проверяем текущую сессию при инициализации
-    const checkSession = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Ошибка получения сессии:", error);
-          return;
+      );
+      
+      // Проверяем текущую сессию при инициализации
+      const checkSession = async () => {
+        try {
+          const { data, error } = await supabase.auth.getSession();
+          if (error) {
+            console.error("Ошибка получения сессии:", error);
+            return;
+          }
+          
+          if (data.session?.user) {
+            setUser(data.session.user);
+            await loadUserProfile();
+          }
+        } catch (error) {
+          console.error("Не удалось проверить сессию:", error);
         }
-        
-        if (data.session?.user) {
-          setUser(data.session.user);
-          await loadUserProfile();
-        }
-      } catch (error) {
-        console.error("Не удалось проверить сессию:", error);
-      }
-    };
+      };
+      
+      checkSession();
+      
+      // Отписываемся при размонтировании
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, [checkOnboardingStatus, loadUserProfile, setUser]);
     
-    checkSession();
-    
-    // Отписываемся при размонтировании
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [checkOnboardingStatus, loadUserProfile, setUser]);
-  
-  return null;
+    return null;
+  } catch (error) {
+    console.error("Error in AppInitializer:", error);
+    return null;
+  }
 };
 
 // Компонент для обработки перенаправлений OAuth
@@ -148,8 +154,8 @@ const AuthCallback = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppInitializer />
           <Routes>
@@ -171,6 +177,7 @@ const App = () => {
             {/* Pro features routes */}
             <Route path="/meditation-pro" element={<MeditationProPage />} />
             <Route path="/universe-chat" element={<UniverseChatPage />} />
+            <Route path="/universe-call" element={<CallPage />} />
             <Route path="/numerology" element={<NumerologyPage />} />
             <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -181,8 +188,8 @@ const App = () => {
           <Toaster />
           <Sonner />
         </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

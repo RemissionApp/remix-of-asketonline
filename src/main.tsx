@@ -8,7 +8,10 @@ import { registerServiceWorker } from './utils/pwaUtils';
 // Регистрируем Service Worker для PWA
 registerServiceWorker();
 
-const root = createRoot(document.getElementById("root")!);
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error('Failed to find the root element');
+
+const root = createRoot(rootElement);
 
 root.render(
   <React.StrictMode>

@@ -14,13 +14,13 @@ export const UniverseChatPreview: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  const handleEnterChat = () => {
-    navigate('/universe-chat');
+  const handleEnterCall = () => {
+    navigate('/universe-call');
   };
   
-  // Translation for the title "Диалог со вселенной"
-  const universeTitle = language === 'ru' ? 'Диалог со вселенной' : 
-                        language === 'es' ? 'Diálogo con el Universo' : 'Dialogue with the Universe';
+  // Translation for the title "Звонок Вселенной"
+  const universeTitle = language === 'ru' ? 'Звонок Вселенной' : 
+                        language === 'es' ? 'Llamada al Universo' : 'Universe Call';
   
   // Determine the correct font class based on language
   const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
@@ -58,13 +58,13 @@ export const UniverseChatPreview: React.FC = () => {
         </div>
         
         <CosmicButton 
-          onClick={handleEnterChat} 
+          onClick={handleEnterCall} 
           size="md"
           variant="default"
           className="w-full bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/20 mt-4"
         >
-          {language === 'ru' ? 'Перейти в чат' : 
-           language === 'es' ? 'Ir al chat' : 'Enter chat'}
+          {language === 'ru' ? 'Позвонить Вселенной' : 
+           language === 'es' ? 'Llamar al Universo' : 'Call Universe'}
         </CosmicButton>
       </div>
     </div>
