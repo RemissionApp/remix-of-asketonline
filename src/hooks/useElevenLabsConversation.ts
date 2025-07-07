@@ -2,7 +2,7 @@ import { useConversation } from '@11labs/react';
 import { useAppStore } from '@/store/useAppStore';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 // Агенты для разных языков
 const AGENTS = {

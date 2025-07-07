@@ -6,7 +6,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { calculateLifePathNumber, getNumerologyMeaning, calculateExpressionNumber, calculatePersonalityNumber } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
 import { Calculator } from 'lucide-react';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 export const NumerologyDisplay: React.FC = () => {
   const logger = createLogger('NumerologyDisplay');

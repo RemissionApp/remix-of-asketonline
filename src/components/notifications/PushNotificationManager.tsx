@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { firebaseConfig } from '@/utils/firebaseConfig';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 interface NotificationSettings {
   dailyReminder: boolean;

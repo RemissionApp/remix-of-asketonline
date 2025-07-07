@@ -5,7 +5,7 @@ import { HoroscopeSection } from './HoroscopeSection';
 import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 interface HoroscopeContentProps {
   horoscope: DetailedHoroscope | null;

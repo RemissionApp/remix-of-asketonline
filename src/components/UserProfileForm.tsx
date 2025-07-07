@@ -5,7 +5,7 @@ import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/utils/dateFormatUtils';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 import AvatarUpload from './AvatarUpload';
 import ZodiacInfo from './ZodiacInfo';
 import BirthDateEditor from './BirthDateEditor';

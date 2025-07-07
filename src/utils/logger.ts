@@ -73,3 +73,6 @@ class Logger {
 // Создаем инстансы для разных модулей
 export const logger = new Logger();
 export const createLogger = (context: string) => new Logger(context);
+
+// Дефолтный экспорт для обратной совместимости
+export default logger;

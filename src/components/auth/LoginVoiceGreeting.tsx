@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 export interface LoginVoiceGreetingRef {
   playGreeting: () => void;

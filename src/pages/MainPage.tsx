@@ -12,7 +12,7 @@ import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils'
 import { useToast } from '@/hooks/use-toast';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { MissionReminder } from '@/components/missions/MissionReminder';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 const MainPage: React.FC = () => {

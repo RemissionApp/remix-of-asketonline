@@ -11,7 +11,7 @@ import { DeveloperSwitch } from '../DeveloperSwitch';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Stars } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { createLogger } from '@/utils/logger';
+import { createLogger } from '@/utils/loggerUtils';
 
 import { UserProfile } from '@/types';
 
