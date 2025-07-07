@@ -5,6 +5,7 @@ import { HoroscopeSection } from './HoroscopeSection';
 import { DetailedHoroscope } from '@/types/horoscope';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { createLogger } from '@/utils/logger';
 
 interface HoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -17,13 +18,14 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   translations,
   language
 }) => {
+  const logger = createLogger('HoroscopeContent');
   const [activeSection, setActiveSection] = useState(0);
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
   const [showRawData, setShowRawData] = useState(false);
   const [rawHoroscopeData, setRawHoroscopeData] = useState<any>(null);
 
   // Улучшенное логирование с информацией о секциях и их содержимом
-  console.log("HoroscopeContent rendered with:", {
+  logger.debug("Component rendered", {
     hasHoroscope: !!horoscope,
     horoscopeDescription: horoscope?.description ? horoscope.description.substring(0, 50) + '...' : 'No description',
     horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
@@ -41,21 +43,21 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   useEffect(() => {
     // Reset active section when horoscope changes
     if (horoscope) {
-      console.log("Horoscope data available, starting with section 0");
+      logger.info("Horoscope data available, starting with section 0");
       setActiveSection(0);
       
       // Verify sections content
       if (horoscope.sections) {
         const hasSections = Object.values(horoscope.sections).some(section => !!section && section.length > 0);
         setSectionsLoaded(hasSections);
-        console.log("Sections loaded check:", { hasSections });
+        logger.debug("Sections loaded check", { hasSections });
         
         if (!hasSections) {
-          console.error("Horoscope sections are empty or missing", horoscope.sections);
+          logger.error("Horoscope sections are empty or missing", horoscope.sections);
         }
       } else {
         setSectionsLoaded(false);
-        console.error("No sections object in horoscope data");
+        logger.error("No sections object in horoscope data");
       }
 
       // Сохраняем необработанные данные для отображения
@@ -65,24 +67,24 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
 
   const handleSectionComplete = () => {
     if (activeSection < 4) {
-      console.log(`Section ${activeSection} complete, advancing to section ${activeSection + 1}`);
+      logger.info(`Section ${activeSection} complete, advancing to section ${activeSection + 1}`);
       setTimeout(() => {
         setActiveSection(activeSection + 1);
       }, 500);
     } else {
-      console.log("All sections completed");
+      logger.info("All sections completed");
     }
   };
 
   // Safety check - if no horoscope data is available, return empty content
   if (!horoscope) {
-    console.log("No horoscope data in HoroscopeContent, returning null");
+    logger.debug("No horoscope data in HoroscopeContent, returning null");
     return null;
   }
 
   // If there are no sections, just show the full description
   if (!horoscope.sections || !sectionsLoaded) {
-    console.log("No valid sections in horoscope, showing full description");
+    logger.debug("No valid sections in horoscope, showing full description");
     return (
       <div className="space-y-4">
         <div className="cosmic-gradient-text text-base font-serif leading-relaxed whitespace-pre-wrap p-4 bg-cosmic-dark/40 border border-cosmic-accent/20 backdrop-blur-sm rounded-lg">
@@ -157,7 +159,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
     }
   ];
 
-  console.log("Rendering sections:", {
+  logger.debug("Rendering sections", {
     config: sectionConfig.map(s => s.key),
     availableSections: Object.keys(horoscope.sections || {}),
     sectionsContent: Object.entries(horoscope.sections || {}).map(([key, value]) => 
@@ -171,7 +173,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
         // Проверяем существование контента для данной секции
         const sectionContent = horoscope.sections?.[section.key];
         
-        console.log(`Section ${section.key}:`, {
+        logger.debug(`Section ${section.key}`, {
           content: sectionContent ? (sectionContent.substring(0, 30) + '...') : 'No content',
           length: sectionContent?.length || 0,
           shouldRender: activeSection >= index
@@ -179,7 +181,7 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
         
         // Проверка на null, undefined или пустую строку
         if (!sectionContent || sectionContent.trim() === '') {
-          console.log(`Section ${section.key} has no content, using fallback text`);
+          logger.debug(`Section ${section.key} has no content, using fallback text`);
         }
         
         return (activeSection >= index) && (

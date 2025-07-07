@@ -13,6 +13,7 @@ import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsB
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
+import { createLogger } from '@/utils/logger';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -41,7 +42,9 @@ export const MainContent: React.FC<MainContentProps> = ({
   getAscesisPrefix,
   formatRejection
 }) => {
-  console.log("MainContent rendering, activePacts:", activePacts.length);
+  const logger = createLogger('MainContent');
+  
+  logger.debug("MainContent rendering", { activePactsCount: activePacts.length, isLoading });
   
   return (
     <main className="flex-1 container mx-auto px-4 py-6 flex flex-col items-center">

@@ -10,6 +10,7 @@ import { DeveloperSwitch } from '../DeveloperSwitch';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Stars } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { createLogger } from '@/utils/logger';
 
 interface DetailedHoroscopeContentProps {
   horoscope: DetailedHoroscope | null;
@@ -30,12 +31,13 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   language,
   onGenerateHoroscope
 }) => {
+  const logger = createLogger('DetailedHoroscopeContent');
   const [showGenerateButton, setShowGenerateButton] = useState(true);
   const [showDevTools, setShowDevTools] = useState(false);
   const navigate = useNavigate();
   
   // Add debugging for props
-  console.log("DetailedHoroscopeContent PROPS:", {
+  logger.debug("Component props", {
     horoscopeNull: horoscope === null,
     horoscopeUndefined: horoscope === undefined,
     horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
@@ -47,19 +49,20 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   useEffect(() => {
     // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
     if (userProfile?.isPro && zodiacInfo && onGenerateHoroscope && !horoscope && !loading) {
-      console.log("Auto-generating horoscope on page load");
-      console.log("User profile:", JSON.stringify(userProfile));
-      console.log("Zodiac info:", JSON.stringify(zodiacInfo));
+      logger.info("Auto-generating horoscope on page load", { 
+        userProfile: userProfile?.name,
+        zodiacSign: zodiacInfo?.sign 
+      });
       setShowGenerateButton(false);
       onGenerateHoroscope();
     }
   }, [userProfile?.isPro, zodiacInfo, onGenerateHoroscope, horoscope, loading]);
   
-  console.log("DetailedHoroscopeContent RENDER:", { 
+  logger.debug("Component render state", { 
     hasHoroscope: !!horoscope, 
     loading, 
     isPro: !!userProfile?.isPro,
-    zodiacInfo: zodiacInfo ? JSON.stringify(zodiacInfo).substring(0, 100) + '...' : null,
+    hasZodiacInfo: !!zodiacInfo,
     birthDate: userProfile?.birthDate,
     horoscopeData: horoscope ? 'Available' : 'Not available',
     horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
@@ -67,23 +70,23 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
   });
 
   const handleGenerateClick = () => {
-    console.log("Generate horoscope button clicked");
+    logger.info("Generate horoscope button clicked");
     setShowGenerateButton(false);
     if (onGenerateHoroscope) {
-      console.log("Calling onGenerateHoroscope function");
+      logger.info("Calling onGenerateHoroscope function");
       onGenerateHoroscope();
     } else {
-      console.log("No onGenerateHoroscope function provided");
+      logger.warn("No onGenerateHoroscope function provided");
     }
   };
 
   // Handle regenerate horoscope - dedicated function with logging
   const handleRegenerateHoroscope = () => {
-    console.log("Regenerating horoscope via developer tools");
+    logger.info("Regenerating horoscope via developer tools");
     if (onGenerateHoroscope) {
       onGenerateHoroscope();
     } else {
-      console.log("ERROR: No onGenerateHoroscope function available for regeneration");
+      logger.error("No onGenerateHoroscope function available for regeneration");
     }
   };
 
@@ -99,7 +102,7 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
-    console.log("No zodiac info available, showing message");
+    logger.debug("No zodiac info available, showing message");
     return (
       <NoZodiacInfoMessage 
         translations={translations}
