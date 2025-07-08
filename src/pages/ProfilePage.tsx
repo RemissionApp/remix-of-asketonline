@@ -6,6 +6,7 @@ import { ProfileSection } from '@/components/ProfilePage/ProfileSection';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { PWASettingsPanel } from '@/components/PWAFeatures/PWASettingsPanel';
 import { ShareButton } from '@/components/PWAFeatures/ShareButton';
+import { LogoutButton } from '@/components/ProfilePage/LogoutButton';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const ProfilePage: React.FC = () => {
@@ -34,6 +35,9 @@ const ProfilePage: React.FC = () => {
           variant="outline" 
           className="w-full"
         />
+        
+        {/* Logout button at the bottom */}
+        <LogoutButton />
       </div>
 
       {/* Add the bottom navigation */}

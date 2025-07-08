@@ -38,7 +38,6 @@ export const ProfileSection: React.FC = () => {
         </div>
         
         <LegalDocuments />
-        <LogoutButton />
       </div>
     </div>
   );

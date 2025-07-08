@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { LogOut } from 'lucide-react';
-import { CosmicButton } from '@/components/CosmicButton';
+import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -24,13 +23,11 @@ export const LogoutButton: React.FC = () => {
   };
   
   return (
-    <CosmicButton 
-      variant="destructive" 
-      className="w-full mb-6"
+    <Button 
+      className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30 font-sans"
       onClick={handleLogout}
     >
-      <LogOut className="mr-2 h-5 w-5" />
       <span>{t.userProfile?.logout || "Выход"}</span>
-    </CosmicButton>
+    </Button>
   );
 };
