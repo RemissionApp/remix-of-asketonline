@@ -161,40 +161,40 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <TooltipProvider>
             <AppInitializer />
-          <Routes>
-            <Route path="/" element={<WelcomePage />} />
-            <Route path="/language" element={<LanguagePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile-setup" element={<UserProfilePage />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/main" element={<MainPage />} />
-            <Route path="/create-pact" element={<CreatePactPage />} />
-            <Route path="/universe" element={<UniversePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/comparison" element={<ComparisonPage />} />
-            <Route path="/meditation" element={<MeditationPage />} />
-            <Route path="/meditation/session" element={<NewMeditationPage />} />
-            <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
-            <Route path="/full-horoscope" element={<FullHoroscopePage />} />
-            <Route path="/affirmations" element={<AffirmationsPage />} />
-            {/* Pro features routes */}
-            <Route path="/meditation-pro" element={<MeditationProPage />} />
-            <Route path="/universe-chat" element={<UniverseChatPage />} />
-            <Route path="/universe-call" element={<CallPage />} />
-            <Route path="/numerology" element={<NumerologyPage />} />
-            <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <PWAInstallPrompt />
-          <PWAUpdateNotification />
-          <Toaster />
-          <Sonner />
-          </BrowserRouter>
-        </TooltipProvider>
+            <Routes>
+              <Route path="/" element={<WelcomePage />} />
+              <Route path="/language" element={<LanguagePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/profile-setup" element={<UserProfilePage />} />
+              <Route path="/onboarding" element={<OnboardingPage />} />
+              <Route path="/main" element={<MainPage />} />
+              <Route path="/create-pact" element={<CreatePactPage />} />
+              <Route path="/universe" element={<UniversePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/comparison" element={<ComparisonPage />} />
+              <Route path="/meditation" element={<MeditationPage />} />
+              <Route path="/meditation/session" element={<NewMeditationPage />} />
+              <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
+              <Route path="/full-horoscope" element={<FullHoroscopePage />} />
+              <Route path="/affirmations" element={<AffirmationsPage />} />
+              {/* Pro features routes */}
+              <Route path="/meditation-pro" element={<MeditationProPage />} />
+              <Route path="/universe-chat" element={<UniverseChatPage />} />
+              <Route path="/universe-call" element={<CallPage />} />
+              <Route path="/numerology" element={<NumerologyPage />} />
+              <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <PWAInstallPrompt />
+            <PWAUpdateNotification />
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
   );
