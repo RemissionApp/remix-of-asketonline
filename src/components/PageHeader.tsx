@@ -45,7 +45,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           <img 
             src="/universe-logo.png" 
             alt="Universe Logo" 
-            className="w-6 h-6 rounded-full object-cover bg-red-500"
+            className="w-8 h-8 rounded-full object-cover border border-cosmic-gold/50"
             onLoad={() => console.log('PageHeader image loaded successfully')}
             onError={(e) => {
               console.error('PageHeader image failed to load:', e);
