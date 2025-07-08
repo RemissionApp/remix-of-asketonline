@@ -46,15 +46,16 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, l
   };
   
   return (
-    <Card className="w-full backdrop-blur-sm bg-cosmic-dark/80 border-cosmic-accent/30 hover:border-cosmic-accent/50 transition-all">
-      <div className="relative overflow-hidden">
+    <Card className="w-full backdrop-blur-sm bg-cosmic-dark/80 border-cosmic-accent/30 hover:border-cosmic-accent/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-cosmic-accent/20">
+      <div className="relative overflow-hidden rounded-t-lg">
         <img 
           src={affirmation.image} 
           alt={affirmation.text}
-          className="w-full h-40 object-cover" 
+          className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105" 
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent py-4">
-          <CardTitle className="text-white px-6 text-lg text-shadow">{affirmation.text}</CardTitle>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <CardTitle className="text-white text-lg font-medium text-shadow-lg leading-relaxed">{affirmation.text}</CardTitle>
         </div>
       </div>
       
