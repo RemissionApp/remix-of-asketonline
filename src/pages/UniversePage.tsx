@@ -27,7 +27,7 @@ const UniversePage: React.FC = () => {
     return () => {
       stopSpeech();
     };
-  }, [stopSpeech]);
+  }, []); // Remove stopSpeech dependency to prevent excessive calls
   
   // Check if there are active pacts
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
@@ -76,8 +76,8 @@ const UniversePage: React.FC = () => {
         title={language === 'ru' ? 'Вселенная' : language === 'es' ? 'Universo' : 'Universe'}
       />
       
-      {/* Voice Greeting с включенным автозапуском */}
-      <VoiceGreeting userProfile={userProfile} language={language} autoPlay={true} />
+      {/* Voice Greeting без автозапуска для улучшения производительности */}
+      <VoiceGreeting userProfile={userProfile} language={language} autoPlay={false} />
       
       {/* Show countdown timer if there are active pacts */}
       {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}

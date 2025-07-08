@@ -204,20 +204,39 @@ export const useOptimizedTextToSpeech = () => {
   };
 
   const stopSpeech = () => {
+    // Debounce multiple rapid calls
+    if (!currentAudio && audioQueue.length === 0 && !isPlaying && !isProcessingQueue) {
+      return;
+    }
+    
+    logger.info('Stopping speech playback');
+    
+    // Stop current audio efficiently
     if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-      URL.revokeObjectURL(currentAudio.src);
+      try {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        URL.revokeObjectURL(currentAudio.src);
+      } catch (e) {
+        logger.warn('Error stopping current audio:', e);
+      }
       setCurrentAudio(null);
     }
 
-    audioQueue.forEach(audio => {
-      audio.pause();
-      audio.currentTime = 0;
-      URL.revokeObjectURL(audio.src);
-    });
+    // Clear queue efficiently
+    if (audioQueue.length > 0) {
+      audioQueue.forEach(audio => {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          URL.revokeObjectURL(audio.src);
+        } catch (e) {
+          logger.warn('Error cleaning up audio from queue:', e);
+        }
+      });
+      setAudioQueue([]);
+    }
 
-    setAudioQueue([]);
     setIsPlaying(false);
     setIsProcessingQueue(false);
   };
