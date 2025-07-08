@@ -50,6 +50,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
         <PactNavigation 
           currentIndex={currentPactIndex}
           totalPacts={activePacts.length}
+          pacts={activePacts}
           onPrevious={handlePrevPact}
           onNext={handleNextPact}
         />
@@ -58,6 +59,13 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       <h1 className="text-xl text-center uppercase font-serif text-white mb-1">
         {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
       </h1>
+      
+      {/* Display pact type if available */}
+      {currentPact.type && (
+        <div className="text-sm text-cosmic-accent/80 text-center mb-2 uppercase tracking-wider">
+          {currentPact.type}
+        </div>
+      )}
       
       <EnergyCircle progress={progress} size="lg">
         <div className="text-center p-4 flex flex-col items-center">
