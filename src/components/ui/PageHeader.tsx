@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import universeLogoImage from '@/assets/universe-logo.png';
+
 
 interface PageHeaderProps {
   title: string;
@@ -42,9 +42,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         
         <div className="flex items-center space-x-2">
           <img 
-            src={universeLogoImage} 
+            src="/universe-logo.png" 
             alt="Universe Logo" 
-            className="w-6 h-6 rounded-full object-cover"
+            className="w-6 h-6 rounded-full object-cover bg-red-500"
+            onLoad={() => console.log('UI PageHeader image loaded successfully')}
+            onError={(e) => {
+              console.error('UI PageHeader image failed to load:', e);
+              console.log('Image src: /universe-logo.png');
+            }}
           />
           <span className="text-white font-serif text-sm">Asket</span>
         </div>
