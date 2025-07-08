@@ -226,35 +226,30 @@ export const PushNotificationManager: React.FC = () => {
 
   if (!isSupported) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BellOff className="w-5 h-5" />
-            Push-уведомления недоступны
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-cosmic-muted">
-            Ваш браузер не поддерживает push-уведомления
-          </p>
-        </CardContent>
-      </Card>
+      <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <BellOff className="w-5 h-5 text-cosmic-accent" />
+          <span className="text-white font-medium font-sans">Push-уведомления недоступны</span>
+        </div>
+        <p className="text-cosmic-secondary font-sans">
+          Ваш браузер не поддерживает push-уведомления
+        </p>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bell className="w-5 h-5" />
-          Push-уведомления
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <Bell className="w-5 h-5 text-cosmic-accent" />
+        <span className="text-white font-medium font-sans">Push-уведомления</span>
+      </div>
+      
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium">Статус уведомлений</p>
-            <p className="text-sm text-cosmic-muted">
+            <p className="font-medium text-white font-sans">Статус уведомлений</p>
+            <p className="text-sm text-cosmic-secondary font-sans">
               {permission === 'granted' 
                 ? isSubscribed ? 'Активны' : 'Разрешены, но не подключены'
                 : permission === 'denied' 
@@ -265,15 +260,27 @@ export const PushNotificationManager: React.FC = () => {
           </div>
           
           {permission !== 'granted' ? (
-            <Button onClick={requestPermission}>
-              Разрешить уведомления
+            <Button 
+              onClick={requestPermission}
+              variant="ghost"
+              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
+            >
+              Разрешить
             </Button>
           ) : isSubscribed ? (
-            <Button variant="outline" onClick={unsubscribe}>
+            <Button 
+              variant="ghost" 
+              onClick={unsubscribe}
+              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
+            >
               Отключить
             </Button>
           ) : (
-            <Button onClick={subscribeToNotifications}>
+            <Button 
+              onClick={subscribeToNotifications}
+              variant="ghost"
+              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
+            >
               Подключить
             </Button>
           )}
@@ -281,15 +288,15 @@ export const PushNotificationManager: React.FC = () => {
 
         {isSubscribed && (
           <>
-            <div className="border-t pt-4">
-              <h4 className="font-medium mb-3 flex items-center gap-2">
+            <div className="border-t border-cosmic-accent/20 pt-4">
+              <h4 className="font-medium mb-3 flex items-center gap-2 text-white font-sans">
                 <Settings className="w-4 h-4" />
                 Настройки уведомлений
               </h4>
               
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Ежедневные напоминания</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Ежедневные напоминания</label>
                   <Switch 
                     checked={settings.dailyReminder}
                     onCheckedChange={(checked) => updateSettings('dailyReminder', checked)}
@@ -297,7 +304,7 @@ export const PushNotificationManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Обновления аскез</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Обновления аскез</label>
                   <Switch 
                     checked={settings.pactUpdates}
                     onCheckedChange={(checked) => updateSettings('pactUpdates', checked)}
@@ -305,7 +312,7 @@ export const PushNotificationManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Напоминания о медитации</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Напоминания о медитации</label>
                   <Switch 
                     checked={settings.meditation}
                     onCheckedChange={(checked) => updateSettings('meditation', checked)}
@@ -313,7 +320,7 @@ export const PushNotificationManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Сообщения от Вселенной</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Сообщения от Вселенной</label>
                   <Switch 
                     checked={settings.universeMessages}
                     onCheckedChange={(checked) => updateSettings('universeMessages', checked)}
@@ -321,7 +328,7 @@ export const PushNotificationManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Достижения</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Достижения</label>
                   <Switch 
                     checked={settings.achievements}
                     onCheckedChange={(checked) => updateSettings('achievements', checked)}
@@ -329,7 +336,7 @@ export const PushNotificationManager: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <label className="text-sm">Подписка и платежи</label>
+                  <label className="text-sm text-cosmic-secondary font-sans">Подписка и платежи</label>
                   <Switch 
                     checked={settings.subscription}
                     onCheckedChange={(checked) => updateSettings('subscription', checked)}
@@ -338,18 +345,18 @@ export const PushNotificationManager: React.FC = () => {
               </div>
             </div>
 
-            <div className="border-t pt-4">
+            <div className="border-t border-cosmic-accent/20 pt-4">
               <Button 
                 onClick={sendTestNotification}
-                variant="outline"
-                className="w-full"
+                variant="ghost"
+                className="w-full text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
               >
                 Отправить тестовое уведомление
               </Button>
             </div>
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

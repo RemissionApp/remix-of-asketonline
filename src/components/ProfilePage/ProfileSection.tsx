@@ -25,10 +25,8 @@ export const ProfileSection: React.FC = () => {
         <h2 className="text-2xl text-white font-serif mb-4">{t.userProfile?.languageLabel || "Application Language"}</h2>
         <LanguageSelector />
         
-        <h2 className="text-2xl text-white font-serif mb-4">{t.subscription?.title || "Subscription"}</h2>
         <SubscriptionManager />
         
-        <h2 className="text-2xl text-white font-serif mb-4">Push-уведомления</h2>
         <PushNotificationManager />
         
         {/* Add Developer Switch here to replace the one from MainPage */}
