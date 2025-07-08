@@ -42,11 +42,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {title}
           </h1>
           <div className="flex items-center space-x-2">
-            <img 
-              src={universeLogoImage} 
-              alt="Universe Logo" 
-              className="w-6 h-6 rounded-full object-cover"
-            />
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-800 border border-yellow-400 flex items-center justify-center">
+              <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+            </div>
             <span className="text-white font-serif text-sm">Asket</span>
           </div>
         </div>
