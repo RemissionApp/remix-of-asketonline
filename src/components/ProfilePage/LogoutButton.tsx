@@ -24,7 +24,7 @@ export const LogoutButton: React.FC = () => {
   
   return (
     <Button 
-      className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30 font-sans"
+      className="w-full bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30 font-sans"
       onClick={handleLogout}
     >
       <span>{t.userProfile?.logout || "Выход"}</span>
