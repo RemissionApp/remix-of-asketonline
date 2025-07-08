@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 import { StarField } from '@/components/StarField';
@@ -10,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
-import { CountdownTimer } from '@/components/CountdownTimer';
 import { MissionReminder } from '@/components/missions/MissionReminder';
 import { createLogger } from '@/utils/loggerUtils';
 import { useErrorHandler } from '@/hooks/useErrorHandler';

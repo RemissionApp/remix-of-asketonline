@@ -248,6 +248,7 @@ export type Database = {
           reward: string | null
           status: string
           title: string
+          type: string | null
           user_id: string
         }
         Insert: {
@@ -257,6 +258,7 @@ export type Database = {
           reward?: string | null
           status?: string
           title: string
+          type?: string | null
           user_id: string
         }
         Update: {
@@ -266,6 +268,7 @@ export type Database = {
           reward?: string | null
           status?: string
           title?: string
+          type?: string | null
           user_id?: string
         }
         Relationships: []
