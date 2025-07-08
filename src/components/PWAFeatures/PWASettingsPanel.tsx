@@ -146,8 +146,8 @@ export const PWASettingsPanel: React.FC = () => {
 
   return (
     <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
-      <h3 className="text-white font-medium mb-4 font-sans flex items-center gap-2">
-        <Download className="w-5 h-5" />
+      <h3 className="text-white font-medium mb-3 font-sans flex items-center gap-2 text-sm">
+        <Download className="w-4 h-4" />
         {getTitle()}
       </h3>
       <div className="space-y-6">
@@ -155,8 +155,8 @@ export const PWASettingsPanel: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <Vibrate className="w-4 h-4" />
-              <span className="text-sm font-medium">{getHapticTitle()}</span>
+              <Vibrate className="w-3 h-3" />
+              <span className="text-xs font-medium">{getHapticTitle()}</span>
             </div>
             <p className="text-xs text-muted-foreground">{getHapticDescription()}</p>
           </div>
@@ -170,9 +170,9 @@ export const PWASettingsPanel: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4" />
-              <span className="text-sm font-medium">{getNotificationsTitle()}</span>
-              <Badge variant={notificationsEnabled ? "default" : "secondary"}>
+              <Bell className="w-3 h-3" />
+              <span className="text-xs font-medium">{getNotificationsTitle()}</span>
+              <Badge variant={notificationsEnabled ? "default" : "secondary"} className="text-xs px-1 py-0">
                 {notificationsEnabled ? getSupportedText() : getNotSupportedText()}
               </Badge>
             </div>
@@ -186,12 +186,12 @@ export const PWASettingsPanel: React.FC = () => {
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 {backgroundSyncStatus.isOnline ? (
-                  <Wifi className="w-4 h-4 text-green-500" />
+                  <Wifi className="w-3 h-3 text-green-500" />
                 ) : (
-                  <WifiOff className="w-4 h-4 text-red-500" />
+                  <WifiOff className="w-3 h-3 text-red-500" />
                 )}
-                <span className="text-sm font-medium">{getSyncTitle()}</span>
-                <Badge variant={backgroundSyncStatus.isSupported ? "default" : "secondary"}>
+                <span className="text-xs font-medium">{getSyncTitle()}</span>
+                <Badge variant={backgroundSyncStatus.isSupported ? "default" : "secondary"} className="text-xs px-1 py-0">
                   {backgroundSyncStatus.isSupported ? getSupportedText() : getNotSupportedText()}
                 </Badge>
               </div>
@@ -199,7 +199,7 @@ export const PWASettingsPanel: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
               {backgroundSyncStatus.isOnline ? getOnlineText() : getOfflineText()}
             </span>
@@ -213,9 +213,9 @@ export const PWASettingsPanel: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={() => sync.clearPendingTasks()}
-              className="w-full border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+              className="w-full border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              <Trash2 className="w-3 h-3 mr-1" />
               {getClearTasksText()}
             </Button>
           )}

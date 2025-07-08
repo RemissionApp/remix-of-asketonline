@@ -101,8 +101,8 @@ export const AdvancedPWAControls: React.FC = () => {
 
   return (
     <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5">
-      <h3 className="text-white font-medium mb-4 font-sans flex items-center gap-2">
-        <Zap className="w-5 h-5" />
+      <h3 className="text-white font-medium mb-3 font-sans flex items-center gap-2 text-sm">
+        <Zap className="w-4 h-4" />
         {getTitle()}
       </h3>
       
@@ -113,11 +113,11 @@ export const AdvancedPWAControls: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {wakeLock.getStatus().active ? (
-                  <Lock className="w-4 h-4 text-cosmic-accent" />
+                  <Lock className="w-3 h-3 text-cosmic-accent" />
                 ) : (
-                  <Unlock className="w-4 h-4 text-muted-foreground" />
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
                 )}
-                <span className="font-medium">
+                <span className="font-medium text-xs">
                   {language === 'ru' ? 'Блокировка экрана' : 
                    language === 'es' ? 'Bloqueo de pantalla' : 'Screen Wake Lock'}
                 </span>
@@ -126,7 +126,7 @@ export const AdvancedPWAControls: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleWakeLockToggle}
-                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
               >
                 {wakeLock.getStatus().active ? 
                   (language === 'ru' ? 'Разблокировать' : 
@@ -143,21 +143,21 @@ export const AdvancedPWAControls: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <RotateCcw className="w-4 h-4" />
-              <span className="font-medium">
+              <RotateCcw className="w-3 h-3" />
+              <span className="font-medium text-xs">
                 {language === 'ru' ? 'Ориентация устройства' : 
                  language === 'es' ? 'Orientación del dispositivo' : 'Device Orientation'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">
+              <Badge variant="outline" className="text-xs px-1 py-0">
                 {orientation.getCurrentOrientation()}
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleOrientationLock}
-                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
               >
                 {orientation.getStatus().locked ? 
                   (language === 'ru' ? 'Разблокировать' : 
@@ -174,14 +174,14 @@ export const AdvancedPWAControls: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <HardDrive className="w-4 h-4" />
-              <span className="font-medium">
+              <HardDrive className="w-3 h-3" />
+              <span className="font-medium text-xs">
                 {language === 'ru' ? 'Постоянное хранилище' : 
                  language === 'es' ? 'Almacenamiento persistente' : 'Persistent Storage'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant={persistentStorageGranted ? "default" : "secondary"}>
+              <Badge variant={persistentStorageGranted ? "default" : "secondary"} className="text-xs px-1 py-0">
                 {persistentStorageGranted ? 
                   (language === 'ru' ? 'Предоставлено' : 
                    language === 'es' ? 'Concedido' : 'Granted') :
@@ -194,7 +194,7 @@ export const AdvancedPWAControls: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleRequestPersistentStorage}
-                  className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+                  className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
                 >
                   {language === 'ru' ? 'Запросить' : 
                    language === 'es' ? 'Solicitar' : 'Request'}
@@ -208,21 +208,21 @@ export const AdvancedPWAControls: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Smartphone className="w-4 h-4" />
-              <span className="font-medium">
+              <Smartphone className="w-3 h-3" />
+              <span className="font-medium text-xs">
                 {language === 'ru' ? 'Счетчик на иконке' : 
                  language === 'es' ? 'Contador en icono' : 'App Badge'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">
+              <Badge variant="outline" className="text-xs px-1 py-0">
                 {badgeCount}
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => badge.set(badgeCount + 1)}
-                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
               >
                 +1
               </Button>
@@ -230,7 +230,7 @@ export const AdvancedPWAControls: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => badge.clear()}
-                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
               >
                 {language === 'ru' ? 'Очистить' : 
                  language === 'es' ? 'Limpiar' : 'Clear'}
@@ -242,8 +242,8 @@ export const AdvancedPWAControls: React.FC = () => {
         {/* Advanced Caching */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Wifi className="w-4 h-4" />
-            <span className="font-medium">
+            <Wifi className="w-3 h-3" />
+            <span className="font-medium text-xs">
               {language === 'ru' ? 'Продвинутое кэширование' : 
                language === 'es' ? 'Caché avanzado' : 'Advanced Caching'}
             </span>
@@ -251,21 +251,21 @@ export const AdvancedPWAControls: React.FC = () => {
           
           {cacheStats && (
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span>
                   {language === 'ru' ? 'Записей:' : 
                    language === 'es' ? 'Entradas:' : 'Entries:'}
                 </span>
                 <span>{cacheStats.entries}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span>
                   {language === 'ru' ? 'Размер:' : 
                    language === 'es' ? 'Tamaño:' : 'Size:'}
                 </span>
                 <span>{formatSize(cacheStats.size)}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span>
                   {language === 'ru' ? 'Обновлено:' : 
                    language === 'es' ? 'Actualizado:' : 'Updated:'}
@@ -280,7 +280,7 @@ export const AdvancedPWAControls: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={handlePreloadResources}
-              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
             >
               <Download className="w-3 h-3" />
               {language === 'ru' ? 'Предзагрузка' : 
@@ -290,7 +290,7 @@ export const AdvancedPWAControls: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={handleClearCache}
-              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
+              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white text-xs"
             >
               <Trash2 className="w-3 h-3" />
               {language === 'ru' ? 'Очистить' : 
