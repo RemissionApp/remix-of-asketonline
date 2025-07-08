@@ -18,6 +18,19 @@ import selfLoveBg from '@/assets/affirmation-self-love-bg.jpg';
 import resilienceBg from '@/assets/affirmation-resilience-bg.jpg';
 import growthBg from '@/assets/affirmation-growth-bg.jpg';
 
+// Импорт изображений руководств
+import guideSuccess from '@/assets/guide-success.jpg';
+import guideConfidence from '@/assets/guide-confidence.jpg';
+import guideAbundance from '@/assets/guide-abundance.jpg';
+import guideLove from '@/assets/guide-love.jpg';
+import guideWellbeing from '@/assets/guide-wellbeing.jpg';
+import guideFocus from '@/assets/guide-focus.jpg';
+import guideTransformation from '@/assets/guide-transformation.jpg';
+import guideWisdom from '@/assets/guide-wisdom.jpg';
+import guideSelfLove from '@/assets/guide-self-love.jpg';
+import guideResilience from '@/assets/guide-resilience.jpg';
+import guideGrowth from '@/assets/guide-growth.jpg';
+
 const AffirmationsPage: React.FC = () => {
   const { language } = useAppStore();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -116,6 +129,7 @@ const useAffirmations = (language: string) => {
       instruction: "Say this affirmation while visualizing yourself having already achieved your goals. Feel the emotions of success and fulfillment.",
       action: "Write down three specific goals and read this affirmation before working on each one.",
       image: successBg,
+      guideImage: guideSuccess,
       categories: ["success", "confidence"]
     },
     {
@@ -124,6 +138,7 @@ const useAffirmations = (language: string) => {
       instruction: "Stand in front of a mirror, make eye contact with yourself, and say this with conviction. Notice your posture straighten as you speak.",
       action: "Make one decision today without seeking others' approval first.",
       image: confidenceBg,
+      guideImage: guideConfidence,
       categories: ["confidence"]
     },
     {
@@ -132,6 +147,7 @@ const useAffirmations = (language: string) => {
       instruction: "Place your hands over your heart as you say this, imagining golden light surrounding you, representing abundance flowing into your life.",
       action: "Notice and write down three instances of abundance you already have in your life.",
       image: abundanceBg,
+      guideImage: guideAbundance,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -140,6 +156,7 @@ const useAffirmations = (language: string) => {
       instruction: "Repeat this affirmation slowly, placing emphasis on 'worthy.' Allow yourself to truly feel deserving as you say it.",
       action: "Do one act of self-care today that honors your worth.",
       image: loveBg,
+      guideImage: guideLove,
       categories: ["love", "wellbeing"]
     },
     {
@@ -148,6 +165,7 @@ const useAffirmations = (language: string) => {
       instruction: "Say this while taking deep breaths, imagining each breath clearing your mind of distractions and doubts.",
       action: "Set a timer for 10 minutes of undistracted work on your most important task.",
       image: focusBg,
+      guideImage: guideFocus,
       categories: ["success", "wellbeing"]
     },
     {
@@ -156,6 +174,7 @@ const useAffirmations = (language: string) => {
       instruction: "Visualize yourself letting go of a weight or burden with each exhale, and welcoming in light with each inhale.",
       action: "Identify one habit or thought pattern to release today and take one small step to change it.",
       image: transformationBg,
+      guideImage: guideTransformation,
       categories: ["wellbeing"]
     },
     {
@@ -164,6 +183,7 @@ const useAffirmations = (language: string) => {
       instruction: "Place your palms facing upward on your knees while seated, symbolizing your openness to receive wisdom and guidance.",
       action: "When faced with a decision today, pause and ask for guidance before responding.",
       image: wisdomBg,
+      guideImage: guideWisdom,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -172,6 +192,7 @@ const useAffirmations = (language: string) => {
       instruction: "Place your hand on your heart and speak to yourself with compassion, as you would to a beloved friend.",
       action: "Write down three things you love about yourself and one area you're working on with compassion.",
       image: selfLoveBg,
+      guideImage: guideSelfLove,
       categories: ["love", "confidence"]
     },
     {
@@ -180,6 +201,7 @@ const useAffirmations = (language: string) => {
       instruction: "Stand tall with your feet firmly planted, shoulders back, and repeat this affirmation with strength in your voice.",
       action: "Reflect on a past challenge and identify one way it helped you grow stronger.",
       image: resilienceBg,
+      guideImage: guideResilience,
       categories: ["confidence", "success"]
     },
     {
@@ -188,6 +210,7 @@ const useAffirmations = (language: string) => {
       instruction: "Say this first thing in the morning and last thing at night, creating a mental image of your improving self.",
       action: "Identify one small improvement you can make today and commit to it.",
       image: growthBg,
+      guideImage: guideGrowth,
       categories: ["success", "wellbeing"]
     }
   ];
@@ -200,6 +223,7 @@ const useAffirmations = (language: string) => {
       instruction: "Произносите эту аффирмацию, представляя себя уже достигшим своих целей. Почувствуйте эмоции успеха и удовлетворения.",
       action: "Запишите три конкретные цели и прочитайте эту аффирмацию перед работой над каждой из них.",
       image: successBg,
+      guideImage: guideSuccess,
       categories: ["success", "confidence"]
     },
     {
@@ -208,6 +232,7 @@ const useAffirmations = (language: string) => {
       instruction: "Встаньте перед зеркалом, установите зрительный контакт с собой и произнесите это с убеждением. Обратите внимание, как выпрямляется ваша осанка, когда вы говорите.",
       action: "Примите сегодня одно решение, не ища одобрения других.",
       image: confidenceBg,
+      guideImage: guideConfidence,
       categories: ["confidence"]
     },
     {
@@ -216,6 +241,7 @@ const useAffirmations = (language: string) => {
       instruction: "Положите руки на сердце, произнося это, представляя золотой свет вокруг вас, символизирующий изобилие, входящее в вашу жизнь.",
       action: "Отметьте и запишите три примера изобилия, которые уже есть в вашей жизни.",
       image: abundanceBg,
+      guideImage: guideAbundance,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -224,6 +250,7 @@ const useAffirmations = (language: string) => {
       instruction: "Повторяйте эту аффирмацию медленно, делая акцент на слове 'достоин'. Позвольте себе по-настоящему почувствовать свою ценность.",
       action: "Выполните сегодня один акт заботы о себе, который подчеркивает вашу ценность.",
       image: loveBg,
+      guideImage: guideLove,
       categories: ["love", "wellbeing"]
     },
     {
@@ -232,6 +259,7 @@ const useAffirmations = (language: string) => {
       instruction: "Произносите это, делая глубокие вдохи, представляя, что каждый вдох очищает ваш разум от отвлекающих факторов и сомнений.",
       action: "Установите таймер на 10 минут сосредоточенной работы над самой важной задачей.",
       image: focusBg,
+      guideImage: guideFocus,
       categories: ["success", "wellbeing"]
     },
     {
@@ -240,6 +268,7 @@ const useAffirmations = (language: string) => {
       instruction: "Представьте, что вы отпускаете тяжесть или бремя с каждым выдохом и приветствуете свет с каждым вдохом.",
       action: "Определите одну привычку или шаблон мышления, от которого стоит отказаться сегодня, и предпримите небольшой шаг для его изменения.",
       image: transformationBg,
+      guideImage: guideTransformation,
       categories: ["wellbeing"]
     },
     {
@@ -248,6 +277,7 @@ const useAffirmations = (language: string) => {
       instruction: "Положите ладони вверх на колени, сидя, что символизирует вашу открытость для получения мудрости и руководства.",
       action: "Столкнувшись с решением сегодня, сделайте паузу и попросите руководства перед ответом.",
       image: wisdomBg,
+      guideImage: guideWisdom,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -256,6 +286,7 @@ const useAffirmations = (language: string) => {
       instruction: "Положите руку на сердце и говорите с собой с состраданием, как с любимым другом.",
       action: "Запишите три вещи, которые вы любите в себе, и одну область, над которой вы работаете с состраданием.",
       image: selfLoveBg,
+      guideImage: guideSelfLove,
       categories: ["love", "confidence"]
     },
     {
@@ -264,6 +295,7 @@ const useAffirmations = (language: string) => {
       instruction: "Стойте прямо, твердо упираясь ногами, расправив плечи, и повторяйте эту аффирмацию с силой в голосе.",
       action: "Подумайте о прошлом испытании и определите, как оно помогло вам стать сильнее.",
       image: resilienceBg,
+      guideImage: guideResilience,
       categories: ["confidence", "success"]
     },
     {
@@ -272,6 +304,7 @@ const useAffirmations = (language: string) => {
       instruction: "Говорите это первым делом утром и последним делом вечером, создавая мысленный образ вашего совершенствующегося я.",
       action: "Определите одно небольшое улучшение, которое вы можете сделать сегодня, и обязуйтесь его выполнить.",
       image: growthBg,
+      guideImage: guideGrowth,
       categories: ["success", "wellbeing"]
     }
   ];
@@ -284,6 +317,7 @@ const useAffirmations = (language: string) => {
       instruction: "Di esta afirmación mientras te visualizas habiendo logrado ya tus objetivos. Siente las emociones de éxito y realización.",
       action: "Escribe tres objetivos específicos y lee esta afirmación antes de trabajar en cada uno.",
       image: successBg,
+      guideImage: guideSuccess,
       categories: ["success", "confidence"]
     },
     {
@@ -292,6 +326,7 @@ const useAffirmations = (language: string) => {
       instruction: "Párate frente a un espejo, haz contacto visual contigo mismo y di esto con convicción. Nota cómo tu postura se endereza mientras hablas.",
       action: "Toma una decisión hoy sin buscar la aprobación de otros primero.",
       image: confidenceBg,
+      guideImage: guideConfidence,
       categories: ["confidence"]
     },
     {
@@ -300,6 +335,7 @@ const useAffirmations = (language: string) => {
       instruction: "Coloca tus manos sobre tu corazón mientras dices esto, imaginando una luz dorada que te rodea, representando la abundancia fluyendo en tu vida.",
       action: "Nota y escribe tres ejemplos de abundancia que ya tienes en tu vida.",
       image: abundanceBg,
+      guideImage: guideAbundance,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -308,6 +344,7 @@ const useAffirmations = (language: string) => {
       instruction: "Repite esta afirmación lentamente, poniendo énfasis en 'digno'. Permítete sentirte verdaderamente merecedor mientras lo dices.",
       action: "Realiza un acto de autocuidado hoy que honre tu valor.",
       image: loveBg,
+      guideImage: guideLove,
       categories: ["love", "wellbeing"]
     },
     {
@@ -316,6 +353,7 @@ const useAffirmations = (language: string) => {
       instruction: "Di esto mientras respiras profundamente, imaginando que cada respiración despeja tu mente de distracciones y dudas.",
       action: "Configura un temporizador para 10 minutos de trabajo sin distracciones en tu tarea más importante.",
       image: focusBg,
+      guideImage: guideFocus,
       categories: ["success", "wellbeing"]
     },
     {
@@ -324,6 +362,7 @@ const useAffirmations = (language: string) => {
       instruction: "Visualízate liberando un peso o carga con cada exhalación y recibiendo luz con cada inhalación.",
       action: "Identifica un hábito o patrón de pensamiento para liberar hoy y da un pequeño paso para cambiarlo.",
       image: transformationBg,
+      guideImage: guideTransformation,
       categories: ["wellbeing"]
     },
     {
@@ -332,6 +371,7 @@ const useAffirmations = (language: string) => {
       instruction: "Coloca tus palmas hacia arriba sobre tus rodillas mientras estás sentado, simbolizando tu apertura para recibir sabiduría y orientación.",
       action: "Cuando te enfrentes a una decisión hoy, haz una pausa y pide orientación antes de responder.",
       image: wisdomBg,
+      guideImage: guideWisdom,
       categories: ["abundance", "wellbeing"]
     },
     {
@@ -340,6 +380,7 @@ const useAffirmations = (language: string) => {
       instruction: "Coloca tu mano sobre tu corazón y háblate con compasión, como lo harías con un querido amigo.",
       action: "Escribe tres cosas que amas de ti mismo y un área en la que estás trabajando con compasión.",
       image: selfLoveBg,
+      guideImage: guideSelfLove,
       categories: ["love", "confidence"]
     },
     {
@@ -348,6 +389,7 @@ const useAffirmations = (language: string) => {
       instruction: "Párate erguido con los pies firmemente plantados, hombros hacia atrás, y repite esta afirmación con fuerza en tu voz.",
       action: "Reflexiona sobre un desafío pasado e identifica una forma en que te ayudó a hacerte más fuerte.",
       image: resilienceBg,
+      guideImage: guideResilience,
       categories: ["confidence", "success"]
     },
     {
@@ -356,6 +398,7 @@ const useAffirmations = (language: string) => {
       instruction: "Di esto lo primero por la mañana y lo último por la noche, creando una imagen mental de tu yo que mejora.",
       action: "Identifica una pequeña mejora que puedas hacer hoy y comprométete con ella.",
       image: growthBg,
+      guideImage: guideGrowth,
       categories: ["success", "wellbeing"]
     }
   ];

@@ -15,6 +15,7 @@ interface AffirmationPracticeModalProps {
     text: string;
     instruction: string;
     action: string;
+    guideImage: string;
   };
   isOpen: boolean;
   onClose: () => void;
@@ -88,6 +89,7 @@ export const AffirmationPracticeModal: React.FC<AffirmationPracticeModalProps> =
               <PracticeStepContent 
                 instruction={currentStep.instruction}
                 visualGuide={currentStep.visualGuide}
+                guideImage={affirmation.guideImage}
                 language={language}
               />
             </div>

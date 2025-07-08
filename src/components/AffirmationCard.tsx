@@ -13,6 +13,7 @@ interface Affirmation {
   instruction: string;
   action: string;
   image: string;
+  guideImage: string;
   categories: string[];
 }
 
@@ -76,8 +77,19 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({ affirmation, l
         <CollapsibleContent>
           <CardContent className="pt-4">
             <div className="mb-4">
-              <h3 className="text-cosmic-accent mb-1 text-sm font-medium">{instructionLabel}:</h3>
-              <p className="text-white/80 text-sm">{affirmation.instruction}</p>
+              <h3 className="text-cosmic-accent mb-2 text-sm font-medium">{instructionLabel}:</h3>
+              <div className="flex flex-col md:flex-row gap-4 items-start">
+                <div className="flex-shrink-0">
+                  <img 
+                    src={affirmation.guideImage} 
+                    alt="Visual guide"
+                    className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg border border-cosmic-accent/30" 
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white/80 text-sm leading-relaxed">{affirmation.instruction}</p>
+                </div>
+              </div>
             </div>
             
             <div>
