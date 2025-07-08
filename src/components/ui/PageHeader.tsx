@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import universeLogoImage from '@/assets/universe-logo.png';
 
 interface PageHeaderProps {
   title: string;
@@ -35,9 +36,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           <ArrowLeft size={20} />
         </button>
         
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-serif text-white font-medium">
-          {title}
-        </h1>
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
+          <h1 className="text-lg font-serif text-white font-medium">
+            {title}
+          </h1>
+          <div className="flex items-center space-x-2">
+            <img 
+              src={universeLogoImage} 
+              alt="Universe Logo" 
+              className="w-6 h-6 rounded-full object-cover"
+            />
+            <span className="text-white font-serif text-sm">Asket</span>
+          </div>
+        </div>
         
         {/* Placeholder для симметрии */}
         <div className="w-10 h-10" />
