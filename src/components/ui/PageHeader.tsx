@@ -36,20 +36,18 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           <ArrowLeft size={20} />
         </button>
         
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
-          <h1 className="text-lg font-serif text-white font-medium">
-            {title}
-          </h1>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-800 border border-yellow-400 flex items-center justify-center">
-              <div className="w-1 h-1 bg-green-400 rounded-full"></div>
-            </div>
-            <span className="text-white font-serif text-sm">Asket</span>
-          </div>
-        </div>
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-serif text-white font-medium">
+          {title}
+        </h1>
         
-        {/* Placeholder для симметрии */}
-        <div className="w-10 h-10" />
+        <div className="flex items-center space-x-2">
+          <img 
+            src={universeLogoImage} 
+            alt="Universe Logo" 
+            className="w-6 h-6 rounded-full object-cover"
+          />
+          <span className="text-white font-serif text-sm">Asket</span>
+        </div>
       </div>
     </div>
   );

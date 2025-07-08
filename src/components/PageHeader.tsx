@@ -37,16 +37,17 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           <ArrowLeft size={20} />
         </Button>
         
-        <div className="flex-1 flex items-center justify-center mr-10">
-          <h1 className="text-lg font-serif text-white mr-3">
-            {title}
-          </h1>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-800 border border-yellow-400 flex items-center justify-center">
-              <div className="w-1 h-1 bg-green-400 rounded-full"></div>
-            </div>
-            <span className="text-white font-serif text-sm">Asket</span>
-          </div>
+        <h1 className="text-lg font-serif text-white flex-1 text-center">
+          {title}
+        </h1>
+        
+        <div className="flex items-center space-x-2 shrink-0">
+          <img 
+            src={universeLogoImage} 
+            alt="Universe Logo" 
+            className="w-6 h-6 rounded-full object-cover"
+          />
+          <span className="text-white font-serif text-sm">Asket</span>
         </div>
       </div>
     </div>
