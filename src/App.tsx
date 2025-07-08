@@ -160,9 +160,9 @@ const AuthCallback = () => {
 const App = () => {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
             <AppInitializer />
             <Routes>
               <Route path="/" element={<WelcomePage />} />
@@ -193,9 +193,9 @@ const App = () => {
             <PWAUpdateNotification />
             <Toaster />
             <Sonner />
-          </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </TooltipProvider>
     </ErrorBoundary>
   );
 };

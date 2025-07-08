@@ -22,6 +22,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logger.error('Uncaught error:', error, errorInfo);
+    
+    // Special handling for React hooks errors
+    if (error.message.includes('useState') || error.message.includes('useContext')) {
+      logger.error('React hooks error detected - possible provider issue', { error, errorInfo });
+    }
   }
 
   public render() {
