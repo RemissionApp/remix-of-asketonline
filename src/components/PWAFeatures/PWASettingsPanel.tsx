@@ -21,9 +21,9 @@ export const PWASettingsPanel: React.FC = () => {
 
   const getTitle = () => {
     switch (language) {
-      case 'ru': return 'Настройки PWA';
-      case 'es': return 'Configuración PWA';
-      default: return 'PWA Settings';
+      case 'ru': return 'Настройки приложения';
+      case 'es': return 'Configuración de la aplicación';
+      default: return 'App Settings';
     }
   };
 
@@ -210,10 +210,10 @@ export const PWASettingsPanel: React.FC = () => {
 
           {backgroundSyncStatus.pendingCount > 0 && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => sync.clearPendingTasks()}
-              className="w-full"
+              className="w-full border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               {getClearTasksText()}

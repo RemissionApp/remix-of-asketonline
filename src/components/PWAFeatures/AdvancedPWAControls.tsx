@@ -33,9 +33,9 @@ export const AdvancedPWAControls: React.FC = () => {
 
   const getTitle = () => {
     switch (language) {
-      case 'ru': return 'Расширенные PWA функции';
-      case 'es': return 'Funciones PWA avanzadas';
-      default: return 'Advanced PWA Features';
+      case 'ru': return 'Расширенные функции приложения';
+      case 'es': return 'Funciones avanzadas de la aplicación';
+      default: return 'Advanced App Features';
     }
   };
 
@@ -123,9 +123,10 @@ export const AdvancedPWAControls: React.FC = () => {
                 </span>
               </div>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={handleWakeLockToggle}
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
               >
                 {wakeLock.getStatus().active ? 
                   (language === 'ru' ? 'Разблокировать' : 
@@ -153,9 +154,10 @@ export const AdvancedPWAControls: React.FC = () => {
                 {orientation.getCurrentOrientation()}
               </Badge>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={handleOrientationLock}
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
               >
                 {orientation.getStatus().locked ? 
                   (language === 'ru' ? 'Разблокировать' : 
@@ -189,9 +191,10 @@ export const AdvancedPWAControls: React.FC = () => {
               </Badge>
               {!persistentStorageGranted && (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handleRequestPersistentStorage}
+                  className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
                 >
                   {language === 'ru' ? 'Запросить' : 
                    language === 'es' ? 'Solicitar' : 'Request'}
@@ -216,16 +219,18 @@ export const AdvancedPWAControls: React.FC = () => {
                 {badgeCount}
               </Badge>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => badge.set(badgeCount + 1)}
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
               >
                 +1
               </Button>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => badge.clear()}
+                className="border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
               >
                 {language === 'ru' ? 'Очистить' : 
                  language === 'es' ? 'Limpiar' : 'Clear'}
@@ -272,20 +277,20 @@ export const AdvancedPWAControls: React.FC = () => {
           
           <div className="flex gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handlePreloadResources}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
             >
               <Download className="w-3 h-3" />
               {language === 'ru' ? 'Предзагрузка' : 
                language === 'es' ? 'Precargar' : 'Preload'}
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleClearCache}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 border border-cosmic-accent/30 hover:bg-cosmic-accent/20 text-cosmic-secondary hover:text-white"
             >
               <Trash2 className="w-3 h-3" />
               {language === 'ru' ? 'Очистить' : 
