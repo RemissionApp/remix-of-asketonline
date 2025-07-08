@@ -13,7 +13,7 @@ import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsB
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 interface MainContentProps {
   activePacts: Pact[];
