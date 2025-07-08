@@ -145,15 +145,12 @@ export const PWASettingsPanel: React.FC = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Download className="w-5 h-5" />
-          {getTitle()}
-        </CardTitle>
-        <CardDescription>{getDescription()}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+      <h3 className="text-white font-medium mb-4 font-sans flex items-center gap-2">
+        <Download className="w-5 h-5" />
+        {getTitle()}
+      </h3>
+      <div className="space-y-6">
         {/* Haptic Feedback */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
@@ -223,12 +220,12 @@ export const PWASettingsPanel: React.FC = () => {
             </Button>
           )}
         </div>
-      </CardContent>
+      </div>
       
       {/* Расширенные PWA функции */}
       <div className="mt-4">
         <AdvancedPWAControls />
       </div>
-    </Card>
+    </div>
   );
 };

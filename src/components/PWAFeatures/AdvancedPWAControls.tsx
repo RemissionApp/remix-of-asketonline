@@ -100,18 +100,13 @@ export const AdvancedPWAControls: React.FC = () => {
   const formatSize = (bytes: number) => storage.formatSize(bytes);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Zap className="w-5 h-5" />
-          {getTitle()}
-        </CardTitle>
-        <CardDescription>
-          {getDescription()}
-        </CardDescription>
-      </CardHeader>
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5">
+      <h3 className="text-white font-medium mb-4 font-sans flex items-center gap-2">
+        <Zap className="w-5 h-5" />
+        {getTitle()}
+      </h3>
       
-      <CardContent className="space-y-6">
+      <div className="space-y-6">
         {/* Screen Wake Lock */}
         {wakeLockSupported && (
           <div className="space-y-2">
@@ -298,7 +293,7 @@ export const AdvancedPWAControls: React.FC = () => {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

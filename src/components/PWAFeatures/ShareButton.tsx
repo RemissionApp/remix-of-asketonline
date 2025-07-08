@@ -163,14 +163,16 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   };
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      className={className}
-      onClick={handleShare}
-    >
-      <Share className="w-4 h-4 mr-2" />
-      {getButtonText()}
-    </Button>
+    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+      <Button
+        variant="ghost"
+        size={size}
+        className={`w-full justify-start text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans ${className}`}
+        onClick={handleShare}
+      >
+        <Share className="w-4 h-4 mr-2" />
+        {getButtonText()}
+      </Button>
+    </div>
   );
 };
