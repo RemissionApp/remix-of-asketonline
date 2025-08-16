@@ -50,8 +50,8 @@ const OnboardingPage: React.FC = () => {
 
         if (!isConfirmed) {
           toast({
-            title: 'Подтвердите email',
-            description: 'Пожалуйста, подтвердите ваш email перед продолжением',
+            title: t.auth?.emailRequired || 'Подтвердите email',
+            description: t.auth?.checkEmailAndEnterCode || 'Пожалуйста, подтвердите ваш email перед продолжением',
             variant: 'warning',
           });
           navigate('/login');
@@ -65,7 +65,7 @@ const OnboardingPage: React.FC = () => {
         !loading &&
         (!userProfile ||
           !userProfile.birthDate ||
-          userProfile.name === 'Искатель')
+          userProfile.name === t.auth?.defaultUserName || 'Искатель')
       ) {
         console.log('Profile not completed, redirecting to profile setup');
         navigate('/profile-setup');

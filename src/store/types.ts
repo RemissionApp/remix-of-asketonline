@@ -118,4 +118,5 @@ export interface AppState {
   setSoundEnabled: (enabled: boolean) => void;
   setSoundVolume: (volume: number) => void;
   loadSoundSettings: () => void;
+  initializeSettings: () => void;
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { UserProfile } from '@/types';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface VoiceGreetingProps {
   userProfile: UserProfile | null;
@@ -18,8 +19,9 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
     useTextToSpeech();
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
-  // Получаем имя пользователя, по умолчанию "искатель"
-  const userName = userProfile?.name || 'искатель';
+  // Получаем имя пользователя с учетом языка
+  const { t } = useTranslations();
+  const userName = userProfile?.name || t.auth.defaultUserName;
 
   // Останавливаем воспроизведение при размонтировании компонента
   useEffect(() => {
@@ -98,19 +100,7 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
           onClick={handleToggleAudio}
           disabled={isGenerating}
           className="p-2 rounded-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 transition-colors border border-cosmic-accent/30"
-          title={
-            isPlaying
-              ? language === 'ru'
-                ? 'Остановить'
-                : language === 'es'
-                  ? 'Detener'
-                  : 'Stop'
-              : language === 'ru'
-                ? 'Воспроизвести приветствие'
-                : language === 'es'
-                  ? 'Reproducir saludo'
-                  : 'Play greeting'
-          }
+          title={isPlaying ? t.auth.stop : t.auth.playGreeting}
         >
           {isGenerating ? (
             <Loader2 size={20} className="text-cosmic-accent animate-spin" />
@@ -123,11 +113,7 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       </div>
 
       <p className="text-cosmic-secondary text-sm max-w-md mx-auto">
-        {language === 'ru'
-          ? 'Нажмите на значок звука для воспроизведения голосового приветствия'
-          : language === 'es'
-            ? 'Haz clic en el icono de sonido para reproducir el saludo de voz'
-            : 'Click the sound icon to play voice greeting'}
+        {t.auth.clickForAudio}
       </p>
     </div>
   );

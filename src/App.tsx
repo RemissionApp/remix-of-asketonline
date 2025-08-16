@@ -12,6 +12,7 @@ import {
 } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { createLogger } from '@/utils/loggerUtils';
+import { useTranslations } from '@/hooks/useTranslations';
 
 import { useAppStore } from './store/useAppStore';
 import { supabase, cleanupAuthState } from './lib/supabase';
@@ -49,10 +50,18 @@ const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
 
   try {
-    const { checkOnboardingStatus, user, loadUserProfile, setUser } =
-      useAppStore();
+    const { 
+      checkOnboardingStatus, 
+      user, 
+      loadUserProfile, 
+      setUser,
+      initializeSettings 
+    } = useAppStore();
 
     useEffect(() => {
+      // Инициализируем настройки из localStorage
+      initializeSettings();
+      
       // Проверяем состояние onboarding при загрузке приложения
       checkOnboardingStatus();
 
@@ -101,7 +110,7 @@ const AppInitializer = () => {
       return () => {
         subscription.unsubscribe();
       };
-    }, [checkOnboardingStatus, loadUserProfile, setUser]);
+    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings]);
 
     return null;
   } catch (error) {
@@ -154,11 +163,13 @@ const AuthCallback = () => {
     handleAuthCallback();
   }, [location, navigate, updateUserProfile, user, loadUserProfile]);
 
+  const { t } = useTranslations();
+  
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
         <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-cosmic-secondary">Выполняется вход...</p>
+        <p className="text-cosmic-secondary">{t.auth.signingIn}</p>
       </div>
     </div>
   );

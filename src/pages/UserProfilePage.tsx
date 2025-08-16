@@ -6,9 +6,11 @@ import UserProfileForm from '@/components/UserProfileForm';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslations();
   const {
     userProfile,
     user,
@@ -49,8 +51,8 @@ const UserProfilePage: React.FC = () => {
 
         if (!isConfirmed) {
           toast({
-            title: 'Подтвердите email',
-            description: 'Пожалуйста, подтвердите ваш email перед продолжением',
+            title: t.auth.emailRequired,
+            description: t.auth.checkEmailAndEnterCode,
             variant: 'warning',
           });
           navigate('/login');
@@ -61,7 +63,7 @@ const UserProfilePage: React.FC = () => {
         if (
           userProfile &&
           userProfile.name &&
-          userProfile.name !== 'Искатель' &&
+          userProfile.name !== t.auth.defaultUserName &&
           userProfile.birthDate
         ) {
           // Если пользователь еще не прошел onboarding, отправляем его туда
@@ -106,7 +108,7 @@ const UserProfilePage: React.FC = () => {
         <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-cosmic-secondary">Загрузка профиля...</p>
+            <p className="text-cosmic-secondary">{t.auth.processing}</p>
           </div>
         </div>
       </div>

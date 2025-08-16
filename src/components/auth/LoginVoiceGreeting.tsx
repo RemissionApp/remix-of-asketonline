@@ -7,6 +7,7 @@ import React, {
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 import { createLogger } from '@/utils/loggerUtils';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export interface LoginVoiceGreetingRef {
   playGreeting: () => void;
@@ -18,8 +19,9 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>(
     const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } =
       useOptimizedTextToSpeech();
     const [userInteracted, setUserInteracted] = useState(false);
+    const { t } = useTranslations();
 
-    const greetingText = 'Приветствую тебя в Asket';
+    const greetingText = t.auth.voiceGreeting;
 
     // Expose playGreeting method through ref
     useImperativeHandle(ref, () => ({
@@ -115,10 +117,10 @@ export const LoginVoiceGreeting = forwardRef<LoginVoiceGreetingRef>(
           }`}
           title={
             !userInteracted
-              ? 'Нажмите для активации звука'
+              ? t.auth.clickForAudio
               : isPlaying
-                ? 'Остановить'
-                : 'Воспроизвести приветствие'
+                ? t.auth.stop
+                : t.auth.playGreeting
           }
         >
           {isGenerating ? (

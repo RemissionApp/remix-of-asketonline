@@ -83,4 +83,28 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       }
     }
   },
+
+  // Initialize settings from localStorage
+  initializeSettings: () => {
+    // Load language
+    const storedLanguage = localStorage.getItem('language');
+    if (storedLanguage && ['ru', 'en', 'es'].includes(storedLanguage)) {
+      set({ language: storedLanguage as any });
+    }
+
+    // Load sound settings
+    const storedEnabled = localStorage.getItem('soundEnabled');
+    const storedVolume = localStorage.getItem('soundVolume');
+
+    if (storedEnabled !== null) {
+      set({ soundEnabled: storedEnabled === 'true' });
+    }
+
+    if (storedVolume !== null) {
+      const volume = parseFloat(storedVolume);
+      if (!isNaN(volume) && volume >= 0 && volume <= 1) {
+        set({ soundVolume: volume });
+      }
+    }
+  },
 }));

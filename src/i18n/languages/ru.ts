@@ -60,6 +60,16 @@ export const ruTranslations: Translations = {
     welcomeToAsket: 'Добро пожаловать в Аскет!',
     emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
     verificationError: 'Произошла ошибка при проверке кода',
+    // Voice greeting
+    voiceGreeting: 'Приветствую тебя в Asket',
+    clickForAudio: 'Нажмите для активации звука',
+    stop: 'Остановить',
+    playGreeting: 'Воспроизвести приветствие',
+    // Loading states
+    processing: 'Обработка...',
+    signingIn: 'Выполняется вход...',
+    // Default user names
+    defaultUserName: 'Искатель',
   },
   main: {
     title: 'Главная',

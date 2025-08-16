@@ -25,7 +25,10 @@ export const createUISlice: StateCreator<AppState, [], [], UISlice> = (
   language: 'ru',
   dailyQuote: '',
 
-  setLanguage: language => set({ language }),
+  setLanguage: language => {
+    set({ language });
+    localStorage.setItem('language', language);
+  },
   setOnboardingComplete: completed => set({ onboardingComplete: completed }),
   setActiveScreen: screen => set({ activeScreen: screen }),
   setDailyQuote: quote => set({ dailyQuote: quote }),

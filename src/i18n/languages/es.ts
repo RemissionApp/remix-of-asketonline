@@ -61,6 +61,16 @@ export const esTranslations: Translations = {
     welcomeToAsket: '¡Bienvenido a Asket!',
     emailVerifiedSignIn: 'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
     verificationError: 'Ocurrió un error al verificar el código',
+    // Voice greeting
+    voiceGreeting: 'Bienvenido a Asket',
+    clickForAudio: 'Haz clic para activar el sonido',
+    stop: 'Detener',
+    playGreeting: 'Reproducir saludo',
+    // Loading states
+    processing: 'Procesando...',
+    signingIn: 'Iniciando sesión...',
+    // Default user names
+    defaultUserName: 'Buscador',
   },
   main: {
     title: 'Principal',

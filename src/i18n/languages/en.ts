@@ -60,6 +60,16 @@ export const enTranslations: Translations = {
     welcomeToAsket: 'Welcome to Asket!',
     emailVerifiedSignIn: 'Your email has been successfully verified. Now sign in with your credentials.',
     verificationError: 'An error occurred while verifying the code',
+    // Voice greeting
+    voiceGreeting: 'Welcome to Asket',
+    clickForAudio: 'Click to activate sound',
+    stop: 'Stop',
+    playGreeting: 'Play greeting',
+    // Loading states
+    processing: 'Processing...',
+    signingIn: 'Signing in...',
+    // Default user names
+    defaultUserName: 'Seeker',
   },
   main: {
     title: 'Main',
