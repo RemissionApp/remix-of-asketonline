@@ -30,12 +30,8 @@ const UserProfilePage: React.FC = () => {
     authCheckRef.current = true;
 
     try {
-      // Check current session
-      const { data: sessionData } = await supabase.auth.getSession();
-      const sessionUser = sessionData?.session?.user;
-
-      // If no session found, redirect to login
-      if (!sessionUser) {
+      // If user is not set, just redirect to login
+      if (!user) {
         navigate('/login');
         return;
       }
@@ -53,18 +49,20 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      // Check if profile is complete using more reliable criteria
-      const isProfileComplete = userProfile && 
-        userProfile.name && 
-        userProfile.name !== 'Искатель' && // Use hardcoded default to avoid translation issues
-        userProfile.name.trim() !== '' &&
-        userProfile.birthDate;
+      // Only check profile completeness if we have userProfile data
+      if (userProfile) {
+        // Check if profile is complete using more reliable criteria
+        const isProfileComplete = userProfile.name && 
+          userProfile.name !== 'Искатель' && // Use hardcoded default to avoid translation issues
+          userProfile.name.trim() !== '' &&
+          userProfile.birthDate;
 
-      if (isProfileComplete) {
-        if (!onboardingComplete) {
-          navigate('/onboarding');
-        } else {
-          navigate('/main');
+        if (isProfileComplete) {
+          if (!onboardingComplete) {
+            navigate('/onboarding');
+          } else {
+            navigate('/main');
+          }
         }
       }
 
@@ -75,14 +73,18 @@ const UserProfilePage: React.FC = () => {
     } finally {
       authCheckRef.current = false;
     }
-  }, [navigate, userProfile, onboardingComplete, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
+  }, [navigate, user, userProfile, onboardingComplete, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
 
-  // Check authentication when conditions are ready
+  // Check authentication when conditions are ready (with debouncing)
   useEffect(() => {
-    if (!loading && !authCheckRef.current) {
-      checkAuth();
-    }
-  }, [loading, checkAuth]);
+    const timer = setTimeout(() => {
+      if (!loading && !authCheckRef.current && user !== undefined) {
+        checkAuth();
+      }
+    }, 100); // Small debounce to prevent rapid calls
+
+    return () => clearTimeout(timer);
+  }, [loading, checkAuth, user]);
 
   // Показываем загрузку, пока проверяем статус аутентификации
   if (loading || authChecking) {

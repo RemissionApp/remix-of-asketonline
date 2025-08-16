@@ -66,6 +66,7 @@ export interface AuthSlice {
   user: AuthUser | null;
   loading: boolean;
   emailConfirmed: boolean;
+  isLoadingProfile: boolean;
   setUser: (user: AuthUser | null) => void;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<void>;
@@ -86,6 +87,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   user: null,
   loading: false,
   emailConfirmed: false,
+  isLoadingProfile: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
 
@@ -502,10 +504,17 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   },
 
   loadUserProfile: async () => {
-    const { user } = get();
+    const { user, isLoadingProfile } = get();
 
     if (!user) return;
 
+    // Prevent multiple simultaneous calls (semaphore)
+    if (isLoadingProfile) {
+      logger.debug('Profile loading already in progress, skipping');
+      return;
+    }
+
+    set({ loading: true, isLoadingProfile: true });
     logger.debug('Loading user profile', { userId: user.id });
 
     try {
@@ -633,6 +642,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           achievements: mappedAchievements,
           activeMission,
         },
+        loading: false,
+        isLoadingProfile: false,
       });
 
       logger.debug('User profile loaded successfully');
@@ -657,6 +668,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       }
     } catch (error) {
       logger.error('Error loading user profile', error);
+      set({ loading: false, isLoadingProfile: false });
     }
   },
 });

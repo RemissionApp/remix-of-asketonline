@@ -33,6 +33,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   user: null,
   loading: false,
   emailConfirmed: false,
+  isLoadingProfile: false,
 
   // Добавляем новый метод для установки пользователя
   setUser: user => set({ user }),
