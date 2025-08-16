@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 import { EnergyCircle } from '@/components/EnergyCircle';
@@ -8,6 +8,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { PactNavigation } from '@/components/PactNavigation';
 import { CountdownTimer } from '@/components/CountdownTimer';
+import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -15,7 +16,6 @@ interface PactDisplayProps {
   currentPact: Pact | null;
   handlePrevPact: () => void;
   handleNextPact: () => void;
-  handleBreakAscesis: () => void;
   getAscesisPrefix: () => string;
   formatRejection: (text: string) => string;
 }
@@ -26,13 +26,19 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   currentPact,
   handlePrevPact,
   handleNextPact,
-  handleBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
   const { t } = useTranslations();
-  const { language } = useAppStore();
+  const { language, breakAscesis } = useAppStore();
+  const [showBreakDialog, setShowBreakDialog] = useState(false);
   
+  const handleBreakAscesis = async (reason?: string) => {
+    if (!currentPact) return;
+    await breakAscesis(currentPact.id, reason);
+    setShowBreakDialog(false);
+  };
+
   if (!currentPact) return null;
   
   const activeDaysCompleted = currentPact.days?.filter(day => day.completed).length || 0;
@@ -79,12 +85,20 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
             className="mt-4" 
             variant="destructive"
             size="sm"
-            onClick={handleBreakAscesis}
+            onClick={() => setShowBreakDialog(true)}
           >
             {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
           </CosmicButton>
         </div>
       </EnergyCircle>
+      
+      {/* Break Ascesis Dialog */}
+      <BreakAscesisDialog
+        pact={currentPact}
+        isOpen={showBreakDialog}
+        onClose={() => setShowBreakDialog(false)}
+        onConfirm={handleBreakAscesis}
+      />
     </div>
   );
 };

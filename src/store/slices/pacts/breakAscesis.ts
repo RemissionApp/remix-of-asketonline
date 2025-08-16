@@ -3,6 +3,7 @@ import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import { calculateBreakPenalty, getCompletedDaysCount } from '@/utils/pactUtils';
 
 export interface BreakAscesisSlice {
   breakAscesis: (pactId: string, reason?: string) => Promise<void>;
@@ -38,17 +39,14 @@ export const createBreakAscesisSlice = (
 
       // Вычисляем штраф в зависимости от прогресса
       const completedDays = pactData.pact_days?.filter((day: any) => day.completed).length || 0;
-      const basePenalty = 100;
-      const progressPenalty = Math.floor(completedDays * 10); // 10 очков за каждый пройденный день
-      const calculatedPenalty = basePenalty + progressPenalty;
+      const calculatedPenalty = calculateBreakPenalty(completedDays, pactData.duration || 1);
 
       // Update pact status to failed with reason
       const { error: pactError } = await supabase
         .from('pacts')
         .update({ 
           status: 'failed',
-          // Сохраняем причину в поле reward (можно добавить отдельное поле в будущем)
-          reward: reason ? `Причина прерывания: ${reason}` : null
+          break_reason: reason || null
         })
         .eq('id', pactId);
       
@@ -77,10 +75,10 @@ export const createBreakAscesisSlice = (
             ? "Ascesis interrumpida"
             : "Ascesis broken",
         description: language === 'ru' 
-          ? `Вы потеряли ${calculatedPenalty} энергетических очков (${basePenalty} базовый штраф + ${progressPenalty} за прогресс)` 
+          ? `Вы потеряли ${calculatedPenalty} энергетических очков` 
           : language === 'es'
-            ? `Has perdido ${calculatedPenalty} puntos de energía (${basePenalty} penalización base + ${progressPenalty} por progreso)`
-            : `You lost ${calculatedPenalty} energy points (${basePenalty} base penalty + ${progressPenalty} for progress)`,
+            ? `Has perdido ${calculatedPenalty} puntos de energía`
+            : `You lost ${calculatedPenalty} energy points`,
         variant: "destructive"
       });
     } catch (error: any) {

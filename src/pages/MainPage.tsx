@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { TopBar } from '@/components/TopBar';
@@ -21,9 +20,7 @@ const MainPage: React.FC = () => {
     user,
     loadUserProfile,
     userProfile,
-    setActiveScreen,
-    // Get the breakAscesis function from the store
-    breakAscesis
+    setActiveScreen
   } = useAppStore();
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
@@ -88,29 +85,6 @@ const MainPage: React.FC = () => {
     }
   };
   
-  // Handler for breaking ascesis
-  const [breakDialogOpen, setBreakDialogOpen] = React.useState(false);
-  
-  const handleBreakAscesis = () => {
-    if (currentPact) {
-      setBreakDialogOpen(true);
-    }
-  };
-
-  const confirmBreakAscesis = async (reason?: string) => {
-    if (currentPact) {
-      await breakAscesis(currentPact.id, reason);
-      
-      // If this was the only pact, reset the index
-      if (activePacts.length === 1) {
-        setCurrentPactIndex(0);
-      }
-      // If we're at the last pact and it's being removed, go back one
-      else if (currentPactIndex === activePacts.length - 1) {
-        setCurrentPactIndex(currentPactIndex - 1);
-      }
-    }
-  };
   
   // Empty string for dailyQuote since we're removing QuoteDisplay
   const dailyQuote = '';
@@ -146,23 +120,12 @@ const MainPage: React.FC = () => {
         showEnergyEffect={showEnergyEffect}
         handlePrevPact={handlePrevPact}
         handleNextPact={handleNextPact}
-        handleBreakAscesis={handleBreakAscesis}
         getAscesisPrefix={getAscesisPrefix}
         formatRejection={formatRejection}
       />
       
       {/* Mission Reminder */}
       <MissionReminder />
-      
-      {/* Break Ascesis Dialog */}
-      {currentPact && (
-        <BreakAscesisDialog
-          pact={currentPact}
-          isOpen={breakDialogOpen}
-          onClose={() => setBreakDialogOpen(false)}
-          onConfirm={confirmBreakAscesis}
-        />
-      )}
       
       {/* Bottom navigation */}
       <BottomNavigation />

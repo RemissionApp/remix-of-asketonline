@@ -25,6 +25,7 @@ import {
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
 import { Pact } from '@/types';
+import { getPactBreakPenalty, formatPenaltyDescription } from '@/utils/pactUtils';
 
 interface BreakAscesisDialogProps {
   pact: Pact;
@@ -65,17 +66,15 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   };
 
   const getConsequences = () => {
-    const basePenalty = 100;
-    const completedDays = pact.duration - (userProfile?.totalDays || 0); // Примерная логика
-    const progressPenalty = Math.floor(completedDays * 10);
-    const totalPenalty = basePenalty + progressPenalty;
+    const penalty = getPactBreakPenalty(pact);
+    const penaltyDescription = formatPenaltyDescription(penalty, language);
 
     switch (language) {
       case 'ru':
         return {
           title: 'Последствия прерывания аскезы:',
           items: [
-            `Потеря ${totalPenalty} энергетических очков`,
+            penaltyDescription,
             'Сброс прогресса текущей аскезы',
             'Снижение ранга духовного развития',
             'Негативное влияние на карму',
@@ -86,7 +85,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
         return {
           title: 'Consecuencias de interrumpir la ascesis:',
           items: [
-            `Pérdida de ${totalPenalty} puntos de energía`,
+            penaltyDescription,
             'Reinicio del progreso de la ascesis actual',
             'Reducción del rango de desarrollo espiritual',
             'Impacto negativo en el karma',
@@ -97,7 +96,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
         return {
           title: 'Consequences of breaking ascesis:',
           items: [
-            `Loss of ${totalPenalty} energy points`,
+            penaltyDescription,
             'Reset of current ascesis progress',
             'Spiritual rank reduction',
             'Negative karma impact',

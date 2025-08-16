@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -242,6 +242,7 @@ export type Database = {
       }
       pacts: {
         Row: {
+          break_reason: string | null
           created_at: string
           duration: number
           id: string
@@ -252,6 +253,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          break_reason?: string | null
           created_at?: string
           duration: number
           id?: string
@@ -262,6 +264,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          break_reason?: string | null
           created_at?: string
           duration?: number
           id?: string
@@ -388,6 +391,11 @@ export type Database = {
           created_at: string
           id: string
           is_pro: boolean
+          original_transaction_id: string | null
+          platform: string | null
+          product_id: string | null
+          revenuecat_user_id: string | null
+          store_transaction_id: string | null
           subscription_end: string | null
           subscription_start: string | null
           updated_at: string
@@ -397,6 +405,11 @@ export type Database = {
           created_at?: string
           id?: string
           is_pro?: boolean
+          original_transaction_id?: string | null
+          platform?: string | null
+          product_id?: string | null
+          revenuecat_user_id?: string | null
+          store_transaction_id?: string | null
           subscription_end?: string | null
           subscription_start?: string | null
           updated_at?: string
@@ -406,6 +419,11 @@ export type Database = {
           created_at?: string
           id?: string
           is_pro?: boolean
+          original_transaction_id?: string | null
+          platform?: string | null
+          product_id?: string | null
+          revenuecat_user_id?: string | null
+          store_transaction_id?: string | null
           subscription_end?: string | null
           subscription_start?: string | null
           updated_at?: string

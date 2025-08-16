@@ -24,7 +24,6 @@ interface MainContentProps {
   showEnergyEffect: boolean;
   handlePrevPact: () => void;
   handleNextPact: () => void;
-  handleBreakAscesis: () => void;
   getAscesisPrefix: () => string;
   formatRejection: (text: string) => string;
 }
@@ -38,7 +37,6 @@ export const MainContent: React.FC<MainContentProps> = ({
   showEnergyEffect,
   handlePrevPact,
   handleNextPact,
-  handleBreakAscesis,
   getAscesisPrefix,
   formatRejection
 }) => {
@@ -57,7 +55,6 @@ export const MainContent: React.FC<MainContentProps> = ({
             currentPact={currentPact}
             handlePrevPact={handlePrevPact}
             handleNextPact={handleNextPact}
-            handleBreakAscesis={handleBreakAscesis}
             getAscesisPrefix={getAscesisPrefix}
             formatRejection={formatRejection}
           />
