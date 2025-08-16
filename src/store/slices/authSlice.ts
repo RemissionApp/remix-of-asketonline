@@ -21,6 +21,8 @@ export interface AuthSlice {
     profileData: Partial<import('@/types').UserProfile>
   ) => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
+  sendOtpCode: (email: string) => Promise<boolean>;
+  verifyOtpCode: (email: string, code: string) => Promise<boolean>;
 }
 
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
@@ -206,6 +208,97 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       return isConfirmed;
     } catch (error) {
       logger.error('Error checking email confirmation', error);
+      return false;
+    }
+  },
+
+  sendOtpCode: async (email: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-otp-email', {
+        body: { email }
+      });
+
+      if (error) {
+        console.error('Error sending OTP:', error);
+        toast({
+          title: "Ошибка",
+          description: "Не удалось отправить код подтверждения",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!data.success) {
+        console.error('OTP send failed:', data.error);
+        toast({
+          title: "Ошибка",
+          description: data.error || "Не удалось отправить код",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      toast({
+        title: "Код отправлен",
+        description: "Проверьте свою почту и введите код подтверждения",
+      });
+      return true;
+    } catch (error) {
+      console.error('Error in sendOtpCode:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось отправить код подтверждения",
+        variant: "destructive",
+      });
+      return false;
+    }
+  },
+
+  verifyOtpCode: async (email: string, code: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-otp', {
+        body: { email, code }
+      });
+
+      if (error) {
+        console.error('Error verifying OTP:', error);
+        toast({
+          title: "Ошибка",
+          description: "Не удалось проверить код",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!data.success) {
+        console.error('OTP verification failed:', data.error);
+        toast({
+          title: "Неверный код",
+          description: data.error || "Проверьте правильность введенного кода",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      toast({
+        title: "Email подтвержден",
+        description: "Ваш email успешно подтвержден",
+      });
+      
+      // Update local state
+      set((state) => ({
+        ...state,
+        emailConfirmed: true
+      }));
+      
+      return true;
+    } catch (error) {
+      console.error('Error in verifyOtpCode:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось проверить код",
+        variant: "destructive",
+      });
       return false;
     }
   },

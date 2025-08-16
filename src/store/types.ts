@@ -74,6 +74,8 @@ export interface AppState {
   signOut: () => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
   setUser: (user: User | null) => void;
+  sendOtpCode: (email: string) => Promise<boolean>;
+  verifyOtpCode: (email: string, code: string) => Promise<boolean>;
 
   // Data loading methods
   loadUserProfile: () => Promise<void>;

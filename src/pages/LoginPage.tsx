@@ -8,6 +8,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -27,6 +28,8 @@ const LoginPage: React.FC = () => {
     userProfile,
     checkEmailConfirmation,
     emailConfirmed,
+    sendOtpCode,
+    verifyOtpCode,
   } = useAppStore();
   const { t } = useTranslations();
   const voiceGreetingRef = useRef<LoginVoiceGreetingRef>(null);
@@ -36,6 +39,9 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('login');
   const [emailSent, setEmailSent] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
 
   // Эффект для проверки, вошел ли пользователь уже в систему
@@ -150,11 +156,43 @@ const LoginPage: React.FC = () => {
     cleanupAuthState();
 
     await signUp(email, password);
-    setEmailSent(true); // Указываем, что письмо с подтверждением могло быть отправлено
+    // Send OTP code instead of email confirmation
+    const otpSent = await sendOtpCode(email);
+    if (otpSent) {
+      setOtpSent(true);
+    }
+  };
 
-    // Перенаправляем на настройку профиля, если подтверждение email не требуется
-    if (user) {
-      navigate('/profile-setup');
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!otpCode || otpCode.length !== 6) {
+      toast({
+        title: "Ошибка",
+        description: "Введите 6-значный код",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setVerifyingOtp(true);
+    try {
+      const verified = await verifyOtpCode(email, otpCode);
+      if (verified) {
+        // Navigate to profile setup or main page
+        navigate('/profile-setup');
+      }
+    } catch (error) {
+      console.error('OTP verification error:', error);
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    const sent = await sendOtpCode(email);
+    if (sent) {
+      setOtpCode("");
     }
   };
 
@@ -235,7 +273,77 @@ const LoginPage: React.FC = () => {
           Asket
         </h1>
 
-        {emailSent ? (
+        {otpSent ? (
+          <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="text-center mb-6">
+                <h2 className="text-xl text-white mb-4">Введите код подтверждения</h2>
+                <p className="text-cosmic-secondary">
+                  Мы отправили 6-значный код на {email}
+                </p>
+              </div>
+              
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="otp-code" className="text-white">Код подтверждения</Label>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      value={otpCode}
+                      onChange={setOtpCode}
+                      maxLength={6}
+                      containerClassName="group flex items-center has-[:disabled]:opacity-30"
+                      className="disabled:cursor-not-allowed"
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={1} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={2} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={4} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={5} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                </div>
+                
+                <CosmicButton 
+                  type="submit" 
+                  className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
+                  disabled={verifyingOtp || otpCode.length !== 6}
+                >
+                  {verifyingOtp ? "Проверяем..." : "Подтвердить"}
+                </CosmicButton>
+                
+                <div className="text-center space-y-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleResendOtp}
+                    className="text-sm text-cosmic-accent hover:text-cosmic-accent/80"
+                  >
+                    Отправить код повторно
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtpCode("");
+                      setActiveTab("signup");
+                    }}
+                    className="text-sm text-cosmic-secondary hover:text-white block w-full"
+                  >
+                    ← Назад к регистрации
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        ) : emailSent ? (
           <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
             <CardContent className="pt-6 text-center">
               <h2 className="text-xl text-white mb-4">Проверьте вашу почту</h2>
