@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,85 +20,68 @@ const UserProfilePage: React.FC = () => {
     checkEmailConfirmation,
   } = useAppStore();
   const [authChecking, setAuthChecking] = useState(true);
+  const authCheckRef = useRef(false);
 
-  // Проверяем, вошел ли пользователь в систему, существуют ли данные профиля и подтвержден ли email
-  useEffect(() => {
-    // Добавлен console.log для отладки потока аутентификации
-    console.log('Profile setup: user status', {
-      user,
-      userProfile,
-      loading,
-      onboardingComplete,
-      emailConfirmed,
-    });
+  const checkAuth = useCallback(async () => {
+    // Prevent multiple simultaneous auth checks
+    if (authCheckRef.current) {
+      return;
+    }
+    authCheckRef.current = true;
 
-    const checkAuth = async () => {
-      try {
-        // Сначала проверяем текущую сессию
-        const { data: sessionData } = await supabase.auth.getSession();
-        const sessionUser = sessionData?.session?.user;
+    try {
+      // Check current session
+      const { data: sessionData } = await supabase.auth.getSession();
+      const sessionUser = sessionData?.session?.user;
 
-        // Если сессия не найдена, перенаправляем на вход
-        if (!sessionUser) {
-          console.log('Пользователь не найден, перенаправляем на вход');
-          navigate('/login');
-          return;
-        }
-
-        // Проверяем, подтвержден ли email
-        const isConfirmed = await checkEmailConfirmation();
-        console.log('Статус подтверждения email:', isConfirmed);
-
-        if (!isConfirmed) {
-          toast({
-            title: t.auth.emailRequired,
-            description: t.auth.checkEmailAndEnterCode,
-            variant: 'warning',
-          });
-          navigate('/login');
-          return;
-        }
-
-        // Перенаправляем на onboarding или main только если пользователь заполнил профиль
-        if (
-          userProfile &&
-          userProfile.name &&
-          userProfile.name !== t.auth.defaultUserName &&
-          userProfile.birthDate
-        ) {
-          // Если пользователь еще не прошел onboarding, отправляем его туда
-          if (!onboardingComplete) {
-            console.log('Профиль заполнен, перенаправляем на onboarding');
-            navigate('/onboarding');
-          } else {
-            // Если onboarding уже пройден, перенаправляем на main
-            console.log(
-              'Профиль и onboarding завершены, перенаправляем на main'
-            );
-            navigate('/main');
-          }
-        }
-
-        setAuthChecking(false);
-      } catch (error) {
-        console.error('Ошибка при проверке аутентификации:', error);
-        setAuthChecking(false);
+      // If no session found, redirect to login
+      if (!sessionUser) {
+        navigate('/login');
+        return;
       }
-    };
 
-    // Если данные еще загружаются, ждем завершения загрузки
-    if (!loading) {
+      // Check if email is confirmed
+      const isConfirmed = await checkEmailConfirmation();
+
+      if (!isConfirmed) {
+        toast({
+          title: t.auth.emailRequired,
+          description: t.auth.checkEmailAndEnterCode,
+          variant: 'warning',
+        });
+        navigate('/login');
+        return;
+      }
+
+      // Redirect to onboarding or main only if user has completed profile
+      if (
+        userProfile &&
+        userProfile.name &&
+        userProfile.name !== t.auth.defaultUserName &&
+        userProfile.birthDate
+      ) {
+        if (!onboardingComplete) {
+          navigate('/onboarding');
+        } else {
+          navigate('/main');
+        }
+      }
+
+      setAuthChecking(false);
+    } catch (error) {
+      console.error('Authentication check error:', error);
+      setAuthChecking(false);
+    } finally {
+      authCheckRef.current = false;
+    }
+  }, [navigate, userProfile, onboardingComplete, t.auth.emailRequired, t.auth.checkEmailAndEnterCode, t.auth.defaultUserName, checkEmailConfirmation]);
+
+  // Check authentication when conditions are ready
+  useEffect(() => {
+    if (!loading && !authCheckRef.current) {
       checkAuth();
     }
-  }, [
-    userProfile,
-    user,
-    loading,
-    navigate,
-    onboardingComplete,
-    emailConfirmed,
-    checkEmailConfirmation,
-  ]);
+  }, [loading, checkAuth]);
 
   // Показываем загрузку, пока проверяем статус аутентификации
   if (loading || authChecking) {
