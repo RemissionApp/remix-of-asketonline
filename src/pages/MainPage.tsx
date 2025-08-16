@@ -68,23 +68,24 @@ const MainPage: React.FC = () => {
     handleAsyncError,
   ]);
 
-  // Filter active pacts
+  // Get all pacts (including failed ones for the slider)
+  const allPacts = pacts || [];
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
 
-  // Get current pact
-  const currentPact = activePacts[currentPactIndex] || null;
+  // Get current pact from all pacts for slider
+  const currentPact = allPacts[currentPactIndex] || null;
 
-  // Change handlers for the carousel
+  // Change handlers for the carousel - now works with all pacts
   const handlePrevPact = () => {
     if (currentPactIndex > 0) {
       setCurrentPactIndex(currentPactIndex - 1);
     } else {
-      setCurrentPactIndex(activePacts.length - 1);
+      setCurrentPactIndex(allPacts.length - 1);
     }
   };
 
   const handleNextPact = () => {
-    if (currentPactIndex < activePacts.length - 1) {
+    if (currentPactIndex < allPacts.length - 1) {
       setCurrentPactIndex(currentPactIndex + 1);
     } else {
       setCurrentPactIndex(0);
@@ -118,6 +119,7 @@ const MainPage: React.FC = () => {
       {/* Main content */}
       <MainContent
         activePacts={activePacts}
+        allPacts={allPacts}
         currentPactIndex={currentPactIndex}
         currentPact={currentPact}
         dailyQuote={dailyQuote}

@@ -16,6 +16,7 @@ import { createLogger } from '@/utils/logger';
 
 interface MainContentProps {
   activePacts: Pact[];
+  allPacts: Pact[];
   currentPactIndex: number;
   currentPact: Pact | null;
   dailyQuote: string;
@@ -29,6 +30,7 @@ interface MainContentProps {
 
 export const MainContent: React.FC<MainContentProps> = ({
   activePacts,
+  allPacts,
   currentPactIndex,
   currentPact,
   dailyQuote,
@@ -52,9 +54,10 @@ export const MainContent: React.FC<MainContentProps> = ({
       <div
         className={`w-full ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
       >
-        {activePacts.length > 0 && currentPact ? (
+        {allPacts.length > 0 && currentPact ? (
           <PactDisplay
             activePacts={activePacts}
+            allPacts={allPacts}
             currentPactIndex={currentPactIndex}
             currentPact={currentPact}
             handlePrevPact={handlePrevPact}

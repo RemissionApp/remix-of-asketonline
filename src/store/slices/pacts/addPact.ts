@@ -36,6 +36,7 @@ export const createAddPactSlice = (
           duration: pact.duration,
           reward: pact.reward,
           status: 'active',
+          type: pact.type || 'spiritual',
         })
         .select()
         .single();

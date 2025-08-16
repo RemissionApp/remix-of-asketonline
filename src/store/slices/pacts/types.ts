@@ -8,4 +8,5 @@ export interface AddPactParams {
   title: string;
   duration: number;
   reward?: string;
+  type?: string;
 }

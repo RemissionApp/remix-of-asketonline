@@ -7,6 +7,7 @@ interface EnergyCircleProps {
   children?: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  style?: React.CSSProperties;
 }
 
 export const EnergyCircle: React.FC<EnergyCircleProps> = ({
@@ -15,6 +16,7 @@ export const EnergyCircle: React.FC<EnergyCircleProps> = ({
   children,
   className,
   onClick,
+  style,
 }) => {
   const sizeClasses = {
     sm: 'w-36 h-36',
@@ -31,6 +33,7 @@ export const EnergyCircle: React.FC<EnergyCircleProps> = ({
       )}
       style={{
         background: `conic-gradient(rgba(139, 92, 246, 0.7) ${progress}%, rgba(139, 92, 246, 0.1) 0%)`,
+        ...style,
       }}
       onClick={onClick}
     >

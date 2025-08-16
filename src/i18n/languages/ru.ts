@@ -95,6 +95,8 @@ export const ruTranslations: Translations = {
       universe: 'Вселенная',
       profile: 'Профиль',
     },
+    failed: 'Прервана',
+    completed: 'Завершена',
   },
   pactOath: {
     title: 'Договор с Вселенной',
