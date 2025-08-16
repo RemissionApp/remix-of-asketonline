@@ -69,13 +69,13 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				cosmic: {
-					DEFAULT: 'hsl(var(--cosmic-dark))',
-					'foreground': 'hsl(var(--foreground))',
+					DEFAULT: 'hsl(var(--cosmic))',
+					'foreground': 'hsl(var(--cosmic-foreground))',
 					'accent': 'hsl(var(--cosmic-accent))',
 					'accent2': 'hsl(var(--cosmic-accent2))',
 					'gold': 'hsl(var(--cosmic-gold))',
 					'dark': 'hsl(var(--cosmic-dark))',
-					'star': 'hsl(var(--foreground))',
+					'star': 'hsl(var(--cosmic-foreground))',
 					'secondary': 'hsl(var(--cosmic-secondary))',
 					'indigo': 'hsl(var(--cosmic-indigo))',
 					'deep-blue': 'hsl(var(--cosmic-deep-blue))',

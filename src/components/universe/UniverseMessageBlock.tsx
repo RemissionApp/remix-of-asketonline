@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -11,20 +11,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 /**
  * Component that displays the Universe chat entry point with an avatar and action buttons
  */
-export const UniverseMessageBlock: React.FC = () => {
+const UniverseMessageBlockComponent: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   
-  console.log("UniverseMessageBlock rendering, userProfile:", userProfile);
-  
-  const handleCallClick = () => {
+  const handleCallClick = useCallback(() => {
     navigate('/universe-call');
-  };
+  }, [navigate]);
   
-  const handleQuestionClick = () => {
+  const handleQuestionClick = useCallback(() => {
     navigate('/universe');
-  };
+  }, [navigate]);
   
   // Translation for the title "Диалог со вселенной"
   const universeTitle = language === 'ru' ? 'Диалог со вселенной' : 
@@ -107,3 +105,6 @@ export const UniverseMessageBlock: React.FC = () => {
   // Leave the chat button visible for free users, but wrap the whole block with ProFeatureOverlay for non-PRO users
   return messageContent;
 };
+
+// Export memoized version to prevent unnecessary re-renders
+export const UniverseMessageBlock = memo(UniverseMessageBlockComponent);
