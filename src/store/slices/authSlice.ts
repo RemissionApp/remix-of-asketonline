@@ -8,6 +8,60 @@ import { createLogger } from '@/utils/loggerUtils';
 
 const logger = createLogger('AuthSlice');
 
+// Language helper function
+const getTranslations = (language: string) => {
+  switch (language) {
+    case 'ru':
+      return {
+        error: 'Ошибка',
+        codeSent: 'Код отправлен',
+        codeValidated: 'Email подтвержден',
+        loginSuccess: 'Вход выполнен',
+        checkEmailAndEnterCode: 'Проверьте свою почту и введите код подтверждения',
+        failedToSendCode: 'Не удалось отправить код подтверждения',
+        failedToVerifyCode: 'Не удалось проверить код',
+        invalidCode: 'Неверный код',
+        checkCodeCorrectness: 'Проверьте правильность введенного кода',
+        emailVerifiedSuccess: 'Ваш email успешно подтвержден',
+        welcomeToAsket: 'Добро пожаловать в Аскет!',
+        emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
+        verificationError: 'Произошла ошибка при проверке кода',
+      };
+    case 'es':
+      return {
+        error: 'Error',
+        codeSent: 'Código enviado',
+        codeValidated: 'Email verificado',
+        loginSuccess: 'Inicio de sesión exitoso',
+        checkEmailAndEnterCode: 'Revisa tu email e ingresa el código de verificación',
+        failedToSendCode: 'No se pudo enviar el código de verificación',
+        failedToVerifyCode: 'No se pudo verificar el código',
+        invalidCode: 'Código inválido',
+        checkCodeCorrectness: 'Verifica la correcta introducción del código',
+        emailVerifiedSuccess: 'Tu email ha sido verificado exitosamente',
+        welcomeToAsket: '¡Bienvenido a Asket!',
+        emailVerifiedSignIn: 'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
+        verificationError: 'Ocurrió un error al verificar el código',
+      };
+    default:
+      return {
+        error: 'Error',
+        codeSent: 'Code sent',
+        codeValidated: 'Email verified',
+        loginSuccess: 'Login successful',
+        checkEmailAndEnterCode: 'Check your email and enter the verification code',
+        failedToSendCode: 'Failed to send verification code',
+        failedToVerifyCode: 'Failed to verify code',
+        invalidCode: 'Invalid code',
+        checkCodeCorrectness: 'Check the correctness of the entered code',
+        emailVerifiedSuccess: 'Your email has been successfully verified',
+        welcomeToAsket: 'Welcome to Asket!',
+        emailVerifiedSignIn: 'Your email has been successfully verified. Now sign in with your credentials.',
+        verificationError: 'An error occurred while verifying the code',
+      };
+  }
+};
+
 export interface AuthSlice {
   user: AuthUser | null;
   loading: boolean;
@@ -225,9 +279,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (error) {
         console.error('Error sending OTP:', error);
+        const lang = get().language || 'en';
+        const t = getTranslations(lang);
+        
         toast({
-          title: "Ошибка",
-          description: "Не удалось отправить код подтверждения",
+          title: t.error,
+          description: t.failedToSendCode,
           variant: "destructive",
         });
         return false;
@@ -235,24 +292,33 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (!data.success) {
         console.error('OTP send failed:', data.error);
+        const lang = get().language || 'en';
+        const t = getTranslations(lang);
+        
         toast({
-          title: "Ошибка",
-          description: data.error || "Не удалось отправить код",
+          title: t.error,
+          description: data.error || t.failedToSendCode,
           variant: "destructive",
         });
         return false;
       }
 
+      const lang = get().language || 'en';
+      const t = getTranslations(lang);
+
       toast({
-        title: "Код отправлен",
-        description: "Проверьте свою почту и введите код подтверждения",
+        title: t.codeSent,
+        description: t.checkEmailAndEnterCode,
       });
       return true;
     } catch (error) {
       console.error('Error in sendOtpCode:', error);
+      const lang = get().language || 'en';
+      const t = getTranslations(lang);
+      
       toast({
-        title: "Ошибка",
-        description: "Не удалось отправить код подтверждения",
+        title: t.error,
+        description: t.failedToSendCode,
         variant: "destructive",
       });
       return false;
@@ -269,9 +335,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (error) {
         console.error('Error verifying OTP:', error);
+        const lang = get().language || 'en';
+        const t = getTranslations(lang);
+        
         toast({
-          title: "Ошибка",
-          description: "Не удалось проверить код",
+          title: t.error,
+          description: t.failedToVerifyCode,
           variant: "destructive",
         });
         return false;
@@ -279,9 +348,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (!data.success) {
         console.error('OTP verification failed:', data.error);
+        const lang = get().language || 'en';
+        const t = getTranslations(lang);
+        
         toast({
-          title: "Неверный код",
-          description: data.error || "Проверьте правильность введенного кода",
+          title: t.invalidCode,
+          description: data.error || t.checkCodeCorrectness,
           variant: "destructive",
         });
         return false;
@@ -306,9 +378,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             // Load user profile
             await get().loadUserProfile();
             
+            const lang = get().language || 'en';
+            const t = getTranslations(lang);
+            
             toast({
-              title: "Вход выполнен",
-              description: "Добро пожаловать в Asket!",
+              title: t.loginSuccess,
+              description: t.welcomeToAsket,
             });
             
             return true;
@@ -319,17 +394,23 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       }
 
       // Fallback: just mark email as confirmed
+      const lang = get().language || 'en';
+      const t = getTranslations(lang);
+      
       toast({
-        title: "Email подтвержден",
-        description: "Ваш email успешно подтвержден. Теперь войдите в систему.",
+        title: t.codeValidated,
+        description: t.emailVerifiedSignIn,
       });
       
       return true;
     } catch (error: any) {
       console.error('Error in verifyOtpCode:', error);
+      const lang = get().language || 'en';
+      const t = getTranslations(lang);
+      
       toast({
-        title: "Ошибка",
-        description: "Произошла ошибка при проверке кода",
+        title: t.error,
+        description: t.verificationError,
         variant: "destructive",
       });
       return false;

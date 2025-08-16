@@ -194,8 +194,8 @@ const LoginPage: React.FC = () => {
           setActiveTab('login');
           setOtpSent(false);
           toast({
-            title: "Email подтвержден",
-            description: "Теперь войдите в систему с вашими данными",
+            title: t.auth.codeValidated,
+            description: t.auth.emailVerifiedSignIn,
           });
         }
       }
@@ -294,15 +294,15 @@ const LoginPage: React.FC = () => {
           <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
             <CardContent className="pt-6">
               <div className="text-center mb-6">
-                <h2 className="text-xl text-white mb-4">Введите код подтверждения</h2>
+                <h2 className="text-xl text-white mb-4">{t.auth.enterOtpCode}</h2>
                 <p className="text-cosmic-secondary">
-                  Мы отправили 6-значный код на {email}
+                  {t.auth.otpSentMessage} {email}
                 </p>
               </div>
               
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="otp-code" className="text-white">Код подтверждения</Label>
+                  <Label htmlFor="otp-code" className="text-white">{t.auth.otpCodeLabel}</Label>
                   <div className="flex justify-center">
                     <InputOTP
                       value={otpCode}
@@ -331,7 +331,7 @@ const LoginPage: React.FC = () => {
                   className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                   disabled={verifyingOtp || otpCode.length !== 6}
                 >
-                  {verifyingOtp ? "Проверяем..." : "Подтвердить"}
+                  {verifyingOtp ? `${t.auth.verifyButton}...` : t.auth.verifyButton}
                 </CosmicButton>
                 
                 <div className="text-center space-y-2">
@@ -341,7 +341,7 @@ const LoginPage: React.FC = () => {
                     onClick={handleResendOtp}
                     className="text-sm text-cosmic-accent hover:text-cosmic-accent/80"
                   >
-                    Отправить код повторно
+                    {t.auth.resendCode}
                   </Button>
                   
                   <Button
