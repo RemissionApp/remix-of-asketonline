@@ -119,12 +119,14 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       </EnergyCircle>
       
       {/* Break Ascesis Dialog */}
-      <BreakAscesisDialog
-        pact={currentPact}
-        isOpen={showBreakDialog}
-        onClose={() => setShowBreakDialog(false)}
-        onConfirm={handleBreakAscesis}
-      />
+      <div className="relative z-[300]">
+        <BreakAscesisDialog
+          pact={currentPact}
+          isOpen={showBreakDialog}
+          onClose={() => setShowBreakDialog(false)}
+          onConfirm={handleBreakAscesis}
+        />
+      </div>
     </div>
   );
 };
