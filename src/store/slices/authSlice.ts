@@ -242,9 +242,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   },
 
   checkEmailConfirmation: async () => {
-    const { user } = get();
+    const { user, emailConfirmed } = get();
 
     if (!user) return false;
+
+    // Return cached result if already confirmed
+    if (emailConfirmed) return true;
 
     try {
       const { data, error } = await supabase.auth.getUser();

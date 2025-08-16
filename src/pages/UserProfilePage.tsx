@@ -40,8 +40,8 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      // Check if email is confirmed
-      const isConfirmed = await checkEmailConfirmation();
+      // Check if email is confirmed (cached result if available)
+      const isConfirmed = emailConfirmed || await checkEmailConfirmation();
 
       if (!isConfirmed) {
         toast({
@@ -53,13 +53,14 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      // Redirect to onboarding or main only if user has completed profile
-      if (
-        userProfile &&
-        userProfile.name &&
-        userProfile.name !== t.auth.defaultUserName &&
-        userProfile.birthDate
-      ) {
+      // Check if profile is complete using more reliable criteria
+      const isProfileComplete = userProfile && 
+        userProfile.name && 
+        userProfile.name !== 'Искатель' && // Use hardcoded default to avoid translation issues
+        userProfile.name.trim() !== '' &&
+        userProfile.birthDate;
+
+      if (isProfileComplete) {
         if (!onboardingComplete) {
           navigate('/onboarding');
         } else {
@@ -74,7 +75,7 @@ const UserProfilePage: React.FC = () => {
     } finally {
       authCheckRef.current = false;
     }
-  }, [navigate, userProfile, onboardingComplete, t.auth.emailRequired, t.auth.checkEmailAndEnterCode, t.auth.defaultUserName, checkEmailConfirmation]);
+  }, [navigate, userProfile, onboardingComplete, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
 
   // Check authentication when conditions are ready
   useEffect(() => {
