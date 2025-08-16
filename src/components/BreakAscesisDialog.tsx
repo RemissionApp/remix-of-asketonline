@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Pact } from '@/types';
 import { getPactBreakPenalty, formatPenaltyDescription } from '@/utils/pactUtils';
 
@@ -45,6 +46,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const { haptic, badge, notifications } = usePWAFeatures();
   const { language, userProfile } = useAppStore();
+  const { handleError } = useErrorHandler();
 
   const getTitle = () => {
     switch (language) {
@@ -139,7 +141,11 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   };
 
   const handleWarningNext = async () => {
-    await haptic.warning();
+    try {
+      await haptic.warning();
+    } catch (error) {
+      console.warn('Haptic warning failed:', error);
+    }
     setStep('reason');
   };
 
@@ -149,26 +155,36 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   };
 
   const handleConfirm = async () => {
-    // Haptic feedback для серьезного действия
-    await haptic.error();
-    
-    // Отправляем уведомление  
-    await notifications.motivational(
-      language === 'ru' ? 'Аскеза прервана' : 
-      language === 'es' ? 'Ascesis interrumpida' : 'Ascesis broken'
-    );
-
-    // Обновляем badge
-    await badge.increment();
-
-    // Вызываем функцию подтверждения с причиной
-    onConfirm(selectedReason === 'Другая причина' || selectedReason === 'Otra razón' || selectedReason === 'Other reason' ? reason : selectedReason || undefined);
-    
-    // Закрываем диалог
-    onClose();
-    setStep('warning');
-    setReason('');
-    setSelectedReason(null);
+    try {
+      console.log('BreakAscesisDialog: Confirming break', { selectedReason, reason });
+      
+      // Non-blocking haptic feedback
+      haptic.error().catch(err => console.warn('Haptic error failed:', err));
+      
+      const finalReason = selectedReason === 'Другая причина' || selectedReason === 'Otra razón' || selectedReason === 'Other reason' ? reason : selectedReason || undefined;
+      
+      // Call confirm function first
+      await onConfirm(finalReason);
+      
+      // Update notifications and badge (non-blocking)
+      try {
+        await notifications.motivational(
+          language === 'ru' ? 'Аскеза прервана' : 
+          language === 'es' ? 'Ascesis interrumpida' : 'Ascesis broken'
+        );
+        await badge.increment();
+      } catch (notificationError) {
+        console.warn('Notification/badge update failed:', notificationError);
+      }
+      
+      // Reset dialog state
+      onClose();
+      setStep('warning');
+      setReason('');
+      setSelectedReason(null);
+    } catch (error) {
+      handleError(error, { component: 'BreakAscesisDialog', action: 'handleConfirm' });
+    }
   };
 
   const handleCancel = async () => {
@@ -250,7 +266,11 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                     size="sm"
                     className="w-full justify-start"
                     onClick={async () => {
-                      await haptic.buttonTap();
+                      try {
+                        await haptic.buttonTap();
+                      } catch (error) {
+                        console.warn('Haptic button tap failed:', error);
+                      }
                       setSelectedReason(reasonOption);
                     }}
                   >

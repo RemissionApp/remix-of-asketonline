@@ -35,8 +35,14 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
   };
   
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Haptic feedback на каждое нажатие
-    await haptic.buttonTap();
+    console.log('CosmicButton clicked', { variant, disabled: props.disabled });
+    
+    // Non-blocking haptic feedback
+    try {
+      haptic.buttonTap().catch(err => console.warn('Haptic feedback failed:', err));
+    } catch (error) {
+      console.warn('Haptic feedback error:', error);
+    }
     
     if (onClick) {
       onClick(event);

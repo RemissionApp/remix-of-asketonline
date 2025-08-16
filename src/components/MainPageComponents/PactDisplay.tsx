@@ -32,11 +32,28 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   const { t } = useTranslations();
   const { language, breakAscesis } = useAppStore();
   const [showBreakDialog, setShowBreakDialog] = useState(false);
+  const [isBreaking, setIsBreaking] = useState(false);
   
   const handleBreakAscesis = async (reason?: string) => {
-    if (!currentPact) return;
-    await breakAscesis(currentPact.id, reason);
-    setShowBreakDialog(false);
+    if (!currentPact || isBreaking) {
+      console.log('Cannot break ascesis:', { currentPact: !!currentPact, isBreaking });
+      return;
+    }
+    
+    console.log('Breaking ascesis:', { pactId: currentPact.id, reason });
+    setIsBreaking(true);
+    
+    try {
+      if (!breakAscesis) {
+        throw new Error('breakAscesis function not available');
+      }
+      await breakAscesis(currentPact.id, reason);
+      setShowBreakDialog(false);
+    } catch (error) {
+      console.error('Failed to break ascesis:', error);
+    } finally {
+      setIsBreaking(false);
+    }
   };
 
   if (!currentPact) return null;
@@ -85,9 +102,18 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
             className="mt-4" 
             variant="destructive"
             size="sm"
-            onClick={() => setShowBreakDialog(true)}
+            disabled={isBreaking}
+            onClick={() => {
+              console.log('Break ascesis button clicked', { isBreaking, showBreakDialog });
+              if (!isBreaking) {
+                setShowBreakDialog(true);
+              }
+            }}
           >
-            {language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism'}
+            {isBreaking 
+              ? (language === 'ru' ? 'Прерывание...' : language === 'es' ? 'Rompiendo...' : 'Breaking...')
+              : (language === 'ru' ? 'Прервать аскезу' : language === 'es' ? 'Romper ascesis' : 'Break asceticism')
+            }
           </CosmicButton>
         </div>
       </EnergyCircle>
