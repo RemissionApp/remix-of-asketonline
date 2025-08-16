@@ -11,9 +11,6 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      {/* User greeting section */}
-      <UserGreetingSection />
-
       <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
         <div className="p-4">
           <div className="flex items-center mb-3">
