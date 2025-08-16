@@ -427,4 +427,14 @@ export const enTranslations: Translations = {
       duration: 'Recommended practice time: 2-5 minutes',
     },
   },
+  emailOtp: {
+    subject: 'Your verification code | Asket',
+    title: 'Verification Code',
+    subtitle: 'Spiritual development and self-knowledge',
+    codeLabel: 'Your verification code',
+    validTime: 'Code valid for 5 minutes',
+    instructionsTitle: 'Instructions',
+    instructions: 'Enter this code in the Asket app to verify your email address. The code is valid for 5 minutes.',
+    footerNote: 'If you didn\'t sign up for Asket, please ignore this email.',
+  },
 };

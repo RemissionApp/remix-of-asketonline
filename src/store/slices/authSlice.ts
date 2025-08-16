@@ -214,8 +214,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
   sendOtpCode: async (email: string): Promise<boolean> => {
     try {
+      const currentLanguage = get().language || 'en';
+      
       const { data, error } = await supabase.functions.invoke('send-otp-email', {
-        body: { email }
+        body: { 
+          email,
+          language: currentLanguage
+        }
       });
 
       if (error) {

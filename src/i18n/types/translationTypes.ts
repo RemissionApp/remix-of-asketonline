@@ -186,6 +186,17 @@ export interface MeditationTranslations {
   visualization: MeditationTypeTranslations;
 }
 
+export interface EmailOtpTranslations {
+  subject: string;
+  title: string;
+  subtitle: string;
+  codeLabel: string;
+  validTime: string;
+  instructionsTitle: string;
+  instructions: string;
+  footerNote: string;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
@@ -208,4 +219,5 @@ export interface Translations {
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
   affirmations?: AffirmationsTranslations; // Add this new field to support affirmations
+  emailOtp?: EmailOtpTranslations;
 }

@@ -393,4 +393,14 @@ export const esTranslations: Translations = {
     terminationText:
       'Podemos terminar o suspender su acceso a la aplicación inmediatamente, sin previo aviso ni responsabilidad, por cualquier motivo, incluida la violación de estos términos.',
   },
+  emailOtp: {
+    subject: 'Tu código de verificación | Asket',
+    title: 'Código de verificación',
+    subtitle: 'Desarrollo espiritual y autoconocimiento',
+    codeLabel: 'Tu código de verificación',
+    validTime: 'Código válido por 5 minutos',
+    instructionsTitle: 'Instrucciones',
+    instructions: 'Ingresa este código en la aplicación Asket para verificar tu dirección de email. El código es válido por 5 minutos.',
+    footerNote: 'Si no te registraste en Asket, ignora este email.',
+  },
 };
