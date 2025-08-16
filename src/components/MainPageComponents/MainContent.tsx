@@ -67,7 +67,10 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
 
-      {/* 2. Daily Advice with User Greeting */}
+      {/* 2. User Greeting Section */}
+      <UserGreetingSection />
+
+      {/* 3. Daily Advice */}
       <DailyAdviceDisplay />
 
       {/* 3. Active Mission Widget (if available) */}

@@ -96,42 +96,42 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       )}
 
       <EnergyCircle progress={progress} size="lg">
-        <div className="text-center p-4 flex flex-col items-center">
+        <div className="text-center p-4">
           <p className="text-4xl font-bold font-serif text-white">
             {activeDaysCompleted}/{currentPact.duration}
           </p>
           <p className="text-lg text-cosmic-accent mt-2">{t.main.days}</p>
-
-          {/* Break Ascesis button moved inside the circle */}
-          <CosmicButton
-            className="mt-4"
-            variant="destructive"
-            size="sm"
-            disabled={isBreaking}
-            onClick={() => {
-              console.log('Break ascesis button clicked', {
-                isBreaking,
-                showBreakDialog,
-              });
-              if (!isBreaking) {
-                setShowBreakDialog(true);
-              }
-            }}
-          >
-            {isBreaking
-              ? language === 'ru'
-                ? 'Прерывание...'
-                : language === 'es'
-                  ? 'Rompiendo...'
-                  : 'Breaking...'
-              : language === 'ru'
-                ? 'Прервать аскезу'
-                : language === 'es'
-                  ? 'Romper ascesis'
-                  : 'Break asceticism'}
-          </CosmicButton>
         </div>
       </EnergyCircle>
+
+      {/* Break Ascesis button placed under the circle */}
+      <CosmicButton
+        className="mt-6 mb-4"
+        variant="destructive"
+        size="sm"
+        disabled={isBreaking}
+        onClick={() => {
+          console.log('Break ascesis button clicked', {
+            isBreaking,
+            showBreakDialog,
+          });
+          if (!isBreaking) {
+            setShowBreakDialog(true);
+          }
+        }}
+      >
+        {isBreaking
+          ? language === 'ru'
+            ? 'Прерывание...'
+            : language === 'es'
+              ? 'Rompiendo...'
+              : 'Breaking...'
+          : language === 'ru'
+            ? 'Прервать аскезу'
+            : language === 'es'
+              ? 'Romper ascesis'
+              : 'Break asceticism'}
+      </CosmicButton>
 
       {/* Break Ascesis Dialog */}
       <div className="relative z-[300]">
