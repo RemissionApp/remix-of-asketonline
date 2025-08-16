@@ -39,7 +39,6 @@ export interface AppState {
   user: User | null;
   loading: boolean;
   emailConfirmed: boolean;
-  isLoadingProfile: boolean;
 
   addPact: (
     pact: Omit<

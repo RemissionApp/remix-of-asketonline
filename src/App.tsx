@@ -50,14 +50,20 @@ const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
 
   try {
-    const store = useAppStore();
+    const { 
+      checkOnboardingStatus, 
+      user, 
+      loadUserProfile, 
+      setUser,
+      initializeSettings 
+    } = useAppStore();
 
     useEffect(() => {
       // Инициализируем настройки из localStorage
-      store.initializeSettings();
+      initializeSettings();
       
       // Проверяем состояние onboarding при загрузке приложения
-      store.checkOnboardingStatus();
+      checkOnboardingStatus();
 
       // Инициализируем push-уведомления
       NotificationIntegrations.initializeAll();
@@ -69,17 +75,14 @@ const AppInitializer = () => {
         logger.info('Auth state changed', { event, userId: session?.user?.id });
 
         if (event === 'SIGNED_IN' && session) {
-          store.setUser(session.user);
+          setUser(session.user);
 
-          // Only load profile if user changed (avoid duplicate calls)
-          if (!store.user || store.user.id !== session.user.id) {
-            // Отложенная загрузка данных пользователя для предотвращения deadlock
-            setTimeout(() => {
-              store.loadUserProfile();
-            }, 0);
-          }
+          // Отложенная загрузка данных пользователя для предотвращения deadlock
+          setTimeout(() => {
+            loadUserProfile();
+          }, 0);
         } else if (event === 'SIGNED_OUT') {
-          store.setUser(null);
+          setUser(null);
         }
       });
 
@@ -92,9 +95,9 @@ const AppInitializer = () => {
             return;
           }
 
-          if (data.session?.user && !store.user) {
-            store.setUser(data.session.user);
-            await store.loadUserProfile();
+          if (data.session?.user) {
+            setUser(data.session.user);
+            await loadUserProfile();
           }
         } catch (error) {
           logger.error('Не удалось проверить сессию', error);
@@ -107,7 +110,7 @@ const AppInitializer = () => {
       return () => {
         subscription.unsubscribe();
       };
-    }, [store]);
+    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings]);
 
     return null;
   } catch (error) {
@@ -121,7 +124,7 @@ const AuthCallback = () => {
   const logger = createLogger('AuthCallback');
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useAppStore();
+  const { updateUserProfile, user, loadUserProfile } = useAppStore();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -141,8 +144,8 @@ const AuthCallback = () => {
             // Очищаем состояние аутентификации для предотвращения проблем
             cleanupAuthState();
 
-            // Set user - profile will be loaded by AppInitializer automatically
-            setUser(data.session.user);
+            // Загружаем данные профиля пользователя
+            await loadUserProfile();
 
             // Перенаправляем на настройку профиля или главную
             navigate('/profile-setup');
@@ -158,7 +161,7 @@ const AuthCallback = () => {
     };
 
     handleAuthCallback();
-  }, [location, navigate, setUser]);
+  }, [location, navigate, updateUserProfile, user, loadUserProfile]);
 
   const { t } = useTranslations();
   
