@@ -261,6 +261,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
   verifyOtpCode: async (email: string, code: string): Promise<boolean> => {
     try {
+      set({ loading: true });
+      
       const { data, error } = await supabase.functions.invoke('verify-otp', {
         body: { email, code }
       });
@@ -285,26 +287,54 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         return false;
       }
 
+      // If we have access tokens, automatically sign in the user
+      if (data.accessToken && data.refreshToken) {
+        try {
+          const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+            access_token: data.accessToken,
+            refresh_token: data.refreshToken
+          });
+
+          if (sessionError) {
+            console.error('Error setting session:', sessionError);
+          } else if (sessionData.user) {
+            set({ 
+              user: sessionData.user,
+              emailConfirmed: true 
+            });
+            
+            // Load user profile
+            await get().loadUserProfile();
+            
+            toast({
+              title: "Вход выполнен",
+              description: "Добро пожаловать в Asket!",
+            });
+            
+            return true;
+          }
+        } catch (sessionError) {
+          console.error('Error during auto sign-in:', sessionError);
+        }
+      }
+
+      // Fallback: just mark email as confirmed
       toast({
         title: "Email подтвержден",
-        description: "Ваш email успешно подтвержден",
+        description: "Ваш email успешно подтвержден. Теперь войдите в систему.",
       });
       
-      // Update local state
-      set((state) => ({
-        ...state,
-        emailConfirmed: true
-      }));
-      
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in verifyOtpCode:', error);
       toast({
         title: "Ошибка",
-        description: "Не удалось проверить код",
+        description: "Произошла ошибка при проверке кода",
         variant: "destructive",
       });
       return false;
+    } finally {
+      set({ loading: false });
     }
   },
 

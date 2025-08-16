@@ -122,10 +122,37 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Email verified successfully for user: ${email}`);
 
+    // Create access token for automatic sign-in
+    const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: email,
+      options: {
+        redirectTo: `${Deno.env.get('SITE_URL') || 'https://aewfggzscyjxpuciqtti.lovable.app'}/`
+      }
+    });
+
+    if (sessionError) {
+      console.error('Failed to generate session:', sessionError);
+      // Still return success for email verification even if session generation fails
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Email verified successfully',
+        userId: user.id 
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Email verified successfully',
-      userId: user.id 
+      userId: user.id,
+      accessToken: sessionData.properties?.access_token,
+      refreshToken: sessionData.properties?.refresh_token
     }), {
       status: 200,
       headers: {

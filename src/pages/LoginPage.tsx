@@ -179,8 +179,25 @@ const LoginPage: React.FC = () => {
     try {
       const verified = await verifyOtpCode(email, otpCode);
       if (verified) {
-        // Navigate to profile setup or main page
-        navigate('/profile-setup');
+        // Check if user is logged in now
+        const currentUser = useAppStore.getState().user;
+        if (currentUser) {
+          // User is automatically logged in, navigate appropriately
+          const userProfile = useAppStore.getState().userProfile;
+          if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
+            navigate('/profile-setup');
+          } else {
+            navigate('/onboarding');
+          }
+        } else {
+          // Fallback: user needs to sign in manually
+          setActiveTab('login');
+          setOtpSent(false);
+          toast({
+            title: "Email подтвержден",
+            description: "Теперь войдите в систему с вашими данными",
+          });
+        }
       }
     } catch (error) {
       console.error('OTP verification error:', error);
