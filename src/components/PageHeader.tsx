@@ -3,17 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
-
 interface PageHeaderProps {
   title: string;
   onBackClick?: () => void;
   backTo?: string;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ 
-  title, 
-  onBackClick, 
-  backTo = '/main' 
+export const PageHeader: React.FC<PageHeaderProps> = ({
+  title,
+  onBackClick,
+  backTo = '/main',
 }) => {
   const navigate = useNavigate();
 
@@ -36,15 +35,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         >
           <ArrowLeft size={20} />
         </Button>
-        
+
         <h1 className="text-lg font-serif text-white flex-1 text-center">
           {title}
         </h1>
-        
+
         <div className="flex items-center space-x-2 shrink-0">
-          <img 
-            src="/asket-logo.png" 
-            alt="Asket Logo" 
+          <img
+            src="/asket-logo.png"
+            alt="Asket Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
           <span className="text-white font-serif text-sm">Asket</span>

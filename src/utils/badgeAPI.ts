@@ -34,16 +34,16 @@ class BadgeManager {
       }
 
       console.log(`App badge set to: ${count || 'default'}`);
-      return { 
-        success: true, 
-        supported: true, 
-        count: this.currentCount 
+      return {
+        success: true,
+        supported: true,
+        count: this.currentCount,
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -59,18 +59,18 @@ class BadgeManager {
     try {
       await navigator.clearAppBadge();
       this.currentCount = 0;
-      
+
       console.log('App badge cleared');
-      return { 
-        success: true, 
-        supported: true, 
-        count: 0 
+      return {
+        success: true,
+        supported: true,
+        count: 0,
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -87,7 +87,9 @@ class BadgeManager {
    */
   async decrementBadge(): Promise<BadgeResult> {
     const newCount = Math.max(0, this.currentCount - 1);
-    return newCount === 0 ? await this.clearBadge() : await this.setBadge(newCount);
+    return newCount === 0
+      ? await this.clearBadge()
+      : await this.setBadge(newCount);
   }
 
   /**
@@ -103,7 +105,7 @@ class BadgeManager {
   getStatus(): { count: number; supported: boolean } {
     return {
       count: this.currentCount,
-      supported: this.isSupported()
+      supported: this.isSupported(),
     };
   }
 }
@@ -138,7 +140,9 @@ export const notificationBadges = {
   /**
    * Обновляет badge для новых достижений
    */
-  async updateAchievementsBadge(newAchievementsCount: number): Promise<BadgeResult> {
+  async updateAchievementsBadge(
+    newAchievementsCount: number
+  ): Promise<BadgeResult> {
     if (newAchievementsCount === 0) {
       return await badgeManager.clearBadge();
     }
@@ -154,16 +158,17 @@ export const notificationBadges = {
     achievements?: number;
     missions?: number;
   }): Promise<BadgeResult> {
-    const total = (counts.pacts || 0) + 
-                  (counts.messages || 0) + 
-                  (counts.achievements || 0) + 
-                  (counts.missions || 0);
+    const total =
+      (counts.pacts || 0) +
+      (counts.messages || 0) +
+      (counts.achievements || 0) +
+      (counts.missions || 0);
 
     if (total === 0) {
       return await badgeManager.clearBadge();
     }
     return await badgeManager.setBadge(total);
-  }
+  },
 };
 
 /**
@@ -216,5 +221,5 @@ export const persistentBadge = {
       localStorage.removeItem('app-badge-count');
     }
     return result;
-  }
+  },
 };

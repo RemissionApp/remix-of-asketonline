@@ -1,85 +1,96 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
+};
 
 // Функция для получения OAuth токена для FCM V1 API
 async function getAccessToken(serviceAccount: any): Promise<string> {
   const jwtHeader = {
     alg: 'RS256',
-    typ: 'JWT'
-  }
+    typ: 'JWT',
+  };
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = Math.floor(Date.now() / 1000);
   const jwtPayload = {
     iss: serviceAccount.client_email,
     scope: 'https://www.googleapis.com/auth/firebase.messaging',
     aud: 'https://oauth2.googleapis.com/token',
     exp: now + 3600,
-    iat: now
-  }
+    iat: now,
+  };
 
   // Создаем JWT
-  const encoder = new TextEncoder()
-  const headerB64 = btoa(JSON.stringify(jwtHeader)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-  const payloadB64 = btoa(JSON.stringify(jwtPayload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-  
-  const signatureInput = `${headerB64}.${payloadB64}`
-  
+  const encoder = new TextEncoder();
+  const headerB64 = btoa(JSON.stringify(jwtHeader))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+  const payloadB64 = btoa(JSON.stringify(jwtPayload))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+
+  const signatureInput = `${headerB64}.${payloadB64}`;
+
   // Парсим приватный ключ из PEM формата
-  const privateKeyPem = serviceAccount.private_key.replace(/\\n/g, '\n')
+  const privateKeyPem = serviceAccount.private_key.replace(/\\n/g, '\n');
   const privateKeyBase64 = privateKeyPem
     .replace('-----BEGIN PRIVATE KEY-----', '')
     .replace('-----END PRIVATE KEY-----', '')
-    .replace(/\s/g, '')
-  
+    .replace(/\s/g, '');
+
   // Декодируем base64 в ArrayBuffer
-  const privateKeyBuffer = Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0))
-  
+  const privateKeyBuffer = Uint8Array.from(atob(privateKeyBase64), c =>
+    c.charCodeAt(0)
+  );
+
   // Импортируем приватный ключ
   const privateKey = await crypto.subtle.importKey(
     'pkcs8',
     privateKeyBuffer,
     {
       name: 'RSASSA-PKCS1-v1_5',
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     false,
     ['sign']
-  )
+  );
 
   // Создаем подпись
   const signature = await crypto.subtle.sign(
     'RSASSA-PKCS1-v1_5',
     privateKey,
     encoder.encode(signatureInput)
-  )
+  );
 
   const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
 
-  const jwt = `${signatureInput}.${signatureB64}`
+  const jwt = `${signatureInput}.${signatureB64}`;
 
   // Получаем access token
   const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-  })
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
 
-  const tokenData = await tokenResponse.json()
-  
+  const tokenData = await tokenResponse.json();
+
   if (!tokenResponse.ok) {
-    throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`)
+    throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
 
-  return tokenData.access_token
+  return tokenData.access_token;
 }
 
 interface NotificationPayload {
@@ -115,46 +126,49 @@ interface PushSubscription {
   };
 }
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders });
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers: corsHeaders })
+    return new Response('Method not allowed', {
+      status: 405,
+      headers: corsHeaders,
+    });
   }
 
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
 
-    const payload: NotificationPayload = await req.json()
-    
+    const payload: NotificationPayload = await req.json();
+
     if (!payload.type || !payload.title || !payload.body) {
-      throw new Error('Missing required fields: type, title, body')
+      throw new Error('Missing required fields: type, title, body');
     }
 
     // Получаем Firebase Service Account из секретов
-    const firebaseServiceAccount = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
+    const firebaseServiceAccount = Deno.env.get('FIREBASE_SERVICE_ACCOUNT');
     if (!firebaseServiceAccount) {
-      throw new Error('Firebase Service Account not configured')
+      throw new Error('Firebase Service Account not configured');
     }
 
-    const serviceAccount = JSON.parse(firebaseServiceAccount)
-    
+    const serviceAccount = JSON.parse(firebaseServiceAccount);
+
     // Получаем OAuth токен для FCM V1 API
-    const accessToken = await getAccessToken(serviceAccount)
+    const accessToken = await getAccessToken(serviceAccount);
 
     // Определяем пользователей для отправки
-    let targetUserIds: string[] = []
+    let targetUserIds: string[] = [];
     if (payload.userId) {
-      targetUserIds = [payload.userId]
+      targetUserIds = [payload.userId];
     } else if (payload.userIds) {
-      targetUserIds = payload.userIds
+      targetUserIds = payload.userIds;
     } else {
-      throw new Error('Either userId or userIds must be specified')
+      throw new Error('Either userId or userIds must be specified');
     }
 
     // Получаем подписки пользователей
@@ -162,59 +176,64 @@ serve(async (req) => {
       .from('push_subscriptions')
       .select('*')
       .in('user_id', targetUserIds)
-      .eq('is_active', true)
+      .eq('is_active', true);
 
     if (fetchError) {
-      throw new Error(`Failed to fetch subscriptions: ${fetchError.message}`)
+      throw new Error(`Failed to fetch subscriptions: ${fetchError.message}`);
     }
 
     if (!subscriptions || subscriptions.length === 0) {
-      return new Response(JSON.stringify({ 
-        success: true, 
-        message: 'No active subscriptions found',
-        sent: 0 
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'No active subscriptions found',
+          sent: 0,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Фильтруем подписки по настройкам уведомлений
-    const filteredSubscriptions = subscriptions.filter((sub: PushSubscription) => {
-      const settings = sub.settings
-      switch (payload.type) {
-        case 'daily_reminder':
-          return settings.dailyReminder
-        case 'pact_start':
-        case 'pact_complete':
-          return settings.pactUpdates
-        case 'meditation_reminder':
-          return settings.meditation
-        case 'universe_message':
-          return settings.universeMessages
-        case 'achievement':
-          return settings.achievements
-        case 'subscription_reminder':
-          return settings.subscription
-        case 'test':
-          return true // Тестовые уведомления всегда отправляются
-        default:
-          return true
+    const filteredSubscriptions = subscriptions.filter(
+      (sub: PushSubscription) => {
+        const settings = sub.settings;
+        switch (payload.type) {
+          case 'daily_reminder':
+            return settings.dailyReminder;
+          case 'pact_start':
+          case 'pact_complete':
+            return settings.pactUpdates;
+          case 'meditation_reminder':
+            return settings.meditation;
+          case 'universe_message':
+            return settings.universeMessages;
+          case 'achievement':
+            return settings.achievements;
+          case 'subscription_reminder':
+            return settings.subscription;
+          case 'test':
+            return true; // Тестовые уведомления всегда отправляются
+          default:
+            return true;
+        }
       }
-    })
+    );
 
     // Отправляем push-уведомления через FCM V1 API
-    const results = []
+    const results = [];
     for (const subscription of filteredSubscriptions) {
       try {
         // Извлекаем FCM токен из endpoint
-        let fcmToken = null
+        let fcmToken = null;
         if (subscription.subscription.endpoint.includes('fcm.googleapis.com')) {
-          const urlParts = subscription.subscription.endpoint.split('/')
-          fcmToken = urlParts[urlParts.length - 1]
+          const urlParts = subscription.subscription.endpoint.split('/');
+          fcmToken = urlParts[urlParts.length - 1];
         }
 
         if (!fcmToken) {
-          throw new Error('Invalid FCM token')
+          throw new Error('Invalid FCM token');
         }
 
         // Формируем payload для FCM V1 API
@@ -224,15 +243,17 @@ serve(async (req) => {
             notification: {
               title: payload.title,
               body: payload.body,
-              image: payload.image
+              image: payload.image,
             },
             data: {
               type: payload.type,
               userId: subscription.user_id,
               url: getNotificationUrl(payload.type, payload.data),
-              ...payload.data ? Object.fromEntries(
-                Object.entries(payload.data).map(([k, v]) => [k, String(v)])
-              ) : {}
+              ...(payload.data
+                ? Object.fromEntries(
+                    Object.entries(payload.data).map(([k, v]) => [k, String(v)])
+                  )
+                : {}),
             },
             webpush: {
               notification: {
@@ -240,84 +261,100 @@ serve(async (req) => {
                 badge: payload.badge || '/icon-72.png',
                 requireInteraction: payload.requireInteraction || false,
                 silent: payload.silent || false,
-                click_action: getNotificationUrl(payload.type, payload.data)
-              }
-            }
-          }
-        }
+                click_action: getNotificationUrl(payload.type, payload.data),
+              },
+            },
+          },
+        };
 
         // Отправляем через FCM V1 API
-        const response = await fetch(`https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(fcmMessage),
-        })
+        const response = await fetch(
+          `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(fcmMessage),
+          }
+        );
 
-        const result = await response.json()
+        const result = await response.json();
         results.push({
           userId: subscription.user_id,
           success: response.ok,
           result: result,
-        })
+        });
 
-        console.log(`Push notification sent to ${subscription.user_id}:`, result)
+        console.log(
+          `Push notification sent to ${subscription.user_id}:`,
+          result
+        );
       } catch (error) {
-        console.error(`Failed to send notification to ${subscription.user_id}:`, error)
+        console.error(
+          `Failed to send notification to ${subscription.user_id}:`,
+          error
+        );
         results.push({
           userId: subscription.user_id,
           success: false,
           error: error.message,
-        })
+        });
       }
     }
 
-    const successCount = results.filter(r => r.success).length
-    const failureCount = results.filter(r => !r.success).length
+    const successCount = results.filter(r => r.success).length;
+    const failureCount = results.filter(r => !r.success).length;
 
-    return new Response(JSON.stringify({
-      success: true,
-      sent: successCount,
-      failed: failureCount,
-      results: results,
-      message: `Sent ${successCount} notifications, ${failureCount} failed`
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        sent: successCount,
+        failed: failureCount,
+        results: results,
+        message: `Sent ${successCount} notifications, ${failureCount} failed`,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
-    console.error('Push notification error:', error)
-    return new Response(JSON.stringify({ 
-      error: error.message 
-    }), { 
-      status: 400, 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-    })
+    console.error('Push notification error:', error);
+    return new Response(
+      JSON.stringify({
+        error: error.message,
+      }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
-})
+});
 
 // Функция для определения URL для перехода по уведомлению
 function getNotificationUrl(type: string, data?: Record<string, any>): string {
-  const baseUrl = 'https://asket.online'
-  
+  const baseUrl = 'https://asket.online';
+
   switch (type) {
     case 'daily_reminder':
     case 'pact_start':
     case 'pact_complete':
-      return data?.pactId ? `${baseUrl}/main?pact=${data.pactId}` : `${baseUrl}/main`
+      return data?.pactId
+        ? `${baseUrl}/main?pact=${data.pactId}`
+        : `${baseUrl}/main`;
     case 'meditation_reminder':
-      return `${baseUrl}/meditation`
+      return `${baseUrl}/meditation`;
     case 'universe_message':
-      return `${baseUrl}/universe`
+      return `${baseUrl}/universe`;
     case 'achievement':
-      return `${baseUrl}/profile`
+      return `${baseUrl}/profile`;
     case 'subscription_reminder':
-      return `${baseUrl}/comparison`
+      return `${baseUrl}/comparison`;
     case 'test':
-      return `${baseUrl}/profile`
+      return `${baseUrl}/profile`;
     default:
-      return baseUrl
+      return baseUrl;
   }
 }

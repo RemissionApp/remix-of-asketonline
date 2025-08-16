@@ -8,21 +8,27 @@ import { useAppStore } from '@/store/useAppStore';
 
 const CallPage: React.FC = () => {
   const { language } = useAppStore();
-  
+
   return (
     <MobileOptimizedInterface>
       <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-20">
         <StarField />
-        
-        <PageHeader 
-          title={language === 'ru' ? 'Звонок Вселенной' : language === 'es' ? 'Llamada al Universo' : 'Universe Call'}
+
+        <PageHeader
+          title={
+            language === 'ru'
+              ? 'Звонок Вселенной'
+              : language === 'es'
+                ? 'Llamada al Universo'
+                : 'Universe Call'
+          }
         />
-        
+
         {/* Main content - Adjusted for fixed headers */}
         <div className="flex-1 flex items-center justify-center relative z-10 px-4 pt-20">
           <VoiceCallInterface />
         </div>
-        
+
         {/* Bottom navigation - Fixed with safe area */}
         <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
           <BottomNavigation />

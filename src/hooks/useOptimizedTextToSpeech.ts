@@ -4,7 +4,14 @@ import { useAppStore } from '@/store/useAppStore';
 import { logger } from '@/utils/loggerUtils';
 
 export interface TextToSpeechOptions {
-  voice?: 'Custom' | 'Aria' | 'Sarah' | 'Laura' | 'Charlie' | 'Charlotte' | 'Alice';
+  voice?:
+    | 'Custom'
+    | 'Aria'
+    | 'Sarah'
+    | 'Laura'
+    | 'Charlie'
+    | 'Charlotte'
+    | 'Alice';
   model?: 'eleven_turbo_v2' | 'eleven_multilingual_v2';
 }
 
@@ -12,7 +19,9 @@ export const useOptimizedTextToSpeech = () => {
   const { soundEnabled, soundVolume } = useAppStore();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
+    null
+  );
   const [audioQueue, setAudioQueue] = useState<HTMLAudioElement[]>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
 
@@ -22,26 +31,35 @@ export const useOptimizedTextToSpeech = () => {
       .split(/\n\s*\n|\.\s{2,}/)
       .map(p => p.trim())
       .filter(p => p.length > 20);
-    
+
     return paragraphs;
   };
 
-  const generateAudioForParagraph = async (text: string, options: TextToSpeechOptions = {}): Promise<HTMLAudioElement | null> => {
+  const generateAudioForParagraph = async (
+    text: string,
+    options: TextToSpeechOptions = {}
+  ): Promise<HTMLAudioElement | null> => {
     if (!soundEnabled) {
       logger.debug('Sound disabled, skipping audio generation');
       return null;
     }
 
     try {
-      logger.debug('Generating audio for paragraph:', text.substring(0, 50) + '...');
+      logger.debug(
+        'Generating audio for paragraph:',
+        text.substring(0, 50) + '...'
+      );
 
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: {
-          text,
-          voice: options.voice || 'Custom',
-          model: options.model || 'eleven_turbo_v2'
+      const { data, error } = await supabase.functions.invoke(
+        'text-to-speech',
+        {
+          body: {
+            text,
+            voice: options.voice || 'Custom',
+            model: options.model || 'eleven_turbo_v2',
+          },
         }
-      });
+      );
 
       if (error) {
         logger.error('Supabase function error:', error);
@@ -58,14 +76,14 @@ export const useOptimizedTextToSpeech = () => {
       for (let i = 0; i < binaryString.length; i++) {
         audioArray[i] = binaryString.charCodeAt(i);
       }
-      
+
       const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
       const audioUrl = URL.createObjectURL(audioBlob);
-      
+
       const audio = new Audio(audioUrl);
       audio.volume = soundVolume;
 
-      audio.addEventListener('error', (e) => logger.error('Audio error:', e));
+      audio.addEventListener('error', e => logger.error('Audio error:', e));
 
       return audio;
     } catch (error) {
@@ -82,10 +100,10 @@ export const useOptimizedTextToSpeech = () => {
     }
 
     setIsProcessingQueue(true);
-    
+
     for (let i = 0; i < audioQueue.length; i++) {
       const audio = audioQueue[i];
-      
+
       if (!audio) {
         logger.warn(`Audio segment ${i} is null, skipping`);
         continue;
@@ -105,12 +123,12 @@ export const useOptimizedTextToSpeech = () => {
             clearTimeout(timeout);
             resolve();
           };
-          audio.onerror = (e) => {
+          audio.onerror = e => {
             logger.error('Audio load error:', e);
             clearTimeout(timeout);
             reject(new Error('Audio load failed'));
           };
-          
+
           audio.load();
         });
 
@@ -125,19 +143,18 @@ export const useOptimizedTextToSpeech = () => {
             URL.revokeObjectURL(audio.src);
             resolve();
           };
-          audio.onerror = (e) => {
+          audio.onerror = e => {
             logger.error('Audio playback error:', e);
             clearTimeout(timeout);
             reject(new Error('Audio playback failed'));
           };
-          
-          audio.play().catch((playError) => {
+
+          audio.play().catch(playError => {
             logger.error('Audio.play() failed:', playError);
             clearTimeout(timeout);
             reject(playError);
           });
         });
-
       } catch (error) {
         logger.error('Error playing audio segment:', error);
         URL.revokeObjectURL(audio.src);
@@ -150,7 +167,10 @@ export const useOptimizedTextToSpeech = () => {
     setAudioQueue([]);
   };
 
-  const generateAndPlaySpeech = async (text: string, options: TextToSpeechOptions = {}) => {
+  const generateAndPlaySpeech = async (
+    text: string,
+    options: TextToSpeechOptions = {}
+  ) => {
     if (!soundEnabled) {
       logger.debug('Sound disabled, skipping speech generation');
       return;
@@ -163,7 +183,10 @@ export const useOptimizedTextToSpeech = () => {
 
     try {
       setIsGenerating(true);
-      logger.debug('Starting speech generation for text:', text.substring(0, 50) + '...');
+      logger.debug(
+        'Starting speech generation for text:',
+        text.substring(0, 50) + '...'
+      );
 
       if (currentAudio || isProcessingQueue) {
         stopSpeech();
@@ -173,12 +196,12 @@ export const useOptimizedTextToSpeech = () => {
       const paragraphs = splitTextIntoParagraphs(text);
       const audioSegments: HTMLAudioElement[] = [];
 
-      const audioPromises = paragraphs.map(paragraph => 
+      const audioPromises = paragraphs.map(paragraph =>
         generateAudioForParagraph(paragraph, options)
       );
 
       const results = await Promise.all(audioPromises);
-      
+
       for (const audio of results) {
         if (audio) {
           audioSegments.push(audio);
@@ -191,7 +214,6 @@ export const useOptimizedTextToSpeech = () => {
 
       setAudioQueue(audioSegments);
       await playAudioQueue(audioSegments);
-
     } catch (error) {
       logger.error('Error generating or playing speech:', error);
       setIsPlaying(false);
@@ -205,12 +227,17 @@ export const useOptimizedTextToSpeech = () => {
 
   const stopSpeech = () => {
     // Debounce multiple rapid calls
-    if (!currentAudio && audioQueue.length === 0 && !isPlaying && !isProcessingQueue) {
+    if (
+      !currentAudio &&
+      audioQueue.length === 0 &&
+      !isPlaying &&
+      !isProcessingQueue
+    ) {
       return;
     }
-    
+
     logger.info('Stopping speech playback');
-    
+
     // Stop current audio efficiently
     if (currentAudio) {
       try {
@@ -245,6 +272,6 @@ export const useOptimizedTextToSpeech = () => {
     generateAndPlaySpeech,
     stopSpeech,
     isGenerating,
-    isPlaying: isPlaying || isProcessingQueue
+    isPlaying: isPlaying || isProcessingQueue,
   };
 };

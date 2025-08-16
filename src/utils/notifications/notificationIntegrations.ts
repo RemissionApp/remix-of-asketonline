@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
  * Интеграции push-уведомлений с событиями приложения
  */
 export class NotificationIntegrations {
-  
   /**
    * Интеграция с системой аскез (пактов)
    */
@@ -13,19 +12,15 @@ export class NotificationIntegrations {
     // Слушаем события создания новых пактов
     window.addEventListener('pact:created', async (event: any) => {
       const { pact, userId } = event.detail;
-      
+
       // Отправляем уведомление о начале аскезы
-      await PushNotificationService.sendPactStart(
-        userId,
-        pact.title,
-        pact.id
-      );
+      await PushNotificationService.sendPactStart(userId, pact.title, pact.id);
     });
 
     // Слушаем события завершения пактов
     window.addEventListener('pact:completed', async (event: any) => {
       const { pact, userId } = event.detail;
-      
+
       // Отправляем уведомление о завершении
       await PushNotificationService.sendPactComplete(
         userId,
@@ -41,7 +36,7 @@ export class NotificationIntegrations {
   static setupAchievementIntegrations() {
     window.addEventListener('achievement:unlocked', async (event: any) => {
       const { achievement, userId } = event.detail;
-      
+
       await PushNotificationService.sendAchievement(
         userId,
         achievement.title,
@@ -56,7 +51,7 @@ export class NotificationIntegrations {
   static setupUniverseIntegrations() {
     window.addEventListener('universe:message', async (event: any) => {
       const { message, userId } = event.detail;
-      
+
       await PushNotificationService.sendUniverseMessage(userId, message);
     });
   }
@@ -67,7 +62,7 @@ export class NotificationIntegrations {
   static setupSubscriptionIntegrations() {
     window.addEventListener('subscription:reminder', async (event: any) => {
       const { userId, message } = event.detail;
-      
+
       await PushNotificationService.sendSubscriptionReminder(userId, message);
     });
   }
@@ -92,12 +87,14 @@ export class NotificationIntegrations {
       // Получаем всех пользователей с активными пактами
       const { data: activePacts, error } = await supabase
         .from('pacts')
-        .select(`
+        .select(
+          `
           id,
           title,
           user_id,
           profiles!inner(name)
-        `)
+        `
+        )
         .eq('status', 'active');
 
       if (error) throw error;
@@ -116,14 +113,13 @@ export class NotificationIntegrations {
       for (const userId in userPacts) {
         const pacts = userPacts[userId];
         const mainPact = pacts[0]; // Берем первый активный пакт
-        
-        await PushNotificationService.sendDailyReminder(
-          userId,
-          mainPact.title
-        );
+
+        await PushNotificationService.sendDailyReminder(userId, mainPact.title);
       }
 
-      console.log(`Daily reminders sent to ${Object.keys(userPacts).length} users`);
+      console.log(
+        `Daily reminders sent to ${Object.keys(userPacts).length} users`
+      );
     } catch (error) {
       console.error('Error sending daily reminders:', error);
     }
@@ -134,11 +130,11 @@ export class NotificationIntegrations {
    */
   static async sendWeeklyMotivation() {
     const motivationalMessages = [
-      "Ваш путь к просветлению продолжается! Каждый день - это новая возможность стать лучше ✨",
-      "Вселенная видит ваши усилия. Продолжайте идти по пути аскезы! 🌟",
-      "Медитация и самодисциплина приближают вас к истинному счастью 🧘‍♀️",
-      "Ваша духовная практика растет с каждым днем. Гордитесь своими достижениями! 🏆",
-      "Космическая энергия поддерживает вас на пути развития 🌌"
+      'Ваш путь к просветлению продолжается! Каждый день - это новая возможность стать лучше ✨',
+      'Вселенная видит ваши усилия. Продолжайте идти по пути аскезы! 🌟',
+      'Медитация и самодисциплина приближают вас к истинному счастью 🧘‍♀️',
+      'Ваша духовная практика растет с каждым днем. Гордитесь своими достижениями! 🏆',
+      'Космическая энергия поддерживает вас на пути развития 🌌',
     ];
 
     try {
@@ -150,12 +146,13 @@ export class NotificationIntegrations {
 
       if (error) throw error;
 
-      const randomMessage = motivationalMessages[
-        Math.floor(Math.random() * motivationalMessages.length)
-      ];
+      const randomMessage =
+        motivationalMessages[
+          Math.floor(Math.random() * motivationalMessages.length)
+        ];
 
       const userIds = users?.map(user => user.id) || [];
-      
+
       if (userIds.length > 0) {
         await PushNotificationService.sendBulk(userIds, {
           type: 'universe_message',

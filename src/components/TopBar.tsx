@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import { CircleDot } from 'lucide-react';
 import { RankBadge } from './RankBadge';
@@ -13,39 +12,46 @@ import { useNavigate } from 'react-router-dom';
 export const TopBar: React.FC = memo(() => {
   const { userProfile } = useAppStore();
   const navigate = useNavigate();
-  
+
   const handleZodiacClick = () => {
     if (userProfile?.isPro && userProfile?.birthDate) {
       navigate('/full-horoscope');
     }
   };
-  
+
   return (
     <div className="w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 h-16">
       {/* Energy points and controls group */}
       <div className="absolute top-4 right-4 z-10 flex items-center space-x-2">
         {/* Sound toggle */}
         <SoundToggle />
-        
+
         {/* Zodiac badge - now positioned to the left of energy points */}
-        <div onClick={handleZodiacClick} className={userProfile?.isPro && userProfile?.birthDate ? "cursor-pointer" : ""}>
+        <div
+          onClick={handleZodiacClick}
+          className={
+            userProfile?.isPro && userProfile?.birthDate ? 'cursor-pointer' : ''
+          }
+        >
           <ZodiacBadge size="sm" />
         </div>
-        
+
         {/* Energy points display */}
         <div className="flex items-center px-3 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20">
           <CircleDot size={16} className="text-cosmic-gold mr-1.5" />
-          <span className="text-cosmic-gold font-medium">{userProfile?.energyPoints || 0}</span>
+          <span className="text-cosmic-gold font-medium">
+            {userProfile?.energyPoints || 0}
+          </span>
         </div>
       </div>
-      
+
       {/* Pro badge if user has pro subscription */}
       {userProfile?.isPro && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
           <ProBadge size="sm" />
         </div>
       )}
-      
+
       {/* User avatar and rank badge */}
       <div className="absolute top-4 left-4 z-10 flex items-center space-x-2">
         <UserAvatar size="sm" showZodiacBadge={false} />

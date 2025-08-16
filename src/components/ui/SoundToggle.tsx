@@ -4,7 +4,7 @@ import { useAppStore } from '@/store/useAppStore';
 
 export const SoundToggle: React.FC = () => {
   const { soundEnabled, setSoundEnabled } = useAppStore();
-  
+
   return (
     <button
       onClick={() => setSoundEnabled(!soundEnabled)}

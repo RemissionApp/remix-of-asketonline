@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MessageSquare, Stars } from 'lucide-react';
 
@@ -11,12 +10,18 @@ export const EmptyChatState: React.FC = () => {
           <MessageSquare size={32} className="text-cosmic-accent/50" />
         </div>
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-cosmic-accent/20 rounded-full animate-pulse"></div>
-        <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-cosmic-accent/10 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+        <div
+          className="absolute -bottom-1 -left-1 w-4 h-4 bg-cosmic-accent/10 rounded-full animate-pulse"
+          style={{ animationDelay: '0.5s' }}
+        ></div>
       </div>
-      
-      <h3 className="text-xl font-serif text-cosmic-accent mb-2 text-center">Диалог со Вселенной</h3>
+
+      <h3 className="text-xl font-serif text-cosmic-accent mb-2 text-center">
+        Диалог со Вселенной
+      </h3>
       <p className="text-cosmic-secondary text-center max-w-md mb-2">
-        Задайте вопрос, и Вселенная ответит вам через язык звёзд, метафор и космической мудрости.
+        Задайте вопрос, и Вселенная ответит вам через язык звёзд, метафор и
+        космической мудрости.
       </p>
       <p className="text-cosmic-secondary/70 text-sm text-center italic">
         Каждый вопрос — это путешествие к осознанию...

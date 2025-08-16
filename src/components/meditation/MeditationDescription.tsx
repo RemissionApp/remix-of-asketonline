@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Music, User, Leaf, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
   backgroundMusic,
   voiceOptions,
   onMusicChange,
-  onVoiceChange
+  onVoiceChange,
 }) => {
   const [selectedMusic, setSelectedMusic] = useState(backgroundMusic[0]);
   const [selectedVoice, setSelectedVoice] = useState(voiceOptions[0]);
@@ -27,7 +26,7 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const musicUrls: { [key: string]: string } = {
-    'Лес': 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3'
+    Лес: 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3',
   };
 
   const handleMusicPreview = async (music: string) => {
@@ -86,8 +85,12 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
             <Leaf size={16} className="text-cosmic-accent" />
           </div>
           <div>
-            <p className="text-white font-medium mb-2">Сообщение от куратора:</p>
-            <p className="text-cosmic-secondary leading-relaxed">{description}</p>
+            <p className="text-white font-medium mb-2">
+              Сообщение от куратора:
+            </p>
+            <p className="text-cosmic-secondary leading-relaxed">
+              {description}
+            </p>
           </div>
         </div>
       </div>
@@ -99,18 +102,19 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
           <h3 className="text-white font-medium">Фоновая музыка</h3>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {backgroundMusic.map((music) => (
+          {backgroundMusic.map(music => (
             <div key={music} className="flex items-center gap-2">
               <Button
-                variant={selectedMusic === music ? "default" : "outline"}
+                variant={selectedMusic === music ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => {
                   setSelectedMusic(music);
                   onMusicChange(music);
                 }}
-                className={`flex-1 ${selectedMusic === music 
-                  ? "bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent" 
-                  : "border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent"
+                className={`flex-1 ${
+                  selectedMusic === music
+                    ? 'bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent'
+                    : 'border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent'
                 }`}
               >
                 {music}
@@ -142,18 +146,19 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
           <h3 className="text-white font-medium">Голос</h3>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {voiceOptions.map((voice) => (
+          {voiceOptions.map(voice => (
             <Button
               key={voice}
-              variant={selectedVoice === voice ? "default" : "outline"}
+              variant={selectedVoice === voice ? 'default' : 'outline'}
               size="sm"
               onClick={() => {
                 setSelectedVoice(voice);
                 onVoiceChange(voice);
               }}
-              className={selectedVoice === voice 
-                ? "bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent" 
-                : "border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent"
+              className={
+                selectedVoice === voice
+                  ? 'bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent'
+                  : 'border-cosmic-accent/40 text-cosmic-secondary hover:text-cosmic-accent'
               }
             >
               {voice}
@@ -168,12 +173,12 @@ export const MeditationDescription: React.FC<MeditationDescriptionProps> = ({
         <Textarea
           placeholder="Как вы себя чувствуете? Что приходит в голову?"
           value={feelings}
-          onChange={(e) => setFeelings(e.target.value)}
+          onChange={e => setFeelings(e.target.value)}
           className="bg-cosmic-dark/40 border-cosmic-accent/20 text-white placeholder:text-cosmic-secondary"
           rows={4}
         />
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           className="bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-cosmic-accent border border-cosmic-accent/40"
         >
           Сохранить запись

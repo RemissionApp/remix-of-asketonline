@@ -7,8 +7,8 @@ import { createLogger } from '@/utils/loggerUtils';
 // Агенты для разных языков
 const AGENTS = {
   ru: 'agent_01jzg4fchcew0tq8fy4j75vkva',
-  en: 'agent_01jzhxjnzrfghs4d2dqbyz6d3a', 
-  es: 'agent_01jzhxwswhfas9ss9ae74n16v0'
+  en: 'agent_01jzhxjnzrfghs4d2dqbyz6d3a',
+  es: 'agent_01jzhxwswhfas9ss9ae74n16v0',
 };
 
 export const useElevenLabsConversation = () => {
@@ -27,34 +27,40 @@ export const useElevenLabsConversation = () => {
       setIsConnected(false);
       setConversationId(null);
     },
-    onMessage: (message) => {
-      logger.debug('Received message', { messageContent: message.message, source: message.source });
+    onMessage: message => {
+      logger.debug('Received message', {
+        messageContent: message.message,
+        source: message.source,
+      });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('ElevenLabs conversation error', error);
-    }
+    },
   });
 
   const startConversation = useCallback(async () => {
     try {
       // Получаем ID агента на основе выбранного языка
       const agentId = AGENTS[language as keyof typeof AGENTS] || AGENTS.en;
-      
+
       // Запрашиваем подписанную ссылку от нашего edge function
-      const { data, error } = await supabase.functions.invoke('elevenlabs-signed-url', {
-        body: { agentId }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        'elevenlabs-signed-url',
+        {
+          body: { agentId },
+        }
+      );
 
       if (error || !data?.signedUrl) {
         throw new Error(error?.message || 'Failed to get signed URL');
       }
-      
+
       // Запускаем разговор с агентом
-      const id = await conversation.startSession({ 
-        agentId: agentId
+      const id = await conversation.startSession({
+        agentId: agentId,
       });
       setConversationId(id);
-      
+
       return id;
     } catch (error) {
       logger.error('Error starting ElevenLabs conversation', error);
@@ -70,13 +76,18 @@ export const useElevenLabsConversation = () => {
     }
   }, [conversation]);
 
-  const setVolume = useCallback(async (volume: number) => {
-    try {
-      await conversation.setVolume({ volume: Math.max(0, Math.min(1, volume)) });
-    } catch (error) {
-      logger.error('Error setting volume', error);
-    }
-  }, [conversation]);
+  const setVolume = useCallback(
+    async (volume: number) => {
+      try {
+        await conversation.setVolume({
+          volume: Math.max(0, Math.min(1, volume)),
+        });
+      } catch (error) {
+        logger.error('Error setting volume', error);
+      }
+    },
+    [conversation]
+  );
 
   return {
     startConversation,
@@ -85,6 +96,6 @@ export const useElevenLabsConversation = () => {
     isConnected,
     isSpeaking: conversation.isSpeaking || false,
     status: conversation.status,
-    conversationId
+    conversationId,
   };
 };

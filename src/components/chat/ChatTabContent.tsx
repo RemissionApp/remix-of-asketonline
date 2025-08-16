@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChatMessagesDisplay } from '@/components/chat/ChatMessagesDisplay';
 import { UniverseChatMessage } from '@/utils/universeChat';
@@ -10,21 +9,18 @@ export interface ChatTabContentProps {
   chatMessages: UniverseChatMessage[];
 }
 
-export const ChatTabContent: React.FC<ChatTabContentProps> = ({ 
+export const ChatTabContent: React.FC<ChatTabContentProps> = ({
   isLoadingChat,
-  chatMessages
+  chatMessages,
 }) => {
   const { userProfile, language } = useAppStore();
-  
+
   return (
     <div className="h-[calc(100vh-230px)] flex flex-col">
       {chatMessages.length === 0 && !isLoadingChat && (
         <UserGreeting userProfile={userProfile} language={language} />
       )}
-      <ChatMessagesDisplay 
-        isLoading={isLoadingChat} 
-        messages={chatMessages} 
-      />
+      <ChatMessagesDisplay isLoading={isLoadingChat} messages={chatMessages} />
     </div>
   );
 };

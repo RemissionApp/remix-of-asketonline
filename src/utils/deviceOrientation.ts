@@ -6,7 +6,7 @@ export interface OrientationLockResult {
   error?: string;
 }
 
-export type OrientationType = 
+export type OrientationType =
   | 'any'
   | 'natural'
   | 'landscape'
@@ -33,11 +33,11 @@ class DeviceOrientationManager {
    */
   getCurrentOrientation(): string {
     if (!this.isSupported()) return 'unknown';
-    
+
     if (screen.orientation) {
       return screen.orientation.type;
     }
-    
+
     // Fallback для старых браузеров
     if (window.innerWidth > window.innerHeight) {
       return 'landscape';
@@ -49,7 +49,9 @@ class DeviceOrientationManager {
   /**
    * Блокирует ориентацию
    */
-  async lockOrientation(orientation: OrientationType): Promise<OrientationLockResult> {
+  async lockOrientation(
+    orientation: OrientationType
+  ): Promise<OrientationLockResult> {
     if (!this.isSupported()) {
       return { success: false, supported: false };
     }
@@ -59,21 +61,21 @@ class DeviceOrientationManager {
       if (!screen.orientation || !('lock' in screen.orientation)) {
         throw new Error('Screen orientation lock not supported');
       }
-      
+
       await (screen.orientation as any).lock(orientation);
       this.lockActive = true;
       console.log(`Orientation locked to: ${orientation}`);
-      
-      return { 
-        success: true, 
-        supported: true, 
-        orientation: this.getCurrentOrientation() 
+
+      return {
+        success: true,
+        supported: true,
+        orientation: this.getCurrentOrientation(),
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -91,21 +93,21 @@ class DeviceOrientationManager {
       if (!screen.orientation || !('unlock' in screen.orientation)) {
         throw new Error('Screen orientation unlock not supported');
       }
-      
+
       (screen.orientation as any).unlock();
       this.lockActive = false;
       console.log('Orientation unlocked');
-      
-      return { 
-        success: true, 
-        supported: true, 
-        orientation: this.getCurrentOrientation() 
+
+      return {
+        success: true,
+        supported: true,
+        orientation: this.getCurrentOrientation(),
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -115,7 +117,7 @@ class DeviceOrientationManager {
    */
   addOrientationChangeListener(callback: (orientation: string) => void): void {
     this.orientationChangeListeners.push(callback);
-    
+
     if (this.isSupported() && screen.orientation) {
       screen.orientation.addEventListener('change', () => {
         const newOrientation = this.getCurrentOrientation();
@@ -137,19 +139,22 @@ class DeviceOrientationManager {
   /**
    * Получает статус ориентации
    */
-  getStatus(): { 
-    current: string; 
-    locked: boolean; 
-    supported: boolean; 
-    angle?: number 
+  getStatus(): {
+    current: string;
+    locked: boolean;
+    supported: boolean;
+    angle?: number;
   } {
     const current = this.getCurrentOrientation();
-    
+
     return {
       current,
       locked: this.lockActive,
       supported: this.isSupported(),
-      angle: this.isSupported() && screen.orientation ? screen.orientation.angle : undefined
+      angle:
+        this.isSupported() && screen.orientation
+          ? screen.orientation.angle
+          : undefined,
     };
   }
 
@@ -165,14 +170,18 @@ class DeviceOrientationManager {
   /**
    * Получает размеры экрана с учетом ориентации
    */
-  getScreenDimensions(): { width: number; height: number; isLandscape: boolean } {
+  getScreenDimensions(): {
+    width: number;
+    height: number;
+    isLandscape: boolean;
+  } {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    
+
     return {
       width,
       height,
-      isLandscape: width > height
+      isLandscape: width > height,
     };
   }
 }
@@ -198,7 +207,7 @@ export const meditationOrientation = {
   async unlockAfterMeditation(): Promise<OrientationLockResult> {
     console.log('Unlocking orientation after meditation');
     return await deviceOrientation.unlockOrientation();
-  }
+  },
 };
 
 /**
@@ -210,8 +219,11 @@ export const responsiveOrientation = {
    */
   setupResponsiveClasses(): void {
     const updateClasses = (orientation: string) => {
-      document.body.classList.remove('orientation-portrait', 'orientation-landscape');
-      
+      document.body.classList.remove(
+        'orientation-portrait',
+        'orientation-landscape'
+      );
+
       if (orientation.includes('portrait')) {
         document.body.classList.add('orientation-portrait');
       } else if (orientation.includes('landscape')) {
@@ -221,7 +233,7 @@ export const responsiveOrientation = {
 
     // Устанавливаем начальный класс
     updateClasses(deviceOrientation.getCurrentOrientation());
-    
+
     // Добавляем слушатель
     deviceOrientation.addOrientationChangeListener(updateClasses);
   },
@@ -229,7 +241,9 @@ export const responsiveOrientation = {
   /**
    * Получает рекомендуемую ориентацию для экрана
    */
-  getRecommendedOrientation(screenType: 'meditation' | 'chat' | 'main'): OrientationType {
+  getRecommendedOrientation(
+    screenType: 'meditation' | 'chat' | 'main'
+  ): OrientationType {
     switch (screenType) {
       case 'meditation':
         return 'portrait'; // Медитация лучше в портретной ориентации
@@ -240,5 +254,5 @@ export const responsiveOrientation = {
       default:
         return 'any';
     }
-  }
+  },
 };

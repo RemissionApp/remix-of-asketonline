@@ -1,4 +1,3 @@
-
 // Системные и пользовательские промпты для генерации гороскопов
 
 // Общий системный промпт для базового гороскопа
@@ -26,7 +25,9 @@ const detailedPrompt_ru = `Ты опытный астролог, создающ�
 Пиши в лёгком и дружелюбном стиле, как совет от хорошего друга. Избегай банальных фраз.`;
 
 // Пользовательский промпт для детального гороскопа на русском
-const userPrompt_ru = (sign: string) => `Создай подробный гороскоп для знака ${sign} на сегодня. 
+const userPrompt_ru = (
+  sign: string
+) => `Создай подробный гороскоп для знака ${sign} на сегодня. 
 Гороскоп должен быть разделен на 5 четких разделов:
 1. Общая атмосфера дня
 2. Советы по работе и финансам
@@ -56,7 +57,9 @@ VERY IMPORTANT:
 Write in a light and friendly style, like advice from a good friend. Avoid clichés.`;
 
 // Пользовательский промпт для детального гороскопа на английском
-const userPrompt_en = (sign: string) => `Create a detailed horoscope for ${sign} for today.
+const userPrompt_en = (
+  sign: string
+) => `Create a detailed horoscope for ${sign} for today.
 The horoscope should be divided into 5 distinct sections:
 1. General Day Atmosphere
 2. Work & Finance Advice
@@ -81,15 +84,24 @@ export function getSystemPrompt(language: string, detailed: boolean): string {
 }
 
 // Функция выбора пользовательского промпта в зависимости от языка и типа
-export function getUserPrompt(sign: string, language: string, detailed: boolean, birthDate: string | null): string {
+export function getUserPrompt(
+  sign: string,
+  language: string,
+  detailed: boolean,
+  birthDate: string | null
+): string {
   if (detailed) {
     const promptFunc = language === 'ru' ? userPrompt_ru : userPrompt_en;
-    return promptFunc(sign) + (birthDate ? ` Учти, что дата рождения: ${birthDate}.` : '');
+    return (
+      promptFunc(sign) +
+      (birthDate ? ` Учти, что дата рождения: ${birthDate}.` : '')
+    );
   } else {
-    const briefPrompt = language === 'ru' 
-      ? `Создай короткий гороскоп на сегодня для знака ${sign}.` 
-      : `Create a short horoscope for today for ${sign}.`;
-      
+    const briefPrompt =
+      language === 'ru'
+        ? `Создай короткий гороскоп на сегодня для знака ${sign}.`
+        : `Create a short horoscope for today for ${sign}.`;
+
     return briefPrompt + (birthDate ? ` Birth date: ${birthDate}.` : '');
   }
 }

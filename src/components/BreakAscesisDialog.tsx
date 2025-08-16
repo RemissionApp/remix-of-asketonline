@@ -1,32 +1,35 @@
 import React, { useState } from 'react';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  AlertTriangle, 
-  Zap, 
-  Clock, 
-  Heart, 
+import {
+  AlertTriangle,
+  Zap,
+  Clock,
+  Heart,
   Target,
   MessageSquare,
-  X
+  X,
 } from 'lucide-react';
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Pact } from '@/types';
-import { getPactBreakPenalty, formatPenaltyDescription } from '@/utils/pactUtils';
+import {
+  getPactBreakPenalty,
+  formatPenaltyDescription,
+} from '@/utils/pactUtils';
 
 interface BreakAscesisDialogProps {
   pact: Pact;
@@ -39,9 +42,11 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   pact,
   isOpen,
   onClose,
-  onConfirm
+  onConfirm,
 }) => {
-  const [step, setStep] = useState<'warning' | 'reason' | 'consequences'>('warning');
+  const [step, setStep] = useState<'warning' | 'reason' | 'consequences'>(
+    'warning'
+  );
   const [reason, setReason] = useState('');
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const { haptic, badge, notifications } = usePWAFeatures();
@@ -50,19 +55,22 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
   const getTitle = () => {
     switch (language) {
-      case 'ru': return 'Прервать аскезу?';
-      case 'es': return '¿Interrumpir ascesis?';
-      default: return 'Break Ascesis?';
+      case 'ru':
+        return 'Прервать аскезу?';
+      case 'es':
+        return '¿Interrumpir ascesis?';
+      default:
+        return 'Break Ascesis?';
     }
   };
 
   const getWarningMessage = () => {
     switch (language) {
-      case 'ru': 
+      case 'ru':
         return `Вы уверены, что хотите прервать аскезу "${pact.title}"? Это серьезное решение с последствиями.`;
-      case 'es': 
+      case 'es':
         return `¿Estás seguro de que quieres interrumpir la ascesis "${pact.title}"? Esta es una decisión seria con consecuencias.`;
-      default: 
+      default:
         return `Are you sure you want to break the ascesis "${pact.title}"? This is a serious decision with consequences.`;
     }
   };
@@ -80,8 +88,8 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
             'Сброс прогресса текущей аскезы',
             'Снижение ранга духовного развития',
             'Негативное влияние на карму',
-            'Потеря накопленных бонусов'
-          ]
+            'Потеря накопленных бонусов',
+          ],
         };
       case 'es':
         return {
@@ -91,8 +99,8 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
             'Reinicio del progreso de la ascesis actual',
             'Reducción del rango de desarrollo espiritual',
             'Impacto negativo en el karma',
-            'Pérdida de bonificaciones acumuladas'
-          ]
+            'Pérdida de bonificaciones acumuladas',
+          ],
         };
       default:
         return {
@@ -102,8 +110,8 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
             'Reset of current ascesis progress',
             'Spiritual rank reduction',
             'Negative karma impact',
-            'Loss of accumulated bonuses'
-          ]
+            'Loss of accumulated bonuses',
+          ],
         };
     }
   };
@@ -117,7 +125,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           'Потерял мотивацию',
           'Здоровье не позволяет',
           'Неправильно выбрал аскезу',
-          'Другая причина'
+          'Другая причина',
         ];
       case 'es':
         return [
@@ -126,7 +134,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           'Perdí la motivación',
           'La salud no lo permite',
           'Elegí mal la ascesis',
-          'Otra razón'
+          'Otra razón',
         ];
       default:
         return [
@@ -135,7 +143,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           'Lost motivation',
           'Health issues',
           'Chose wrong ascesis',
-          'Other reason'
+          'Other reason',
         ];
     }
   };
@@ -156,34 +164,48 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
   const handleConfirm = async () => {
     try {
-      console.log('BreakAscesisDialog: Confirming break', { selectedReason, reason });
-      
+      console.log('BreakAscesisDialog: Confirming break', {
+        selectedReason,
+        reason,
+      });
+
       // Non-blocking haptic feedback
       haptic.error().catch(err => console.warn('Haptic error failed:', err));
-      
-      const finalReason = selectedReason === 'Другая причина' || selectedReason === 'Otra razón' || selectedReason === 'Other reason' ? reason : selectedReason || undefined;
-      
+
+      const finalReason =
+        selectedReason === 'Другая причина' ||
+        selectedReason === 'Otra razón' ||
+        selectedReason === 'Other reason'
+          ? reason
+          : selectedReason || undefined;
+
       // Call confirm function first
       await onConfirm(finalReason);
-      
+
       // Update notifications and badge (non-blocking)
       try {
         await notifications.motivational(
-          language === 'ru' ? 'Аскеза прервана' : 
-          language === 'es' ? 'Ascesis interrumpida' : 'Ascesis broken'
+          language === 'ru'
+            ? 'Аскеза прервана'
+            : language === 'es'
+              ? 'Ascesis interrumpida'
+              : 'Ascesis broken'
         );
         await badge.increment();
       } catch (notificationError) {
         console.warn('Notification/badge update failed:', notificationError);
       }
-      
+
       // Reset dialog state
       onClose();
       setStep('warning');
       setReason('');
       setSelectedReason(null);
     } catch (error) {
-      handleError(error, { component: 'BreakAscesisDialog', action: 'handleConfirm' });
+      handleError(error, {
+        component: 'BreakAscesisDialog',
+        action: 'handleConfirm',
+      });
     }
   };
 
@@ -212,23 +234,25 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           <>
             <AlertDialogDescription className="space-y-4">
               <p>{getWarningMessage()}</p>
-              
+
               <Card className="border-destructive/20 bg-destructive/5">
                 <CardContent className="pt-4">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="w-4 h-4 text-destructive" />
                     <span className="font-medium text-destructive">
-                      {language === 'ru' ? 'Внимание!' : 
-                       language === 'es' ? '¡Atención!' : 'Warning!'}
+                      {language === 'ru'
+                        ? 'Внимание!'
+                        : language === 'es'
+                          ? '¡Atención!'
+                          : 'Warning!'}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {language === 'ru' ? 
-                      'Прерывание аскезы негативно влияет на ваше духовное развитие и прогресс в приложении.' :
-                     language === 'es' ? 
-                      'Interrumpir la ascesis afecta negativamente tu desarrollo espiritual y progreso en la aplicación.' :
-                      'Breaking ascesis negatively affects your spiritual development and app progress.'
-                    }
+                    {language === 'ru'
+                      ? 'Прерывание аскезы негативно влияет на ваше духовное развитие и прогресс в приложении.'
+                      : language === 'es'
+                        ? 'Interrumpir la ascesis afecta negativamente tu desarrollo espiritual y progreso en la aplicación.'
+                        : 'Breaking ascesis negatively affects your spiritual development and app progress.'}
                   </p>
                 </CardContent>
               </Card>
@@ -236,12 +260,18 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
             <AlertDialogFooter>
               <AlertDialogCancel onClick={handleCancel}>
-                {language === 'ru' ? 'Продолжить аскезу' : 
-                 language === 'es' ? 'Continuar ascesis' : 'Continue Ascesis'}
+                {language === 'ru'
+                  ? 'Продолжить аскезу'
+                  : language === 'es'
+                    ? 'Continuar ascesis'
+                    : 'Continue Ascesis'}
               </AlertDialogCancel>
               <Button variant="destructive" onClick={handleWarningNext}>
-                {language === 'ru' ? 'Все равно прервать' : 
-                 language === 'es' ? 'Interrumpir de todos modos' : 'Break Anyway'}
+                {language === 'ru'
+                  ? 'Все равно прервать'
+                  : language === 'es'
+                    ? 'Interrumpir de todos modos'
+                    : 'Break Anyway'}
               </Button>
             </AlertDialogFooter>
           </>
@@ -253,16 +283,21 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 <span className="font-medium">
-                  {language === 'ru' ? 'Расскажите, почему вы прерываете аскезу:' : 
-                   language === 'es' ? 'Cuéntanos por qué interrumpes la ascesis:' : 'Tell us why you\'re breaking the ascesis:'}
+                  {language === 'ru'
+                    ? 'Расскажите, почему вы прерываете аскезу:'
+                    : language === 'es'
+                      ? 'Cuéntanos por qué interrumpes la ascesis:'
+                      : "Tell us why you're breaking the ascesis:"}
                 </span>
               </div>
-              
+
               <div className="space-y-2">
-                {commonReasons.map((reasonOption) => (
+                {commonReasons.map(reasonOption => (
                   <Button
                     key={reasonOption}
-                    variant={selectedReason === reasonOption ? "default" : "outline"}
+                    variant={
+                      selectedReason === reasonOption ? 'default' : 'outline'
+                    }
                     size="sm"
                     className="w-full justify-start"
                     onClick={async () => {
@@ -279,12 +314,19 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                 ))}
               </div>
 
-              {(selectedReason === 'Другая причина' || selectedReason === 'Otra razón' || selectedReason === 'Other reason') && (
+              {(selectedReason === 'Другая причина' ||
+                selectedReason === 'Otra razón' ||
+                selectedReason === 'Other reason') && (
                 <Textarea
-                  placeholder={language === 'ru' ? 'Опишите свою причину...' : 
-                              language === 'es' ? 'Describe tu razón...' : 'Describe your reason...'}
+                  placeholder={
+                    language === 'ru'
+                      ? 'Опишите свою причину...'
+                      : language === 'es'
+                        ? 'Describe tu razón...'
+                        : 'Describe your reason...'
+                  }
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  onChange={e => setReason(e.target.value)}
                   className="min-h-[80px]"
                 />
               )}
@@ -292,16 +334,25 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setStep('warning')}>
-                {language === 'ru' ? 'Назад' : 
-                 language === 'es' ? 'Atrás' : 'Back'}
+                {language === 'ru'
+                  ? 'Назад'
+                  : language === 'es'
+                    ? 'Atrás'
+                    : 'Back'}
               </AlertDialogCancel>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={handleReasonNext}
-                disabled={!selectedReason || (selectedReason.includes('причина') && !reason.trim())}
+                disabled={
+                  !selectedReason ||
+                  (selectedReason.includes('причина') && !reason.trim())
+                }
               >
-                {language === 'ru' ? 'Далее' : 
-                 language === 'es' ? 'Siguiente' : 'Next'}
+                {language === 'ru'
+                  ? 'Далее'
+                  : language === 'es'
+                    ? 'Siguiente'
+                    : 'Next'}
               </Button>
             </AlertDialogFooter>
           </>
@@ -312,9 +363,11 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
             <AlertDialogDescription className="space-y-4">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-destructive" />
-                <span className="font-medium text-destructive">{consequences.title}</span>
+                <span className="font-medium text-destructive">
+                  {consequences.title}
+                </span>
               </div>
-              
+
               <ul className="space-y-2">
                 {consequences.items.map((item, index) => (
                   <li key={index} className="flex items-center gap-2 text-sm">
@@ -329,17 +382,19 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                   <div className="flex items-center gap-2 mb-2">
                     <Heart className="w-4 h-4 text-amber-600" />
                     <span className="font-medium text-amber-800">
-                      {language === 'ru' ? 'Помните:' : 
-                       language === 'es' ? 'Recuerda:' : 'Remember:'}
+                      {language === 'ru'
+                        ? 'Помните:'
+                        : language === 'es'
+                          ? 'Recuerda:'
+                          : 'Remember:'}
                     </span>
                   </div>
                   <p className="text-sm text-amber-700">
-                    {language === 'ru' ? 
-                      'Духовный путь - это марафон, а не спринт. Каждая попытка делает вас сильнее.' :
-                     language === 'es' ? 
-                      'El camino espiritual es un maratón, no un sprint. Cada intento te hace más fuerte.' :
-                      'The spiritual path is a marathon, not a sprint. Every attempt makes you stronger.'
-                    }
+                    {language === 'ru'
+                      ? 'Духовный путь - это марафон, а не спринт. Каждая попытка делает вас сильнее.'
+                      : language === 'es'
+                        ? 'El camino espiritual es un maratón, no un sprint. Cada intento te hace más fuerte.'
+                        : 'The spiritual path is a marathon, not a sprint. Every attempt makes you stronger.'}
                   </p>
                 </CardContent>
               </Card>
@@ -347,13 +402,19 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setStep('reason')}>
-                {language === 'ru' ? 'Назад' : 
-                 language === 'es' ? 'Atrás' : 'Back'}
+                {language === 'ru'
+                  ? 'Назад'
+                  : language === 'es'
+                    ? 'Atrás'
+                    : 'Back'}
               </AlertDialogCancel>
               <Button variant="destructive" onClick={handleConfirm}>
                 <Zap className="w-4 h-4 mr-1" />
-                {language === 'ru' ? 'Прервать аскезу' : 
-                 language === 'es' ? 'Interrumpir ascesis' : 'Break Ascesis'}
+                {language === 'ru'
+                  ? 'Прервать аскезу'
+                  : language === 'es'
+                    ? 'Interrumpir ascesis'
+                    : 'Break Ascesis'}
               </Button>
             </AlertDialogFooter>
           </>

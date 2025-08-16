@@ -1,17 +1,19 @@
-
 import { supabase } from '@/lib/supabase';
 import { UniverseChatSession } from './types';
 
 /**
  * Creates a new chat session
  */
-export const createChatSession = async (userId: string, title: string): Promise<string | null> => {
+export const createChatSession = async (
+  userId: string,
+  title: string
+): Promise<string | null> => {
   try {
     const { data, error } = await supabase
       .from('universe_chat_sessions')
       .insert({
         user_id: userId,
-        title
+        title,
       })
       .select('id')
       .single();
@@ -27,7 +29,9 @@ export const createChatSession = async (userId: string, title: string): Promise<
 /**
  * Loads all chat sessions for the user
  */
-export const loadChatSessions = async (userId: string): Promise<UniverseChatSession[]> => {
+export const loadChatSessions = async (
+  userId: string
+): Promise<UniverseChatSession[]> => {
   if (!userId) {
     console.error('User ID is required to load chat sessions');
     return [];
@@ -39,7 +43,7 @@ export const loadChatSessions = async (userId: string): Promise<UniverseChatSess
       .select('*')
       .eq('user_id', userId)
       .order('last_message', { ascending: false });
-      
+
     if (error) throw error;
     console.log(`Loaded ${data?.length || 0} chat sessions for user ${userId}`);
     return data as UniverseChatSession[];
@@ -52,7 +56,9 @@ export const loadChatSessions = async (userId: string): Promise<UniverseChatSess
 /**
  * Updates the session's last message timestamp
  */
-export const updateSessionTimestamp = async (sessionId: string): Promise<void> => {
+export const updateSessionTimestamp = async (
+  sessionId: string
+): Promise<void> => {
   try {
     await supabase
       .from('universe_chat_sessions')

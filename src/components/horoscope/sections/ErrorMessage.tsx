@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -17,12 +16,12 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   language,
   zodiacInfo,
   userName,
-  onRetry
+  onRetry,
 }) => {
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
       <CardHeader>
-        <HoroscopeHeader 
+        <HoroscopeHeader
           zodiacInfo={zodiacInfo}
           translations={translations}
           language={language}
@@ -31,15 +30,11 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center py-8">
         <p className="text-cosmic-accent text-center">
-          {language === 'ru' 
+          {language === 'ru'
             ? 'Не удалось получить данные гороскопа. Пожалуйста, попробуйте еще раз.'
             : 'Failed to retrieve horoscope data. Please try again.'}
         </p>
-        <CosmicButton 
-          variant="outline" 
-          className="mt-4"
-          onClick={onRetry}
-        >
+        <CosmicButton variant="outline" className="mt-4" onClick={onRetry}>
           {language === 'ru' ? 'Попробовать снова' : 'Try again'}
         </CosmicButton>
       </CardContent>

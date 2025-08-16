@@ -5,9 +5,9 @@ interface StarFieldProps {
   galaxyCount?: number;
 }
 
-export const StarField: React.FC<StarFieldProps> = ({ 
+export const StarField: React.FC<StarFieldProps> = ({
   starCount = 60, // Reduced for mobile performance
-  galaxyCount = 3  // Reduced for mobile performance
+  galaxyCount = 3, // Reduced for mobile performance
 }) => {
   // Создаем массив с случайными позициями и размерами для звезд
   const stars = useMemo(() => {
@@ -22,7 +22,7 @@ export const StarField: React.FC<StarFieldProps> = ({
       moveDistance: Math.random() * 20 + 10, // Расстояние движения (в пикселях)
     }));
   }, [starCount]);
-  
+
   // Создаем массив с галактиками
   const galaxies = useMemo(() => {
     return Array.from({ length: galaxyCount }, (_, i) => ({
@@ -39,10 +39,11 @@ export const StarField: React.FC<StarFieldProps> = ({
   return (
     <div className="main-background fixed inset-0 overflow-hidden pointer-events-none z-0">
       {/* Background image optimized for mobile */}
-      <div 
-        className="absolute inset-0" 
+      <div
+        className="absolute inset-0"
         style={{
-          backgroundImage: 'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
+          backgroundImage:
+            'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
@@ -50,15 +51,18 @@ export const StarField: React.FC<StarFieldProps> = ({
           opacity: 1,
           filter: 'brightness(1.3)',
           width: '100vw',
-          height: '100vh'
+          height: '100vh',
         }}
       />
-      
+
       {/* Mobile-optimized overlay */}
-      <div className="absolute inset-0 bg-cosmic-dark/40" style={{ zIndex: -1 }}></div>
-      
+      <div
+        className="absolute inset-0 bg-cosmic-dark/40"
+        style={{ zIndex: -1 }}
+      ></div>
+
       {/* Галактики */}
-      {galaxies.map((galaxy) => (
+      {galaxies.map(galaxy => (
         <div
           key={`galaxy-${galaxy.id}`}
           className="absolute rounded-full animate-pulse-slow"
@@ -69,30 +73,30 @@ export const StarField: React.FC<StarFieldProps> = ({
             height: `${galaxy.size}px`,
             opacity: galaxy.opacity,
             transform: `rotate(${galaxy.rotation}deg)`,
-            background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(145, 185, 255, 0.15) 40%, rgba(10, 6, 30, 0) 70%)',
+            background:
+              'radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(145, 185, 255, 0.15) 40%, rgba(10, 6, 30, 0) 70%)',
             boxShadow: '0 0 40px rgba(139, 92, 246, 0.4)',
             animationDelay: galaxy.animationDelay,
           }}
         />
       ))}
-      
+
       {/* Звезды */}
-      {stars.map((star) => {
-        const moveKeyframes = star.moveDirection === 'horizontal' 
-          ? `@keyframes move-${star.id} {
+      {stars.map(star => {
+        const moveKeyframes =
+          star.moveDirection === 'horizontal'
+            ? `@keyframes move-${star.id} {
               0%, 100% { transform: translateX(0); }
               50% { transform: translateX(${star.moveDistance}px); }
             }`
-          : `@keyframes move-${star.id} {
+            : `@keyframes move-${star.id} {
               0%, 100% { transform: translateY(0); }
               50% { transform: translateY(${star.moveDistance}px); }
             }`;
-            
+
         return (
           <div key={star.id}>
-            <style>
-              {moveKeyframes}
-            </style>
+            <style>{moveKeyframes}</style>
             <div
               className="star absolute rounded-full"
               style={{

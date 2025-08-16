@@ -1,4 +1,3 @@
-
 export type SupportedLanguage = 'en' | 'ru' | 'es';
 
 export interface MeditationCategoriesTranslations {
@@ -208,5 +207,5 @@ export interface Translations {
   legal?: LegalTranslations;
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
-  affirmations?: AffirmationsTranslations;  // Add this new field to support affirmations
+  affirmations?: AffirmationsTranslations; // Add this new field to support affirmations
 }

@@ -1,4 +1,3 @@
-
 // Types for Universe Chat functionality
 export interface UniverseChatMessage {
   id: string;

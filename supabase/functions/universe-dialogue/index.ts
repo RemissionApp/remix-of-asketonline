@@ -1,10 +1,10 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import 'https://deno.land/x/xhr@0.1.0/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface RequestBody {
@@ -23,7 +23,7 @@ interface RequestBody {
   };
 }
 
-serve(async (req) => {
+serve(async req => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -35,12 +35,17 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language = 'ru', userData, recentMessages = [] } = await req.json() as RequestBody;
-    
+    const {
+      question,
+      language = 'ru',
+      userData,
+      recentMessages = [],
+    } = (await req.json()) as RequestBody;
+
     if (!question || question.trim() === '') {
       throw new Error('Question is required');
     }
-    
+
     // Custom system prompt based on user request
     const systemPrompt = `Ты — эксперт-консультант, который помогает пользователю найти ответы на вопросы.
     
@@ -72,30 +77,30 @@ serve(async (req) => {
 "Подбери список лучших книг по этой теме. Определи, какие из них наиболее полно раскрывают вопрос, и сделай краткое изложение ключевых идей каждой книги, чтобы помочь быстрее разобраться в теме."
 
 Сохраняй легкий космический тон, но давай полезные и конкретные рекомендации.`;
-    
+
     // Add user context if available
-    let userContext = "";
+    let userContext = '';
     if (userData) {
       if (userData.userName) {
         userContext += `\nИмя пользователя: ${userData.userName}`;
       }
-      
+
       if (userData.userGender) {
         userContext += `\nПол: ${userData.userGender}`;
       }
-      
+
       if (userData.birthDate) {
         userContext += `\nДата рождения: ${userData.birthDate}`;
       }
-      
+
       if (userData.zodiacSign) {
         userContext += `\nЗнак зодиака: ${userData.zodiacSign}`;
       }
-      
+
       if (userData.userGoal) {
         userContext += `\nЦель: ${userData.userGoal}`;
       }
-      
+
       if (userData.currentVow) {
         userContext += `\nТекущая аскеза/обет: ${userData.currentVow}`;
         if (userData.vowDay && userData.vowDuration) {
@@ -103,13 +108,13 @@ serve(async (req) => {
         }
       }
     }
-    
+
     // Add message history for context
-    let messageHistory = "";
+    let messageHistory = '';
     if (recentMessages && recentMessages.length > 0) {
-      messageHistory = `\n\nИстория последних сообщений пользователя (используй для контекста):\n${recentMessages.map((msg, i) => `${i+1}. ${msg}`).join('\n')}`;
+      messageHistory = `\n\nИстория последних сообщений пользователя (используй для контекста):\n${recentMessages.map((msg, i) => `${i + 1}. ${msg}`).join('\n')}`;
     }
-    
+
     // User prompt with context
     const userPrompt = `Вопрос пользователя: "${question}"
 
@@ -119,65 +124,74 @@ ${messageHistory}
 Ответь, учитывая все 9 пунктов из инструкции, сохраняя глубину экспертного мнения.`;
 
     // Use GPT-4o for expert responses
-    const gptModel = "gpt-4o";
-    
-    console.log(`Processing dialogue request with model ${gptModel}. Question: ${question}`);
-    
+    const gptModel = 'gpt-4o';
+
+    console.log(
+      `Processing dialogue request with model ${gptModel}. Question: ${question}`
+    );
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: gptModel,
         messages: [
           {
-            role: "system",
-            content: systemPrompt
+            role: 'system',
+            content: systemPrompt,
           },
           {
-            role: "user",
-            content: userPrompt
-          }
+            role: 'user',
+            content: userPrompt,
+          },
         ],
         temperature: 0.8,
-        max_tokens: 1000
+        max_tokens: 1000,
       }),
     });
 
     const data = await response.json();
-    
+
     if (data.error) {
       console.error('OpenAI API error:', data.error);
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
     const answer = data.choices[0].message.content;
-    
-    console.log("Generated Universe dialogue response:", answer.substring(0, 100) + "...");
+
+    console.log(
+      'Generated Universe dialogue response:',
+      answer.substring(0, 100) + '...'
+    );
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in universe-dialogue function:', error);
-    
+
     // Fallback responses if the API fails
     const fallbackResponses = [
-      "Я понимаю, что этот вопрос важен для тебя. К сожалению, сейчас я не могу дать полный ответ. Попробуй переформулировать вопрос или задать его позже.",
-      "Интересный вопрос! Мне нужно больше времени, чтобы дать тебе качественный ответ. Попробуй снова через несколько минут.",
-      "Я хотела бы помочь тебе с этим вопросом, но сейчас у меня не получается собрать все нужные данные. Можешь задать вопрос по-другому?"
+      'Я понимаю, что этот вопрос важен для тебя. К сожалению, сейчас я не могу дать полный ответ. Попробуй переформулировать вопрос или задать его позже.',
+      'Интересный вопрос! Мне нужно больше времени, чтобы дать тебе качественный ответ. Попробуй снова через несколько минут.',
+      'Я хотела бы помочь тебе с этим вопросом, но сейчас у меня не получается собрать все нужные данные. Можешь задать вопрос по-другому?',
     ];
-    
-    const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-    
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      answer: randomResponse
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+
+    const randomResponse =
+      fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+
+    return new Response(
+      JSON.stringify({
+        error: error.message,
+        answer: randomResponse,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });

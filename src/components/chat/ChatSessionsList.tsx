@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UniverseChatSession } from '@/utils/universeChat';
 import { Card } from '@/components/ui/card';
@@ -15,10 +14,10 @@ interface ChatSessionsListProps {
 export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
   sessions,
   onSelectSession,
-  currentSessionId
+  currentSessionId,
 }) => {
   const { t } = useTranslations();
-  
+
   return (
     <div className="py-4 px-2">
       <div className="mb-4">
@@ -26,7 +25,7 @@ export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
           {t.universe?.yourConversations || 'Ваши диалоги'}
         </h2>
       </div>
-      
+
       {sessions.length === 0 ? (
         <div className="text-center py-6">
           <div className="w-16 h-16 bg-cosmic-dark/50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -41,8 +40,8 @@ export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
         </div>
       ) : (
         <div className="space-y-2">
-          {sessions.map((session) => (
-            <Card 
+          {sessions.map(session => (
+            <Card
               key={session.id}
               className={`p-3 cursor-pointer transition-all ${
                 currentSessionId === session.id
@@ -56,7 +55,9 @@ export const ChatSessionsList: React.FC<ChatSessionsListProps> = ({
                   <MessageSquare size={16} className="text-cosmic-accent" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white text-sm font-medium line-clamp-1">{session.title}</h3>
+                  <h3 className="text-white text-sm font-medium line-clamp-1">
+                    {session.title}
+                  </h3>
                   <p className="text-xs text-cosmic-secondary">
                     {formatRelativeTime(new Date(session.last_message))}
                   </p>

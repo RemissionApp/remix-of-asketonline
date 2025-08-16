@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,10 +13,10 @@ interface HoroscopeProOverlayProps {
 export const HoroscopeProOverlay: React.FC<HoroscopeProOverlayProps> = ({
   translations,
   language,
-  zodiacInfo
+  zodiacInfo,
 }) => {
-  console.log("Rendering ProOverlay for zodiacInfo:", zodiacInfo);
-  
+  console.log('Rendering ProOverlay for zodiacInfo:', zodiacInfo);
+
   return (
     <ProFeatureOverlay
       title={translations.proTitle[language] || translations.proTitle.en}
@@ -32,7 +31,8 @@ export const HoroscopeProOverlay: React.FC<HoroscopeProOverlayProps> = ({
             </h3>
           </div>
           <div className="text-sm text-muted-foreground">
-            {zodiacInfo?.symbol} {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
+            {zodiacInfo?.symbol}{' '}
+            {zodiacInfo?.name[language] || zodiacInfo?.name.en || ''}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

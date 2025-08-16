@@ -25,71 +25,85 @@ interface DetailedHoroscopeContentProps {
   onGenerateHoroscope?: () => void;
 }
 
-export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> = ({
+export const DetailedHoroscopeContent: React.FC<
+  DetailedHoroscopeContentProps
+> = ({
   horoscope,
   loading,
   userProfile,
   zodiacInfo,
   translations,
   language,
-  onGenerateHoroscope
+  onGenerateHoroscope,
 }) => {
   const logger = createLogger('DetailedHoroscopeContent');
   const [showGenerateButton, setShowGenerateButton] = useState(true);
   const [showDevTools, setShowDevTools] = useState(false);
   const navigate = useNavigate();
-  
+
   // Add debugging for props
-  logger.debug("Component props", {
+  logger.debug('Component props', {
     horoscopeNull: horoscope === null,
     horoscopeUndefined: horoscope === undefined,
-    horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
+    horoscopeSections: horoscope?.sections
+      ? Object.keys(horoscope.sections).join(', ')
+      : 'No sections',
     loading,
     isPro: !!userProfile?.isPro,
-    onGenerateHoroscopeExists: !!onGenerateHoroscope
+    onGenerateHoroscopeExists: !!onGenerateHoroscope,
   });
-  
+
   useEffect(() => {
     // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
-    if (userProfile?.isPro && zodiacInfo && onGenerateHoroscope && !horoscope && !loading) {
-      logger.info("Auto-generating horoscope on page load", { 
+    if (
+      userProfile?.isPro &&
+      zodiacInfo &&
+      onGenerateHoroscope &&
+      !horoscope &&
+      !loading
+    ) {
+      logger.info('Auto-generating horoscope on page load', {
         userProfile: userProfile?.name,
-        zodiacSign: zodiacInfo?.sign 
+        zodiacSign: zodiacInfo?.sign,
       });
       setShowGenerateButton(false);
       onGenerateHoroscope();
     }
   }, [userProfile?.isPro, zodiacInfo, onGenerateHoroscope, horoscope, loading]);
-  
-  logger.debug("Component render state", { 
-    hasHoroscope: !!horoscope, 
-    loading, 
+
+  logger.debug('Component render state', {
+    hasHoroscope: !!horoscope,
+    loading,
     isPro: !!userProfile?.isPro,
     hasZodiacInfo: !!zodiacInfo,
     birthDate: userProfile?.birthDate,
     horoscopeData: horoscope ? 'Available' : 'Not available',
-    horoscopeSections: horoscope?.sections ? Object.keys(horoscope.sections).join(', ') : 'No sections',
-    showGenerateButton
+    horoscopeSections: horoscope?.sections
+      ? Object.keys(horoscope.sections).join(', ')
+      : 'No sections',
+    showGenerateButton,
   });
 
   const handleGenerateClick = () => {
-    logger.info("Generate horoscope button clicked");
+    logger.info('Generate horoscope button clicked');
     setShowGenerateButton(false);
     if (onGenerateHoroscope) {
-      logger.info("Calling onGenerateHoroscope function");
+      logger.info('Calling onGenerateHoroscope function');
       onGenerateHoroscope();
     } else {
-      logger.warn("No onGenerateHoroscope function provided");
+      logger.warn('No onGenerateHoroscope function provided');
     }
   };
 
   // Handle regenerate horoscope - dedicated function with logging
   const handleRegenerateHoroscope = () => {
-    logger.info("Regenerating horoscope via developer tools");
+    logger.info('Regenerating horoscope via developer tools');
     if (onGenerateHoroscope) {
       onGenerateHoroscope();
     } else {
-      logger.error("No onGenerateHoroscope function available for regeneration");
+      logger.error(
+        'No onGenerateHoroscope function available for regeneration'
+      );
     }
   };
 
@@ -105,9 +119,9 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
 
   // No zodiac info means we probably don't have a birth date
   if (!zodiacInfo) {
-    logger.debug("No zodiac info available, showing message");
+    logger.debug('No zodiac info available, showing message');
     return (
-      <NoZodiacInfoMessage 
+      <NoZodiacInfoMessage
         translations={translations}
         language={language}
         userName={userProfile?.name}
@@ -119,28 +133,32 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
     <>
       {/* Developer tools toggle button */}
       <div className="mb-4 text-right">
-        <Button 
+        <Button
           onClick={toggleDevTools}
           variant="ghost"
           size="sm"
           className="text-cosmic-secondary hover:text-cosmic-accent"
         >
-          {showDevTools ? 
-            (language === 'ru' ? '🔒 Скрыть инструменты' : '🔒 Hide Dev Tools') : 
-            (language === 'ru' ? '🛠️ Инструменты разработчика' : '🛠️ Dev Tools')}
+          {showDevTools
+            ? language === 'ru'
+              ? '🔒 Скрыть инструменты'
+              : '🔒 Hide Dev Tools'
+            : language === 'ru'
+              ? '🛠️ Инструменты разработчика'
+              : '🛠️ Dev Tools'}
         </Button>
       </div>
-      
+
       {/* Developer tools section */}
       {showDevTools && (
         <div className="mb-4 p-3 border border-cosmic-accent/20 bg-cosmic-dark/80 rounded-lg">
           <h3 className="text-cosmic-accent mb-2">Developer Tools</h3>
           <div className="space-y-3">
             <DeveloperSwitch />
-            
+
             <div className="flex justify-between mt-2">
-              <Button 
-                onClick={goToFullHoroscope} 
+              <Button
+                onClick={goToFullHoroscope}
                 variant="outline"
                 size="sm"
                 className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
@@ -148,16 +166,18 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
                 <Stars size={16} className="mr-1" />
                 {language === 'ru' ? 'Полный гороскоп' : 'Full Horoscope'}
               </Button>
-              
-              <Button 
-                onClick={handleRegenerateHoroscope} 
+
+              <Button
+                onClick={handleRegenerateHoroscope}
                 variant="outline"
                 size="sm"
                 className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
                 disabled={loading}
               >
                 <RefreshCw size={16} className="mr-1" />
-                {language === 'ru' ? 'Сгенерировать новый гороскоп' : 'Generate New Horoscope'}
+                {language === 'ru'
+                  ? 'Сгенерировать новый гороскоп'
+                  : 'Generate New Horoscope'}
               </Button>
             </div>
           </div>
@@ -208,12 +228,14 @@ export const DetailedHoroscopeContent: React.FC<DetailedHoroscopeContentProps> =
       {/* Full Horoscope Link */}
       {userProfile?.isPro && horoscope && (
         <div className="mt-8 mb-4 flex justify-center">
-          <Button 
+          <Button
             onClick={goToFullHoroscope}
             className="bg-amber-500 hover:bg-amber-600 text-black"
           >
             <Stars className="mr-2 h-4 w-4" />
-            {language === 'ru' ? 'Посмотреть полный гороскоп' : 'View Full Horoscope Analysis'}
+            {language === 'ru'
+              ? 'Посмотреть полный гороскоп'
+              : 'View Full Horoscope Analysis'}
           </Button>
         </div>
       )}

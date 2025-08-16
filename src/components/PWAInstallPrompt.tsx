@@ -8,7 +8,9 @@ interface PWAInstallPromptProps {
   onClose?: () => void;
 }
 
-export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onClose }) => {
+export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
+  onClose,
+}) => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
@@ -33,7 +35,10 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onClose }) =
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
     };
   }, []);
 
@@ -64,7 +69,9 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onClose }) =
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center space-x-2">
               <Download className="text-cosmic-gold w-5 h-5" />
-              <h3 className="text-cosmic-light font-medium">Установить приложение</h3>
+              <h3 className="text-cosmic-light font-medium">
+                Установить приложение
+              </h3>
             </div>
             <Button
               variant="ghost"
@@ -75,11 +82,12 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onClose }) =
               <X className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <p className="text-cosmic-muted text-sm mb-4">
-            Установите Cosmic Path на свое устройство для быстрого доступа и уведомлений
+            Установите Cosmic Path на свое устройство для быстрого доступа и
+            уведомлений
           </p>
-          
+
           <div className="flex space-x-2">
             <Button
               onClick={handleInstall}

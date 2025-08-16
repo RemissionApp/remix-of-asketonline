@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
@@ -29,15 +28,15 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     achievements: [...defaultAchievements],
     birthDate: null,
     avatar_url: null,
-    activeMission: undefined
+    activeMission: undefined,
   },
   user: null,
   loading: false,
   emailConfirmed: false,
-  
+
   // Добавляем новый метод для установки пользователя
-  setUser: (user) => set({ user }),
-  
+  setUser: user => set({ user }),
+
   // Состояние чата
   chatSessions: [],
   isLoadingChatSessions: false,
@@ -46,7 +45,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   isLoadingChat: false,
   isSendingMessage: false,
   isUniverseTyping: false,
-  
+
   // Комбинируем все срезы
   ...createOptimizedUISlice(set, get, api),
   ...createPactsSlice(set, get, api),
@@ -54,34 +53,34 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   ...createGamificationSlice(set, get, api),
   ...createProFeaturesSlice(set, get, api),
   ...createAuthSlice(set, get, api),
-  
+
   // Audio settings
   soundEnabled: true,
   soundVolume: 0.8,
-  
-  setSoundEnabled: (enabled) => {
+
+  setSoundEnabled: enabled => {
     set({ soundEnabled: enabled });
     localStorage.setItem('soundEnabled', String(enabled));
   },
-  
-  setSoundVolume: (volume) => {
+
+  setSoundVolume: volume => {
     set({ soundVolume: volume });
     localStorage.setItem('soundVolume', String(volume));
   },
-  
+
   loadSoundSettings: () => {
     const storedEnabled = localStorage.getItem('soundEnabled');
     const storedVolume = localStorage.getItem('soundVolume');
-    
+
     if (storedEnabled !== null) {
       set({ soundEnabled: storedEnabled === 'true' });
     }
-    
+
     if (storedVolume !== null) {
       const volume = parseFloat(storedVolume);
       if (!isNaN(volume) && volume >= 0 && volume <= 1) {
         set({ soundVolume: volume });
       }
     }
-  }
+  },
 }));

@@ -1,4 +1,3 @@
-
 export interface DetailedHoroscope {
   description: string;
   sections?: {

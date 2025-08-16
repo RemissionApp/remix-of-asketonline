@@ -36,16 +36,16 @@ class ScreenWakeLockManager {
       });
 
       console.log('Screen wake lock acquired');
-      return { 
-        success: true, 
-        supported: true, 
-        active: true 
+      return {
+        success: true,
+        supported: true,
+        active: true,
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -55,10 +55,10 @@ class ScreenWakeLockManager {
    */
   async release(): Promise<WakeLockResult> {
     if (!this.wakeLock) {
-      return { 
-        success: true, 
-        supported: this.isSupported(), 
-        active: false 
+      return {
+        success: true,
+        supported: this.isSupported(),
+        active: false,
       };
     }
 
@@ -66,18 +66,18 @@ class ScreenWakeLockManager {
       await this.wakeLock.release();
       this.wakeLock = null;
       this.isActive = false;
-      
+
       console.log('Screen wake lock manually released');
-      return { 
-        success: true, 
-        supported: true, 
-        active: false 
+      return {
+        success: true,
+        supported: true,
+        active: false,
       };
     } catch (error: any) {
-      return { 
-        success: false, 
-        supported: true, 
-        error: error.message 
+      return {
+        success: false,
+        supported: true,
+        error: error.message,
       };
     }
   }
@@ -88,7 +88,7 @@ class ScreenWakeLockManager {
   getStatus(): { active: boolean; supported: boolean } {
     return {
       active: this.isActive,
-      supported: this.isSupported()
+      supported: this.isSupported(),
     };
   }
 
@@ -99,7 +99,11 @@ class ScreenWakeLockManager {
     if (!this.isSupported()) return;
 
     document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'visible' && this.isActive && !this.wakeLock) {
+      if (
+        document.visibilityState === 'visible' &&
+        this.isActive &&
+        !this.wakeLock
+      ) {
         console.log('Reacquiring wake lock after visibility change');
         await this.request();
       }
@@ -137,7 +141,7 @@ export const meditationWakeLock = {
     const status = screenWakeLock.getStatus();
     return {
       wakeLockActive: status.active,
-      supported: status.supported
+      supported: status.supported,
     };
-  }
+  },
 };

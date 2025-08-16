@@ -45,17 +45,18 @@ export const getNotificationPermission = (): NotificationPermission => {
 /**
  * Запрашивает разрешение на уведомления
  */
-export const requestNotificationPermission = async (): Promise<NotificationPermission> => {
-  if (!isNotificationSupported()) return 'denied';
-  
-  try {
-    const permission = await Notification.requestPermission();
-    return permission;
-  } catch (error) {
-    console.error('Error requesting notification permission:', error);
-    return 'denied';
-  }
-};
+export const requestNotificationPermission =
+  async (): Promise<NotificationPermission> => {
+    if (!isNotificationSupported()) return 'denied';
+
+    try {
+      const permission = await Notification.requestPermission();
+      return permission;
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return 'denied';
+    }
+  };
 
 /**
  * Показывает уведомление с расширенными возможностями
@@ -64,10 +65,10 @@ export const showEnhancedNotification = async (
   options: EnhancedNotificationOptions
 ): Promise<NotificationResult> => {
   if (!isNotificationSupported()) {
-    return { 
-      success: false, 
-      permission: 'denied', 
-      error: 'Notifications not supported' 
+    return {
+      success: false,
+      permission: 'denied',
+      error: 'Notifications not supported',
     };
   }
 
@@ -91,13 +92,13 @@ export const showEnhancedNotification = async (
         requireInteraction: options.requireInteraction || false,
         silent: options.silent || false,
         timestamp: options.timestamp || Date.now(),
-        renotify: options.renotify || false
+        renotify: options.renotify || false,
       };
-      
+
       // Добавляем дополнительные свойства если поддерживаются
       if (options.image) notificationOptions.image = options.image;
       if (options.vibrate) notificationOptions.vibrate = options.vibrate;
-      
+
       await registration.showNotification(options.title, notificationOptions);
     } else {
       // Fallback к обычному уведомлению
@@ -109,22 +110,25 @@ export const showEnhancedNotification = async (
         requireInteraction: options.requireInteraction || false,
         silent: options.silent || false,
         timestamp: options.timestamp || Date.now(),
-        renotify: options.renotify || false
+        renotify: options.renotify || false,
       };
-      
+
       // Добавляем vibrate только если поддерживается
       if (options.vibrate && 'vibrate' in navigator) {
         navigator.vibrate(options.vibrate);
       }
-      
-      const notification = new Notification(options.title, basicNotificationOptions);
+
+      const notification = new Notification(
+        options.title,
+        basicNotificationOptions
+      );
 
       // Добавляем обработчики событий
-      notification.onclick = (event) => {
+      notification.onclick = event => {
         event.preventDefault();
         window.focus();
         notification.close();
-        
+
         // Обработка клика
         if (options.data?.url) {
           window.location.href = options.data.url;
@@ -135,10 +139,10 @@ export const showEnhancedNotification = async (
     return { success: true, permission: 'granted' };
   } catch (error: any) {
     console.error('Error showing notification:', error);
-    return { 
-      success: false, 
-      permission: 'granted', 
-      error: error.message 
+    return {
+      success: false,
+      permission: 'granted',
+      error: error.message,
     };
   }
 };
@@ -148,7 +152,10 @@ export const showEnhancedNotification = async (
  */
 export const notificationTemplates = {
   // Напоминание о ежедневной аскезе
-  dailyReminder: (pactTitle: string, dayNumber: number): EnhancedNotificationOptions => ({
+  dailyReminder: (
+    pactTitle: string,
+    dayNumber: number
+  ): EnhancedNotificationOptions => ({
     title: 'Время выполнить аскезу! 🔥',
     body: `День ${dayNumber}: "${pactTitle}". Не забудь подтвердить выполнение.`,
     icon: '/icon-192.png',
@@ -159,12 +166,15 @@ export const notificationTemplates = {
     data: { type: 'daily_reminder', url: '/main' },
     actions: [
       { action: 'complete', title: 'Выполнено ✓', icon: '/icon-72.png' },
-      { action: 'remind_later', title: 'Напомнить позже' }
-    ]
+      { action: 'remind_later', title: 'Напомнить позже' },
+    ],
   }),
 
   // Завершение аскезы
-  pactCompleted: (pactTitle: string, totalDays: number): EnhancedNotificationOptions => ({
+  pactCompleted: (
+    pactTitle: string,
+    totalDays: number
+  ): EnhancedNotificationOptions => ({
     title: 'Аскеза завершена! 🏆',
     body: `Поздравляем! Вы успешно прошли "${pactTitle}" за ${totalDays} дней!`,
     icon: '/icon-192.png',
@@ -175,8 +185,8 @@ export const notificationTemplates = {
     data: { type: 'pact_complete', url: '/profile' },
     actions: [
       { action: 'share', title: 'Поделиться 📱' },
-      { action: 'new_pact', title: 'Новая аскеза' }
-    ]
+      { action: 'new_pact', title: 'Новая аскеза' },
+    ],
   }),
 
   // Напоминание о медитации
@@ -190,8 +200,8 @@ export const notificationTemplates = {
     data: { type: 'meditation_reminder', url: '/meditation' },
     actions: [
       { action: 'start_meditation', title: 'Начать медитацию' },
-      { action: 'remind_later', title: 'Позже' }
-    ]
+      { action: 'remind_later', title: 'Позже' },
+    ],
   }),
 
   // Сообщение от Вселенной
@@ -206,12 +216,15 @@ export const notificationTemplates = {
     data: { type: 'universe_message', url: '/universe', fullMessage: message },
     actions: [
       { action: 'read_full', title: 'Читать полностью' },
-      { action: 'share', title: 'Поделиться' }
-    ]
+      { action: 'share', title: 'Поделиться' },
+    ],
   }),
 
   // Новое достижение
-  newAchievement: (title: string, description: string): EnhancedNotificationOptions => ({
+  newAchievement: (
+    title: string,
+    description: string
+  ): EnhancedNotificationOptions => ({
     title: 'Новое достижение! 🏆',
     body: `${title}: ${description}`,
     icon: '/icon-192.png',
@@ -222,8 +235,8 @@ export const notificationTemplates = {
     data: { type: 'achievement', url: '/profile' },
     actions: [
       { action: 'view', title: 'Посмотреть' },
-      { action: 'share', title: 'Поделиться' }
-    ]
+      { action: 'share', title: 'Поделиться' },
+    ],
   }),
 
   // Напоминание о подписке
@@ -237,8 +250,8 @@ export const notificationTemplates = {
     data: { type: 'subscription_reminder', url: '/comparison' },
     actions: [
       { action: 'renew', title: 'Продлить' },
-      { action: 'remind_later', title: 'Напомнить позже' }
-    ]
+      { action: 'remind_later', title: 'Напомнить позже' },
+    ],
   }),
 
   // Мотивационное сообщение
@@ -250,10 +263,8 @@ export const notificationTemplates = {
     tag: 'motivation',
     vibrate: [100, 100, 100],
     data: { type: 'motivation', url: '/main' },
-    actions: [
-      { action: 'view', title: 'Узнать больше' }
-    ]
-  })
+    actions: [{ action: 'view', title: 'Узнать больше' }],
+  }),
 };
 
 /**
@@ -270,11 +281,13 @@ export const createNotificationManager = () => {
 
   const isEnabled = (): boolean => permissionGranted;
 
-  const show = async (options: EnhancedNotificationOptions): Promise<NotificationResult> => {
+  const show = async (
+    options: EnhancedNotificationOptions
+  ): Promise<NotificationResult> => {
     if (!permissionGranted) {
       const permission = await requestNotificationPermission();
       permissionGranted = permission === 'granted';
-      
+
       if (!permissionGranted) {
         return { success: false, permission };
       }
@@ -285,32 +298,31 @@ export const createNotificationManager = () => {
 
   // Обертки для шаблонов
   const templates = {
-    dailyReminder: (pactTitle: string, dayNumber: number) => 
+    dailyReminder: (pactTitle: string, dayNumber: number) =>
       show(notificationTemplates.dailyReminder(pactTitle, dayNumber)),
-    
-    pactCompleted: (pactTitle: string, totalDays: number) => 
+
+    pactCompleted: (pactTitle: string, totalDays: number) =>
       show(notificationTemplates.pactCompleted(pactTitle, totalDays)),
-    
-    meditationReminder: () => 
-      show(notificationTemplates.meditationReminder()),
-    
-    universeMessage: (message: string) => 
+
+    meditationReminder: () => show(notificationTemplates.meditationReminder()),
+
+    universeMessage: (message: string) =>
       show(notificationTemplates.universeMessage(message)),
-    
-    newAchievement: (title: string, description: string) => 
+
+    newAchievement: (title: string, description: string) =>
       show(notificationTemplates.newAchievement(title, description)),
-    
-    subscriptionReminder: (daysLeft: number) => 
+
+    subscriptionReminder: (daysLeft: number) =>
       show(notificationTemplates.subscriptionReminder(daysLeft)),
-    
-    motivational: (message: string) => 
-      show(notificationTemplates.motivational(message))
+
+    motivational: (message: string) =>
+      show(notificationTemplates.motivational(message)),
   };
 
   return {
     init,
     isEnabled,
     show,
-    templates
+    templates,
   };
 };

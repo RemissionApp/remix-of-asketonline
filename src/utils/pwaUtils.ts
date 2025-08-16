@@ -6,7 +6,9 @@ export const registerServiceWorker = async (): Promise<void> => {
     try {
       // Инициализируем менеджер обновлений (который также регистрирует SW)
       await pwaUpdateManager.initialize();
-      console.log('Service Worker зарегистрирован и менеджер обновлений инициализирован');
+      console.log(
+        'Service Worker зарегистрирован и менеджер обновлений инициализирован'
+      );
     } catch (error) {
       console.error('Ошибка регистрации Service Worker:', error);
     }
@@ -14,15 +16,15 @@ export const registerServiceWorker = async (): Promise<void> => {
 };
 
 export const checkInstallPrompt = (): Promise<boolean> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     let deferredPrompt: any;
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
+
+    window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredPrompt = e;
       resolve(true);
     });
-    
+
     // Если событие не произошло в течение 1 секунды
     setTimeout(() => resolve(false), 1000);
   });
@@ -30,14 +32,14 @@ export const checkInstallPrompt = (): Promise<boolean> => {
 
 export const installPWA = async (): Promise<boolean> => {
   const deferredPrompt = (window as any).deferredPrompt;
-  
+
   if (!deferredPrompt) {
     return false;
   }
-  
+
   deferredPrompt.prompt();
   const { outcome } = await deferredPrompt.userChoice;
-  
+
   if (outcome === 'accepted') {
     console.log('PWA установлено');
     return true;
@@ -48,6 +50,8 @@ export const installPWA = async (): Promise<boolean> => {
 };
 
 export const isPWAInstalled = (): boolean => {
-  return window.matchMedia('(display-mode: standalone)').matches || 
-         (window.navigator as any).standalone === true;
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true
+  );
 };

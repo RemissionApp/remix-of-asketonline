@@ -1,5 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,120 +21,162 @@ export const PWASettingsPanel: React.FC = () => {
     notificationsEnabled,
     backgroundSyncStatus,
     toggleHaptic,
-    sync
+    sync,
   } = usePWAFeatures();
   const { language } = useAppStore();
 
   const getTitle = () => {
     switch (language) {
-      case 'ru': return 'Настройки приложения';
-      case 'es': return 'Configuración de la aplicación';
-      default: return 'App Settings';
+      case 'ru':
+        return 'Настройки приложения';
+      case 'es':
+        return 'Configuración de la aplicación';
+      default:
+        return 'App Settings';
     }
   };
 
   const getDescription = () => {
     switch (language) {
-      case 'ru': return 'Управление функциями приложения';
-      case 'es': return 'Gestionar características de la aplicación';
-      default: return 'Manage app features';
+      case 'ru':
+        return 'Управление функциями приложения';
+      case 'es':
+        return 'Gestionar características de la aplicación';
+      default:
+        return 'Manage app features';
     }
   };
 
   const getHapticTitle = () => {
     switch (language) {
-      case 'ru': return 'Тактильная обратная связь';
-      case 'es': return 'Retroalimentación táctil';
-      default: return 'Haptic Feedback';
+      case 'ru':
+        return 'Тактильная обратная связь';
+      case 'es':
+        return 'Retroalimentación táctil';
+      default:
+        return 'Haptic Feedback';
     }
   };
 
   const getHapticDescription = () => {
     switch (language) {
-      case 'ru': return 'Вибрация при взаимодействии с приложением';
-      case 'es': return 'Vibración al interactuar con la aplicación';
-      default: return 'Vibration when interacting with the app';
+      case 'ru':
+        return 'Вибрация при взаимодействии с приложением';
+      case 'es':
+        return 'Vibración al interactuar con la aplicación';
+      default:
+        return 'Vibration when interacting with the app';
     }
   };
 
   const getNotificationsTitle = () => {
     switch (language) {
-      case 'ru': return 'Уведомления';
-      case 'es': return 'Notificaciones';
-      default: return 'Notifications';
+      case 'ru':
+        return 'Уведомления';
+      case 'es':
+        return 'Notificaciones';
+      default:
+        return 'Notifications';
     }
   };
 
   const getNotificationsDescription = () => {
     switch (language) {
-      case 'ru': return 'Push-уведомления о событиях приложения';
-      case 'es': return 'Notificaciones push sobre eventos de la aplicación';
-      default: return 'Push notifications about app events';
+      case 'ru':
+        return 'Push-уведомления о событиях приложения';
+      case 'es':
+        return 'Notificaciones push sobre eventos de la aplicación';
+      default:
+        return 'Push notifications about app events';
     }
   };
 
   const getSyncTitle = () => {
     switch (language) {
-      case 'ru': return 'Фоновая синхронизация';
-      case 'es': return 'Sincronización en segundo plano';
-      default: return 'Background Sync';
+      case 'ru':
+        return 'Фоновая синхронизация';
+      case 'es':
+        return 'Sincronización en segundo plano';
+      default:
+        return 'Background Sync';
     }
   };
 
   const getSyncDescription = () => {
     switch (language) {
-      case 'ru': return 'Синхронизация данных в фоновом режиме';
-      case 'es': return 'Sincronización de datos en segundo plano';
-      default: return 'Background data synchronization';
+      case 'ru':
+        return 'Синхронизация данных в фоновом режиме';
+      case 'es':
+        return 'Sincronización de datos en segundo plano';
+      default:
+        return 'Background data synchronization';
     }
   };
 
   const getOnlineText = () => {
     switch (language) {
-      case 'ru': return 'Онлайн';
-      case 'es': return 'En línea';
-      default: return 'Online';
+      case 'ru':
+        return 'Онлайн';
+      case 'es':
+        return 'En línea';
+      default:
+        return 'Online';
     }
   };
 
   const getOfflineText = () => {
     switch (language) {
-      case 'ru': return 'Офлайн';
-      case 'es': return 'Fuera de línea';
-      default: return 'Offline';
+      case 'ru':
+        return 'Офлайн';
+      case 'es':
+        return 'Fuera de línea';
+      default:
+        return 'Offline';
     }
   };
 
   const getPendingTasksText = () => {
     const count = backgroundSyncStatus.pendingCount;
     switch (language) {
-      case 'ru': return `Отложенных задач: ${count}`;
-      case 'es': return `Tareas pendientes: ${count}`;
-      default: return `Pending tasks: ${count}`;
+      case 'ru':
+        return `Отложенных задач: ${count}`;
+      case 'es':
+        return `Tareas pendientes: ${count}`;
+      default:
+        return `Pending tasks: ${count}`;
     }
   };
 
   const getClearTasksText = () => {
     switch (language) {
-      case 'ru': return 'Очистить задачи';
-      case 'es': return 'Limpiar tareas';
-      default: return 'Clear tasks';
+      case 'ru':
+        return 'Очистить задачи';
+      case 'es':
+        return 'Limpiar tareas';
+      default:
+        return 'Clear tasks';
     }
   };
 
   const getSupportedText = () => {
     switch (language) {
-      case 'ru': return 'Поддерживается';
-      case 'es': return 'Compatible';
-      default: return 'Supported';
+      case 'ru':
+        return 'Поддерживается';
+      case 'es':
+        return 'Compatible';
+      default:
+        return 'Supported';
     }
   };
 
   const getNotSupportedText = () => {
     switch (language) {
-      case 'ru': return 'Не поддерживается';
-      case 'es': return 'No compatible';
-      default: return 'Not supported';
+      case 'ru':
+        return 'Не поддерживается';
+      case 'es':
+        return 'No compatible';
+      default:
+        return 'Not supported';
     }
   };
 
@@ -158,12 +206,11 @@ export const PWASettingsPanel: React.FC = () => {
               <Vibrate className="w-3 h-3" />
               <span className="text-xs font-medium">{getHapticTitle()}</span>
             </div>
-            <p className="text-xs text-muted-foreground">{getHapticDescription()}</p>
+            <p className="text-xs text-muted-foreground">
+              {getHapticDescription()}
+            </p>
           </div>
-          <Switch
-            checked={hapticEnabled}
-            onCheckedChange={toggleHaptic}
-          />
+          <Switch checked={hapticEnabled} onCheckedChange={toggleHaptic} />
         </div>
 
         {/* Notifications */}
@@ -171,12 +218,21 @@ export const PWASettingsPanel: React.FC = () => {
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <Bell className="w-3 h-3" />
-              <span className="text-xs font-medium">{getNotificationsTitle()}</span>
-              <Badge variant={notificationsEnabled ? "default" : "secondary"} className="text-xs px-1 py-0">
-                {notificationsEnabled ? getSupportedText() : getNotSupportedText()}
+              <span className="text-xs font-medium">
+                {getNotificationsTitle()}
+              </span>
+              <Badge
+                variant={notificationsEnabled ? 'default' : 'secondary'}
+                className="text-xs px-1 py-0"
+              >
+                {notificationsEnabled
+                  ? getSupportedText()
+                  : getNotSupportedText()}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">{getNotificationsDescription()}</p>
+            <p className="text-xs text-muted-foreground">
+              {getNotificationsDescription()}
+            </p>
           </div>
         </div>
 
@@ -191,17 +247,28 @@ export const PWASettingsPanel: React.FC = () => {
                   <WifiOff className="w-3 h-3 text-red-500" />
                 )}
                 <span className="text-xs font-medium">{getSyncTitle()}</span>
-                <Badge variant={backgroundSyncStatus.isSupported ? "default" : "secondary"} className="text-xs px-1 py-0">
-                  {backgroundSyncStatus.isSupported ? getSupportedText() : getNotSupportedText()}
+                <Badge
+                  variant={
+                    backgroundSyncStatus.isSupported ? 'default' : 'secondary'
+                  }
+                  className="text-xs px-1 py-0"
+                >
+                  {backgroundSyncStatus.isSupported
+                    ? getSupportedText()
+                    : getNotSupportedText()}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">{getSyncDescription()}</p>
+              <p className="text-xs text-muted-foreground">
+                {getSyncDescription()}
+              </p>
             </div>
           </div>
 
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
-              {backgroundSyncStatus.isOnline ? getOnlineText() : getOfflineText()}
+              {backgroundSyncStatus.isOnline
+                ? getOnlineText()
+                : getOfflineText()}
             </span>
             <span className="text-muted-foreground">
               {getPendingTasksText()}
@@ -221,7 +288,7 @@ export const PWASettingsPanel: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       {/* Расширенные PWA функции */}
       <div className="mt-4">
         <AdvancedPWAControls />

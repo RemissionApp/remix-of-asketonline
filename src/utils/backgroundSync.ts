@@ -18,7 +18,10 @@ export interface SyncResult {
  * Проверяет поддержку Background Sync
  */
 export const isBackgroundSyncSupported = (): boolean => {
-  return 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype;
+  return (
+    'serviceWorker' in navigator &&
+    'sync' in window.ServiceWorkerRegistration.prototype
+  );
 };
 
 /**
@@ -57,7 +60,7 @@ export class BackgroundSyncManager {
 
     // Слушаем события от Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', event => {
         if (event.data.type === 'sync-complete') {
           this.handleSyncComplete(event.data.taskId, event.data.success);
         }
@@ -97,19 +100,23 @@ export class BackgroundSyncManager {
   /**
    * Регистрирует задачу для синхронизации
    */
-  async registerSync(type: string, data: any, options: {
-    maxRetries?: number;
-    immediate?: boolean;
-  } = {}): Promise<string> {
+  async registerSync(
+    type: string,
+    data: any,
+    options: {
+      maxRetries?: number;
+      immediate?: boolean;
+    } = {}
+  ): Promise<string> {
     const taskId = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const task: SyncTask = {
       id: taskId,
       type,
       data,
       timestamp: Date.now(),
       retries: 0,
-      maxRetries: options.maxRetries || 3
+      maxRetries: options.maxRetries || 3,
     };
 
     this.pendingTasks.set(taskId, task);
@@ -150,23 +157,23 @@ export class BackgroundSyncManager {
         case 'pact_day_complete':
           result = await this.syncPactDayComplete(task.data);
           break;
-        
+
         case 'pact_break':
           result = await this.syncPactBreak(task.data);
           break;
-        
+
         case 'universe_question':
           result = await this.syncUniverseQuestion(task.data);
           break;
-        
+
         case 'user_profile_update':
           result = await this.syncUserProfileUpdate(task.data);
           break;
-        
+
         case 'mission_progress':
           result = await this.syncMissionProgress(task.data);
           break;
-        
+
         default:
           result = { success: false, error: `Unknown sync type: ${task.type}` };
       }
@@ -181,7 +188,9 @@ export class BackgroundSyncManager {
           // Удаляем задачу после превышения лимита попыток
           this.pendingTasks.delete(task.id);
           this.savePendingTasks();
-          console.error(`Task ${task.id} failed after ${task.maxRetries} retries`);
+          console.error(
+            `Task ${task.id} failed after ${task.maxRetries} retries`
+          );
         } else {
           // Сохраняем обновленную задачу
           this.savePendingTasks();
@@ -195,11 +204,11 @@ export class BackgroundSyncManager {
         this.pendingTasks.delete(task.id);
       }
       this.savePendingTasks();
-      
-      return { 
-        success: false, 
+
+      return {
+        success: false,
         error: error.message,
-        retryAfter: this.calculateRetryDelay(task.retries)
+        retryAfter: this.calculateRetryDelay(task.retries),
       };
     }
   }
@@ -239,7 +248,10 @@ export class BackgroundSyncManager {
   /**
    * Синхронизация завершения дня аскезы
    */
-  private async syncPactDayComplete(data: { pactId: string; date: string }): Promise<SyncResult> {
+  private async syncPactDayComplete(data: {
+    pactId: string;
+    date: string;
+  }): Promise<SyncResult> {
     try {
       // Здесь будет реальная логика синхронизации с API
       // Пока заглушка
@@ -265,7 +277,10 @@ export class BackgroundSyncManager {
   /**
    * Синхронизация вопроса Вселенной
    */
-  private async syncUniverseQuestion(data: { question: string; answer: string }): Promise<SyncResult> {
+  private async syncUniverseQuestion(data: {
+    question: string;
+    answer: string;
+  }): Promise<SyncResult> {
     try {
       console.log('Syncing universe question:', data);
       return { success: true };
@@ -289,7 +304,10 @@ export class BackgroundSyncManager {
   /**
    * Синхронизация прогресса миссий
    */
-  private async syncMissionProgress(data: { missionId: string; progress: any }): Promise<SyncResult> {
+  private async syncMissionProgress(data: {
+    missionId: string;
+    progress: any;
+  }): Promise<SyncResult> {
     try {
       console.log('Syncing mission progress:', data);
       return { success: true };
@@ -324,7 +342,7 @@ export class BackgroundSyncManager {
     return {
       isOnline: this.isOnline,
       pendingCount: this.pendingTasks.size,
-      isSupported: isBackgroundSyncSupported()
+      isSupported: isBackgroundSyncSupported(),
     };
   }
 }

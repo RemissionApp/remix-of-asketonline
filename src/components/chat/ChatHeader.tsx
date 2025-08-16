@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
@@ -14,32 +13,34 @@ interface ChatHeaderProps {
 export const ChatHeader: React.FC<ChatHeaderProps> = ({ title }) => {
   const navigate = useNavigate();
   const { t } = useTranslations();
-  
+
   const handleBack = () => {
     navigate('/main');
   };
-  
+
   return (
     <div className="bg-cosmic-dark text-white py-2 px-4 flex items-center z-20 fixed top-0 left-0 right-0">
-      <Button 
-        variant="ghost" 
-        className="text-cosmic-secondary mr-2 p-2" 
+      <Button
+        variant="ghost"
+        className="text-cosmic-secondary mr-2 p-2"
         onClick={handleBack}
       >
         <ChevronLeft size={24} />
       </Button>
-      
+
       <div className="flex items-center flex-1">
         <div className="w-10 h-10 rounded-full overflow-hidden relative mr-3 border-2 border-cosmic-gold">
           <Avatar className="h-full w-full">
-            <AvatarImage 
-              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png" 
+            <AvatarImage
+              src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png"
               alt="Вселенная"
               className="object-cover"
             />
-            <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">ВС</AvatarFallback>
+            <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
+              ВС
+            </AvatarFallback>
           </Avatar>
-          
+
           <div className="absolute inset-0 bg-gradient-to-b from-cosmic-accent/20 to-transparent"></div>
           <div className="absolute inset-0 rounded-full overflow-hidden z-0">
             <div className="absolute animate-pulse top-0 left-1/2 w-4 h-1 bg-white/20 rounded transform -translate-x-1/2 blur-sm"></div>

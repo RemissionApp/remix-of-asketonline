@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DetailedHoroscope } from '@/types/horoscope';
 
@@ -11,7 +10,7 @@ interface HoroscopeStatsProps {
 export const HoroscopeStats: React.FC<HoroscopeStatsProps> = ({
   horoscope,
   translations,
-  language
+  language,
 }) => {
   if (!horoscope) {
     return null;
@@ -22,39 +21,41 @@ export const HoroscopeStats: React.FC<HoroscopeStatsProps> = ({
       key: 'lucky_number',
       title: translations.luckyNumber[language] || translations.luckyNumber.en,
       value: horoscope.lucky_number,
-      icon: '🔢'
+      icon: '🔢',
     },
     {
       key: 'lucky_time',
       title: translations.luckyTime[language] || translations.luckyTime.en,
       value: horoscope.lucky_time,
-      icon: '⏰'
+      icon: '⏰',
     },
     {
       key: 'color',
       title: translations.color[language] || translations.color.en,
       value: horoscope.color,
-      icon: '🎨'
+      icon: '🎨',
     },
     {
       key: 'mood',
       title: translations.mood[language] || translations.mood.en,
       value: horoscope.mood,
-      icon: '😊'
-    }
+      icon: '😊',
+    },
   ];
 
   return (
     <div className="mt-6 grid grid-cols-2 gap-4">
       {statsConfig.map(stat => (
-        <div 
-          key={stat.key} 
+        <div
+          key={stat.key}
           className="bg-cosmic-dark/40 border border-cosmic-accent/30 p-4 rounded-lg flex items-center backdrop-blur-sm shadow-md transition-all duration-300 hover:border-cosmic-accent/50"
         >
           <span className="text-2xl mr-3">{stat.icon}</span>
           <div>
             <p className="text-sm text-cosmic-secondary">{stat.title}</p>
-            <p className="text-cosmic-accent font-medium text-xl">{stat.value}</p>
+            <p className="text-cosmic-accent font-medium text-xl">
+              {stat.value}
+            </p>
           </div>
         </div>
       ))}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -18,22 +17,26 @@ export const HoroscopeContent: React.FC<HoroscopeContentProps> = ({
   horoscope,
   language,
   onRegenerate,
-  uiText
+  uiText,
 }) => {
   return (
     <div className="space-y-8">
       {Object.entries(horoscope).map(([key, content]) => (
         <section key={key}>
-          <h2 className="text-2xl font-bold mb-4 text-amber-400 text-center">{translateSection(key, language as any)}</h2>
+          <h2 className="text-2xl font-bold mb-4 text-amber-400 text-center">
+            {translateSection(key, language as any)}
+          </h2>
           <Card className="p-6 bg-slate-800/20 backdrop-blur-sm border-amber-500/30">
             <p className="whitespace-pre-line">{content as string}</p>
           </Card>
-          {key !== 'personalGrowth' && <Separator className="bg-amber-500/30 mt-8" />}
+          {key !== 'personalGrowth' && (
+            <Separator className="bg-amber-500/30 mt-8" />
+          )}
         </section>
       ))}
 
       <div className="flex justify-center pt-8 pb-12">
-        <CosmicButton 
+        <CosmicButton
           onClick={onRegenerate}
           className="bg-amber-500/80 hover:bg-amber-600/90 text-black backdrop-blur-sm"
         >

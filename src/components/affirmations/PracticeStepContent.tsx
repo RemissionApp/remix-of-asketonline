@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 
 interface PracticeStepContentProps {
   instruction: string;
@@ -13,29 +12,28 @@ export const PracticeStepContent: React.FC<PracticeStepContentProps> = ({
   instruction,
   visualGuide,
   guideImage,
-  language
+  language,
 }) => {
-  const visualGuideLabel = language === 'ru' 
-    ? 'Визуальное руководство: ' 
-    : language === 'es' 
-    ? 'Guía visual: ' 
-    : 'Visual guide: ';
-  
+  const visualGuideLabel =
+    language === 'ru'
+      ? 'Визуальное руководство: '
+      : language === 'es'
+        ? 'Guía visual: '
+        : 'Visual guide: ';
+
   return (
     <div className="mt-6 space-y-4">
       <div className="bg-cosmic-dark/80 rounded-md p-4 border border-cosmic-accent/20">
         <div className="flex flex-col md:flex-row gap-4 items-start mb-4">
           <div className="flex-shrink-0">
-            <img 
-              src={guideImage} 
+            <img
+              src={guideImage}
               alt="Visual practice guide"
-              className="w-32 h-32 object-cover rounded-lg border border-cosmic-accent/30" 
+              className="w-32 h-32 object-cover rounded-lg border border-cosmic-accent/30"
             />
           </div>
           <div className="flex-1">
-            <p className="text-white/90">
-              {instruction}
-            </p>
+            <p className="text-white/90">{instruction}</p>
           </div>
         </div>
         <div className="bg-purple-900/30 border border-purple-500/30 rounded p-3 flex items-start">

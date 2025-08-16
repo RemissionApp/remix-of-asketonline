@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
@@ -12,10 +11,10 @@ interface MeditationLayoutProps {
   icon?: React.ReactNode;
 }
 
-export const MeditationLayout: React.FC<MeditationLayoutProps> = ({ 
-  children, 
+export const MeditationLayout: React.FC<MeditationLayoutProps> = ({
+  children,
   title,
-  icon
+  icon,
 }) => {
   const { t } = useTranslations();
 

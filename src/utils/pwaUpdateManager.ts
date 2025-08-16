@@ -16,7 +16,7 @@ export class PWAUpdateManager {
     if ('serviceWorker' in navigator) {
       try {
         this.registration = await navigator.serviceWorker.register('/sw.js');
-        
+
         // Проверяем обновления каждые 60 секунд
         setInterval(() => {
           this.checkForUpdates();
@@ -25,10 +25,13 @@ export class PWAUpdateManager {
         // Слушаем события обновления
         this.registration.addEventListener('updatefound', () => {
           const newWorker = this.registration?.installing;
-          
+
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              if (
+                newWorker.state === 'installed' &&
+                navigator.serviceWorker.controller
+              ) {
                 this.updateAvailable = true;
                 this.showUpdateNotification();
               }
@@ -56,12 +59,12 @@ export class PWAUpdateManager {
   async applyUpdate(): Promise<boolean> {
     if (this.registration?.waiting) {
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      
+
       // Перезагружаем страницу после применения обновления
       window.addEventListener('controllerchange', () => {
         window.location.reload();
       });
-      
+
       return true;
     }
     return false;
@@ -70,7 +73,7 @@ export class PWAUpdateManager {
   private showUpdateNotification(): void {
     // Создаем событие для уведомления о доступном обновлении
     const event = new CustomEvent('pwa-update-available', {
-      detail: { updateManager: this }
+      detail: { updateManager: this },
     });
     window.dispatchEvent(event);
   }

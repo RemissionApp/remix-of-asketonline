@@ -24,9 +24,9 @@ export const handleError = (
   options: ErrorHandlerOptions = {}
 ) => {
   const { context = 'Unknown', fallback, notify = true } = options;
-  
+
   logger.error(`Error in ${context}`, error);
-  
+
   if (error instanceof AppError) {
     if (notify) {
       // Toast notification would go here
@@ -41,7 +41,7 @@ export const handleError = (
       console.error('An unknown error occurred');
     }
   }
-  
+
   if (fallback) {
     try {
       fallback();

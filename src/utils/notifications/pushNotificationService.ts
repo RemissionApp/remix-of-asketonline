@@ -1,7 +1,15 @@
 import { supabase } from '@/lib/supabase';
 
 export interface NotificationData {
-  type: 'daily_reminder' | 'pact_start' | 'pact_complete' | 'meditation_reminder' | 'universe_message' | 'achievement' | 'subscription_reminder' | 'test';
+  type:
+    | 'daily_reminder'
+    | 'pact_start'
+    | 'pact_complete'
+    | 'meditation_reminder'
+    | 'universe_message'
+    | 'achievement'
+    | 'subscription_reminder'
+    | 'test';
   title: string;
   body: string;
   data?: Record<string, any>;
@@ -15,9 +23,12 @@ export class PushNotificationService {
    */
   static async send(notification: NotificationData): Promise<boolean> {
     try {
-      const { data, error } = await supabase.functions.invoke('send-push-notification', {
-        body: notification,
-      });
+      const { data, error } = await supabase.functions.invoke(
+        'send-push-notification',
+        {
+          body: notification,
+        }
+      );
 
       if (error) {
         console.error('Ошибка отправки push-уведомления:', error);
@@ -35,11 +46,14 @@ export class PushNotificationService {
   /**
    * Отправляет ежедневное напоминание о выполнении аскезы
    */
-  static async sendDailyReminder(userId: string, pactTitle?: string): Promise<boolean> {
+  static async sendDailyReminder(
+    userId: string,
+    pactTitle?: string
+  ): Promise<boolean> {
     return this.send({
       type: 'daily_reminder',
       title: 'Ежедневное напоминание',
-      body: pactTitle 
+      body: pactTitle
         ? `Не забудьте подтвердить выполнение аскезы "${pactTitle}"`
         : 'Не забудьте подтвердить выполнение вашей аскезы',
       userId,
@@ -50,7 +64,11 @@ export class PushNotificationService {
   /**
    * Отправляет уведомление о начале аскезы
    */
-  static async sendPactStart(userId: string, pactTitle: string, pactId: string): Promise<boolean> {
+  static async sendPactStart(
+    userId: string,
+    pactTitle: string,
+    pactId: string
+  ): Promise<boolean> {
     return this.send({
       type: 'pact_start',
       title: 'Начало аскезы',
@@ -61,9 +79,13 @@ export class PushNotificationService {
   }
 
   /**
-   * Отправляет уведомление о завершении аскезы  
+   * Отправляет уведомление о завершении аскезы
    */
-  static async sendPactComplete(userId: string, pactTitle: string, pactId: string): Promise<boolean> {
+  static async sendPactComplete(
+    userId: string,
+    pactTitle: string,
+    pactId: string
+  ): Promise<boolean> {
     return this.send({
       type: 'pact_complete',
       title: 'Аскеза завершена! 🎉',
@@ -88,7 +110,10 @@ export class PushNotificationService {
   /**
    * Отправляет сообщение от Вселенной
    */
-  static async sendUniverseMessage(userId: string, message: string): Promise<boolean> {
+  static async sendUniverseMessage(
+    userId: string,
+    message: string
+  ): Promise<boolean> {
     return this.send({
       type: 'universe_message',
       title: 'Сообщение от Вселенной ✨',
@@ -101,7 +126,11 @@ export class PushNotificationService {
   /**
    * Отправляет уведомление о новом достижении
    */
-  static async sendAchievement(userId: string, achievementTitle: string, achievementId: string): Promise<boolean> {
+  static async sendAchievement(
+    userId: string,
+    achievementTitle: string,
+    achievementId: string
+  ): Promise<boolean> {
     return this.send({
       type: 'achievement',
       title: 'Новое достижение! 🏆',
@@ -114,11 +143,16 @@ export class PushNotificationService {
   /**
    * Отправляет напоминание о подписке
    */
-  static async sendSubscriptionReminder(userId: string, message?: string): Promise<boolean> {
+  static async sendSubscriptionReminder(
+    userId: string,
+    message?: string
+  ): Promise<boolean> {
     return this.send({
       type: 'subscription_reminder',
       title: 'Напоминание о подписке',
-      body: message || 'Ваша PRO-подписка скоро истекает. Продлите её, чтобы не потерять доступ к премиум-функциям',
+      body:
+        message ||
+        'Ваша PRO-подписка скоро истекает. Продлите её, чтобы не потерять доступ к премиум-функциям',
       userId,
       data: { message },
     });
@@ -139,7 +173,10 @@ export class PushNotificationService {
   /**
    * Массовая отправка уведомлений
    */
-  static async sendBulk(userIds: string[], notification: Omit<NotificationData, 'userId' | 'userIds'>): Promise<boolean> {
+  static async sendBulk(
+    userIds: string[],
+    notification: Omit<NotificationData, 'userId' | 'userIds'>
+  ): Promise<boolean> {
     return this.send({
       ...notification,
       userIds,

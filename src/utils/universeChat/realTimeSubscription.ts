@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import { UniverseChatMessage } from './types';
 
@@ -12,12 +11,12 @@ export const subscribeToSessionMessages = (
   if (!sessionId) {
     console.error('Session ID is required for subscription');
     return {
-      unsubscribe: () => {}
+      unsubscribe: () => {},
     };
   }
 
   console.log('Setting up real-time subscription for session:', sessionId);
-  
+
   return supabase
     .channel(`session-${sessionId}`)
     .on(
@@ -26,9 +25,9 @@ export const subscribeToSessionMessages = (
         event: 'INSERT',
         schema: 'public',
         table: 'universe_chat_messages',
-        filter: `session_id=eq.${sessionId}`
+        filter: `session_id=eq.${sessionId}`,
       },
-      (payload) => {
+      payload => {
         console.log('New message received via subscription:', payload.new);
         onNewMessage(payload.new as UniverseChatMessage);
       }

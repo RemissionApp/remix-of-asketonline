@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { MeditationCard } from './MeditationCard';
 import { MeditationPlayer } from './MeditationPlayer';
-import { 
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from './ui/carousel';
 import { Meditation } from '@/types';
 
@@ -15,11 +15,13 @@ interface MeditationSliderProps {
   onMeditationClick?: (meditation: Meditation) => void;
 }
 
-export const MeditationSlider: React.FC<MeditationSliderProps> = ({ 
-  meditations, 
-  onMeditationClick 
+export const MeditationSlider: React.FC<MeditationSliderProps> = ({
+  meditations,
+  onMeditationClick,
 }) => {
-  const [activeMeditationId, setActiveMeditationId] = useState<string | null>(null);
+  const [activeMeditationId, setActiveMeditationId] = useState<string | null>(
+    null
+  );
   const activeMeditation = meditations.find(m => m.id === activeMeditationId);
 
   const handlePlayMeditation = (id: string) => {
@@ -33,7 +35,9 @@ export const MeditationSlider: React.FC<MeditationSliderProps> = ({
 
   const handleNextMeditation = () => {
     if (activeMeditationId) {
-      const currentIndex = meditations.findIndex(m => m.id === activeMeditationId);
+      const currentIndex = meditations.findIndex(
+        m => m.id === activeMeditationId
+      );
       if (currentIndex < meditations.length - 1) {
         setActiveMeditationId(meditations[currentIndex + 1].id);
       }
@@ -42,13 +46,15 @@ export const MeditationSlider: React.FC<MeditationSliderProps> = ({
 
   const handlePreviousMeditation = () => {
     if (activeMeditationId) {
-      const currentIndex = meditations.findIndex(m => m.id === activeMeditationId);
+      const currentIndex = meditations.findIndex(
+        m => m.id === activeMeditationId
+      );
       if (currentIndex > 0) {
         setActiveMeditationId(meditations[currentIndex - 1].id);
       }
     }
   };
-  
+
   return (
     <div className="w-full">
       {activeMeditation ? (
@@ -66,9 +72,12 @@ export const MeditationSlider: React.FC<MeditationSliderProps> = ({
 
       <Carousel className="w-full">
         <CarouselContent className="-ml-2 md:-ml-4">
-          {meditations.map((meditation) => (
-            <CarouselItem key={meditation.id} className="pl-2 md:pl-4 sm:basis-1/2 md:basis-1/3">
-              <MeditationCard 
+          {meditations.map(meditation => (
+            <CarouselItem
+              key={meditation.id}
+              className="pl-2 md:pl-4 sm:basis-1/2 md:basis-1/3"
+            >
+              <MeditationCard
                 title={meditation.title}
                 description={meditation.description}
                 duration={meditation.duration}

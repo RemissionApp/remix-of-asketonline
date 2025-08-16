@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowLeft, Crown, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +10,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 interface MeditationHeaderProps {
   isPro?: boolean;
@@ -24,7 +23,7 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
   isPro,
   onBackClick,
   showProButton,
-  onProButtonClick
+  onProButtonClick,
 }) => {
   const { userProfile } = useAppStore();
 
@@ -40,17 +39,23 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
             </AvatarFallback>
           </Avatar>
           <div>
-            <span className="text-white text-sm font-medium">{userProfile.name}</span>
+            <span className="text-white text-sm font-medium">
+              {userProfile.name}
+            </span>
             <div className="flex items-center gap-1">
               <Star size={12} className="text-cosmic-gold" />
-              <span className="text-cosmic-gold text-xs">{userProfile.energyPoints} энергии</span>
+              <span className="text-cosmic-gold text-xs">
+                {userProfile.energyPoints} энергии
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="bg-cosmic-accent/20 px-2 py-1 rounded-full">
-            <span className="text-cosmic-accent text-xs capitalize">{userProfile.rank}</span>
+            <span className="text-cosmic-accent text-xs capitalize">
+              {userProfile.rank}
+            </span>
           </div>
           {userProfile.isPro && <ProBadge size="sm" />}
         </div>
@@ -61,12 +66,12 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
         <button onClick={onBackClick} className="p-2 text-cosmic-accent">
           <ArrowLeft size={24} />
         </button>
-        
+
         {showProButton ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="flex items-center gap-2 text-cosmic-gold bg-cosmic-dark/60 hover:bg-cosmic-accent/20"
                 onClick={onProButtonClick}
               >
@@ -78,7 +83,9 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
               <p>Перейти к PRO медитациям</p>
             </TooltipContent>
           </Tooltip>
-        ) : isPro && <ProBadge size="md" />}
+        ) : (
+          isPro && <ProBadge size="md" />
+        )}
       </div>
     </div>
   );

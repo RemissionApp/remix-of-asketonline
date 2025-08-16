@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -10,11 +9,11 @@ interface ConfirmUploadProps {
   onConfirm: () => void;
 }
 
-export const ConfirmUpload: React.FC<ConfirmUploadProps> = ({ 
-  previewUrl, 
-  uploading, 
-  onCancel, 
-  onConfirm 
+export const ConfirmUpload: React.FC<ConfirmUploadProps> = ({
+  previewUrl,
+  uploading,
+  onCancel,
+  onConfirm,
 }) => {
   return (
     <div className="flex flex-col items-center">
@@ -27,7 +26,7 @@ export const ConfirmUpload: React.FC<ConfirmUploadProps> = ({
           />
         )}
       </div>
-      
+
       <div className="flex gap-2">
         <Button
           variant="outline"
@@ -39,7 +38,7 @@ export const ConfirmUpload: React.FC<ConfirmUploadProps> = ({
           <X className="mr-1 h-4 w-4" />
           Отмена
         </Button>
-        
+
         <Button
           variant="default"
           size="sm"

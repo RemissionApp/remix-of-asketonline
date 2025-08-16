@@ -16,12 +16,12 @@ interface CountdownTimerProps {
 }
 
 export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ 
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
-    hours: 0, 
-    minutes: 0, 
+    hours: 0,
+    minutes: 0,
     seconds: 0,
-    milliseconds: 0
+    milliseconds: 0,
   });
   const { language, pacts } = useAppStore();
   const { t } = useTranslations();
@@ -29,41 +29,56 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   // Get translations for time units
   const getDaysLabel = () => {
     switch (language) {
-      case 'ru': return 'д';
-      case 'es': return 'd';
-      default: return 'd';
+      case 'ru':
+        return 'д';
+      case 'es':
+        return 'd';
+      default:
+        return 'd';
     }
   };
-  
+
   const getHoursLabel = () => {
     switch (language) {
-      case 'ru': return 'ч';
-      case 'es': return 'h';
-      default: return 'h';
+      case 'ru':
+        return 'ч';
+      case 'es':
+        return 'h';
+      default:
+        return 'h';
     }
   };
-  
+
   const getMinutesLabel = () => {
     switch (language) {
-      case 'ru': return 'м';
-      case 'es': return 'm';
-      default: return 'm';
+      case 'ru':
+        return 'м';
+      case 'es':
+        return 'm';
+      default:
+        return 'm';
     }
   };
-  
+
   const getSecondsLabel = () => {
     switch (language) {
-      case 'ru': return 'с';
-      case 'es': return 's';
-      default: return 's';
+      case 'ru':
+        return 'с';
+      case 'es':
+        return 's';
+      default:
+        return 's';
     }
   };
-  
+
   const getMillisecondsLabel = () => {
     switch (language) {
-      case 'ru': return 'мс';
-      case 'es': return 'ms';
-      default: return 'ms';
+      case 'ru':
+        return 'мс';
+      case 'es':
+        return 'ms';
+      default:
+        return 'ms';
     }
   };
 
@@ -72,7 +87,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     const calculateTimeLeft = () => {
       // Find the current active pact
       let activePact = null;
-      
+
       if (pactId) {
         // If a pact ID is provided, find that specific pact
         activePact = pacts?.find(p => p.id === pactId && p.status === 'active');
@@ -83,7 +98,13 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
 
       if (!activePact) {
         // If no active pact is found, set all values to 0
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0,
+        });
         return;
       }
 
@@ -92,57 +113,83 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
       const createdAtDate = new Date(activePact.created_at);
       const endDate = new Date(createdAtDate);
       endDate.setDate(createdAtDate.getDate() + activePact.duration);
-      
+
       // Calculate time difference
       const difference = endDate.getTime() - now.getTime();
-      
+
       if (difference > 0) {
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((difference / 1000 / 60) % 60);
         const seconds = Math.floor((difference / 1000) % 60);
         const milliseconds = Math.floor((difference % 1000) / 10); // Get only tens of milliseconds (2 digits)
-        
+
         setTimeLeft({ days, hours, minutes, seconds, milliseconds });
       } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0,
+        });
       }
     };
-    
+
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 10); // Update frequently for milliseconds
-    
+
     return () => clearInterval(timer);
   }, [pactId, pacts]);
-  
+
   return (
     <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
       <div className="flex items-center justify-center text-xs">
         <Clock size={16} className="text-cosmic-secondary mr-1" />
         <div className="flex items-center space-x-2">
           <div className="flex flex-col items-center">
-            <span className="text-cosmic-accent font-medium">{timeLeft.days.toString().padStart(2, '0')}</span>
-            <span className="text-cosmic-secondary text-[10px]">{getDaysLabel()}</span>
+            <span className="text-cosmic-accent font-medium">
+              {timeLeft.days.toString().padStart(2, '0')}
+            </span>
+            <span className="text-cosmic-secondary text-[10px]">
+              {getDaysLabel()}
+            </span>
           </div>
           <span className="text-cosmic-accent">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-cosmic-accent font-medium">{timeLeft.hours.toString().padStart(2, '0')}</span>
-            <span className="text-cosmic-secondary text-[10px]">{getHoursLabel()}</span>
+            <span className="text-cosmic-accent font-medium">
+              {timeLeft.hours.toString().padStart(2, '0')}
+            </span>
+            <span className="text-cosmic-secondary text-[10px]">
+              {getHoursLabel()}
+            </span>
           </div>
           <span className="text-cosmic-accent">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-cosmic-accent font-medium">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-            <span className="text-cosmic-secondary text-[10px]">{getMinutesLabel()}</span>
+            <span className="text-cosmic-accent font-medium">
+              {timeLeft.minutes.toString().padStart(2, '0')}
+            </span>
+            <span className="text-cosmic-secondary text-[10px]">
+              {getMinutesLabel()}
+            </span>
           </div>
           <span className="text-cosmic-accent">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-cosmic-accent font-medium">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-            <span className="text-cosmic-secondary text-[10px]">{getSecondsLabel()}</span>
+            <span className="text-cosmic-accent font-medium">
+              {timeLeft.seconds.toString().padStart(2, '0')}
+            </span>
+            <span className="text-cosmic-secondary text-[10px]">
+              {getSecondsLabel()}
+            </span>
           </div>
           <span className="text-cosmic-accent">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-cosmic-accent font-medium">{timeLeft.milliseconds.toString().padStart(2, '0')}</span>
-            <span className="text-cosmic-secondary text-[10px]">{getMillisecondsLabel()}</span>
+            <span className="text-cosmic-accent font-medium">
+              {timeLeft.milliseconds.toString().padStart(2, '0')}
+            </span>
+            <span className="text-cosmic-secondary text-[10px]">
+              {getMillisecondsLabel()}
+            </span>
           </div>
         </div>
       </div>

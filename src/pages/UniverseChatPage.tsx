@@ -11,9 +11,9 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { toast } from 'sonner';
 
 const UniverseChatPage = () => {
-  const { 
-    userProfile, 
-    currentChatSession, 
+  const {
+    userProfile,
+    currentChatSession,
     chatMessages,
     isLoadingChat,
     isSendingMessage,
@@ -22,17 +22,17 @@ const UniverseChatPage = () => {
     setCurrentChatSession,
     sendChatMessage,
     loadChatMessages,
-    isUniverseTyping
+    isUniverseTyping,
   } = useAppStore();
-  
+
   const { t } = useTranslations();
   const [initialLoaded, setInitialLoaded] = useState(false);
-  
+
   // Load chat sessions on first render
   useEffect(() => {
     loadChatSessions();
   }, [loadChatSessions]);
-  
+
   // Ensure we have a current session and load messages
   useEffect(() => {
     const initializeChat = async () => {
@@ -42,7 +42,7 @@ const UniverseChatPage = () => {
           // Using a fallback for defaultChatTitle if it doesn't exist in translations
           const defaultTitle = t.universe?.chatTitle || 'Диалог со Вселенной';
           const sessionId = await createChatSession(defaultTitle);
-          
+
           if (sessionId) {
             console.log('Created new default session:', sessionId);
             await setCurrentChatSession(sessionId);
@@ -56,25 +56,32 @@ const UniverseChatPage = () => {
         setInitialLoaded(true);
       }
     };
-    
+
     initializeChat();
-  }, [currentChatSession, createChatSession, loadChatMessages, setCurrentChatSession, t.universe]);
-  
+  }, [
+    currentChatSession,
+    createChatSession,
+    loadChatMessages,
+    setCurrentChatSession,
+    t.universe,
+  ]);
+
   // Add welcome message when session and messages are loaded
   useEffect(() => {
     const addWelcomeMessage = async () => {
       // Only proceed if we have a session, messages are loaded, and there are no messages
       if (
-        currentChatSession && 
-        !isLoadingChat && 
+        currentChatSession &&
+        !isLoadingChat &&
         initialLoaded &&
-        chatMessages.length === 0 && 
+        chatMessages.length === 0 &&
         !isSendingMessage
       ) {
         try {
           // Create welcome message from universe (not from user)
-          const welcomeMessage = "Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?";
-          
+          const welcomeMessage =
+            'Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?';
+
           // Send welcome message - removed the second parameter as it's not supported
           await sendChatMessage(welcomeMessage);
         } catch (error) {
@@ -82,25 +89,32 @@ const UniverseChatPage = () => {
         }
       }
     };
-    
+
     addWelcomeMessage();
-  }, [currentChatSession, isLoadingChat, initialLoaded, chatMessages.length, isSendingMessage, sendChatMessage]);
-  
+  }, [
+    currentChatSession,
+    isLoadingChat,
+    initialLoaded,
+    chatMessages.length,
+    isSendingMessage,
+    sendChatMessage,
+  ]);
+
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
-    
+
     try {
       if (!currentChatSession) {
         // Create a new session with the message as title
         const title = message.slice(0, 50) + (message.length > 50 ? '...' : '');
         console.log('Creating new chat session with title:', title);
-        
+
         const sessionId = await createChatSession(title);
-        
+
         if (sessionId) {
           console.log('Session created with ID:', sessionId);
           await setCurrentChatSession(sessionId);
-          
+
           // Wait a bit for state to update before sending
           setTimeout(() => {
             sendChatMessage(message);
@@ -115,13 +129,14 @@ const UniverseChatPage = () => {
       toast.error(t.universe?.errorSendingMessage || 'Failed to send message');
     }
   };
-  
+
   const handleNewChat = async () => {
     try {
       // Creating a new chat session
-      const defaultTitle = t.universe?.newChatTitle || 'Новый диалог со Вселенной';
+      const defaultTitle =
+        t.universe?.newChatTitle || 'Новый диалог со Вселенной';
       const sessionId = await createChatSession(defaultTitle);
-      
+
       if (sessionId) {
         await setCurrentChatSession(sessionId);
         setInitialLoaded(false); // Reset so welcome message can be added
@@ -132,31 +147,29 @@ const UniverseChatPage = () => {
       toast.error('Ошибка создания нового диалога');
     }
   };
-  
+
   // Wrap content with PRO check
   return (
     <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
       <div className="min-h-screen flex flex-col bg-cosmic pb-20">
         <StarField starCount={100} />
-        
-        <PageHeader 
-          title={t.universe?.chatTitle || 'Диалог со Вселенной'}
-        />
-        
+
+        <PageHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
+
         <div className="w-full max-w-2xl mx-auto pt-20">
           <div className="px-4 mb-24">
-            <ChatTabContent 
+            <ChatTabContent
               isLoadingChat={isLoadingChat}
               chatMessages={chatMessages}
             />
           </div>
         </div>
-        
-        <ChatInput 
-          onSendMessage={handleSendMessage} 
+
+        <ChatInput
+          onSendMessage={handleSendMessage}
           isDisabled={isSendingMessage}
         />
-        
+
         <BottomNavigation />
       </div>
     </UniverseChatProWrapper>

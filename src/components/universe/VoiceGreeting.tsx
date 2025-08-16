@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
@@ -10,12 +9,13 @@ interface VoiceGreetingProps {
   autoPlay?: boolean;
 }
 
-export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({ 
-  userProfile, 
-  language, 
-  autoPlay = false
+export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
+  userProfile,
+  language,
+  autoPlay = false,
 }) => {
-  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } =
+    useTextToSpeech();
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
   // Получаем имя пользователя, по умолчанию "искатель"
@@ -48,14 +48,14 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       const timer = setTimeout(() => {
         // Проверяем еще раз перед запуском
         if (!isPlaying && !isGenerating && !hasAutoPlayed) {
-          generateAndPlaySpeech(greetingText, { 
-            voice: 'Custom', 
-            model: 'eleven_multilingual_v2' 
+          generateAndPlaySpeech(greetingText, {
+            voice: 'Custom',
+            model: 'eleven_multilingual_v2',
           });
           setHasAutoPlayed(true);
         }
       }, 1500);
-      
+
       return () => clearTimeout(timer);
     }
   }, [autoPlay, greetingText, hasAutoPlayed]);
@@ -66,10 +66,10 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
       stopSpeech();
       return;
     }
-    
-    generateAndPlaySpeech(greetingText, { 
-      voice: 'Custom', 
-      model: 'eleven_multilingual_v2' 
+
+    generateAndPlaySpeech(greetingText, {
+      voice: 'Custom',
+      model: 'eleven_multilingual_v2',
     });
   };
 
@@ -87,20 +87,29 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
     <div className="relative z-10 text-center mb-6">
       <div className="flex items-center justify-center gap-3 mb-2">
         <h2 className="text-cosmic-gold font-serif text-xl">
-          {language === 'ru' 
-            ? `Приветствую тебя, ${userName}!` 
+          {language === 'ru'
+            ? `Приветствую тебя, ${userName}!`
             : language === 'es'
               ? `¡Te saludo, ${userName}!`
               : `Greetings, ${userName}!`}
         </h2>
-        
+
         <button
           onClick={handleToggleAudio}
           disabled={isGenerating}
           className="p-2 rounded-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 transition-colors border border-cosmic-accent/30"
-          title={isPlaying 
-            ? (language === 'ru' ? 'Остановить' : language === 'es' ? 'Detener' : 'Stop')
-            : (language === 'ru' ? 'Воспроизвести приветствие' : language === 'es' ? 'Reproducir saludo' : 'Play greeting')
+          title={
+            isPlaying
+              ? language === 'ru'
+                ? 'Остановить'
+                : language === 'es'
+                  ? 'Detener'
+                  : 'Stop'
+              : language === 'ru'
+                ? 'Воспроизвести приветствие'
+                : language === 'es'
+                  ? 'Reproducir saludo'
+                  : 'Play greeting'
           }
         >
           {isGenerating ? (
@@ -112,9 +121,9 @@ export const VoiceGreeting: React.FC<VoiceGreetingProps> = ({
           )}
         </button>
       </div>
-      
+
       <p className="text-cosmic-secondary text-sm max-w-md mx-auto">
-        {language === 'ru' 
+        {language === 'ru'
           ? 'Нажмите на значок звука для воспроизведения голосового приветствия'
           : language === 'es'
             ? 'Haz clic en el icono de sonido para reproducir el saludo de voz'

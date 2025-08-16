@@ -122,4 +122,9 @@ export interface Meditation {
   requiresPro?: boolean;
 }
 
-export type SpiritualRank = 'seeker' | 'pilgrim' | 'warrior' | 'master' | 'enlightened';
+export type SpiritualRank =
+  | 'seeker'
+  | 'pilgrim'
+  | 'warrior'
+  | 'master'
+  | 'enlightened';

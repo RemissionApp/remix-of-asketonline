@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -10,32 +9,34 @@ import { SupportedLanguage } from '@/hooks/useTranslations';
 const LanguagePage = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useAppStore();
-  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(language as SupportedLanguage);
+  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(
+    language as SupportedLanguage
+  );
   const [isReady, setIsReady] = useState(false);
-  
+
   useEffect(() => {
     setIsReady(true);
   }, []);
-  
+
   const handleContinue = () => {
     setLanguage(selectedLang);
-    
+
     // Check if user was already onboarded
     const onboarded = localStorage.getItem('onboarded');
-    
+
     if (onboarded === 'true') {
       navigate('/login');
     } else {
       navigate('/profile-setup');
     }
   };
-  
+
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
-  
+
   const getWelcomeText = () => {
     switch (selectedLang) {
       case 'ru':
@@ -46,7 +47,7 @@ const LanguagePage = () => {
         return 'Select your language';
     }
   };
-  
+
   const getContinueText = () => {
     switch (selectedLang) {
       case 'ru':
@@ -57,25 +58,25 @@ const LanguagePage = () => {
         return 'Continue';
     }
   };
-  
+
   return (
     <div className="min-h-screen overflow-hidden flex flex-col items-center justify-center relative p-4">
       <StarField starCount={100} />
-      
+
       <div className="absolute inset-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/10 to-cosmic-dark z-0" />
-      
+
       <div className="relative z-10 w-full max-w-md">
-        <div className={`text-center transition-all duration-1000 ${
-          isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
+        <div
+          className={`text-center transition-all duration-1000 ${
+            isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
           <h1 className="text-4xl font-serif text-white mb-8">Asket</h1>
-          
-          <p className="text-white text-lg mb-12">
-            {getWelcomeText()}
-          </p>
-        
+
+          <p className="text-white text-lg mb-12">{getWelcomeText()}</p>
+
           <div className="space-y-4 mb-12">
-            {languages.map((lang) => (
+            {languages.map(lang => (
               <Button
                 key={lang.code}
                 onClick={() => setSelectedLang(lang.code as SupportedLanguage)}
@@ -90,7 +91,7 @@ const LanguagePage = () => {
               </Button>
             ))}
           </div>
-          
+
           <CosmicButton onClick={handleContinue} className="w-full">
             {getContinueText()}
           </CosmicButton>

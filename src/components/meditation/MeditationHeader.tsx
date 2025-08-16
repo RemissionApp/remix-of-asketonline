@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Star, Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,7 @@ interface MeditationHeaderProps {
 export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
   sessions,
   currentIndex,
-  onSessionChange
+  onSessionChange,
 }) => {
   const { userProfile } = useAppStore();
   const currentSession = sessions[currentIndex];
@@ -51,17 +50,23 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
             </AvatarFallback>
           </Avatar>
           <div>
-            <span className="text-white text-sm font-medium">{userProfile.name}</span>
+            <span className="text-white text-sm font-medium">
+              {userProfile.name}
+            </span>
             <div className="flex items-center gap-1">
               <Star size={12} className="text-cosmic-gold" />
-              <span className="text-cosmic-gold text-xs">{userProfile.energyPoints} энергии</span>
+              <span className="text-cosmic-gold text-xs">
+                {userProfile.energyPoints} энергии
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="bg-cosmic-accent/20 px-2 py-1 rounded-full">
-            <span className="text-cosmic-accent text-xs capitalize">{userProfile.rank}</span>
+            <span className="text-cosmic-accent text-xs capitalize">
+              {userProfile.rank}
+            </span>
           </div>
         </div>
       </div>
@@ -76,7 +81,7 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
         >
           <ChevronLeft size={20} />
         </Button>
-        
+
         <div className="flex-1 text-center">
           <h1 className="text-xl font-serif text-white mb-1">
             {currentSession.title}
@@ -84,14 +89,16 @@ export const MeditationHeader: React.FC<MeditationHeaderProps> = ({
           <p className="text-cosmic-secondary text-sm mb-2">
             {currentSession.category}
           </p>
-          
+
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-full bg-cosmic-accent/20 flex items-center justify-center">
               <User size={16} className="text-cosmic-accent" />
             </div>
-            <span className="text-cosmic-accent text-sm">{currentSession.curator}</span>
+            <span className="text-cosmic-accent text-sm">
+              {currentSession.curator}
+            </span>
           </div>
-          
+
           <div className="text-cosmic-gold text-xs">
             {currentSession.moonPhase} • {currentSession.level}
           </div>

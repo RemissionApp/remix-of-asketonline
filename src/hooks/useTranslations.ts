@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { translations, SupportedLanguage } from '@/i18n/translations';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,11 +6,11 @@ import { useAppStore } from '@/store/useAppStore';
 export const getYearWord = (age: number): string => {
   const lastDigit = age % 10;
   const lastTwoDigits = age % 100;
-  
+
   if (lastDigit === 1 && lastTwoDigits !== 11) {
     return 'год';
   } else if (
-    [2, 3, 4].includes(lastDigit) && 
+    [2, 3, 4].includes(lastDigit) &&
     ![12, 13, 14].includes(lastTwoDigits)
   ) {
     return 'года';
@@ -31,8 +30,8 @@ export const useTranslations = () => {
     setT(translations[language]);
   }, [language]);
 
-  return { 
+  return {
     t,
-    getYearWord 
+    getYearWord,
   };
 };

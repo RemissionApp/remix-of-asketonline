@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
@@ -10,24 +9,24 @@ export const LogoutButton: React.FC = () => {
   const { signOut } = useAppStore();
   const navigate = useNavigate();
   const { t } = useTranslations();
-  
+
   const handleLogout = async () => {
     // Очищаем состояние аутентификации перед выходом
     cleanupAuthState();
-    
+
     // Выполняем выход
     await signOut();
-    
+
     // Принудительно перенаправляем на страницу входа
-    navigate('/login'); 
+    navigate('/login');
   };
-  
+
   return (
-    <Button 
+    <Button
       className="w-full bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30 font-sans"
       onClick={handleLogout}
     >
-      <span>{t.userProfile?.logout || "Выход"}</span>
+      <span>{t.userProfile?.logout || 'Выход'}</span>
     </Button>
   );
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardHeader, CardContent } from '@/components/ui/card';
@@ -13,12 +12,12 @@ interface HoroscopeLoadingProps {
 export const HoroscopeLoading: React.FC<HoroscopeLoadingProps> = ({
   zodiacInfo,
   translations,
-  language
+  language,
 }) => {
   return (
     <>
       <CardHeader>
-        <HoroscopeHeader 
+        <HoroscopeHeader
           zodiacInfo={zodiacInfo}
           translations={translations}
           language={language}

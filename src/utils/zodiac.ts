@@ -1,16 +1,15 @@
-
-export type ZodiacSign = 
-  | 'aries' 
-  | 'taurus' 
-  | 'gemini' 
-  | 'cancer' 
-  | 'leo' 
-  | 'virgo' 
-  | 'libra' 
-  | 'scorpio' 
-  | 'sagittarius' 
-  | 'capricorn' 
-  | 'aquarius' 
+export type ZodiacSign =
+  | 'aries'
+  | 'taurus'
+  | 'gemini'
+  | 'cancer'
+  | 'leo'
+  | 'virgo'
+  | 'libra'
+  | 'scorpio'
+  | 'sagittarius'
+  | 'capricorn'
+  | 'aquarius'
   | 'pisces';
 
 export interface ZodiacInfo {
@@ -33,165 +32,165 @@ export const zodiacData: Record<ZodiacSign, ZodiacInfo> = {
     name: {
       en: 'Aries',
       ru: 'Овен',
-      es: 'Aries'
+      es: 'Aries',
     },
     symbol: '♈',
     dates: 'March 21 - April 19',
     element: 'Fire',
     ruler: 'Mars',
-    traits: ['Courageous', 'Determined', 'Passionate', 'Confident']
+    traits: ['Courageous', 'Determined', 'Passionate', 'Confident'],
   },
   taurus: {
     sign: 'taurus',
     name: {
       en: 'Taurus',
       ru: 'Телец',
-      es: 'Tauro'
+      es: 'Tauro',
     },
     symbol: '♉',
     dates: 'April 20 - May 20',
     element: 'Earth',
     ruler: 'Venus',
-    traits: ['Reliable', 'Patient', 'Practical', 'Devoted']
+    traits: ['Reliable', 'Patient', 'Practical', 'Devoted'],
   },
   gemini: {
     sign: 'gemini',
     name: {
       en: 'Gemini',
       ru: 'Близнецы',
-      es: 'Géminis'
+      es: 'Géminis',
     },
     symbol: '♊',
     dates: 'May 21 - June 20',
     element: 'Air',
     ruler: 'Mercury',
-    traits: ['Adaptable', 'Outgoing', 'Curious', 'Intelligent']
+    traits: ['Adaptable', 'Outgoing', 'Curious', 'Intelligent'],
   },
   cancer: {
     sign: 'cancer',
     name: {
       en: 'Cancer',
       ru: 'Рак',
-      es: 'Cáncer'
+      es: 'Cáncer',
     },
     symbol: '♋',
     dates: 'June 21 - July 22',
     element: 'Water',
     ruler: 'Moon',
-    traits: ['Empathetic', 'Nurturing', 'Intuitive', 'Protective']
+    traits: ['Empathetic', 'Nurturing', 'Intuitive', 'Protective'],
   },
   leo: {
     sign: 'leo',
     name: {
       en: 'Leo',
       ru: 'Лев',
-      es: 'Leo'
+      es: 'Leo',
     },
     symbol: '♌',
     dates: 'July 23 - August 22',
     element: 'Fire',
     ruler: 'Sun',
-    traits: ['Creative', 'Passionate', 'Generous', 'Charismatic']
+    traits: ['Creative', 'Passionate', 'Generous', 'Charismatic'],
   },
   virgo: {
     sign: 'virgo',
     name: {
       en: 'Virgo',
       ru: 'Дева',
-      es: 'Virgo'
+      es: 'Virgo',
     },
     symbol: '♍',
     dates: 'August 23 - September 22',
     element: 'Earth',
     ruler: 'Mercury',
-    traits: ['Analytical', 'Practical', 'Diligent', 'Detail-oriented']
+    traits: ['Analytical', 'Practical', 'Diligent', 'Detail-oriented'],
   },
   libra: {
     sign: 'libra',
     name: {
       en: 'Libra',
       ru: 'Весы',
-      es: 'Libra'
+      es: 'Libra',
     },
     symbol: '♎',
     dates: 'September 23 - October 22',
     element: 'Air',
     ruler: 'Venus',
-    traits: ['Diplomatic', 'Fair-minded', 'Harmonious', 'Social']
+    traits: ['Diplomatic', 'Fair-minded', 'Harmonious', 'Social'],
   },
   scorpio: {
     sign: 'scorpio',
     name: {
       en: 'Scorpio',
       ru: 'Скорпион',
-      es: 'Escorpio'
+      es: 'Escorpio',
     },
     symbol: '♏',
     dates: 'October 23 - November 21',
     element: 'Water',
     ruler: 'Pluto, Mars',
-    traits: ['Passionate', 'Resourceful', 'Intense', 'Determined']
+    traits: ['Passionate', 'Resourceful', 'Intense', 'Determined'],
   },
   sagittarius: {
     sign: 'sagittarius',
     name: {
       en: 'Sagittarius',
       ru: 'Стрелец',
-      es: 'Sagitario'
+      es: 'Sagitario',
     },
     symbol: '♐',
     dates: 'November 22 - December 21',
     element: 'Fire',
     ruler: 'Jupiter',
-    traits: ['Optimistic', 'Freedom-loving', 'Adventurous', 'Philosophical']
+    traits: ['Optimistic', 'Freedom-loving', 'Adventurous', 'Philosophical'],
   },
   capricorn: {
     sign: 'capricorn',
     name: {
       en: 'Capricorn',
       ru: 'Козерог',
-      es: 'Capricornio'
+      es: 'Capricornio',
     },
     symbol: '♑',
     dates: 'December 22 - January 19',
     element: 'Earth',
     ruler: 'Saturn',
-    traits: ['Disciplined', 'Responsible', 'Self-controlled', 'Ambitious']
+    traits: ['Disciplined', 'Responsible', 'Self-controlled', 'Ambitious'],
   },
   aquarius: {
     sign: 'aquarius',
     name: {
       en: 'Aquarius',
       ru: 'Водолей',
-      es: 'Acuario'
+      es: 'Acuario',
     },
     symbol: '♒',
     dates: 'January 20 - February 18',
     element: 'Air',
     ruler: 'Uranus, Saturn',
-    traits: ['Progressive', 'Original', 'Independent', 'Humanitarian']
+    traits: ['Progressive', 'Original', 'Independent', 'Humanitarian'],
   },
   pisces: {
     sign: 'pisces',
     name: {
       en: 'Pisces',
       ru: 'Рыбы',
-      es: 'Piscis'
+      es: 'Piscis',
     },
     symbol: '♓',
     dates: 'February 19 - March 20',
     element: 'Water',
     ruler: 'Neptune, Jupiter',
-    traits: ['Compassionate', 'Intuitive', 'Gentle', 'Artistic']
-  }
+    traits: ['Compassionate', 'Intuitive', 'Gentle', 'Artistic'],
+  },
 };
 
 export const getZodiacSign = (birthDate: Date | null): ZodiacSign | null => {
   if (!birthDate) return null;
-  
+
   const day = birthDate.getDate();
   const month = birthDate.getMonth() + 1; // JavaScript months are 0-based
-  
+
   if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
     return 'aries';
   } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
@@ -217,6 +216,6 @@ export const getZodiacSign = (birthDate: Date | null): ZodiacSign | null => {
   } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
     return 'pisces';
   }
-  
+
   return null;
 };

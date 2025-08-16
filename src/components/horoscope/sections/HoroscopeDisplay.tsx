@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
@@ -24,48 +23,51 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
   language,
   zodiacInfo,
   userName,
-  onRegenerate
+  onRegenerate,
 }) => {
   const logger = createLogger('HoroscopeDisplay');
-  
+
   // Enhanced debugging logs
-  logger.debug("Component rendering", {
+  logger.debug('Component rendering', {
     horoscopeExists: !!horoscope,
     sections: horoscope?.sections ? Object.keys(horoscope.sections) : [],
-    sectionValues: horoscope?.sections ? Object.entries(horoscope.sections).map(([key, value]) => 
-      `${key}: ${value ? value.substring(0, 30) + '...' : 'missing'}`
-    ) : [],
-    generalAtmosphere: horoscope?.sections?.general_atmosphere ? 
-      horoscope.sections.general_atmosphere.substring(0, 30) + "..." : 
-      "No general_atmosphere"
+    sectionValues: horoscope?.sections
+      ? Object.entries(horoscope.sections).map(
+          ([key, value]) =>
+            `${key}: ${value ? value.substring(0, 30) + '...' : 'missing'}`
+        )
+      : [],
+    generalAtmosphere: horoscope?.sections?.general_atmosphere
+      ? horoscope.sections.general_atmosphere.substring(0, 30) + '...'
+      : 'No general_atmosphere',
   });
 
   const handleRegenerate = () => {
-    logger.info("Regenerate button clicked");
+    logger.info('Regenerate button clicked');
     if (onRegenerate) {
-      logger.info("Calling onRegenerate function");
+      logger.info('Calling onRegenerate function');
       onRegenerate();
     } else {
-      logger.warn("No onRegenerate function provided");
+      logger.warn('No onRegenerate function provided');
     }
   };
 
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
       <CardHeader>
-        <HoroscopeHeader 
+        <HoroscopeHeader
           zodiacInfo={zodiacInfo}
           translations={translations}
           language={language}
           userName={userName}
         />
-        
+
         {/* Developer regenerate button with enhanced click handler */}
         {onRegenerate && (
           <div className="mt-2 flex justify-end">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleRegenerate}
               className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
             >
@@ -76,7 +78,7 @@ export const HoroscopeDisplay: React.FC<HoroscopeDisplayProps> = ({
         )}
       </CardHeader>
       <CardContent className="space-y-6 pb-6">
-        <HoroscopeContent 
+        <HoroscopeContent
           horoscope={horoscope}
           translations={translations}
           language={language}

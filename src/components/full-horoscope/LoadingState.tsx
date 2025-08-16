@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Loader } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -17,7 +16,9 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ uiText }) => {
         <div className="animate-spin mb-4">
           <Loader className="h-12 w-12 text-amber-400" />
         </div>
-        <p className="text-amber-300 text-lg font-medium">{uiText.loadingTitle}</p>
+        <p className="text-amber-300 text-lg font-medium">
+          {uiText.loadingTitle}
+        </p>
         <p className="text-gray-400 mt-2">{uiText.loadingDescription}</p>
         <div className="mt-4 flex justify-center space-x-2">
           {[...Array(5)].map((_, i) => (

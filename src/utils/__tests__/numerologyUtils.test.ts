@@ -1,6 +1,8 @@
-
 import { describe, it, expect } from 'vitest';
-import { calculateLifePathNumber, getNumerologyMeaning } from '../numerologyUtils';
+import {
+  calculateLifePathNumber,
+  getNumerologyMeaning,
+} from '../numerologyUtils';
 
 describe('Numerology Utilities', () => {
   describe('calculateLifePathNumber', () => {
@@ -67,7 +69,9 @@ describe('Numerology Utilities', () => {
     it('should return meaning for master number 11', () => {
       const result = getNumerologyMeaning(11, 'en');
       expect(result.title.en).toBe('The Intuitive Leader');
-      expect(result.description.en).toBe('Inspiration, intuition, high spirituality');
+      expect(result.description.en).toBe(
+        'Inspiration, intuition, high spirituality'
+      );
     });
 
     // Test translations

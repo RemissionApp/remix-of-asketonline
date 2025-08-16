@@ -1,4 +1,3 @@
-
 import { useAppStore } from '@/store/useAppStore';
 
 export const useMainPageUtils = () => {
@@ -9,50 +8,50 @@ export const useMainPageUtils = () => {
     // Predefined options with translations
     const predefinedOptions: Record<string, Record<string, string>> = {
       ru: {
-        'sugar': 'сахара',
-        'phone_after_22': 'телефона после 22:00',
-        'cigarettes': 'сигарет',
-        'procrastination': 'прокрастинации',
-        'social_media': 'социальных сетей',
-        'alcohol': 'алкоголя',
-        'junk_food': 'фастфуда'
+        sugar: 'сахара',
+        phone_after_22: 'телефона после 22:00',
+        cigarettes: 'сигарет',
+        procrastination: 'прокрастинации',
+        social_media: 'социальных сетей',
+        alcohol: 'алкоголя',
+        junk_food: 'фастфуда',
       },
       en: {
-        'sugar': 'sugar',
-        'phone_after_22': 'phone after 10 PM',
-        'cigarettes': 'cigarettes',
-        'procrastination': 'procrastination',
-        'social_media': 'social media',
-        'alcohol': 'alcohol',
-        'junk_food': 'junk food'
+        sugar: 'sugar',
+        phone_after_22: 'phone after 10 PM',
+        cigarettes: 'cigarettes',
+        procrastination: 'procrastination',
+        social_media: 'social media',
+        alcohol: 'alcohol',
+        junk_food: 'junk food',
       },
       es: {
-        'sugar': 'azúcar',
-        'phone_after_22': 'teléfono después de las 22:00',
-        'cigarettes': 'cigarrillos',
-        'procrastination': 'procrastinación',
-        'social_media': 'redes sociales',
-        'alcohol': 'alcohol',
-        'junk_food': 'comida rápida'
-      }
+        sugar: 'azúcar',
+        phone_after_22: 'teléfono después de las 22:00',
+        cigarettes: 'cigarrillos',
+        procrastination: 'procrastinación',
+        social_media: 'redes sociales',
+        alcohol: 'alcohol',
+        junk_food: 'comida rápida',
+      },
     };
-    
+
     if (!rejectionText) return '';
-    
+
     // Get translations for current language
     const translations = predefinedOptions[language];
-    
+
     // Check if it's a multiple rejection (comma-separated)
     if (rejectionText.includes(',')) {
       const items = rejectionText.split(',').map(item => item.trim());
       const translatedItems = items.map(item => translations[item] || item);
       return translatedItems.join(', ');
     }
-    
+
     // Single rejection
     return translations[rejectionText] || rejectionText;
   };
-  
+
   // Get the prefix for the ascesis title based on language
   const getAscesisPrefix = () => {
     switch (language) {
@@ -64,9 +63,9 @@ export const useMainPageUtils = () => {
         return 'Ascesis from';
     }
   };
-  
+
   return {
     formatRejection,
-    getAscesisPrefix
+    getAscesisPrefix,
   };
 };

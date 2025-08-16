@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -11,17 +10,18 @@ interface ProfileDataDisplayProps {
 const ProfileDataDisplay: React.FC<ProfileDataDisplayProps> = ({ age }) => {
   const { language } = useAppStore();
   const { t, getYearWord } = useTranslations();
-  
+
   return (
     <>
       {age !== null && (
         <div className="mb-6 text-cosmic-secondary font-medium font-sans">
-          {t.userProfile?.age || "Возраст"}: {age} {getYearWord(age)}
+          {t.userProfile?.age || 'Возраст'}: {age} {getYearWord(age)}
         </div>
       )}
-      
+
       <div className="mt-6 mb-8 text-cosmic-secondary text-sm font-sans">
-        {t.userProfile?.currentDate || "Текущая дата"}: {formatDateLong(new Date(), language)}
+        {t.userProfile?.currentDate || 'Текущая дата'}:{' '}
+        {formatDateLong(new Date(), language)}
       </div>
     </>
   );

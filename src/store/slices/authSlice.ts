@@ -17,117 +17,126 @@ export interface AuthSlice {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loadUserProfile: () => Promise<void>;
-  updateUserProfile: (profileData: Partial<import('@/types').UserProfile>) => Promise<void>;
+  updateUserProfile: (
+    profileData: Partial<import('@/types').UserProfile>
+  ) => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
 }
 
-export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
+export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
+  set,
+  get
+) => ({
   user: null,
   loading: false,
   emailConfirmed: false,
-  
+
   setUser: (user: AuthUser | null) => set({ user }),
-  
+
   signIn: async (email, password) => {
     set({ loading: true });
-    
+
     try {
       cleanupAuthState();
-      
+
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (error) {
-        logger.warn("Error during global signout before signin", error);
+        logger.warn('Error during global signout before signin', error);
       }
-      
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
-      
+
       if (error) throw error;
-      
+
       set({ user: data.user });
-      
+
       await get().loadUserProfile();
-      
+
       setTimeout(async () => {
         try {
           await get().loadPacts();
           await get().loadUniverseQuestions();
         } catch (err) {
-          logger.error("Error loading user data after signin", err);
+          logger.error('Error loading user data after signin', err);
         }
       }, 0);
-      
+
       toast({
-        title: "Вход выполнен",
-        description: "Вы успешно вошли в систему"
+        title: 'Вход выполнен',
+        description: 'Вы успешно вошли в систему',
       });
-      
+
       return true;
     } catch (error) {
-      logger.error("Sign in failed", error);
+      logger.error('Sign in failed', error);
       toast({
-        title: "Ошибка входа",
-        description: error instanceof Error ? error.message : "Не удалось войти в систему",
-        variant: "destructive"
+        title: 'Ошибка входа',
+        description:
+          error instanceof Error ? error.message : 'Не удалось войти в систему',
+        variant: 'destructive',
       });
       return false;
     } finally {
       set({ loading: false });
     }
   },
-  
+
   signUp: async (email, password) => {
     set({ loading: true });
-    
+
     try {
       cleanupAuthState();
-      
+
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
       });
-      
+
       if (error) throw error;
-      
+
       set({ user: data.user });
-      
+
       if (data.session) {
         toast({
-          title: "Регистрация выполнена",
-          description: "Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль."
+          title: 'Регистрация выполнена',
+          description:
+            'Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль.',
         });
-        
+
         set({ activeScreen: 'profile', emailConfirmed: true });
       } else {
         set({ emailConfirmed: false });
         toast({
-          title: "Регистрация выполнена",
-          description: "Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения."
+          title: 'Регистрация выполнена',
+          description:
+            'Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения.',
         });
       }
     } catch (error) {
-      logger.error("Sign up failed", error);
+      logger.error('Sign up failed', error);
       toast({
-        title: "Ошибка регистрации",
-        description: error instanceof Error ? error.message : "Не удалось создать аккаунт",
-        variant: "destructive"
+        title: 'Ошибка регистрации',
+        description:
+          error instanceof Error ? error.message : 'Не удалось создать аккаунт',
+        variant: 'destructive',
       });
     } finally {
       set({ loading: false });
     }
   },
-  
+
   signOut: async () => {
     set({ loading: true });
-    
+
     try {
       cleanupAuthState();
       await supabase.auth.signOut({ scope: 'global' });
-      
-      set({ 
+
+      set({
         user: null,
         pacts: [],
         activeQuestions: [],
@@ -146,7 +155,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           achievements: [...defaultAchievements],
           birthDate: null,
           avatar_url: null,
-          activeMission: undefined
+          activeMission: undefined,
         },
         chatSessions: [],
         currentChatSession: null,
@@ -154,89 +163,99 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         isLoadingChatSessions: false,
         isLoadingChat: false,
         isSendingMessage: false,
-        isUniverseTyping: false
+        isUniverseTyping: false,
       });
-      
+
       toast({
-        title: "Выход выполнен",
-        description: "Вы успешно вышли из системы"
+        title: 'Выход выполнен',
+        description: 'Вы успешно вышли из системы',
       });
     } catch (error) {
-      logger.error("Sign out failed", error);
+      logger.error('Sign out failed', error);
       toast({
-        title: "Ошибка выхода",
-        description: error instanceof Error ? error.message : "Не удалось выйти из системы",
-        variant: "destructive"
+        title: 'Ошибка выхода',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Не удалось выйти из системы',
+        variant: 'destructive',
       });
     } finally {
       set({ loading: false });
     }
   },
-  
+
   checkEmailConfirmation: async () => {
     const { user } = get();
-    
+
     if (!user) return false;
-    
+
     try {
       const { data, error } = await supabase.auth.getUser();
-      
+
       if (error) throw error;
-      
+
       const isConfirmed = data.user?.email_confirmed_at != null;
       set({ emailConfirmed: isConfirmed });
-      
-      logger.debug("Email confirmation status", { isConfirmed, user: data.user });
-      
+
+      logger.debug('Email confirmation status', {
+        isConfirmed,
+        user: data.user,
+      });
+
       return isConfirmed;
     } catch (error) {
-      logger.error("Error checking email confirmation", error);
+      logger.error('Error checking email confirmation', error);
       return false;
     }
   },
-  
-  updateUserProfile: async (profileData) => {
+
+  updateUserProfile: async profileData => {
     const { user } = get();
-    
+
     if (!user) {
       toast({
-        title: "Ошибка",
-        description: "Вы должны войти в систему для обновления профиля",
-        variant: "destructive"
+        title: 'Ошибка',
+        description: 'Вы должны войти в систему для обновления профиля',
+        variant: 'destructive',
       });
       return;
     }
-    
+
     set({ loading: true });
-    
+
     try {
       const updateFields: Record<string, any> = {};
       if (profileData.name) updateFields.name = profileData.name;
-      if (profileData.birthDate) updateFields.birth_date = profileData.birthDate;
+      if (profileData.birthDate)
+        updateFields.birth_date = profileData.birthDate;
       if (profileData.goal) updateFields.goal = profileData.goal;
-      if (profileData.totalDays !== undefined) updateFields.total_days = profileData.totalDays;
-      if (profileData.energyPoints !== undefined) updateFields.energy_points = profileData.energyPoints;
+      if (profileData.totalDays !== undefined)
+        updateFields.total_days = profileData.totalDays;
+      if (profileData.energyPoints !== undefined)
+        updateFields.energy_points = profileData.energyPoints;
       if (profileData.rank) updateFields.rank = profileData.rank;
-      if (profileData.avatar_url) updateFields.avatar_url = profileData.avatar_url;
+      if (profileData.avatar_url)
+        updateFields.avatar_url = profileData.avatar_url;
 
-      logger.debug("Updating profile with fields", updateFields);
-      
+      logger.debug('Updating profile with fields', updateFields);
+
       const { error } = await supabase
         .from('profiles')
         .update(updateFields)
         .eq('id', user.id);
-      
+
       if (error) throw error;
-      
-      set((state) => ({
-        userProfile: { ...state.userProfile, ...profileData }
+
+      set(state => ({
+        userProfile: { ...state.userProfile, ...profileData },
       }));
-      
+
       toast({
-        title: "Профиль обновлен",
-        description: "Ваш профиль был успешно обновлен"
+        title: 'Профиль обновлен',
+        description: 'Ваш профиль был успешно обновлен',
       });
-      
+
       // Предварительная загрузка гороскопа если установлена дата рождения
       if (profileData.birthDate) {
         try {
@@ -244,52 +263,54 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           const sign = getZodiacSign(profileData.birthDate);
           if (sign) {
             await supabase.functions.invoke('fetch-horoscope', {
-              body: { 
+              body: {
                 sign,
                 language,
-                detailed: false
-              }
+                detailed: false,
+              },
             });
           }
         } catch (e) {
-          logger.warn("Failed to preload horoscope", e);
+          logger.warn('Failed to preload horoscope', e);
         }
       }
-      
     } catch (error) {
-      logger.error("Profile update failed", error);
+      logger.error('Profile update failed', error);
       toast({
-        title: "Ошибка",
-        description: error instanceof Error ? error.message : "Не удалось обновить профиль",
-        variant: "destructive"
+        title: 'Ошибка',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Не удалось обновить профиль',
+        variant: 'destructive',
       });
     } finally {
       set({ loading: false });
     }
   },
-  
+
   loadUserProfile: async () => {
     const { user } = get();
-    
+
     if (!user) return;
-    
-    logger.debug("Loading user profile", { userId: user.id });
-    
+
+    logger.debug('Loading user profile', { userId: user.id });
+
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
-      
+
       if (error && error.code !== 'PGRST116') {
-        logger.error("Error loading profile data", error);
+        logger.error('Error loading profile data', error);
         throw error;
       }
-      
+
       // Если профиля нет, создаем его
       if (!data) {
-        logger.info("Profile not found, creating new profile");
+        logger.info('Profile not found, creating new profile');
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
@@ -297,53 +318,62 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
             name: 'Искатель',
             rank: 'seeker',
             total_days: 0,
-            energy_points: 0
+            energy_points: 0,
           })
           .select('*')
           .maybeSingle();
-          
+
         if (createError) {
-          logger.error("Error creating profile", createError);
+          logger.error('Error creating profile', createError);
           throw createError;
         }
-        
-        logger.info("Profile created successfully", { profileId: newProfile?.id });
+
+        logger.info('Profile created successfully', {
+          profileId: newProfile?.id,
+        });
         return newProfile;
       }
-      
-      logger.debug("Profile data loaded", { profileData: data ? 'Found' : 'Not found' });
-      
+
+      logger.debug('Profile data loaded', {
+        profileData: data ? 'Found' : 'Not found',
+      });
+
       // Check subscription status
       const { data: subscription } = await supabase
         .from('subscriptions')
         .select('is_pro, subscription_end')
         .eq('user_id', user.id)
         .maybeSingle();
-      
-      const isPro = subscription?.is_pro && 
+
+      const isPro =
+        subscription?.is_pro &&
         new Date(subscription.subscription_end) > new Date();
-      
+
       // Get achievements
       const { data: achievements, error: achievementsError } = await supabase
         .from('achievements')
         .select('*')
         .eq('user_id', user.id);
-      
+
       if (achievementsError) throw achievementsError;
-      
+
       // Map achievements to app format
       const mappedAchievements = defaultAchievements.map(defaultAch => {
-        const foundAch = achievements?.find(a => a.achievement_type === defaultAch.id);
-        return foundAch ? {
-          id: defaultAch.id,
-          title: defaultAch.title,
-          description: defaultAch.description,
-          icon: defaultAch.icon,
-          unlocked: !!foundAch.unlocked_at,
-          unlockedAt: foundAch.unlocked_at
-        } : defaultAch;
+        const foundAch = achievements?.find(
+          a => a.achievement_type === defaultAch.id
+        );
+        return foundAch
+          ? {
+              id: defaultAch.id,
+              title: defaultAch.title,
+              description: defaultAch.description,
+              icon: defaultAch.icon,
+              unlocked: !!foundAch.unlocked_at,
+              unlockedAt: foundAch.unlocked_at,
+            }
+          : defaultAch;
       });
-      
+
       // Get active mission
       const { data: missions, error: missionsError } = await supabase
         .from('missions')
@@ -352,24 +382,32 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         .eq('completed', false)
         .order('created_at', { ascending: false })
         .limit(1);
-      
+
       if (missionsError) throw missionsError;
-      
-      const activeMission = missions && missions.length > 0 ? {
-        id: missions[0].id,
-        title: missions[0].title,
-        description: missions[0].description,
-        requirements: missions[0].requirements as string[],
-        reward: missions[0].reward as { energyPoints?: number; achievement?: string },
-        completed: false
-      } : undefined;
-      
+
+      const activeMission =
+        missions && missions.length > 0
+          ? {
+              id: missions[0].id,
+              title: missions[0].title,
+              description: missions[0].description,
+              requirements: missions[0].requirements as string[],
+              reward: missions[0].reward as {
+                energyPoints?: number;
+                achievement?: string;
+              },
+              completed: false,
+            }
+          : undefined;
+
       // Update local state with full profile data
       set({
         userProfile: {
           name: data?.name || 'Искатель',
           email: user.email || '',
-          age: data?.birth_date ? calculateAge(new Date(data.birth_date)) : null,
+          age: data?.birth_date
+            ? calculateAge(new Date(data.birth_date))
+            : null,
           birthDate: data?.birth_date ? new Date(data.birth_date) : null,
           totalDays: data?.total_days || 0,
           energyPoints: data?.energy_points || 0,
@@ -377,14 +415,16 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           isPro: isPro || false,
           rank: data?.rank || 'seeker',
           avatar_url: data?.avatar_url,
-          zodiacSign: data?.birth_date ? getZodiacSign(new Date(data.birth_date)) || '' : '',
+          zodiacSign: data?.birth_date
+            ? getZodiacSign(new Date(data.birth_date)) || ''
+            : '',
           achievements: mappedAchievements,
-          activeMission
-        }
+          activeMission,
+        },
       });
-      
-      logger.debug("User profile loaded successfully");
-      
+
+      logger.debug('User profile loaded successfully');
+
       // Preload horoscope data if birth date exists
       if (data.birth_date) {
         try {
@@ -392,22 +432,21 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
           const sign = getZodiacSign(new Date(data.birth_date));
           if (sign) {
             await supabase.functions.invoke('fetch-horoscope', {
-              body: { 
+              body: {
                 sign,
                 language,
-                detailed: false
-              }
+                detailed: false,
+              },
             });
           }
         } catch (e) {
-          logger.warn("Failed to preload horoscope data", e);
+          logger.warn('Failed to preload horoscope data', e);
         }
       }
-      
     } catch (error) {
-      logger.error("Error loading user profile", error);
+      logger.error('Error loading user profile', error);
     }
-  }
+  },
 });
 
 // Helper function to calculate age
@@ -425,10 +464,10 @@ function calculateAge(birthDate: Date): number | null {
 // Helper function to get zodiac sign (simplified version for preloading only)
 function getZodiacSign(birthDate: Date): string | null {
   if (!birthDate) return null;
-  
+
   const day = birthDate.getDate();
   const month = birthDate.getMonth() + 1; // JavaScript months are 0-based
-  
+
   if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
     return 'aries';
   } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
@@ -454,6 +493,6 @@ function getZodiacSign(birthDate: Date): string | null {
   } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
     return 'pisces';
   }
-  
+
   return null;
 }

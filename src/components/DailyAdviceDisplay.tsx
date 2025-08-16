@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LightbulbIcon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -14,15 +13,28 @@ export const DailyAdviceDisplay: React.FC = () => {
     <div className="w-full max-w-lg mx-auto">
       {/* User greeting section */}
       <UserGreetingSection />
-      
+
       <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
         <div className="p-4">
           <div className="flex items-center mb-3">
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
-              <LightbulbIcon size={20} className="text-cosmic-gold animate-pulse-slow" />
+              <LightbulbIcon
+                size={20}
+                className="text-cosmic-gold animate-pulse-slow"
+              />
             </div>
-            <h3 className={language === 'en' ? "font-serif font-medium" : "font-sans font-medium"}>
-              {language === 'ru' ? 'Совет дня' : language === 'es' ? 'Consejo del día' : 'Daily Advice'}
+            <h3
+              className={
+                language === 'en'
+                  ? 'font-serif font-medium'
+                  : 'font-sans font-medium'
+              }
+            >
+              {language === 'ru'
+                ? 'Совет дня'
+                : language === 'es'
+                  ? 'Consejo del día'
+                  : 'Daily Advice'}
             </h3>
           </div>
 

@@ -23,7 +23,11 @@ export const isWebShareSupported = (): boolean => {
  * Проверяет поддержку шаринга файлов
  */
 export const isWebShareFilesSupported = (): boolean => {
-  return isWebShareSupported() && 'canShare' in navigator && typeof navigator.canShare === 'function';
+  return (
+    isWebShareSupported() &&
+    'canShare' in navigator &&
+    typeof navigator.canShare === 'function'
+  );
 };
 
 /**
@@ -31,7 +35,7 @@ export const isWebShareFilesSupported = (): boolean => {
  */
 export const canShare = async (data: ShareData): Promise<boolean> => {
   if (!isWebShareSupported()) return false;
-  
+
   try {
     if (navigator.canShare) {
       return navigator.canShare(data);
@@ -66,7 +70,7 @@ export const shareContent = async (data: ShareData): Promise<ShareResult> => {
     if (error.name === 'AbortError') {
       return { success: true, shared: false };
     }
-    
+
     console.warn('Web Share failed, falling back to clipboard:', error);
     return copyToClipboard(data);
   }
@@ -78,16 +82,16 @@ export const shareContent = async (data: ShareData): Promise<ShareResult> => {
 const copyToClipboard = async (data: ShareData): Promise<ShareResult> => {
   try {
     let textToShare = '';
-    
+
     if (data.title) textToShare += `${data.title}\n`;
     if (data.text) textToShare += `${data.text}\n`;
     if (data.url) textToShare += data.url;
-    
+
     if ('clipboard' in navigator) {
       await navigator.clipboard.writeText(textToShare.trim());
       return { success: true, shared: true };
     }
-    
+
     // Fallback для старых браузеров
     const textArea = document.createElement('textarea');
     textArea.value = textToShare.trim();
@@ -95,14 +99,14 @@ const copyToClipboard = async (data: ShareData): Promise<ShareResult> => {
     textArea.select();
     document.execCommand('copy');
     document.body.removeChild(textArea);
-    
+
     return { success: true, shared: true };
   } catch (error) {
     console.error('Clipboard copy failed:', error);
-    return { 
-      success: false, 
-      shared: false, 
-      error: 'Failed to copy to clipboard' 
+    return {
+      success: false,
+      shared: false,
+      error: 'Failed to copy to clipboard',
     };
   }
 };
@@ -112,20 +116,27 @@ const copyToClipboard = async (data: ShareData): Promise<ShareResult> => {
  */
 export const shareUtils = {
   // Поделиться прогрессом аскезы
-  sharePactProgress: (pactTitle: string, completedDays: number, totalDays: number) => {
+  sharePactProgress: (
+    pactTitle: string,
+    completedDays: number,
+    totalDays: number
+  ) => {
     return shareContent({
       title: 'Мой прогресс в Asket App',
       text: `Я прохожу аскезу "${pactTitle}" уже ${completedDays} из ${totalDays} дней! 🔥\nПрисоединяйся к духовному развитию в Asket App`,
-      url: 'https://asket.online'
+      url: 'https://asket.online',
     });
   },
 
   // Поделиться достижением
-  shareAchievement: (achievementTitle: string, achievementDescription: string) => {
+  shareAchievement: (
+    achievementTitle: string,
+    achievementDescription: string
+  ) => {
     return shareContent({
       title: 'Новое достижение в Asket App! 🏆',
       text: `Получил достижение: "${achievementTitle}"\n${achievementDescription}\nРазвивайся вместе со мной в Asket App!`,
-      url: 'https://asket.online'
+      url: 'https://asket.online',
     });
   },
 
@@ -134,7 +145,7 @@ export const shareUtils = {
     return shareContent({
       title: 'Мудрость от Вселенной 🌌',
       text: `"${wisdom}"\n\nПолучено через Asket App - твой путь к просветлению`,
-      url: 'https://asket.online'
+      url: 'https://asket.online',
     });
   },
 
@@ -143,7 +154,7 @@ export const shareUtils = {
     return shareContent({
       title: 'Asket App - Путь к просветлению',
       text: 'Открой для себя мир аскезы, медитации и связи с Космосом. Развивайся духовно каждый день! 🧘‍♀️✨',
-      url: 'https://asket.online'
+      url: 'https://asket.online',
     });
-  }
+  },
 };

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ZodiacSign, getZodiacSign } from '@/utils/zodiac';
@@ -23,7 +22,7 @@ export function useFullHoroscope() {
   const [error, setError] = useState<string | null>(null);
   const [zodiacSign, setZodiacSign] = useState<ZodiacSign | null>(null);
   const { toast } = useToast();
-  
+
   // Get current year for the header display
   const currentYear = new Date().getFullYear();
 
@@ -33,7 +32,10 @@ export function useFullHoroscope() {
       const birthDate = new Date(userProfile.birthDate);
       const sign = getZodiacSign(birthDate);
       setZodiacSign(sign);
-      logger.debug("Set zodiac sign", { sign, birthDate: userProfile.birthDate });
+      logger.debug('Set zodiac sign', {
+        sign,
+        birthDate: userProfile.birthDate,
+      });
     }
   }, [userProfile?.birthDate]);
 
@@ -52,8 +54,11 @@ export function useFullHoroscope() {
       setLoading(true);
       setError(null);
 
-      logger.debug("Checking for existing horoscope", { userId: user.id, zodiacSign });
-      
+      logger.debug('Checking for existing horoscope', {
+        userId: user.id,
+        zodiacSign,
+      });
+
       // Query the full_horoscopes table
       const { data, error } = await supabase
         .from('full_horoscopes')
@@ -65,22 +70,24 @@ export function useFullHoroscope() {
         .maybeSingle();
 
       if (error) {
-        logger.error("Error fetching horoscope", error);
+        logger.error('Error fetching horoscope', error);
         throw new Error(error.message || 'Failed to fetch existing horoscope');
       }
-      
+
       if (data) {
         // Existing horoscope found
-        logger.info("Found existing horoscope", { horoscopeId: data.id });
+        logger.info('Found existing horoscope', { horoscopeId: data.id });
         setHoroscope(data.content);
       } else {
         // No records found
-        logger.debug("No existing horoscope found");
+        logger.debug('No existing horoscope found');
         setHoroscope(null);
       }
     } catch (error: any) {
-      logger.error("Error in fetchExistingHoroscope", error);
-      setError(error.message || "An error occurred while retrieving your horoscope");
+      logger.error('Error in fetchExistingHoroscope', error);
+      setError(
+        error.message || 'An error occurred while retrieving your horoscope'
+      );
     } finally {
       setLoading(false);
     }
@@ -89,9 +96,10 @@ export function useFullHoroscope() {
   const generateFullHoroscope = async () => {
     if (!user || !zodiacSign) {
       toast({
-        title: "Cannot generate horoscope",
-        description: "Please log in and set your birth date to generate a horoscope.",
-        variant: "destructive"
+        title: 'Cannot generate horoscope',
+        description:
+          'Please log in and set your birth date to generate a horoscope.',
+        variant: 'destructive',
       });
       return;
     }
@@ -99,44 +107,51 @@ export function useFullHoroscope() {
     try {
       setLoading(true);
       setError(null);
-      
-      logger.info("Calling generateFullHoroscope edge function", { 
+
+      logger.info('Calling generateFullHoroscope edge function', {
         userId: user.id,
         zodiacSign,
         birthDate: userProfile?.birthDate || null,
-        language
-      });
-      
-      // Call the edge function to generate the full horoscope
-      const { data, error } = await supabase.functions.invoke('generate-full-horoscope', {
-        body: { 
-          userId: user.id,
-          zodiacSign,
-          birthDate: userProfile?.birthDate || null,
-          language // Pass current app language
-        }
+        language,
       });
 
+      // Call the edge function to generate the full horoscope
+      const { data, error } = await supabase.functions.invoke(
+        'generate-full-horoscope',
+        {
+          body: {
+            userId: user.id,
+            zodiacSign,
+            birthDate: userProfile?.birthDate || null,
+            language, // Pass current app language
+          },
+        }
+      );
+
       if (error) {
-        logger.error("Edge function error", error);
+        logger.error('Edge function error', error);
         throw new Error(error.message || 'Failed to generate full horoscope');
       }
 
-      logger.info("Received horoscope data", { dataKeys: Object.keys(data || {}) });
+      logger.info('Received horoscope data', {
+        dataKeys: Object.keys(data || {}),
+      });
       setHoroscope(data);
-      
+
       toast({
         title: 'Success',
         description: 'Your comprehensive horoscope has been generated!',
-        variant: 'default'
+        variant: 'default',
       });
     } catch (error: any) {
       logger.error('Error generating full horoscope', error);
-      setError(error.message || "Failed to generate horoscope. Please try again later.");
+      setError(
+        error.message || 'Failed to generate horoscope. Please try again later.'
+      );
       toast({
         title: 'Error',
         description: error.message || 'Failed to generate full horoscope',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -149,6 +164,6 @@ export function useFullHoroscope() {
     error,
     zodiacSign,
     generateFullHoroscope,
-    currentYear
+    currentYear,
   };
 }

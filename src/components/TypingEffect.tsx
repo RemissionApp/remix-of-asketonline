@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 
 interface TypingProps {
@@ -8,23 +7,23 @@ interface TypingProps {
   onComplete?: () => void;
 }
 
-export const TypingEffect: React.FC<TypingProps> = ({ 
-  text, 
-  speed = 30, 
-  className = "", 
-  onComplete 
+export const TypingEffect: React.FC<TypingProps> = ({
+  text,
+  speed = 30,
+  className = '',
+  onComplete,
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [hasRun, setHasRun] = useState(false);
-  
+
   useEffect(() => {
     if (!text || hasRun) return;
-    
+
     setIsTyping(true);
     setDisplayedText('');
     let index = 0;
-    
+
     const typingInterval = setInterval(() => {
       if (index < text.length) {
         setDisplayedText(prev => prev + text.charAt(index));
@@ -36,10 +35,10 @@ export const TypingEffect: React.FC<TypingProps> = ({
         if (onComplete) onComplete();
       }
     }, speed);
-    
+
     return () => clearInterval(typingInterval);
   }, [text, speed, onComplete, hasRun]);
-  
+
   return (
     <div className={className}>
       {displayedText}

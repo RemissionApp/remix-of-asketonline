@@ -5,9 +5,9 @@ interface WaveVisualizationProps {
   intensity: number;
 }
 
-export const WaveVisualization: React.FC<WaveVisualizationProps> = ({ 
-  isActive, 
-  intensity 
+export const WaveVisualization: React.FC<WaveVisualizationProps> = ({
+  isActive,
+  intensity,
 }) => {
   const [waveData, setWaveData] = useState<number[]>(Array(20).fill(0.1));
 
@@ -18,9 +18,7 @@ export const WaveVisualization: React.FC<WaveVisualizationProps> = ({
     }
 
     const interval = setInterval(() => {
-      setWaveData(prev => 
-        prev.map(() => Math.random() * intensity + 0.1)
-      );
+      setWaveData(prev => prev.map(() => Math.random() * intensity + 0.1));
     }, 100);
 
     return () => clearInterval(interval);
@@ -40,13 +38,11 @@ export const WaveVisualization: React.FC<WaveVisualizationProps> = ({
           }}
         />
       ))}
-      
+
       {/* Glow effect */}
-      <div 
+      <div
         className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-          isActive 
-            ? `bg-cosmic-accent/20 blur-xl opacity-50` 
-            : 'opacity-0'
+          isActive ? `bg-cosmic-accent/20 blur-xl opacity-50` : 'opacity-0'
         }`}
         style={{
           transform: 'scale(1.5)',

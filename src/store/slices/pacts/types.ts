@@ -1,4 +1,3 @@
-
 import { Pact } from '@/types';
 
 export interface PactsState {

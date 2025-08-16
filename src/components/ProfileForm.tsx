@@ -1,14 +1,24 @@
-
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { CalendarIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
@@ -24,22 +34,23 @@ interface ProfileFormProps {
   };
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ 
-  onSubmit, 
-  isSaving, 
-  defaultValues = { name: '', birthDate: new Date() }
+const ProfileForm: React.FC<ProfileFormProps> = ({
+  onSubmit,
+  isSaving,
+  defaultValues = { name: '', birthDate: new Date() },
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
   const navigate = useNavigate();
-  
+
   // Create form schema based on language
   const formSchema = z.object({
-    name: z.string().min(2, { 
-      message: t.userProfile?.nameRequired || "Имя обязательно" 
+    name: z.string().min(2, {
+      message: t.userProfile?.nameRequired || 'Имя обязательно',
     }),
     birthDate: z.date({
-      required_error: t.userProfile?.birthDateRequired || "Укажите дату рождения"
+      required_error:
+        t.userProfile?.birthDateRequired || 'Укажите дату рождения',
     }),
   });
 
@@ -51,7 +62,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       birthDate: defaultValues.birthDate || new Date(),
     },
   });
-  
+
   // Update form values when defaultValues changes
   useEffect(() => {
     if (defaultValues) {
@@ -61,13 +72,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       });
     }
   }, [defaultValues, form]);
-  
+
   // Handle form submission with navigation
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     await onSubmit(values);
     navigate('/main');
   };
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
@@ -77,56 +88,68 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           render={({ field }) => (
             <FormItem className="text-left">
               <FormLabel className="text-cosmic-secondary text-sm font-sans">
-                {t.userProfile?.nameLabel || "Как тебя зовут"}
+                {t.userProfile?.nameLabel || 'Как тебя зовут'}
               </FormLabel>
               <FormControl>
-                <Input 
+                <Input
                   className="bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-white font-sans"
-                  placeholder={t.userProfile?.namePlaceholder || "Введите ваше имя"} 
-                  {...field} 
+                  placeholder={
+                    t.userProfile?.namePlaceholder || 'Введите ваше имя'
+                  }
+                  {...field}
                 />
               </FormControl>
               <FormMessage className="text-red-400 font-sans" />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="birthDate"
           render={({ field }) => (
             <FormItem className="text-left">
               <FormLabel className="text-cosmic-secondary text-sm font-sans">
-                {t.userProfile?.birthDateLabel || "Дата рождения"}
+                {t.userProfile?.birthDateLabel || 'Дата рождения'}
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={"outline"}
+                      variant={'outline'}
                       className={cn(
-                        "w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-sans text-white",
-                        !field.value && "text-muted-foreground"
+                        'w-full bg-transparent backdrop-blur-[5px] border-cosmic-accent/30 text-left font-sans text-white',
+                        !field.value && 'text-muted-foreground'
                       )}
                     >
                       {field.value ? (
                         formatDateLong(field.value, language)
                       ) : (
-                        <span>{t.userProfile?.birthDatePlaceholder || "Выберите дату рождения"}</span>
+                        <span>
+                          {t.userProfile?.birthDatePlaceholder ||
+                            'Выберите дату рождения'}
+                        </span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0" align="start">
+                <PopoverContent
+                  className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0"
+                  align="start"
+                >
                   <Calendar
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) => {
+                    disabled={date => {
                       const today = new Date();
                       const maxYear = today.getFullYear();
-                      return date > today || date.getFullYear() > maxYear || date < new Date("1900-01-01");
+                      return (
+                        date > today ||
+                        date.getFullYear() > maxYear ||
+                        date < new Date('1900-01-01')
+                      );
                     }}
                     initialFocus
                     className="pointer-events-auto"
@@ -138,16 +161,16 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             </FormItem>
           )}
         />
-        
+
         <div className="pt-4">
-          <Button 
+          <Button
             className="w-full bg-cosmic-accent/20 hover:bg-cosmic-accent/30 text-white border border-cosmic-accent/30 font-sans"
             type="submit"
             disabled={isSaving}
           >
-            {isSaving ? 
-              (t.userProfile?.savingButton || "Сохранение...") : 
-              (t.userProfile?.continueButton || "Продолжить")}
+            {isSaving
+              ? t.userProfile?.savingButton || 'Сохранение...'
+              : t.userProfile?.continueButton || 'Продолжить'}
           </Button>
         </div>
       </form>

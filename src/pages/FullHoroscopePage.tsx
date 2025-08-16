@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useFullHoroscope } from '@/hooks/useFullHoroscope';
@@ -21,68 +20,70 @@ export default function FullHoroscopePage() {
     error,
     zodiacSign,
     generateFullHoroscope,
-    currentYear
+    currentYear,
   } = useFullHoroscope();
 
   // Get UI translations for different languages
   const uiText = getFullHoroscopeUIText(language, currentYear);
 
   return (
-    <div 
-      className="min-h-screen text-white relative pb-20" 
+    <div
+      className="min-h-screen text-white relative pb-20"
       style={{
         backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.3)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Add the moving star field overlay */}
       <MovingStarField />
-      
-      <PageHeader 
-        title={language === 'ru' ? 'Полный гороскоп' : language === 'es' ? 'Horóscopo completo' : 'Full Horoscope'}
+
+      <PageHeader
+        title={
+          language === 'ru'
+            ? 'Полный гороскоп'
+            : language === 'es'
+              ? 'Horóscopo completo'
+              : 'Full Horoscope'
+        }
       />
-      
+
       <div className="max-w-4xl mx-auto relative z-10 pt-20 p-4 md:p-8">
-        {!zodiacSign && (
-          <SetBirthDateCard uiText={uiText} />
-        )}
+        {!zodiacSign && <SetBirthDateCard uiText={uiText} />}
 
         {error && (
-          <ErrorCard 
-            error={error} 
-            uiText={uiText} 
+          <ErrorCard
+            error={error}
+            uiText={uiText}
             onRetry={() => {
               generateFullHoroscope();
-            }} 
+            }}
           />
         )}
 
         {zodiacSign && !horoscope && !loading && !error && (
-          <GenerateHoroscopeCard 
-            zodiacSign={zodiacSign} 
+          <GenerateHoroscopeCard
+            zodiacSign={zodiacSign}
             language={language}
             uiText={uiText}
             onGenerate={generateFullHoroscope}
           />
         )}
 
-        {loading && (
-          <LoadingState uiText={uiText} />
-        )}
+        {loading && <LoadingState uiText={uiText} />}
 
         {horoscope && (
-          <HoroscopeContent 
-            horoscope={horoscope} 
+          <HoroscopeContent
+            horoscope={horoscope}
             language={language}
             onRegenerate={generateFullHoroscope}
             uiText={uiText}
           />
         )}
       </div>
-      
+
       {/* Add bottom navigation */}
       <BottomNavigation />
     </div>

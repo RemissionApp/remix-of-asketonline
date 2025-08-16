@@ -6,14 +6,14 @@ interface UniverseAvatarProps {
   isSpeaking: boolean;
 }
 
-export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({ 
-  isActive, 
-  isSpeaking 
+export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
+  isActive,
+  isSpeaking,
 }) => {
   // Выбираем аватар в зависимости от состояния соединения
-  const avatarSrc = isActive 
-    ? universeAvatarDefault  // С открытыми глазами когда активен
-    : "https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png"; // Закрытые глаза когда неактивен
+  const avatarSrc = isActive
+    ? universeAvatarDefault // С открытыми глазами когда активен
+    : 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png'; // Закрытые глаза когда неактивен
 
   // Создаем звезды для анимации - вдвое больше для активного состояния
   const stars = useMemo(() => {
@@ -33,38 +33,37 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   return (
     <div className="relative w-32 h-32 mx-auto">
       {/* Main avatar circle */}
-      <div 
+      <div
         className={`w-full h-full rounded-full border-4 transition-all duration-500 relative overflow-hidden ${
-          isActive 
-            ? 'border-cosmic-accent shadow-lg shadow-cosmic-accent/50' 
+          isActive
+            ? 'border-cosmic-accent shadow-lg shadow-cosmic-accent/50'
             : 'border-cosmic-accent/30 shadow-sm'
         }`}
       >
         {/* Universe Avatar Image */}
-        <img 
+        <img
           src={avatarSrc}
           alt="Universe Avatar"
           className="w-full h-full object-cover rounded-full transition-all duration-500"
         />
-        
+
         {/* Animated stars overlay */}
         <div className="absolute inset-0 rounded-full">
-          {stars.map((star) => {
-            const moveKeyframes = star.moveDirection === 'horizontal' 
-              ? `@keyframes move-avatar-${star.id} {
+          {stars.map(star => {
+            const moveKeyframes =
+              star.moveDirection === 'horizontal'
+                ? `@keyframes move-avatar-${star.id} {
                   0%, 100% { transform: translateX(0); }
                   50% { transform: translateX(${star.moveDistance}px); }
                 }`
-              : `@keyframes move-avatar-${star.id} {
+                : `@keyframes move-avatar-${star.id} {
                   0%, 100% { transform: translateY(0); }
                   50% { transform: translateY(${star.moveDistance}px); }
                 }`;
-                
+
             return (
               <div key={star.id}>
-                <style>
-                  {moveKeyframes}
-                </style>
+                <style>{moveKeyframes}</style>
                 <div
                   className="absolute rounded-full"
                   style={{
@@ -83,7 +82,7 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
             );
           })}
         </div>
-        
+
         {/* Gradient overlay for better visibility */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/5 to-transparent" />
       </div>

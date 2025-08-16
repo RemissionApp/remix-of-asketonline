@@ -16,7 +16,7 @@ const CreatePactPage: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
-  
+
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
   const [duration, setDuration] = useState(30);
@@ -28,9 +28,9 @@ const CreatePactPage: React.FC = () => {
   useEffect(() => {
     const welcomePhrase = getWelcomePhrase();
     try {
-      generateAndPlaySpeech(welcomePhrase, { 
-        voice: 'Custom', 
-        model: 'eleven_multilingual_v2' 
+      generateAndPlaySpeech(welcomePhrase, {
+        voice: 'Custom',
+        model: 'eleven_multilingual_v2',
       });
     } catch (error) {
       console.error('Error playing welcome phrase:', error);
@@ -42,9 +42,9 @@ const CreatePactPage: React.FC = () => {
     if (step === 2) {
       const goalInstructionsPhrase = getGoalInstructionsPhrase();
       try {
-        generateAndPlaySpeech(goalInstructionsPhrase, { 
-          voice: 'Custom', 
-          model: 'eleven_multilingual_v2' 
+        generateAndPlaySpeech(goalInstructionsPhrase, {
+          voice: 'Custom',
+          model: 'eleven_multilingual_v2',
         });
       } catch (error) {
         console.error('Error playing goal instructions phrase:', error);
@@ -53,35 +53,41 @@ const CreatePactPage: React.FC = () => {
   }, [step]);
 
   const getWelcomePhrase = () => {
-    switch(language) {
-      case 'ru': return 'Добро пожаловать в создание аскезы. Здесь вы сможете выбрать свой путь духовного роста и заключить договор с Вселенной.';
-      case 'es': return 'Bienvenido a la creación de ascesis. Aquí podrás elegir tu camino de crecimiento espiritual y hacer un contrato con el Universo.';
-      default: return 'Welcome to ascesis creation. Here you can choose your path of spiritual growth and make a contract with the Universe.';
+    switch (language) {
+      case 'ru':
+        return 'Добро пожаловать в создание аскезы. Здесь вы сможете выбрать свой путь духовного роста и заключить договор с Вселенной.';
+      case 'es':
+        return 'Bienvenido a la creación de ascesis. Aquí podrás elegir tu camino de crecimiento espiritual y hacer un contrato con el Universo.';
+      default:
+        return 'Welcome to ascesis creation. Here you can choose your path of spiritual growth and make a contract with the Universe.';
     }
   };
 
   const getGoalInstructionsPhrase = () => {
-    switch(language) {
-      case 'ru': return 'Теперь сформулируйте свою цель. Помните: цель должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы опишете конечный результат, тем больше вероятность получить желаемое.';
-      case 'es': return 'Ahora formula tu objetivo. Recuerda: el objetivo debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describas el resultado final, mayor será la probabilidad de obtener lo que deseas.';
-      default: return 'Now formulate your goal. Remember: the goal must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you describe the end result, the more likely you are to get what you want.';
+    switch (language) {
+      case 'ru':
+        return 'Теперь сформулируйте свою цель. Помните: цель должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы опишете конечный результат, тем больше вероятность получить желаемое.';
+      case 'es':
+        return 'Ahora formula tu objetivo. Recuerda: el objetivo debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describas el resultado final, mayor será la probabilidad de obtener lo que deseas.';
+      default:
+        return 'Now formulate your goal. Remember: the goal must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you describe the end result, the more likely you are to get what you want.';
     }
   };
-  
+
   // Функция для правильного склонения в русском языке
   const getDaysText = (count: number): string => {
     if (language !== 'ru') {
-      return t.main?.days || "days";
+      return t.main?.days || 'days';
     }
-    
+
     // Правило для русского языка
     const lastDigit = count % 10;
     const lastTwoDigits = count % 100;
-    
+
     if (lastDigit === 1 && lastTwoDigits !== 11) {
       return 'день';
     } else if (
-      (lastDigit === 2 || lastDigit === 3 || lastDigit === 4) && 
+      (lastDigit === 2 || lastDigit === 3 || lastDigit === 4) &&
       !(lastTwoDigits >= 12 && lastTwoDigits <= 14)
     ) {
       return 'дня';
@@ -89,7 +95,7 @@ const CreatePactPage: React.FC = () => {
       return 'дней';
     }
   };
-  
+
   // Опции для мультиселекта, переведенные на нужный язык
   const getRejectionOptions = () => {
     if (language === 'ru') {
@@ -125,24 +131,25 @@ const CreatePactPage: React.FC = () => {
       ];
     }
   };
-  
+
   const handleNext = () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
       // Create pact and navigate to main screen
-      const pactTitle = selectedItems.length > 0 ? selectedItems.join(', ') : title;
+      const pactTitle =
+        selectedItems.length > 0 ? selectedItems.join(', ') : title;
       addPact({
         title: pactTitle,
         duration,
         reward,
-        status: 'active'
+        status: 'active',
       });
       setActiveScreen('main');
       navigate('/main');
     }
   };
-  
+
   const handleBack = () => {
     if (step > 0) {
       setStep(step - 1);
@@ -151,26 +158,26 @@ const CreatePactPage: React.FC = () => {
       navigate('/main');
     }
   };
-  
+
   const isNextDisabled = () => {
     if (step === 0) return !title && selectedItems.length === 0;
     if (step === 1) return !duration || duration < 30;
     if (step === 2) return !reward || reward.length < 3;
     return false;
   };
-  
+
   // Обработчик изменения продолжительности с проверкой минимального значения
   const handleDurationChange = (value: number) => {
     const newDuration = Math.max(30, value); // Не позволяет установить значение меньше 30
     setDuration(newDuration);
     setDurationText(newDuration.toString());
   };
-  
+
   // Обработчик для ручного ввода текста
   const handleDurationTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setDurationText(text);
-    
+
     // Convert to number if possible
     const num = parseInt(text);
     if (!isNaN(num)) {
@@ -178,7 +185,7 @@ const CreatePactPage: React.FC = () => {
       setDuration(validNum);
     }
   };
-  
+
   // Handle blur to enforce minimum value
   const handleDurationBlur = () => {
     if (durationText === '' || isNaN(parseInt(durationText))) {
@@ -191,42 +198,55 @@ const CreatePactPage: React.FC = () => {
       setDuration(validNum);
     }
   };
-  
+
   const renderStep = () => {
     switch (step) {
       case 0:
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-3xl font-serif text-white mb-8 text-center leading-tight">
-              {t.createPact?.stepOneTitle || "Choose ascesis type"}
+              {t.createPact?.stepOneTitle || 'Choose ascesis type'}
             </h2>
-            
+
             <div className="mb-6">
-              <MultiSelectWithCustomInput 
+              <MultiSelectWithCustomInput
                 options={getRejectionOptions()}
                 value={selectedItems}
                 onChange={setSelectedItems}
-                placeholder={language === 'ru' ? "Выберите или введите Ваш отказ" : 
-                            language === 'es' ? "Seleccione o ingrese a qué renuncia" : 
-                            "Select or enter what you're giving up"}
-                inputPlaceholder={language === 'ru' ? "Введите свой вариант..." : 
-                                 language === 'es' ? "Ingrese su opción..." : 
-                                 "Enter your option..."}
+                placeholder={
+                  language === 'ru'
+                    ? 'Выберите или введите Ваш отказ'
+                    : language === 'es'
+                      ? 'Seleccione o ingrese a qué renuncia'
+                      : "Select or enter what you're giving up"
+                }
+                inputPlaceholder={
+                  language === 'ru'
+                    ? 'Введите свой вариант...'
+                    : language === 'es'
+                      ? 'Ingrese su opción...'
+                      : 'Enter your option...'
+                }
               />
             </div>
-            
+
             {selectedItems.length === 0 && (
               <input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={t.createPact?.placeholders?.title || "Enter a title..."}
+                onChange={e => setTitle(e.target.value)}
+                placeholder={
+                  t.createPact?.placeholders?.title || 'Enter a title...'
+                }
                 className="cosmic-input w-full mb-6 text-lg"
               />
             )}
-            
+
             <div className="text-sm text-cosmic-secondary mb-8 text-center leading-relaxed">
-              <p className="whitespace-pre-line text-justify font-sans">{t.createPact?.ascesisWarning || "Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement."}</p>
+              <p className="whitespace-pre-line text-justify font-sans">
+                {t.createPact?.ascesisWarning ||
+                  'Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement.'}
+              </p>
             </div>
           </div>
         );
@@ -234,11 +254,11 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-3xl font-serif text-white mb-8 text-center leading-tight">
-              {t.createPact?.stepTwoTitle || "Choose duration"}
+              {t.createPact?.stepTwoTitle || 'Choose duration'}
             </h2>
-            
+
             <div className="flex justify-between gap-4 mb-8">
-              {[30, 60, 90].map((days) => (
+              {[30, 60, 90].map(days => (
                 <button
                   key={days}
                   className={`flex-1 py-4 px-2 rounded-lg border text-lg font-medium ${
@@ -256,10 +276,10 @@ const CreatePactPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            
+
             <div className="mb-8">
               <label className="block text-cosmic-secondary text-base mb-3 text-center font-medium">
-                {t.createPact?.customDays || "Set custom days"}
+                {t.createPact?.customDays || 'Set custom days'}
               </label>
               <input
                 type="text"
@@ -267,20 +287,26 @@ const CreatePactPage: React.FC = () => {
                 onChange={handleDurationTextChange}
                 onBlur={handleDurationBlur}
                 className="cosmic-input w-full text-lg text-center"
-                placeholder={language === 'ru' ? "Введите количество дней (мин. 30)" : 
-                           language === 'es' ? "Ingrese el número de días (mín. 30)" : 
-                           "Enter number of days (min. 30)"}
+                placeholder={
+                  language === 'ru'
+                    ? 'Введите количество дней (мин. 30)'
+                    : language === 'es'
+                      ? 'Ingrese el número de días (mín. 30)'
+                      : 'Enter number of days (min. 30)'
+                }
               />
               <p className="text-sm text-cosmic-secondary mt-2 text-center font-sans">
-                {t.minimumPeriod || "Minimum ascesis period is 30 days"}
+                {t.minimumPeriod || 'Minimum ascesis period is 30 days'}
               </p>
             </div>
-            
+
             <div className="w-32 h-32 mx-auto">
               <div className="energy-circle w-32 h-32 animate-circle-expand">
                 <div className="text-center">
                   <p className="text-3xl font-bold text-white">{duration}</p>
-                  <p className="text-sm text-cosmic-accent font-medium">{getDaysText(duration)}</p>
+                  <p className="text-sm text-cosmic-accent font-medium">
+                    {getDaysText(duration)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -290,41 +316,72 @@ const CreatePactPage: React.FC = () => {
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
             <h2 className="text-3xl font-serif text-white mb-6 text-center leading-tight">
-              {t.createPact?.stepThreeTitle || "Create contract"}
+              {t.createPact?.stepThreeTitle || 'Create contract'}
             </h2>
-            
+
             <p className="text-lg text-cosmic-secondary mb-8 text-center font-medium">
-              {t.createPact?.notAsking || "I'm not asking for anything in return"}
+              {t.createPact?.notAsking ||
+                "I'm not asking for anything in return"}
             </p>
-            
+
             <textarea
               value={reward}
-              onChange={(e) => setReward(e.target.value)}
-              placeholder={t.createPact?.placeholders?.reward || "What you will get in return..."}
+              onChange={e => setReward(e.target.value)}
+              placeholder={
+                t.createPact?.placeholders?.reward ||
+                'What you will get in return...'
+              }
               className="cosmic-input w-full h-40 resize-none mb-4 text-base leading-relaxed"
             />
 
             <div className="text-sm text-cosmic-secondary mb-8 text-center leading-relaxed">
               {language === 'ru' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Цель:</span>{"\n"}
-                  Должна быть сформулирована чётко и как можно подробнее. Желание может быть абсолютно любым, но Вселенная любит шутить. Поэтому, чем точнее вы мысленно опишете или проговорите конечный результат, тем больше вероятность получить желаемое.{"\n\n"}
-                  <span className="font-semibold text-base">Главное правило:</span>{"\n"}
-                  Договор нужно заключать осознанно, иначе вы только навредите себе.
+                  <span className="font-semibold text-base">Цель:</span>
+                  {'\n'}
+                  Должна быть сформулирована чётко и как можно подробнее.
+                  Желание может быть абсолютно любым, но Вселенная любит шутить.
+                  Поэтому, чем точнее вы мысленно опишете или проговорите
+                  конечный результат, тем больше вероятность получить желаемое.
+                  {'\n\n'}
+                  <span className="font-semibold text-base">
+                    Главное правило:
+                  </span>
+                  {'\n'}
+                  Договор нужно заключать осознанно, иначе вы только навредите
+                  себе.
                 </p>
               ) : language === 'es' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Objetivo:</span>{"\n"}
-                  Debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describa o articule mentalmente el resultado final, mayor será la probabilidad de obtener lo que desea.{"\n\n"}
-                  <span className="font-semibold text-base">La regla principal:</span>{"\n"}
-                  El pacto debe hacerse conscientemente, de lo contrario solo se hará daño a sí mismo.
+                  <span className="font-semibold text-base">Objetivo:</span>
+                  {'\n'}
+                  Debe formularse claramente y con el mayor detalle posible. El
+                  deseo puede ser absolutamente cualquiera, pero al Universo le
+                  gusta bromear. Por lo tanto, cuanto más precisamente describa
+                  o articule mentalmente el resultado final, mayor será la
+                  probabilidad de obtener lo que desea.{'\n\n'}
+                  <span className="font-semibold text-base">
+                    La regla principal:
+                  </span>
+                  {'\n'}
+                  El pacto debe hacerse conscientemente, de lo contrario solo se
+                  hará daño a sí mismo.
                 </p>
               ) : (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Goal:</span>{"\n"}
-                  It must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you mentally describe or articulate the end result, the more likely you are to get what you want.{"\n\n"}
-                  <span className="font-semibold text-base">The main rule:</span>{"\n"}
-                  The covenant must be made consciously, otherwise you will only harm yourself.
+                  <span className="font-semibold text-base">Goal:</span>
+                  {'\n'}
+                  It must be formulated clearly and in as much detail as
+                  possible. The desire can be absolutely anything, but the
+                  Universe loves to joke. Therefore, the more precisely you
+                  mentally describe or articulate the end result, the more
+                  likely you are to get what you want.{'\n\n'}
+                  <span className="font-semibold text-base">
+                    The main rule:
+                  </span>
+                  {'\n'}
+                  The covenant must be made consciously, otherwise you will only
+                  harm yourself.
                 </p>
               )}
             </div>
@@ -342,30 +399,30 @@ const CreatePactPage: React.FC = () => {
         );
     }
   };
-  
+
   // Don't show the standard UI for the oath screen
   const showStandardLayout = step < 3;
-  
+
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
       <StarField starCount={100} />
-      
+
       {showStandardLayout && (
         <>
-          <PageHeader 
-            title={t.createPact?.title || "Create Ascesis"}
+          <PageHeader
+            title={t.createPact?.title || 'Create Ascesis'}
             onBackClick={handleBack}
           />
-          
+
           {/* Main content */}
           <div className="relative z-10 flex-1 flex flex-col px-4 pt-20 py-4 mx-auto w-full items-center justify-center">
             {renderStep()}
           </div>
-          
+
           {/* Bottom */}
           <div className="relative z-10 p-4 max-w-lg mx-auto w-full text-center mb-4">
             <div className="flex justify-between items-center mb-6">
-              {[0, 1, 2, 3].map((i) => (
+              {[0, 1, 2, 3].map(i => (
                 <div
                   key={i}
                   className={`flex-1 h-1 rounded-full mx-1 ${
@@ -374,26 +431,26 @@ const CreatePactPage: React.FC = () => {
                 />
               ))}
             </div>
-            
+
             {step < 3 && (
-              <CosmicButton 
-                onClick={handleNext} 
+              <CosmicButton
+                onClick={handleNext}
                 className="w-full"
                 disabled={isNextDisabled()}
               >
-                {t.createPact?.nextButton || "Next"}
+                {t.createPact?.nextButton || 'Next'}
               </CosmicButton>
             )}
           </div>
         </>
       )}
-      
+
       {!showStandardLayout && (
         <div className="relative z-10 flex-1 flex flex-col p-4">
           {renderStep()}
         </div>
       )}
-      
+
       {/* Bottom Navigation */}
       <BottomNavigation />
     </div>

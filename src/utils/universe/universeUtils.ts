@@ -1,5 +1,4 @@
-
-import { Pact } from "@/types";
+import { Pact } from '@/types';
 
 /**
  * Helper function to get current day of the pact
@@ -17,12 +16,12 @@ export function getCurrentDay(days = []): number {
  * @param pact The pact to check
  * @returns Boolean indicating if it's a custom pact
  */
-export function isCustomPact(pact: any): pact is { 
-  title: string; 
-  duration: number; 
-  days: any[]; 
-  purpose: string; 
-  restrictions: { title: string; }[] 
+export function isCustomPact(pact: any): pact is {
+  title: string;
+  duration: number;
+  days: any[];
+  purpose: string;
+  restrictions: { title: string }[];
 } {
   return pact && 'restrictions' in pact && 'purpose' in pact;
 }
@@ -42,31 +41,34 @@ export function getTodayFormatted(): string {
  * @param currentVow Active pact if any
  * @returns Object with formatted user data
  */
-export function prepareUserData(userProfile: any, currentVow: Pact | undefined): Record<string, any> {
+export function prepareUserData(
+  userProfile: any,
+  currentVow: Pact | undefined
+): Record<string, any> {
   const userData: Record<string, any> = {};
-    
+
   // Add user profile information
   if (userProfile) {
     if (userProfile.name) {
       userData.userName = userProfile.name;
     }
-    
+
     if (userProfile.goal) {
       userData.userGoal = userProfile.goal;
     }
-    
+
     if (userProfile.birthDate) {
       userData.birthDate = userProfile.birthDate;
       // Note: zodiacSign is added in the main function after importing getZodiacSign
     }
   }
-  
+
   // Add pact information if available
   if (currentVow) {
     userData.currentVow = currentVow.title || 'вредных привычек';
     userData.vowDay = getCurrentDay(currentVow.days);
     userData.vowDuration = currentVow.duration || 21;
-    
+
     if (isCustomPact(currentVow)) {
       userData.vowPurpose = currentVow.purpose;
     } else if ((currentVow as any).reward) {
@@ -75,7 +77,7 @@ export function prepareUserData(userProfile: any, currentVow: Pact | undefined):
       userData.vowPurpose = 'духовный рост';
     }
   }
-  
+
   return userData;
 }
 

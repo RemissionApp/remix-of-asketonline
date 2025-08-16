@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Star } from 'lucide-react';
 import { CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,21 +14,21 @@ export const HoroscopeHeader: React.FC<HoroscopeHeaderProps> = ({
   zodiacInfo,
   translations,
   language,
-  userName
+  userName,
 }) => {
   return (
     <>
       <CardTitle className="flex items-center gap-2 text-cosmic-gold">
         <Star className="text-cosmic-gold" size={24} />
-        {language === 'ru' 
+        {language === 'ru'
           ? 'Гороскоп'
-          : language === 'es' 
+          : language === 'es'
             ? 'Horóscopo'
             : 'Horoscope'}
       </CardTitle>
       <CardDescription className="text-cosmic-secondary text-base">
         {zodiacInfo && (
-          <ZodiacSignDisplay 
+          <ZodiacSignDisplay
             zodiacSign={zodiacInfo.sign}
             language={language}
             className="inline-flex"
@@ -38,9 +37,11 @@ export const HoroscopeHeader: React.FC<HoroscopeHeaderProps> = ({
         )}
       </CardDescription>
       {/* User Greeting */}
-      <h2 className={`text-cosmic-gold ${language === 'en' ? 'font-serif' : 'font-sans'} text-xl mt-3`}>
-        {language === 'ru' 
-          ? `Приветствую тебя, ${userName || 'Искатель'}!` 
+      <h2
+        className={`text-cosmic-gold ${language === 'en' ? 'font-serif' : 'font-sans'} text-xl mt-3`}
+      >
+        {language === 'ru'
+          ? `Приветствую тебя, ${userName || 'Искатель'}!`
           : language === 'es'
             ? `¡Te saludo, ${userName || 'Buscador'}!`
             : `Greetings, ${userName || 'Seeker'}!`}

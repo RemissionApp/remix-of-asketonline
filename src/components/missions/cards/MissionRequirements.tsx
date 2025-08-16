@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,28 +25,38 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
   missionType,
   canCompleteToday,
   daysCompleted = 0,
-  totalDays = 0
+  totalDays = 0,
 }) => {
   const { language } = useAppStore();
 
   // Convert requirements to string array if they are MissionRequirement objects
-  const requirementStrings = requirements.map(req => typeof req === 'string' ? req : req.type);
-  
+  const requirementStrings = requirements.map(req =>
+    typeof req === 'string' ? req : req.type
+  );
+
   // For multi-day missions, we only need to show the first requirement
-  const displayRequirements = missionType === 'multi-day' ? 
-    requirementStrings.slice(0, 1) : requirementStrings;
+  const displayRequirements =
+    missionType === 'multi-day'
+      ? requirementStrings.slice(0, 1)
+      : requirementStrings;
 
   const handleToggle = (index: number) => {
     // For multi-day missions, only allow checking today's requirement
-    if (missionType === 'multi-day' && !canCompleteToday && !requirementStatus[index]) {
+    if (
+      missionType === 'multi-day' &&
+      !canCompleteToday &&
+      !requirementStatus[index]
+    ) {
       toast.error(
-        language === 'ru' ? 'Вы уже выполнили задачу сегодня. Возвращайтесь завтра!' : 
-        language === 'es' ? '¡Ya has completado la tarea hoy. ¡Vuelve mañana!' : 
-        'You already completed today\'s task. Come back tomorrow!'
+        language === 'ru'
+          ? 'Вы уже выполнили задачу сегодня. Возвращайтесь завтра!'
+          : language === 'es'
+            ? '¡Ya has completado la tarea hoy. ¡Vuelve mañana!'
+            : "You already completed today's task. Come back tomorrow!"
       );
       return;
     }
-    
+
     toggleRequirement(index);
   };
 
@@ -71,11 +80,11 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
                 />
               )}
             </div>
-            <label 
+            <label
               htmlFor={`req-${i}`}
               className={cn(
-                "text-sm text-white cursor-pointer",
-                requirementStatus[i] && "line-through opacity-70"
+                'text-sm text-white cursor-pointer',
+                requirementStatus[i] && 'line-through opacity-70'
               )}
             >
               {req}
@@ -85,7 +94,7 @@ export const MissionRequirements: React.FC<MissionRequirementsProps> = ({
       </ul>
     );
   }
-  
+
   return (
     <ul className="space-y-2 mb-4">
       {displayRequirements.map((req, i) => (

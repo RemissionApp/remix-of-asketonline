@@ -1,4 +1,3 @@
-
 // Re-export all universe chat functionality for backwards compatibility
 export * from './types';
 export * from './sessionManager';

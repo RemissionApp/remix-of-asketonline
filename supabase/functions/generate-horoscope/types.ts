@@ -1,4 +1,3 @@
-
 // Request and response types for the horoscope API
 
 export interface HoroscopeRequest {

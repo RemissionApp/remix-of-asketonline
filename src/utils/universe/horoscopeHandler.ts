@@ -1,7 +1,6 @@
-
-import { supabase } from "@/lib/supabase";
-import { getZodiacSign } from "@/utils/zodiac";
-import { UserProfile } from "@/types";
+import { supabase } from '@/lib/supabase';
+import { getZodiacSign } from '@/utils/zodiac';
+import { UserProfile } from '@/types';
 
 /**
  * Handles horoscope request processing
@@ -20,30 +19,29 @@ export async function handleHoroscopeRequest(
     if (!userProfile?.birthDate) {
       return null;
     }
-    
+
     // Get zodiac sign
     const zodiacSign = getZodiacSign(new Date(userProfile.birthDate));
     if (!zodiacSign) {
       throw new Error("Couldn't determine zodiac sign");
     }
-    
+
     // Get daily horoscope through the edge function
     const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
-      body: { sign: zodiacSign, language, detailed: false }
+      body: { sign: zodiacSign, language, detailed: false },
     });
-    
+
     if (error) {
       throw error;
     }
-    
+
     if (data.success && data.data.description) {
       return data.data.description;
     }
-    
-    throw new Error("No horoscope data available");
-    
+
+    throw new Error('No horoscope data available');
   } catch (error) {
-    console.error("Horoscope error:", error);
+    console.error('Horoscope error:', error);
     return null;
   }
 }
@@ -55,9 +53,9 @@ export async function handleHoroscopeRequest(
  */
 export function isHoroscopeRequest(question: string): boolean {
   const lowercaseQuestion = question.toLowerCase();
-  
+
   return (
-    lowercaseQuestion.includes('гороскоп') || 
+    lowercaseQuestion.includes('гороскоп') ||
     lowercaseQuestion.includes('horoscope') ||
     lowercaseQuestion.includes('zodiac') ||
     lowercaseQuestion.includes('звезды') ||

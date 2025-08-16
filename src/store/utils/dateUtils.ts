@@ -1,4 +1,3 @@
-
 // Helper function to get date string in YYYY-MM-DD format
 export const getDateString = (date: Date): string => {
   return date.toISOString().split('T')[0];

@@ -4,14 +4,19 @@ interface MobileOptimizedInterfaceProps {
   children: React.ReactNode;
 }
 
-export const MobileOptimizedInterface: React.FC<MobileOptimizedInterfaceProps> = ({ children }) => {
+export const MobileOptimizedInterface: React.FC<
+  MobileOptimizedInterfaceProps
+> = ({ children }) => {
   useEffect(() => {
     // Prevent zoom on input focus for iOS
     const handleFocus = (e: FocusEvent) => {
       if (window.innerWidth < 768) {
         const viewport = document.querySelector('meta[name=viewport]');
         if (viewport) {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+          viewport.setAttribute(
+            'content',
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+          );
         }
       }
     };
@@ -20,7 +25,10 @@ export const MobileOptimizedInterface: React.FC<MobileOptimizedInterfaceProps> =
       if (window.innerWidth < 768) {
         const viewport = document.querySelector('meta[name=viewport]');
         if (viewport) {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no');
+          viewport.setAttribute(
+            'content',
+            'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no'
+          );
         }
       }
     };
@@ -51,7 +59,9 @@ export const MobileOptimizedInterface: React.FC<MobileOptimizedInterfaceProps> =
       }
     };
 
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
     document.addEventListener('focusin', handleFocus);
     document.addEventListener('focusout', handleBlur);

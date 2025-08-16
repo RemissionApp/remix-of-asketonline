@@ -1,6 +1,12 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  SkipBack,
+  SkipForward,
+} from 'lucide-react';
 import { CosmicButton } from './CosmicButton';
 import { Slider } from './ui/slider';
 import { cn } from '@/lib/utils';
@@ -47,7 +53,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
-      
+
       // If meditation has finished
       if (audioRef.current.currentTime >= audioRef.current.duration) {
         setIsPlaying(false);
@@ -80,7 +86,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({
     if (audioRef.current) {
       audioRef.current.volume = newVolume;
     }
-    
+
     // If volume is set to 0, mute. Otherwise, unmute
     setIsMuted(newVolume === 0);
   };
@@ -109,7 +115,12 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({
   }, []);
 
   return (
-    <div className={cn("bg-cosmic-dark/70 backdrop-blur-md border border-cosmic-accent/20 rounded-lg p-4", className)}>
+    <div
+      className={cn(
+        'bg-cosmic-dark/70 backdrop-blur-md border border-cosmic-accent/20 rounded-lg p-4',
+        className
+      )}
+    >
       <audio
         ref={audioRef}
         src={audioSrc}
@@ -117,7 +128,7 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({
         onLoadedMetadata={handleLoadedMetadata}
         hidden
       />
-      
+
       <div className="flex flex-col items-center mb-4">
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-cosmic-accent/30 mb-3">
           <img
@@ -128,67 +139,71 @@ export const MeditationPlayer: React.FC<MeditationPlayerProps> = ({
         </div>
         <h3 className="text-lg font-serif text-white text-center">{title}</h3>
       </div>
-      
+
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs text-cosmic-secondary">{formatTime(currentTime)}</span>
-          <Slider 
-            value={[currentTime]} 
+          <span className="text-xs text-cosmic-secondary">
+            {formatTime(currentTime)}
+          </span>
+          <Slider
+            value={[currentTime]}
             max={duration || 100}
             step={1}
             onValueChange={handleSeek}
             className="flex-1"
           />
-          <span className="text-xs text-cosmic-secondary">{formatTime(duration)}</span>
+          <span className="text-xs text-cosmic-secondary">
+            {formatTime(duration)}
+          </span>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <button 
+          <button
             onClick={toggleMute}
             className="text-cosmic-secondary hover:text-cosmic-accent"
           >
             {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
-          <Slider 
-            value={[volume]} 
+          <Slider
+            value={[volume]}
             max={1}
             step={0.01}
             onValueChange={handleVolumeChange}
             className="w-20"
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <CosmicButton 
-            onClick={onPrevious} 
-            variant="subtle" 
+          <CosmicButton
+            onClick={onPrevious}
+            variant="subtle"
             size="sm"
             className="rounded-full px-2"
           >
             <SkipBack size={18} />
           </CosmicButton>
-          
-          <CosmicButton 
-            onClick={togglePlayPause} 
-            variant="default" 
+
+          <CosmicButton
+            onClick={togglePlayPause}
+            variant="default"
             size="md"
             className="rounded-full w-12 h-12 flex items-center justify-center"
           >
             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
           </CosmicButton>
-          
-          <CosmicButton 
-            onClick={onNext} 
-            variant="subtle" 
+
+          <CosmicButton
+            onClick={onNext}
+            variant="subtle"
             size="sm"
             className="rounded-full px-2"
           >
             <SkipForward size={18} />
           </CosmicButton>
         </div>
-        
+
         <div className="w-24" />
       </div>
     </div>

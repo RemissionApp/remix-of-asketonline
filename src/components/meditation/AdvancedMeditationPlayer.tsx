@@ -1,6 +1,14 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Star, RotateCcw, Volume2, Music } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Star,
+  RotateCcw,
+  Volume2,
+  Music,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
@@ -15,14 +23,16 @@ interface AdvancedMeditationPlayerProps {
   className?: string;
 }
 
-export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> = ({
+export const AdvancedMeditationPlayer: React.FC<
+  AdvancedMeditationPlayerProps
+> = ({
   audioSrc,
   title,
   selectedMusic = 'Лес',
   onFinish,
   onNext,
   onPrevious,
-  className
+  className,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -35,11 +45,11 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
   const musicAudioRef = useRef<HTMLAudioElement>(null);
 
   const musicUrls: { [key: string]: string } = {
-    'Лес': 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3',
-    'Дождь': '',
+    Лес: 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/Forest.mp3',
+    Дождь: '',
     'Тибетские чаши': '',
-    'Океан': '',
-    'Тишина': ''
+    Океан: '',
+    Тишина: '',
   };
 
   const togglePlayPause = async () => {
@@ -58,7 +68,7 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
         if (voiceAudioRef.current) {
           await voiceAudioRef.current.play();
         }
-        
+
         // Запускаем фоновую музыку если выбрана
         if (selectedMusic !== 'Тишина' && musicUrls[selectedMusic]) {
           if (musicAudioRef.current) {
@@ -68,7 +78,7 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
             await musicAudioRef.current.play();
           }
         }
-        
+
         setIsPlaying(true);
       }
     } catch (error) {
@@ -152,14 +162,10 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
         onLoadedMetadata={handleLoadedMetadata}
         hidden
       />
-      
+
       {/* Фоновая музыка */}
-      <audio
-        ref={musicAudioRef}
-        hidden
-        loop
-      />
-      
+      <audio ref={musicAudioRef} hidden loop />
+
       {/* Progress Bar with Breathing Wave Effect */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-cosmic-secondary mb-2">
@@ -168,13 +174,13 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
         </div>
         <div className="relative">
           <Progress value={progressPercentage} className="h-2" />
-          <div 
+          <div
             className="absolute top-0 left-0 h-2 bg-gradient-to-r from-cosmic-accent to-cosmic-gold rounded-full transition-all duration-300"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
-        <Slider 
-          value={[currentTime]} 
+        <Slider
+          value={[currentTime]}
           max={duration || 100}
           step={1}
           onValueChange={handleSeek}
@@ -224,7 +230,7 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
             onValueChange={handleVoiceVolumeChange}
           />
         </div>
-        
+
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Music size={16} className="text-cosmic-accent" />
@@ -247,7 +253,11 @@ export const AdvancedMeditationPlayer: React.FC<AdvancedMeditationPlayerProps> =
           onClick={() => setIsFavorite(!isFavorite)}
           className={`${isFavorite ? 'text-cosmic-gold' : 'text-cosmic-secondary'} hover:text-cosmic-accent`}
         >
-          <Star size={16} className="mr-1" fill={isFavorite ? 'currentColor' : 'none'} />
+          <Star
+            size={16}
+            className="mr-1"
+            fill={isFavorite ? 'currentColor' : 'none'}
+          />
           Избранное
         </Button>
 

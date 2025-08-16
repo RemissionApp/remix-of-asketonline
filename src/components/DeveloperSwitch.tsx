@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -21,12 +20,15 @@ export const DeveloperSwitch: React.FC = () => {
     <div className="flex flex-col space-y-2">
       <div className="flex items-center justify-between bg-cosmic-dark/70 backdrop-blur-sm p-3 rounded-lg border border-cosmic-gold/20">
         <div className="flex items-center space-x-2">
-          <Label htmlFor="dev-mode" className="text-cosmic-secondary cursor-pointer">
+          <Label
+            htmlFor="dev-mode"
+            className="text-cosmic-secondary cursor-pointer"
+          >
             Developer Mode: Pro Subscription
           </Label>
           {isPro && <ProBadge size="sm" />}
         </div>
-        <Switch 
+        <Switch
           id="dev-mode"
           checked={isPro}
           onCheckedChange={handleToggleSubscription}

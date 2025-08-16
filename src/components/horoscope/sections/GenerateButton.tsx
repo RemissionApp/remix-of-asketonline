@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { HoroscopeHeader } from './HoroscopeHeader';
@@ -18,12 +17,12 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({
   language,
   zodiacInfo,
   userName,
-  onGenerate
+  onGenerate,
 }) => {
   return (
     <Card className="border-cosmic-accent/20 bg-cosmic-dark/50 backdrop-blur-sm shadow-lg">
       <CardHeader>
-        <HoroscopeHeader 
+        <HoroscopeHeader
           zodiacInfo={zodiacInfo}
           translations={translations}
           language={language}
@@ -32,19 +31,19 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center py-12">
         <p className="text-center mb-6 text-cosmic-light">
-          {translations.findOutToday?.[language] || translations.findOutToday?.en || 
-            (language === 'ru' 
+          {translations.findOutToday?.[language] ||
+            translations.findOutToday?.en ||
+            (language === 'ru'
               ? 'Узнайте, что вас ждет сегодня!'
               : 'Find out what awaits you today!')}
         </p>
-        <CosmicButton 
-          onClick={onGenerate}
-          size="lg"
-          className="animate-pulse"
-        >
+        <CosmicButton onClick={onGenerate} size="lg" className="animate-pulse">
           <Star className="mr-2" />
-          {translations.generateButton?.[language] || translations.generateButton?.en ||
-            (language === 'ru' ? 'Что меня ждет сегодня?' : 'What awaits me today?')}
+          {translations.generateButton?.[language] ||
+            translations.generateButton?.en ||
+            (language === 'ru'
+              ? 'Что меня ждет сегодня?'
+              : 'What awaits me today?')}
         </CosmicButton>
       </CardContent>
     </Card>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
@@ -12,17 +11,18 @@ import { BriefHoroscopeLoading } from './sections/BriefHoroscopeLoading';
 export const BriefHoroscopeDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
-  
+
   // Check if user is PRO
   const isPro = userProfile?.isPro || false;
-  
+
   // Get translated button text based on language
-  const seeMoreText = {
-    ru: 'Подробнее',
-    en: 'See More',
-    es: 'Ver Más',
-  }[language] || 'See More';
-  
+  const seeMoreText =
+    {
+      ru: 'Подробнее',
+      en: 'See More',
+      es: 'Ver Más',
+    }[language] || 'See More';
+
   // Use our custom hook to handle horoscope data and loading state
   const { horoscope, loading, displayedText, isTyping } = useBriefHoroscope();
 
@@ -30,19 +30,22 @@ export const BriefHoroscopeDisplay: React.FC = () => {
     // Navigate to detailed horoscope page
     navigate('/detailed-horoscope');
   };
-  
+
   // Signature based on language
-  const signature = language === 'ru' ? '— Послание Вселенной' : 
-                   language === 'es' ? '— Mensaje del Universo' : 
-                   '— Message from the Universe';
-  
+  const signature =
+    language === 'ru'
+      ? '— Послание Вселенной'
+      : language === 'es'
+        ? '— Mensaje del Universo'
+        : '— Message from the Universe';
+
   const horoscopeContent = (
     <div className="w-full max-w-lg mx-auto text-center">
       {loading ? (
         <BriefHoroscopeLoading language={language} />
       ) : (
-        <BriefHoroscopeContent 
-          displayedText={displayedText} 
+        <BriefHoroscopeContent
+          displayedText={displayedText}
           isTyping={isTyping}
           horoscopeDescription={horoscope?.description}
           signature={signature}
@@ -53,7 +56,7 @@ export const BriefHoroscopeDisplay: React.FC = () => {
       )}
     </div>
   );
-  
+
   // For non-PRO users, wrap with ProFeatureOverlay if showing detailed content
   if (!isPro && !loading) {
     return (
@@ -62,7 +65,7 @@ export const BriefHoroscopeDisplay: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="cosmic-block bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4 mb-6 w-full max-w-lg mx-auto">
       {horoscopeContent}

@@ -2,7 +2,6 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-
 interface PageHeaderProps {
   title: string;
   onBack?: () => void;
@@ -14,7 +13,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   onBack,
   backTo = '/main',
-  className = ''
+  className = '',
 }) => {
   const navigate = useNavigate();
 
@@ -27,7 +26,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   };
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 ${className}`}>
+    <div
+      className={`fixed top-0 left-0 right-0 z-50 bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 ${className}`}
+    >
       <div className="flex items-center justify-between px-4 py-3 h-14">
         <button
           onClick={handleBack}
@@ -35,15 +36,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         >
           <ArrowLeft size={20} />
         </button>
-        
+
         <h1 className="absolute left-1/2 transform -translate-x-1/2 text-lg font-serif text-white font-medium">
           {title}
         </h1>
-        
+
         <div className="flex items-center space-x-2">
-          <img 
-            src="/asket-logo.png" 
-            alt="Asket Logo" 
+          <img
+            src="/asket-logo.png"
+            alt="Asket Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
           <span className="text-white font-serif text-sm">Asket</span>

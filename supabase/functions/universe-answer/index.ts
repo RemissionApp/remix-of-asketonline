@@ -1,10 +1,10 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import 'https://deno.land/x/xhr@0.1.0/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface RequestBody {
@@ -20,7 +20,7 @@ interface RequestBody {
   };
 }
 
-serve(async (req) => {
+serve(async req => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -32,20 +32,25 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not set');
     }
 
-    const { question, language = 'ru', userData } = await req.json() as RequestBody;
-    
+    const {
+      question,
+      language = 'ru',
+      userData,
+    } = (await req.json()) as RequestBody;
+
     if (!question || question.trim() === '') {
       throw new Error('Question is required');
     }
-    
+
     // Check if this is a daily advice request
-    const isDailyAdvice = question.includes("совет дня") || 
-                          question.includes("daily advice") || 
-                          question.includes("consejo del día");
-    
+    const isDailyAdvice =
+      question.includes('совет дня') ||
+      question.includes('daily advice') ||
+      question.includes('consejo del día');
+
     // Use a specific prompt for daily advice/horoscope
     let systemPrompt;
-    
+
     if (isDailyAdvice) {
       // Use an astrologer-style format for daily advice
       if (language === 'ru') {
@@ -100,19 +105,19 @@ serve(async (req) => {
 9. Найди лучшую литературу по теме и выдели главное:
 "Подбери список лучших книг по этой теме. Определи, какие из них наиболее полно раскрывают вопрос, и сделай краткое изложение ключевых идей каждой книги, чтобы помочь мне быстрее разобраться в теме."`;
     }
-    
+
     // Add user context if available
-    let userContext = "";
+    let userContext = '';
     if (userData) {
       if (userData.zodiacSign) {
         userContext += `\nЧеловек родился под знаком ${userData.zodiacSign}.`;
       }
-      
+
       if (userData.currentVow) {
         userContext += `\nВ данный момент человек взял обет ${userData.currentVow} и находится на ${userData.vowDay || 1} дне из ${userData.vowDuration || 21} дней пути.`;
       }
     }
-    
+
     // User prompt
     const userPrompt = `Вопрос человека: "${question}"
 
@@ -121,57 +126,63 @@ serve(async (req) => {
     Ответь подробно, следуя всем пунктам структуры. Разделяй части ответа пустой строкой для лучшей читаемости. Не цитируй мои заголовки абзацев дословно, вместо этого дай свою формулировку каждого раздела. Ответы должны быть содержательными и основанными на экспертных знаниях.`;
 
     // Use GPT-4o for responses
-    const gptModel = "gpt-4o";
-    
-    console.log(`Processing request with model ${gptModel}. Question: ${question}`);
-    
+    const gptModel = 'gpt-4o';
+
+    console.log(
+      `Processing request with model ${gptModel}. Question: ${question}`
+    );
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: gptModel,
         messages: [
           {
-            role: "system",
-            content: systemPrompt
+            role: 'system',
+            content: systemPrompt,
           },
           {
-            role: "user",
-            content: userPrompt
-          }
+            role: 'user',
+            content: userPrompt,
+          },
         ],
         temperature: 0.8,
         // Увеличиваем лимит токенов для более подробных ответов
-        max_tokens: 4000
+        max_tokens: 4000,
       }),
     });
 
     const data = await response.json();
-    
+
     if (data.error) {
       console.error('OpenAI API error:', data.error);
       throw new Error(data.error.message || 'Error from OpenAI API');
     }
 
     const answer = data.choices[0].message.content;
-    
-    console.log("Generated universe answer:", answer.substring(0, 100) + "...");
+
+    console.log('Generated universe answer:', answer.substring(0, 100) + '...');
 
     return new Response(JSON.stringify({ answer }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in universe-answer function:', error);
-    
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      message: "Вселенная временно молчит. Закрой глаза и прислушайся к внутреннему голосу."
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+
+    return new Response(
+      JSON.stringify({
+        error: error.message,
+        message:
+          'Вселенная временно молчит. Закрой глаза и прислушайся к внутреннему голосу.',
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });

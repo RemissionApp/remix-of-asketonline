@@ -6,7 +6,9 @@ import { PWAUpdateManager } from '@/utils/pwaUpdateManager';
 
 export const PWAUpdateNotification: React.FC = () => {
   const [showUpdate, setShowUpdate] = useState(false);
-  const [updateManager, setUpdateManager] = useState<PWAUpdateManager | null>(null);
+  const [updateManager, setUpdateManager] = useState<PWAUpdateManager | null>(
+    null
+  );
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -15,10 +17,16 @@ export const PWAUpdateNotification: React.FC = () => {
       setShowUpdate(true);
     };
 
-    window.addEventListener('pwa-update-available', handleUpdateAvailable as EventListener);
+    window.addEventListener(
+      'pwa-update-available',
+      handleUpdateAvailable as EventListener
+    );
 
     return () => {
-      window.removeEventListener('pwa-update-available', handleUpdateAvailable as EventListener);
+      window.removeEventListener(
+        'pwa-update-available',
+        handleUpdateAvailable as EventListener
+      );
     };
   }, []);
 
@@ -26,7 +34,7 @@ export const PWAUpdateNotification: React.FC = () => {
     if (updateManager) {
       setIsUpdating(true);
       const success = await updateManager.applyUpdate();
-      
+
       if (!success) {
         setIsUpdating(false);
         setShowUpdate(false);
@@ -49,8 +57,12 @@ export const PWAUpdateNotification: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center space-x-2">
-              <RefreshCw className={`text-cosmic-gold w-5 h-5 ${isUpdating ? 'animate-spin' : ''}`} />
-              <h3 className="text-cosmic-light font-medium">Обновление доступно</h3>
+              <RefreshCw
+                className={`text-cosmic-gold w-5 h-5 ${isUpdating ? 'animate-spin' : ''}`}
+              />
+              <h3 className="text-cosmic-light font-medium">
+                Обновление доступно
+              </h3>
             </div>
             {!isUpdating && (
               <Button
@@ -63,11 +75,11 @@ export const PWAUpdateNotification: React.FC = () => {
               </Button>
             )}
           </div>
-          
+
           <p className="text-cosmic-muted text-sm mb-4">
             Доступна новая версия приложения с улучшениями и исправлениями
           </p>
-          
+
           <div className="flex space-x-2">
             <Button
               onClick={handleUpdate}

@@ -1,6 +1,13 @@
-
 import React from 'react';
-import { ChevronLeft, ChevronRight, Heart, Zap, Shield, Star, Target } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Zap,
+  Shield,
+  Star,
+  Target,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Pact } from '@/types';
 
@@ -31,19 +38,19 @@ const getPactIcon = (pactType?: string) => {
   }
 };
 
-export const PactNavigation: React.FC<PactNavigationProps> = ({ 
-  currentIndex, 
+export const PactNavigation: React.FC<PactNavigationProps> = ({
+  currentIndex,
   totalPacts,
   pacts,
-  onPrevious, 
-  onNext 
+  onPrevious,
+  onNext,
 }) => {
   if (totalPacts <= 1) return null;
-  
+
   return (
     <div className="mb-4 flex items-center justify-center">
-      <button 
-        onClick={onPrevious} 
+      <button
+        onClick={onPrevious}
         className="text-cosmic-accent p-1 mr-2"
         aria-label="Previous pact"
       >
@@ -53,13 +60,13 @@ export const PactNavigation: React.FC<PactNavigationProps> = ({
         {pacts.map((pact, index) => {
           const IconComponent = getPactIcon(pact.type);
           return (
-            <div 
+            <div
               key={pact.id}
               className={cn(
-                "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200",
-                index === currentIndex 
-                  ? "bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent" 
-                  : "bg-cosmic-dark/40 border-cosmic-accent/30 text-cosmic-accent/60 hover:border-cosmic-accent/60"
+                'flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200',
+                index === currentIndex
+                  ? 'bg-cosmic-accent/20 border-cosmic-accent text-cosmic-accent'
+                  : 'bg-cosmic-dark/40 border-cosmic-accent/30 text-cosmic-accent/60 hover:border-cosmic-accent/60'
               )}
             >
               <IconComponent size={16} />
@@ -67,8 +74,8 @@ export const PactNavigation: React.FC<PactNavigationProps> = ({
           );
         })}
       </div>
-      <button 
-        onClick={onNext} 
+      <button
+        onClick={onNext}
         className="text-cosmic-accent p-1 ml-2"
         aria-label="Next pact"
       >

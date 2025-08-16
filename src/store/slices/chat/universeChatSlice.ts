@@ -1,15 +1,14 @@
-
 import { StateCreator } from 'zustand';
 import { AppState } from '../../types';
 import { UniverseChatState } from './universeChatTypes';
-import { 
+import {
   createLoadChatSessionsAction,
   createLoadChatMessagesAction,
   createChatSessionAction,
   createSetCurrentChatSessionAction,
   createSendChatMessageAction,
   createSubscribeToChatMessagesAction,
-  createHandleNewChatMessageAction
+  createHandleNewChatMessageAction,
 } from './actions';
 
 /**
@@ -29,13 +28,34 @@ export const createUniverseChatSlice: StateCreator<
   isLoadingChat: false,
   isSendingMessage: false,
   isUniverseTyping: false,
-  
+
   // Actions
-  loadChatSessions: createLoadChatSessionsAction(set, get as () => AppState & UniverseChatState),
-  loadChatMessages: createLoadChatMessagesAction(set, get as () => AppState & UniverseChatState),
-  createChatSession: createChatSessionAction(set, get as () => AppState & UniverseChatState),
-  setCurrentChatSession: createSetCurrentChatSessionAction(set, get as () => AppState & UniverseChatState),
-  sendChatMessage: createSendChatMessageAction(set, get as () => AppState & UniverseChatState),
-  subscribeToChatMessages: createSubscribeToChatMessagesAction(set, get as () => AppState & UniverseChatState),
-  handleNewChatMessage: createHandleNewChatMessageAction(set, get as () => AppState & UniverseChatState)
+  loadChatSessions: createLoadChatSessionsAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  loadChatMessages: createLoadChatMessagesAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  createChatSession: createChatSessionAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  setCurrentChatSession: createSetCurrentChatSessionAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  sendChatMessage: createSendChatMessageAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  subscribeToChatMessages: createSubscribeToChatMessagesAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
+  handleNewChatMessage: createHandleNewChatMessageAction(
+    set,
+    get as () => AppState & UniverseChatState
+  ),
 });

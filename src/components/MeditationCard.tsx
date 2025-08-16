@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LockIcon, PlayIcon, SparklesIcon } from 'lucide-react';
 import { CosmicButton } from './CosmicButton';
@@ -24,7 +23,7 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   image,
   locked = false,
   requiresPro = true,
-  onPlay
+  onPlay,
 }) => {
   const { t } = useTranslations();
   const { userProfile, upgradeToPro } = useAppStore();
@@ -44,17 +43,19 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
       console.log(`Playing meditation: ${title}`);
     }
   };
-  
+
   const handleUpgrade = () => {
     // For demo purposes, immediately upgrade the user
     upgradeToPro();
   };
-  
+
   return (
-    <Card className={`overflow-hidden border border-cosmic-accent/30 bg-cosmic-dark/40 backdrop-blur-sm ${locked ? 'relative' : ''}`}>
+    <Card
+      className={`overflow-hidden border border-cosmic-accent/30 bg-cosmic-dark/40 backdrop-blur-sm ${locked ? 'relative' : ''}`}
+    >
       <div className="bg-gradient-to-b from-cosmic-accent/10 to-cosmic-dark/30 p-3">
         <div className="relative h-32 rounded-md overflow-hidden mb-3">
-          <div 
+          <div
             className="absolute inset-0 bg-center bg-cover"
             style={{ backgroundImage: `url(${image})` }}
           />
@@ -72,21 +73,23 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
             </div>
           )}
         </div>
-        
+
         <CardContent className="p-0">
           <h3 className="text-lg font-serif text-white mb-1">{title}</h3>
-          <p className="text-sm text-cosmic-secondary mb-2 line-clamp-2">{description}</p>
+          <p className="text-sm text-cosmic-secondary mb-2 line-clamp-2">
+            {description}
+          </p>
           <div className="flex items-center justify-between">
             <span className="text-xs text-cosmic-accent">{duration}</span>
             {!locked ? (
               <CosmicButton size="sm" onClick={handlePlay}>
                 <PlayIcon size={16} className="mr-1" />
-                {t.meditation.play || "Играть"}
+                {t.meditation.play || 'Играть'}
               </CosmicButton>
             ) : (
               <CosmicButton size="sm" variant="outline" onClick={handleUpgrade}>
                 <SparklesIcon size={14} className="mr-1" />
-                {t.meditation.unlock || "Разблокировать"}
+                {t.meditation.unlock || 'Разблокировать'}
               </CosmicButton>
             )}
           </div>

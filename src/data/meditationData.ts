@@ -1,4 +1,3 @@
-
 import { Meditation } from '@/types';
 import { useTranslations } from '@/hooks/useTranslations';
 
@@ -14,7 +13,7 @@ export const useFreeMeditations = (): Meditation[] => {
       image: '/meditation/morning1.jpg',
       audioSrc: '/meditations/morning-free.mp3',
       locked: false,
-      requiresPro: false
+      requiresPro: false,
     },
     {
       id: 'evening-free-1',
@@ -25,7 +24,7 @@ export const useFreeMeditations = (): Meditation[] => {
       image: '/meditation/evening1.jpg',
       audioSrc: '/meditations/evening-free.mp3',
       locked: false,
-      requiresPro: false
+      requiresPro: false,
     },
     {
       id: 'stress-free-1',
@@ -36,14 +35,14 @@ export const useFreeMeditations = (): Meditation[] => {
       image: '/meditation/stress1.jpg',
       audioSrc: '/meditations/stress-free.mp3',
       locked: false,
-      requiresPro: false
+      requiresPro: false,
     },
   ];
 };
 
 export const useProMeditations = (isPro: boolean): Meditation[] => {
   const { t } = useTranslations();
-  
+
   // PRO meditations data
   return [
     {
@@ -55,18 +54,19 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       image: '/meditation/morning2.jpg',
       audioSrc: '/meditations/morning-pro-1.mp3',
       locked: !isPro,
-      requiresPro: true
+      requiresPro: true,
     },
     {
       id: 'morning-pro-2',
       title: t.meditation.morning.title2 || 'Утренняя энергия',
-      description: t.meditation.morning.desc2 || 'Зарядитесь энергией на весь день',
+      description:
+        t.meditation.morning.desc2 || 'Зарядитесь энергией на весь день',
       duration: '15 мин',
       category: 'morning',
       image: '/meditation/morning3.jpg',
       audioSrc: '/meditations/morning-pro-2.mp3',
       locked: !isPro,
-      requiresPro: true
+      requiresPro: true,
     },
     {
       id: 'evening-pro-1',
@@ -77,7 +77,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       image: '/meditation/evening2.jpg',
       audioSrc: '/meditations/evening-pro-1.mp3',
       locked: !isPro,
-      requiresPro: true
+      requiresPro: true,
     },
     {
       id: 'stress-pro-1',
@@ -88,7 +88,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       image: '/meditation/stress2.jpg',
       audioSrc: '/meditations/stress-pro-1.mp3',
       locked: !isPro,
-      requiresPro: true
+      requiresPro: true,
     },
     {
       id: 'visualization-pro-1',
@@ -99,7 +99,7 @@ export const useProMeditations = (isPro: boolean): Meditation[] => {
       image: '/meditation/visualization1.jpg',
       audioSrc: '/meditations/visualization-pro-1.mp3',
       locked: !isPro,
-      requiresPro: true
-    }
+      requiresPro: true,
+    },
   ];
 };

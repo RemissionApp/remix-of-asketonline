@@ -3,7 +3,13 @@ import { Button, ButtonProps } from '@/components/ui/button';
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 
 interface HapticButtonProps extends ButtonProps {
-  hapticType?: 'tap' | 'success' | 'error' | 'notification' | 'warning' | 'energyBoost';
+  hapticType?:
+    | 'tap'
+    | 'success'
+    | 'error'
+    | 'notification'
+    | 'warning'
+    | 'energyBoost';
   children: React.ReactNode;
 }
 

@@ -11,7 +11,7 @@ const LOG_LEVELS: LogLevel = {
   ERROR: 1,
   WARN: 2,
   INFO: 3,
-  DEBUG: 4
+  DEBUG: 4,
 };
 
 const isDevelopment = import.meta.env.DEV;
@@ -33,7 +33,7 @@ class Logger {
   error(message: string, error?: Error | unknown, data?: any) {
     if (currentLogLevel >= LOG_LEVELS.ERROR) {
       console.error(this.formatMessage('ERROR', message), error, data);
-      
+
       // В продакшене можно отправлять в сервис мониторинга
       if (!isDevelopment && error instanceof Error) {
         this.sendToMonitoring('error', message, error, data);
@@ -59,7 +59,12 @@ class Logger {
     }
   }
 
-  private sendToMonitoring(level: string, message: string, error?: Error, data?: any) {
+  private sendToMonitoring(
+    level: string,
+    message: string,
+    error?: Error,
+    data?: any
+  ) {
     // Здесь можно интегрировать Sentry, LogRocket или другой сервис
     // Пока просто заглушка
     try {

@@ -1,11 +1,10 @@
-
-import { openAiModel, openAiTemperature, tokenLimits } from "./config.ts";
-import { getUserPrompt, getSystemPrompt } from "./prompts.ts";
+import { openAiModel, openAiTemperature, tokenLimits } from './config.ts';
+import { getUserPrompt, getSystemPrompt } from './prompts.ts';
 
 export async function generateHoroscope(
-  sign: string, 
-  language: string, 
-  detailed: boolean, 
+  sign: string,
+  language: string,
+  detailed: boolean,
   birthDate: string | null
 ): Promise<string> {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
@@ -24,32 +23,35 @@ export async function generateHoroscope(
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: openAiModel,
       messages: [
         {
-          role: "system",
-          content: systemPrompt
+          role: 'system',
+          content: systemPrompt,
         },
         {
-          role: "user",
-          content: userPrompt
-        }
+          role: 'user',
+          content: userPrompt,
+        },
       ],
       temperature: openAiTemperature,
-      max_tokens: detailed ? tokenLimits.detailed : tokenLimits.brief
+      max_tokens: detailed ? tokenLimits.detailed : tokenLimits.brief,
     }),
   });
 
   const data = await response.json();
-  console.log("OpenAI API status:", response.status);
-  console.log("OpenAI response:", JSON.stringify(data).substring(0, 500) + "...");
-  
+  console.log('OpenAI API status:', response.status);
+  console.log(
+    'OpenAI response:',
+    JSON.stringify(data).substring(0, 500) + '...'
+  );
+
   if (data.error) {
-    console.error("OpenAI API error:", data.error);
+    console.error('OpenAI API error:', data.error);
     throw new Error(data.error.message || 'Error from OpenAI API');
   }
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -18,12 +17,12 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
   zodiacSign,
   language,
   uiText,
-  onGenerate
+  onGenerate,
 }) => {
   return (
     <Card className="p-6 mb-8 bg-slate-800/40 backdrop-blur-sm border-amber-500/30">
       <div className="flex items-center gap-4 mb-4">
-        <ZodiacSignDisplay 
+        <ZodiacSignDisplay
           zodiacSign={zodiacSign}
           language={language}
           size="lg"
@@ -34,9 +33,7 @@ export const GenerateHoroscopeCard: React.FC<GenerateHoroscopeCardProps> = ({
         />
       </div>
       <p className="mb-6">{uiText.generateDescription}</p>
-      <CosmicButton onClick={onGenerate}>
-        {uiText.generateButton}
-      </CosmicButton>
+      <CosmicButton onClick={onGenerate}>{uiText.generateButton}</CosmicButton>
     </Card>
   );
 };

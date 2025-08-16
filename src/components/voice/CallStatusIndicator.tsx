@@ -10,39 +10,51 @@ interface CallStatusIndicatorProps {
 export const CallStatusIndicator: React.FC<CallStatusIndicatorProps> = ({
   isConnected,
   isLoading = false,
-  error = null
+  error = null,
 }) => {
   const { language } = useAppStore();
 
   const getStatusText = () => {
     if (error) {
       switch (language) {
-        case 'ru': return 'Ошибка соединения';
-        case 'es': return 'Error de conexión';
-        default: return 'Connection error';
+        case 'ru':
+          return 'Ошибка соединения';
+        case 'es':
+          return 'Error de conexión';
+        default:
+          return 'Connection error';
       }
     }
-    
+
     if (isLoading) {
       switch (language) {
-        case 'ru': return 'Соединение...';
-        case 'es': return 'Conectando...';
-        default: return 'Connecting...';
+        case 'ru':
+          return 'Соединение...';
+        case 'es':
+          return 'Conectando...';
+        default:
+          return 'Connecting...';
       }
     }
-    
+
     if (isConnected) {
       switch (language) {
-        case 'ru': return 'Соединение активно';
-        case 'es': return 'Conexión activa';
-        default: return 'Connected';
+        case 'ru':
+          return 'Соединение активно';
+        case 'es':
+          return 'Conexión activa';
+        default:
+          return 'Connected';
       }
     }
-    
+
     switch (language) {
-      case 'ru': return 'Готов к звонку';
-      case 'es': return 'Listo para llamar';
-      default: return 'Ready to call';
+      case 'ru':
+        return 'Готов к звонку';
+      case 'es':
+        return 'Listo para llamar';
+      default:
+        return 'Ready to call';
     }
   };
 

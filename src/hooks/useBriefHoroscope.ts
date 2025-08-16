@@ -1,13 +1,12 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  getTodayDateString, 
-  isHoroscopeFromToday, 
-  getDefaultMessage 
+import {
+  getTodayDateString,
+  isHoroscopeFromToday,
+  getDefaultMessage,
 } from '@/utils/horoscopeUtils';
 
 interface BriefHoroscope {
@@ -22,16 +21,16 @@ export const useBriefHoroscope = () => {
   const { userProfile, language, user } = useAppStore();
   const { toast } = useToast();
   const typingSpeedRef = useRef(30); // milliseconds per character
-  
+
   // Typing effect
   useEffect(() => {
     if (horoscope && !isTyping) {
       setIsTyping(true);
       setDisplayedText('');
-      
+
       const text = horoscope.description;
       let index = 0;
-      
+
       const typingInterval = setInterval(() => {
         if (index < text.length) {
           setDisplayedText(prev => prev + text.charAt(index));
@@ -41,66 +40,78 @@ export const useBriefHoroscope = () => {
           setIsTyping(false);
         }
       }, typingSpeedRef.current);
-      
+
       return () => clearInterval(typingInterval);
     }
   }, [horoscope]);
-  
+
   useEffect(() => {
     const fetchHoroscope = async () => {
       try {
         setLoading(true);
-        
+
         // Check if user has birth date to determine zodiac sign
         if (!userProfile?.birthDate) {
           setHoroscope({ description: getDefaultMessage(language) });
           setLoading(false);
           return;
         }
-        
+
         // Get zodiac sign based on birth date
         const sign = getZodiacSign(userProfile.birthDate);
         if (!sign) {
           throw new Error('Could not determine zodiac sign');
         }
-        
+
         // Try to get cached horoscope for today
         const today = getTodayDateString();
         const cachedHoroscopeKey = `horoscope_${sign}_${today}_brief`;
         const cachedHoroscopeData = localStorage.getItem(cachedHoroscopeKey);
         const cachedHoroscopeDateKey = `horoscope_${sign}_date_brief`;
-        const cachedHoroscopeDate = localStorage.getItem(cachedHoroscopeDateKey);
-        
+        const cachedHoroscopeDate = localStorage.getItem(
+          cachedHoroscopeDateKey
+        );
+
         // Use cached horoscope if it exists and is from today
-        if (cachedHoroscopeData && cachedHoroscopeDate && isHoroscopeFromToday(cachedHoroscopeDate)) {
+        if (
+          cachedHoroscopeData &&
+          cachedHoroscopeDate &&
+          isHoroscopeFromToday(cachedHoroscopeDate)
+        ) {
           setHoroscope(JSON.parse(cachedHoroscopeData));
           setLoading(false);
           return;
         }
-        
+
         // Call our edge function to generate a horoscope
-        const { data, error } = await supabase.functions.invoke('fetch-horoscope', {
-          body: { 
-            sign,
-            language,
-            detailed: false
+        const { data, error } = await supabase.functions.invoke(
+          'fetch-horoscope',
+          {
+            body: {
+              sign,
+              language,
+              detailed: false,
+            },
           }
-        });
-        
+        );
+
         if (error) {
           throw new Error(error.message || 'Failed to fetch horoscope');
         }
-        
+
         if (!data.success) {
           throw new Error('Invalid response from fetch-horoscope function');
         }
-        
+
         // Set the horoscope with just the description
         const briefHoroscope = { description: data.data.description };
         setHoroscope(briefHoroscope);
-        
+
         // Cache the horoscope with today's date
-        localStorage.setItem(cachedHoroscopeKey, JSON.stringify(briefHoroscope));
+        localStorage.setItem(
+          cachedHoroscopeKey,
+          JSON.stringify(briefHoroscope)
+        );
         localStorage.setItem(cachedHoroscopeDateKey, today);
       } catch (error) {
         console.error('Error fetching horoscope:', error);
@@ -109,7 +120,7 @@ export const useBriefHoroscope = () => {
         setLoading(false);
       }
     };
-    
+
     // Only fetch horoscope when user is logged in and we have their profile
     if (user && userProfile) {
       fetchHoroscope();
@@ -124,6 +135,6 @@ export const useBriefHoroscope = () => {
     horoscope,
     loading,
     displayedText,
-    isTyping
+    isTyping,
   };
 };

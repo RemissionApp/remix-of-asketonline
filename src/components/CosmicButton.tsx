@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -21,29 +20,35 @@ export const CosmicButton: React.FC<CosmicButtonProps> = ({
 }) => {
   const { haptic } = usePWAFeatures();
   const variantClasses = {
-    default: 'bg-gradient-to-r from-cosmic-accent to-cosmic-indigo hover:from-purple-500 hover:to-blue-500 text-white shadow-md',
-    outline: 'border border-cosmic-accent bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 shadow-sm',
+    default:
+      'bg-gradient-to-r from-cosmic-accent to-cosmic-indigo hover:from-purple-500 hover:to-blue-500 text-white shadow-md',
+    outline:
+      'border border-cosmic-accent bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 shadow-sm',
     subtle: 'bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20',
-    destructive: 'bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30',
-    ghost: 'text-cosmic-accent hover:bg-cosmic-accent/10 hover:text-cosmic-accent'
+    destructive:
+      'bg-red-500/20 hover:bg-red-500/30 text-white border border-red-500/30',
+    ghost:
+      'text-cosmic-accent hover:bg-cosmic-accent/10 hover:text-cosmic-accent',
   };
-  
+
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-6 py-3',
-    lg: 'px-8 py-4 text-lg'
+    lg: 'px-8 py-4 text-lg',
   };
-  
+
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log('CosmicButton clicked', { variant, disabled: props.disabled });
-    
+
     // Non-blocking haptic feedback
     try {
-      haptic.buttonTap().catch(err => console.warn('Haptic feedback failed:', err));
+      haptic
+        .buttonTap()
+        .catch(err => console.warn('Haptic feedback failed:', err));
     } catch (error) {
       console.warn('Haptic feedback error:', error);
     }
-    
+
     if (onClick) {
       onClick(event);
     }

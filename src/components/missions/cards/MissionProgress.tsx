@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore } from '@/store/useAppStore';
@@ -18,37 +17,42 @@ export const MissionProgress: React.FC<MissionProgressProps> = ({
   lastCompletedDate,
   missionType,
   daysCompleted = 0,
-  totalDays = 0
+  totalDays = 0,
 }) => {
   const { language } = useAppStore();
-  
+
   return (
     <>
       <div className="mb-4">
         <div className="flex justify-between text-xs text-cosmic-gold mb-1">
           <span>
-            {language === 'ru' ? 'Прогресс' : 
-             language === 'es' ? 'Progreso' : 
-             'Progress'}
+            {language === 'ru'
+              ? 'Прогресс'
+              : language === 'es'
+                ? 'Progreso'
+                : 'Progress'}
           </span>
           <span>
-            {missionType === 'multi-day' ? 
-              `${daysCompleted}/${totalDays} (${progress}%)` : 
-              `${progress}%`
-            }
+            {missionType === 'multi-day'
+              ? `${daysCompleted}/${totalDays} (${progress}%)`
+              : `${progress}%`}
           </span>
         </div>
         <Progress value={progress} className="h-2" />
       </div>
-      
-      {missionType === 'multi-day' && lastCompletedDate && isToday(lastCompletedDate) && (
-        <div className="text-xs text-cosmic-secondary mb-3 flex items-center">
-          <CheckSquare size={14} className="inline mr-1 text-green-500" />
-          {language === 'ru' ? 'Задача на сегодня выполнена' : 
-           language === 'es' ? 'Tarea de hoy completada' : 
-           'Today\'s task completed'}
-        </div>
-      )}
+
+      {missionType === 'multi-day' &&
+        lastCompletedDate &&
+        isToday(lastCompletedDate) && (
+          <div className="text-xs text-cosmic-secondary mb-3 flex items-center">
+            <CheckSquare size={14} className="inline mr-1 text-green-500" />
+            {language === 'ru'
+              ? 'Задача на сегодня выполнена'
+              : language === 'es'
+                ? 'Tarea de hoy completada'
+                : "Today's task completed"}
+          </div>
+        )}
     </>
   );
 };

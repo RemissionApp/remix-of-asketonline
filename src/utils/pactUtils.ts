@@ -10,7 +10,10 @@ import { Pact } from '@/types';
  * @param totalDays Total duration of the pact
  * @returns Calculated penalty points
  */
-export const calculateBreakPenalty = (completedDays: number, totalDays: number): number => {
+export const calculateBreakPenalty = (
+  completedDays: number,
+  totalDays: number
+): number => {
   const basePenalty = 100;
   const progressPenalty = Math.floor(completedDays * 10); // 10 points per completed day
   return basePenalty + progressPenalty;
@@ -36,13 +39,13 @@ export const getPactBreakPenalty = (pact: Pact) => {
   const basePenalty = 100;
   const progressPenalty = Math.floor(completedDays * 10);
   const totalPenalty = calculateBreakPenalty(completedDays, totalDays);
-  
+
   return {
     completedDays,
     totalDays,
     basePenalty,
     progressPenalty,
-    totalPenalty
+    totalPenalty,
   };
 };
 
@@ -57,7 +60,7 @@ export const formatPenaltyDescription = (
   language: string
 ): string => {
   const { basePenalty, progressPenalty, totalPenalty } = penalty;
-  
+
   switch (language) {
     case 'ru':
       return `Вы потеряете ${totalPenalty} энергетических очков (${basePenalty} базовый штраф + ${progressPenalty} за прогресс)`;

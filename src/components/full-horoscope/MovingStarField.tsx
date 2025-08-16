@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 
 interface Star {
@@ -17,7 +16,7 @@ export const MovingStarField: React.FC = () => {
   // Generate stars with random properties
   const stars = useMemo(() => {
     const starCount = 200; // Increased from 100 to 200 stars
-    
+
     // Array of possible star colors
     const starColors = [
       'rgb(255, 255, 255)', // White
@@ -28,7 +27,7 @@ export const MovingStarField: React.FC = () => {
       'rgb(240, 230, 140)', // Khaki/gold
       'rgb(175, 238, 238)', // Pale turquoise
     ];
-    
+
     return Array.from({ length: starCount }, (_, i) => ({
       id: i,
       x: Math.random() * 100, // position as percentage
@@ -44,7 +43,7 @@ export const MovingStarField: React.FC = () => {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {stars.map((star) => {
+      {stars.map(star => {
         // Create unique keyframe animations for each star
         const floatAnimation = `
           @keyframes float-${star.id} {
@@ -62,7 +61,7 @@ export const MovingStarField: React.FC = () => {
             }
           }
         `;
-        
+
         const twinkleAnimation = `
           @keyframes twinkle-${star.id} {
             0%, 100% {

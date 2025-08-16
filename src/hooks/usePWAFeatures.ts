@@ -6,8 +6,16 @@ import { createNotificationManager } from '@/utils/enhancedNotifications';
 import { backgroundSync } from '@/utils/backgroundSync';
 import { persistentStorage } from '@/utils/persistentStorage';
 import { screenWakeLock, meditationWakeLock } from '@/utils/screenWakeLock';
-import { deviceOrientation, meditationOrientation, responsiveOrientation } from '@/utils/deviceOrientation';
-import { badgeManager, notificationBadges, persistentBadge } from '@/utils/badgeAPI';
+import {
+  deviceOrientation,
+  meditationOrientation,
+  responsiveOrientation,
+} from '@/utils/deviceOrientation';
+import {
+  badgeManager,
+  notificationBadges,
+  persistentBadge,
+} from '@/utils/badgeAPI';
 import { advancedCache, cacheServiceWorker } from '@/utils/advancedCaching';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,9 +23,14 @@ export const usePWAFeatures = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [backgroundSyncStatus, setBackgroundSyncStatus] = useState(backgroundSync.getSyncStatus());
-  const [persistentStorageGranted, setPersistentStorageGranted] = useState(false);
-  const [wakeLockSupported, setWakeLockSupported] = useState(screenWakeLock.getStatus().supported);
+  const [backgroundSyncStatus, setBackgroundSyncStatus] = useState(
+    backgroundSync.getSyncStatus()
+  );
+  const [persistentStorageGranted, setPersistentStorageGranted] =
+    useState(false);
+  const [wakeLockSupported, setWakeLockSupported] = useState(
+    screenWakeLock.getStatus().supported
+  );
   const [orientationLocked, setOrientationLocked] = useState(false);
   const [badgeCount, setBadgeCount] = useState(0);
   const { toast } = useToast();
@@ -65,9 +78,9 @@ export const usePWAFeatures = () => {
     } catch (error) {
       console.error('Error initializing PWA features:', error);
       toast({
-        title: "Ошибка инициализации",
-        description: "Не удалось инициализировать некоторые функции приложения",
-        variant: "destructive"
+        title: 'Ошибка инициализации',
+        description: 'Не удалось инициализировать некоторые функции приложения',
+        variant: 'destructive',
       });
     }
   };
@@ -94,7 +107,7 @@ export const usePWAFeatures = () => {
     setHapticEnabled(enabled);
     hapticManager.setEnabled(enabled);
     localStorage.setItem('haptic-enabled', JSON.stringify(enabled));
-    
+
     if (enabled) {
       hapticManager.tap();
     }
@@ -127,23 +140,59 @@ export const usePWAFeatures = () => {
     pactProgress: shareUtils.sharePactProgress,
     achievement: shareUtils.shareAchievement,
     universeWisdom: shareUtils.shareUniverseWisdom,
-    app: shareUtils.shareApp
+    app: shareUtils.shareApp,
   };
 
   // Haptic Feedback функции
   const haptic = {
-    tap: () => hapticEnabled ? hapticManager.tap() : Promise.resolve({ success: false, supported: true }),
-    success: () => hapticEnabled ? hapticManager.success() : Promise.resolve({ success: false, supported: true }),
-    error: () => hapticEnabled ? hapticManager.error() : Promise.resolve({ success: false, supported: true }),
-    notification: () => hapticEnabled ? hapticManager.notification() : Promise.resolve({ success: false, supported: true }),
-    buttonTap: () => hapticEnabled ? hapticFeedback.buttonTap() : Promise.resolve({ success: false, supported: true }),
-    dayCompleted: () => hapticEnabled ? hapticFeedback.dayCompleted() : Promise.resolve({ success: false, supported: true }),
-    pactCompleted: () => hapticEnabled ? hapticFeedback.pactCompleted() : Promise.resolve({ success: false, supported: true }),
-    meditationStart: () => hapticEnabled ? hapticFeedback.meditationStart() : Promise.resolve({ success: false, supported: true }),
-    meditationEnd: () => hapticEnabled ? hapticFeedback.meditationEnd() : Promise.resolve({ success: false, supported: true }),
-    warning: () => hapticEnabled ? hapticFeedback.warning() : Promise.resolve({ success: false, supported: true }),
-    reminder: () => hapticEnabled ? hapticFeedback.reminder() : Promise.resolve({ success: false, supported: true }),
-    energyBoost: () => hapticEnabled ? hapticFeedback.energyBoost() : Promise.resolve({ success: false, supported: true })
+    tap: () =>
+      hapticEnabled
+        ? hapticManager.tap()
+        : Promise.resolve({ success: false, supported: true }),
+    success: () =>
+      hapticEnabled
+        ? hapticManager.success()
+        : Promise.resolve({ success: false, supported: true }),
+    error: () =>
+      hapticEnabled
+        ? hapticManager.error()
+        : Promise.resolve({ success: false, supported: true }),
+    notification: () =>
+      hapticEnabled
+        ? hapticManager.notification()
+        : Promise.resolve({ success: false, supported: true }),
+    buttonTap: () =>
+      hapticEnabled
+        ? hapticFeedback.buttonTap()
+        : Promise.resolve({ success: false, supported: true }),
+    dayCompleted: () =>
+      hapticEnabled
+        ? hapticFeedback.dayCompleted()
+        : Promise.resolve({ success: false, supported: true }),
+    pactCompleted: () =>
+      hapticEnabled
+        ? hapticFeedback.pactCompleted()
+        : Promise.resolve({ success: false, supported: true }),
+    meditationStart: () =>
+      hapticEnabled
+        ? hapticFeedback.meditationStart()
+        : Promise.resolve({ success: false, supported: true }),
+    meditationEnd: () =>
+      hapticEnabled
+        ? hapticFeedback.meditationEnd()
+        : Promise.resolve({ success: false, supported: true }),
+    warning: () =>
+      hapticEnabled
+        ? hapticFeedback.warning()
+        : Promise.resolve({ success: false, supported: true }),
+    reminder: () =>
+      hapticEnabled
+        ? hapticFeedback.reminder()
+        : Promise.resolve({ success: false, supported: true }),
+    energyBoost: () =>
+      hapticEnabled
+        ? hapticFeedback.energyBoost()
+        : Promise.resolve({ success: false, supported: true }),
   };
 
   // Enhanced Notifications функции
@@ -154,29 +203,29 @@ export const usePWAFeatures = () => {
     universeMessage: notificationManager.templates.universeMessage,
     newAchievement: notificationManager.templates.newAchievement,
     subscriptionReminder: notificationManager.templates.subscriptionReminder,
-    motivational: notificationManager.templates.motivational
+    motivational: notificationManager.templates.motivational,
   };
 
   // Background Sync функции
   const sync = {
-    registerPactDayComplete: (pactId: string, date: string) => 
+    registerPactDayComplete: (pactId: string, date: string) =>
       backgroundSync.registerSync('pact_day_complete', { pactId, date }),
-    
-    registerPactBreak: (pactId: string) => 
+
+    registerPactBreak: (pactId: string) =>
       backgroundSync.registerSync('pact_break', { pactId }),
-    
-    registerUniverseQuestion: (question: string, answer: string) => 
+
+    registerUniverseQuestion: (question: string, answer: string) =>
       backgroundSync.registerSync('universe_question', { question, answer }),
-    
-    registerUserProfileUpdate: (data: any) => 
+
+    registerUserProfileUpdate: (data: any) =>
       backgroundSync.registerSync('user_profile_update', data),
-    
-    registerMissionProgress: (missionId: string, progress: any) => 
+
+    registerMissionProgress: (missionId: string, progress: any) =>
       backgroundSync.registerSync('mission_progress', { missionId, progress }),
-    
+
     getPendingTasks: () => backgroundSync.getPendingTasks(),
     clearPendingTasks: () => backgroundSync.clearPendingTasks(),
-    getStatus: () => backgroundSync.getSyncStatus()
+    getStatus: () => backgroundSync.getSyncStatus(),
   };
 
   // Screen Wake Lock функции
@@ -187,20 +236,22 @@ export const usePWAFeatures = () => {
     meditation: {
       start: meditationWakeLock.startMeditation,
       end: meditationWakeLock.endMeditation,
-      getStatus: meditationWakeLock.getMeditationStatus
-    }
+      getStatus: meditationWakeLock.getMeditationStatus,
+    },
   };
 
   // Device Orientation функции
   const orientation = {
-    getCurrentOrientation: deviceOrientation.getCurrentOrientation.bind(deviceOrientation),
+    getCurrentOrientation:
+      deviceOrientation.getCurrentOrientation.bind(deviceOrientation),
     lockOrientation: deviceOrientation.lockOrientation.bind(deviceOrientation),
-    unlockOrientation: deviceOrientation.unlockOrientation.bind(deviceOrientation),
+    unlockOrientation:
+      deviceOrientation.unlockOrientation.bind(deviceOrientation),
     getStatus: deviceOrientation.getStatus.bind(deviceOrientation),
     meditation: {
       lock: meditationOrientation.lockForMeditation,
-      unlock: meditationOrientation.unlockAfterMeditation
-    }
+      unlock: meditationOrientation.unlockAfterMeditation,
+    },
   };
 
   // Persistent Storage функции
@@ -209,7 +260,7 @@ export const usePWAFeatures = () => {
     isPersistent: persistentStorage.isPersistent,
     request: requestPersistentStorage,
     getEstimate: persistentStorage.getEstimate,
-    formatSize: persistentStorage.formatSize
+    formatSize: persistentStorage.formatSize,
   };
 
   // Badge функции
@@ -219,7 +270,7 @@ export const usePWAFeatures = () => {
     increment: badgeManager.incrementBadge.bind(badgeManager),
     decrement: badgeManager.decrementBadge.bind(badgeManager),
     getCount: () => badgeCount,
-    notifications: notificationBadges
+    notifications: notificationBadges,
   };
 
   // Advanced Caching функции
@@ -227,13 +278,13 @@ export const usePWAFeatures = () => {
     handleRequest: advancedCache.handleRequest.bind(advancedCache),
     preload: advancedCache.preloadCriticalResources.bind(advancedCache),
     getStats: advancedCache.getCacheStats.bind(advancedCache),
-    clear: advancedCache.clearCache.bind(advancedCache)
+    clear: advancedCache.clearCache.bind(advancedCache),
   };
 
   return {
     // Статус инициализации
     isInitialized,
-    
+
     // Настройки
     hapticEnabled,
     notificationsEnabled,
@@ -243,7 +294,7 @@ export const usePWAFeatures = () => {
     orientationLocked,
     badgeCount,
     toggleHaptic,
-    
+
     // Функции PWA
     share: shareContent,
     haptic,
@@ -254,8 +305,8 @@ export const usePWAFeatures = () => {
     storage,
     badge,
     cache,
-    
+
     // Утилиты
-    toast
+    toast,
   };
 };
