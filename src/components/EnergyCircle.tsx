@@ -3,11 +3,12 @@ import { cn } from '@/lib/utils';
 
 interface EnergyCircleProps {
   progress?: number; // 0 to 100
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   children?: React.ReactNode;
   className?: string;
   onClick?: () => void;
   style?: React.CSSProperties;
+  status?: 'active' | 'completed' | 'failed' | 'planned';
 }
 
 export const EnergyCircle: React.FC<EnergyCircleProps> = ({
@@ -17,22 +18,33 @@ export const EnergyCircle: React.FC<EnergyCircleProps> = ({
   className,
   onClick,
   style,
+  status = 'active',
 }) => {
   const sizeClasses = {
-    sm: 'w-36 h-36',
+    xs: 'w-24 h-24',
+    sm: 'w-48 h-48',
     md: 'w-64 h-64',
     lg: 'w-80 h-80',
+  };
+
+  const getProgressGradient = () => {
+    if (status === 'failed') {
+      return `conic-gradient(rgba(239, 68, 68, 0.7) ${progress}%, rgba(239, 68, 68, 0.1) 0%)`;
+    }
+    return `conic-gradient(rgba(139, 92, 246, 0.7) ${progress}%, rgba(139, 92, 246, 0.1) 0%)`;
   };
 
   return (
     <div
       className={cn(
-        'energy-circle animate-pulse-slow cursor-pointer',
+        'energy-circle animate-pulse-slow',
         sizeClasses[size],
+        onClick && 'cursor-pointer',
+        status === 'failed' && 'ring-2 ring-red-500/30',
         className
       )}
       style={{
-        background: `conic-gradient(rgba(139, 92, 246, 0.7) ${progress}%, rgba(139, 92, 246, 0.1) 0%)`,
+        background: getProgressGradient(),
         ...style,
       }}
       onClick={onClick}
