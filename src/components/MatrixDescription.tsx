@@ -8,6 +8,7 @@ import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { NumerologyDiagnostic } from './NumerologyDiagnostic';
 import { FallbackMatrixDescription } from './FallbackMatrixDescription';
+import { RussianMatrixDescription } from './numerology/RussianMatrixDescription';
 
 interface MatrixDescriptionProps {
   matrixData: FullDestinyMatrixData;
@@ -17,6 +18,12 @@ interface MatrixDescriptionProps {
 }
 
 interface NumerologyDescription {
+  // Russian format (plain text)
+  fullDescription?: string;
+  language?: string;
+  type?: string;
+  
+  // English format (JSON structure)
   centralEnergy?: {
     title: string;
     number: number;
@@ -306,6 +313,38 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
             </div>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  // Check if this is Russian plain text format
+  if (description.fullDescription && (description.language === 'ru' || description.type === 'text')) {
+    return (
+      <div className="space-y-6">
+        <NumerologyDiagnostic 
+          matrixData={matrixData}
+          birthDate={birthDate}
+          name={name}
+          language={language}
+        />
+        
+        <div className="flex justify-end mb-4">
+          <Button 
+            onClick={handleRegenerate} 
+            variant="ghost" 
+            size="sm"
+            disabled={generating}
+            className="text-cosmic-secondary hover:text-white"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Обновить описание
+          </Button>
+        </div>
+        
+        <RussianMatrixDescription 
+          fullDescription={description.fullDescription}
+          name={name}
+        />
       </div>
     );
   }
