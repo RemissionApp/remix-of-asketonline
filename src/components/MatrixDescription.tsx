@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { FullDestinyMatrixData } from '@/utils/numerologyUtils';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { NumerologyDiagnostic } from './NumerologyDiagnostic';
+import { FallbackMatrixDescription } from './FallbackMatrixDescription';
 
 interface MatrixDescriptionProps {
   matrixData: FullDestinyMatrixData;
@@ -76,9 +78,15 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
   const [description, setDescription] = useState<NumerologyDescription | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [showFallback, setShowFallback] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    loadOrGenerateDescription();
+    const timer = setTimeout(() => {
+      loadOrGenerateDescription();
+    }, 1000); // Delay to show fallback first
+    
+    return () => clearTimeout(timer);
   }, [matrixData, birthDate, name, language]);
 
   const loadOrGenerateDescription = async () => {
@@ -138,6 +146,7 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
       if (existingDescription) {
         console.log('✅ MatrixDescription: Найдено существующее описание');
         setDescription(existingDescription.description_data);
+        setShowFallback(false);
         setLoading(false);
         return;
       }
@@ -194,11 +203,20 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
 
       console.log('✅ MatrixDescription: Описание получено успешно');
       setDescription(data.description);
+      setShowFallback(false);
       toast.success('Описание матрицы успешно создано');
 
     } catch (error) {
       console.error('❌ MatrixDescription: Ошибка генерации:', error);
-      toast.error(`Ошибка при создании описания матрицы: ${error.message}`);
+      setRetryCount(prev => prev + 1);
+      
+      if (retryCount < 2) {
+        toast.error(`Попытка ${retryCount + 1}/3 не удалась. Повторяем...`);
+        setTimeout(() => generateDescription(readingId), 2000);
+      } else {
+        toast.error(`Не удалось создать описание. Показываем базовую версию.`);
+        setShowFallback(true);
+      }
     } finally {
       setGenerating(false);
       setLoading(false);
@@ -224,53 +242,96 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
     }
   };
 
-  if (loading) {
+  // Show fallback description immediately while loading
+  if (showFallback && !description) {
     return (
-      <Card className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30">
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-cosmic-accent" />
-            <p className="text-cosmic-secondary">
-              {generating ? 'Создаём персональное описание...' : 'Загружаем описание матрицы...'}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <NumerologyDiagnostic 
+          matrixData={matrixData}
+          birthDate={birthDate}
+          name={name}
+          language={language}
+        />
+        
+        <FallbackMatrixDescription 
+          matrixData={matrixData}
+          name={name}
+        />
+        
+        {loading && (
+          <Card className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30">
+            <CardContent className="flex items-center justify-center py-8">
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-6 h-6 animate-spin text-cosmic-accent" />
+                <p className="text-cosmic-secondary text-sm">
+                  {generating ? 
+                    `Создаём детальное описание... (попытка ${retryCount + 1})` : 
+                    'Подключаемся к системе анализа...'
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     );
   }
 
-  if (!description) {
+  if (!description && !showFallback) {
     return (
-      <Card className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30">
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-cosmic-secondary text-center">
-              Не удалось загрузить описание матрицы.
-            </p>
-            <Button onClick={loadOrGenerateDescription} variant="outline" size="sm">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Попробовать снова
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <NumerologyDiagnostic 
+          matrixData={matrixData}
+          birthDate={birthDate}
+          name={name}
+          language={language}
+        />
+        
+        <Card className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30">
+          <CardContent className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-4">
+              <AlertTriangle className="w-8 h-8 text-yellow-400" />
+              <p className="text-cosmic-secondary text-center">
+                Не удалось загрузить полное описание матрицы.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={loadOrGenerateDescription} variant="outline" size="sm">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Попробовать снова
+                </Button>
+                <Button onClick={() => setShowFallback(true)} variant="secondary" size="sm">
+                  Показать базовое описание
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Regenerate Button */}
-      <div className="flex justify-center">
-        <Button 
-          onClick={handleRegenerate} 
-          variant="outline" 
-          size="sm"
-          disabled={generating}
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Перегенерировать описание
-        </Button>
-      </div>
+      {/* Success indicator and regenerate button */}
+      <Card className="bg-gradient-to-r from-green-500/20 to-cosmic-accent/20 border-green-500/30">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <p className="text-white font-medium">Детальное описание готово!</p>
+            </div>
+            <Button 
+              onClick={handleRegenerate} 
+              variant="ghost" 
+              size="sm"
+              disabled={generating}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Обновить
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Central Energy */}
       {description.centralEnergy && (
