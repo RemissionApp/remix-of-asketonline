@@ -56,21 +56,33 @@ export async function generateNumerologyDescription(
   const rawContent = data.choices[0].message.content;
   console.log('Raw AI response length:', rawContent.length);
 
-  // Try to parse as JSON
+  // Handle response based on language
   let descriptionData;
-  try {
-    descriptionData = JSON.parse(rawContent);
-    console.log('Successfully parsed JSON response');
-  } catch (parseError) {
-    console.error('Failed to parse AI response as JSON:', parseError);
-    console.log('Raw response:', rawContent);
-    
-    // Fallback: create basic structure with AI response
+  
+  if (language === 'ru') {
+    // For Russian: expect plain text, store as is
+    console.log('Processing Russian text response');
     descriptionData = {
-      generalConclusion: {
-        personalProfile: rawContent
-      }
+      fullDescription: rawContent.trim(),
+      language: 'ru',
+      type: 'text'
     };
+  } else {
+    // For English: expect JSON format
+    try {
+      descriptionData = JSON.parse(rawContent);
+      console.log('Successfully parsed JSON response for English');
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', parseError);
+      console.log('Raw response:', rawContent);
+      
+      // Fallback: create basic structure with AI response
+      descriptionData = {
+        generalConclusion: {
+          personalProfile: rawContent
+        }
+      };
+    }
   }
 
   return descriptionData;
