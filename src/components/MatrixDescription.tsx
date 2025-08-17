@@ -82,15 +82,25 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
   }, [matrixData, birthDate, name, language]);
 
   const loadOrGenerateDescription = async () => {
+    console.log('🔄 MatrixDescription: Начинаем загрузку/генерацию описания');
+    console.log('📊 MatrixData:', matrixData);
+    console.log('👤 UserProfile:', userProfile);
+    console.log('📅 BirthDate:', birthDate);
+    console.log('👨 Name:', name);
+    console.log('🌍 Language:', language);
+
     if (!userProfile?.id) {
+      console.log('❌ MatrixDescription: Нет userProfile.id');
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
+      console.log('⏳ MatrixDescription: Начинаем процесс загрузки');
 
       // First, save or get the numerology reading
+      console.log('💾 MatrixDescription: Сохраняем/получаем numerology reading');
       const { data: reading, error: readingError } = await supabase
         .from('numerology_readings')
         .upsert({
@@ -103,63 +113,96 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
         .single();
 
       if (readingError) {
-        console.error('Error saving reading:', readingError);
+        console.error('❌ MatrixDescription: Ошибка сохранения reading:', readingError);
         throw readingError;
       }
 
+      console.log('✅ MatrixDescription: Reading создан/получен:', reading);
+
       // Try to get existing description
-      const { data: existingDescription } = await supabase
+      console.log('🔍 MatrixDescription: Ищем существующее описание');
+      const { data: existingDescription, error: descError } = await supabase
         .from('numerology_descriptions')
         .select('*')
         .eq('user_id', userProfile.id)
         .eq('reading_id', reading.id)
         .eq('language', language)
-        .single();
+        .maybeSingle();
+
+      if (descError) {
+        console.error('❌ MatrixDescription: Ошибка поиска описания:', descError);
+      }
+
+      console.log('🔍 MatrixDescription: Результат поиска описания:', existingDescription);
 
       if (existingDescription) {
+        console.log('✅ MatrixDescription: Найдено существующее описание');
         setDescription(existingDescription.description_data);
         setLoading(false);
         return;
       }
 
+      console.log('📝 MatrixDescription: Существующего описания нет, генерируем новое');
       // Generate new description
       await generateDescription(reading.id);
 
     } catch (error) {
-      console.error('Error loading description:', error);
+      console.error('❌ MatrixDescription: Общая ошибка:', error);
       setLoading(false);
       toast.error('Ошибка при загрузке описания матрицы');
     }
   };
 
   const generateDescription = async (readingId: string) => {
-    if (!userProfile?.id) return;
+    console.log('🤖 MatrixDescription: Начинаем генерацию описания');
+    console.log('🆔 ReadingId:', readingId);
+    
+    if (!userProfile?.id) {
+      console.log('❌ MatrixDescription: Нет userProfile.id для генерации');
+      return;
+    }
 
     try {
       setGenerating(true);
+      console.log('⚡ MatrixDescription: Вызываем Edge функцию generate-numerology-description');
+
+      const requestBody = {
+        matrixData,
+        userId: userProfile.id,
+        readingId,
+        language
+      };
+      
+      console.log('📤 MatrixDescription: Отправляем данные:', requestBody);
 
       const { data, error } = await supabase.functions.invoke('generate-numerology-description', {
-        body: {
-          matrixData,
-          userId: userProfile.id,
-          readingId,
-          language
-        }
+        body: requestBody
       });
 
+      console.log('📥 MatrixDescription: Ответ Edge функции - data:', data);
+      console.log('📥 MatrixDescription: Ответ Edge функции - error:', error);
+
       if (error) {
+        console.error('❌ MatrixDescription: Ошибка от Edge функции:', error);
         throw error;
       }
 
+      if (!data?.description) {
+        console.error('❌ MatrixDescription: Нет описания в ответе:', data);
+        throw new Error('Нет описания в ответе Edge функции');
+      }
+
+      console.log('✅ MatrixDescription: Описание получено успешно');
       setDescription(data.description);
       toast.success('Описание матрицы успешно создано');
 
     } catch (error) {
-      console.error('Error generating description:', error);
-      toast.error('Ошибка при создании описания матрицы');
+      console.error('❌ MatrixDescription: Ошибка генерации:', error);
+      toast.error(`Ошибка при создании описания матрицы: ${error.message}`);
     } finally {
       setGenerating(false);
       setLoading(false);
+      console.log('🏁 MatrixDescription: Завершили генерацию');
     }
   };
 
