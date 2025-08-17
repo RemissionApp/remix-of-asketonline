@@ -1,0 +1,28 @@
+{
+  "" : {
+    "diagnostics" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/App-master.dia",
+    "emit-module-dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/App-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/App-master-emit-module.dia",
+    "swift-dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/App-master.swiftdeps"
+  },
+  "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/App/App/AppDelegate.swift" : {
+    "const-values" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.swiftconstvalues",
+    "dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.d",
+    "diagnostics" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.dia",
+    "index-unit-output-path" : "/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.o",
+    "swift-dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate.swiftdeps",
+    "swiftmodule" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/AppDelegate~partial.swiftmodule"
+  },
+  "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/zhalgas/Documents/asket/cosmic-ascension-path/ios/DerivedData/00008120-001115AA11B8C01E/Build/Intermediates.noindex/App.build/Debug-iphoneos/App.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}
