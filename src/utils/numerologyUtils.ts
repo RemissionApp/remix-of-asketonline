@@ -427,6 +427,165 @@ export const calculateDestinyMatrix = (birthDate: string, name: string = '') => 
 };
 
 /**
+ * Interface for chakra number with color
+ */
+export interface ChakraNumber {
+  number: number;
+  position: string;
+  color: string;
+  chakra: string;
+}
+
+/**
+ * Interface for center numbers around main destiny
+ */
+export interface CenterNumber {
+  number: number;
+  position: 'left-top' | 'left-bottom' | 'right-top' | 'right-middle' | 'right-bottom';
+  type: 'energy' | 'material' | 'spiritual';
+}
+
+/**
+ * Interface for age line data
+ */
+export interface AgeLineData {
+  lineIndex: number;
+  numbers: number[];
+  ages: number[];
+  direction: string;
+}
+
+/**
+ * Interface for full destiny matrix data
+ */
+export interface FullDestinyMatrixData {
+  // Main chakra positions (8 total - 7 chakras + 1 additional)
+  chakras: ChakraNumber[];
+  
+  // Central numbers around main destiny
+  centerNumbers: CenterNumber[];
+  
+  // Main destiny number (center)
+  destinyCenter: number;
+  
+  // Corner numbers of outer square (4)
+  cornerNumbers: number[];
+  
+  // Channel numbers
+  relationshipChannel: number[];
+  moneyChannel: number[];
+  
+  // Age lines with numbers (8 lines × 3 numbers each)
+  ageLines: AgeLineData[];
+}
+
+/**
+ * Calculate complete destiny matrix with all positions
+ * @param birthDate - Birth date string
+ * @param name - Full name
+ * @returns Complete destiny matrix data
+ */
+export const calculateFullDestinyMatrix = (birthDate: string, name: string = ''): FullDestinyMatrixData => {
+  const date = new Date(birthDate);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  // Helper function to reduce numbers while preserving master numbers
+  const reduceToSingleDigit = (num: number): number => {
+    if (num === 11 || num === 22 || num === 33) return num;
+    while (num > 9) {
+      let sum = 0;
+      while (num > 0) {
+        sum += num % 10;
+        num = Math.floor(num / 10);
+      }
+      num = sum;
+    }
+    return num;
+  };
+
+  // Calculate basic numbers
+  const dayNumber = reduceToSingleDigit(day);
+  const monthNumber = reduceToSingleDigit(month);
+  const yearNumber = reduceToSingleDigit(year);
+  const lifePathNumber = calculateLifePathNumber(birthDate);
+
+  // Calculate chakra positions with colors
+  const chakras: ChakraNumber[] = [
+    { number: reduceToSingleDigit(dayNumber + monthNumber + yearNumber), position: 'top', color: '#8B5CF6', chakra: 'Сахасрара' },
+    { number: reduceToSingleDigit(dayNumber + monthNumber), position: 'top-right', color: '#3B82F6', chakra: 'Аджна' },
+    { number: reduceToSingleDigit(monthNumber + yearNumber), position: 'right', color: '#10B981', chakra: 'Анахата' },
+    { number: reduceToSingleDigit(dayNumber + yearNumber), position: 'bottom-right', color: '#F59E0B', chakra: 'Манипура' },
+    { number: dayNumber, position: 'bottom', color: '#EF4444', chakra: 'Муладхара' },
+    { number: monthNumber, position: 'bottom-left', color: '#F97316', chakra: 'Свадхистана' },
+    { number: yearNumber, position: 'left', color: '#06B6D4', chakra: 'Вишуддха' },
+    { number: lifePathNumber, position: 'top-left', color: '#6366F1', chakra: 'Дополнительная' },
+  ];
+
+  // Calculate center numbers around destiny
+  const personalKarma = reduceToSingleDigit(dayNumber + monthNumber + yearNumber);
+  const socialKarma = reduceToSingleDigit(chakras[0].number + chakras[4].number);
+  const planetaryKarma = reduceToSingleDigit(chakras[2].number + chakras[6].number);
+  const destinyCenter = reduceToSingleDigit(personalKarma + socialKarma + planetaryKarma);
+
+  const centerNumbers: CenterNumber[] = [
+    { number: reduceToSingleDigit(personalKarma + dayNumber), position: 'left-top', type: 'spiritual' },
+    { number: reduceToSingleDigit(socialKarma + monthNumber), position: 'left-bottom', type: 'energy' },
+    { number: reduceToSingleDigit(planetaryKarma + yearNumber), position: 'right-top', type: 'material' },
+    { number: reduceToSingleDigit(destinyCenter + personalKarma), position: 'right-middle', type: 'material' },
+    { number: reduceToSingleDigit(destinyCenter + socialKarma), position: 'right-bottom', type: 'spiritual' },
+  ];
+
+  // Calculate corner numbers
+  const cornerNumbers = [
+    reduceToSingleDigit(chakras[0].number + chakras[7].number), // top-left corner
+    reduceToSingleDigit(chakras[0].number + chakras[1].number), // top-right corner  
+    reduceToSingleDigit(chakras[3].number + chakras[4].number), // bottom-right corner
+    reduceToSingleDigit(chakras[4].number + chakras[5].number), // bottom-left corner
+  ];
+
+  // Calculate channel numbers
+  const relationshipChannel = [
+    reduceToSingleDigit(destinyCenter + chakras[4].number),
+    reduceToSingleDigit(centerNumbers[1].number + chakras[4].number)
+  ];
+
+  const moneyChannel = [
+    reduceToSingleDigit(destinyCenter + chakras[2].number),
+    reduceToSingleDigit(centerNumbers[2].number + chakras[2].number)
+  ];
+
+  // Calculate age lines (simplified version)
+  const ageLines: AgeLineData[] = [];
+  const ages = [5, 15, 25, 30, 40, 45, 55, 65];
+  
+  for (let i = 0; i < 8; i++) {
+    const baseNum = chakras[i].number;
+    ageLines.push({
+      lineIndex: i,
+      numbers: [
+        reduceToSingleDigit(baseNum + 1),
+        reduceToSingleDigit(baseNum + 2), 
+        reduceToSingleDigit(baseNum + 3)
+      ],
+      ages: [ages[i], ages[i] + 10, ages[i] + 20],
+      direction: i % 2 === 0 ? 'clockwise' : 'counterclockwise'
+    });
+  }
+
+  return {
+    chakras,
+    centerNumbers,
+    destinyCenter,
+    cornerNumbers,
+    relationshipChannel,
+    moneyChannel,
+    ageLines
+  };
+};
+
+/**
  * Get meaning for any number in the destiny matrix
  * @param number - The number to get meaning for
  * @param type - Type of number (basic, karmic, talent, destiny)

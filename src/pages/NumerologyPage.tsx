@@ -8,13 +8,14 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { UserAvatar } from '@/components/UserAvatar';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DestinyMatrix } from '@/components/DestinyMatrix';
+import FullDestinyMatrix from '@/components/FullDestinyMatrix';
 import { Button } from '@/components/ui/button';
-import { Grid, Sparkles } from 'lucide-react';
+import { Grid, Sparkles, Star } from 'lucide-react';
 
 const NumerologyPage = () => {
   const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<'matrix' | 'detailed'>('matrix');
+  const [viewMode, setViewMode] = useState<'matrix' | 'detailed' | 'full'>('matrix');
 
   const getNumerologyData = () => {
     // In a real app, this would calculate actual numerology based on user's birth date
@@ -92,26 +93,44 @@ const NumerologyPage = () => {
               variant={viewMode === 'matrix' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('matrix')}
-              className="px-4 py-2 text-sm"
+              className="px-3 py-2 text-xs"
             >
-              <Sparkles className="w-4 h-4 mr-2" />
+              <Sparkles className="w-3 h-3 mr-1" />
               Матрица
+            </Button>
+            <Button
+              variant={viewMode === 'full' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('full')}
+              className="px-3 py-2 text-xs"
+            >
+              <Star className="w-3 h-3 mr-1" />
+              Полная
             </Button>
             <Button
               variant={viewMode === 'detailed' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('detailed')}
-              className="px-4 py-2 text-sm"
+              className="px-3 py-2 text-xs"
             >
-              <Grid className="w-4 h-4 mr-2" />
-              Подробно
+              <Grid className="w-3 h-3 mr-1" />
+              Данные
             </Button>
           </div>
         </div>
 
-        {/* Destiny Matrix View */}
+        {/* Destiny Matrix Views */}
         {viewMode === 'matrix' && userProfile?.birthDate && (
           <DestinyMatrix 
+            birthDate={String(userProfile.birthDate)} 
+            name={userProfile.name || ''} 
+            language={language}
+          />
+        )}
+
+        {/* Full Destiny Matrix View */}
+        {viewMode === 'full' && userProfile?.birthDate && (
+          <FullDestinyMatrix 
             birthDate={String(userProfile.birthDate)} 
             name={userProfile.name || ''} 
             language={language}
