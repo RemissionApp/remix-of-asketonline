@@ -1,4 +1,5 @@
 import { Translations } from '../types/translationTypes';
+import { esLegalTranslations } from './es-legal';
 
 export const esTranslations: Translations = {
   welcome: {
@@ -363,66 +364,7 @@ export const esTranslations: Translations = {
     next: 'Siguiente',
     submit: 'Enviar',
   },
-  legal: {
-    title: 'Información Legal',
-    privacyPolicy: 'Política de Privacidad',
-    termsOfUse: 'Términos de Uso',
-    lastUpdated: 'Última actualización',
-    may: 'Mayo',
-    introduction: 'Introducción',
-    introText:
-      'La aplicación ASKET respeta su privacidad y está comprometida a proteger sus datos personales. Esta política de privacidad explica cómo recopilamos, usamos, divulgamos, procesamos y protegemos la información que proporciona al usar nuestra aplicación.',
-    dataCollected: 'Información que Recopilamos',
-    dataCollectedText: 'Recopilamos los siguientes tipos de información:',
-    profileInfo: 'Información de perfil: nombre, correo electrónico, objetivos',
-    usageData:
-      'Datos de uso: información sobre sus pactos, días de observancia e interacción con la aplicación',
-    technicalData:
-      'Información técnica: dirección IP, tipo de dispositivo, versión del sistema operativo',
-    dataUse: 'Uso de la Información',
-    dataUseText: 'Su información se utiliza para:',
-    provideServices: 'Proporcionar y mejorar las funciones de la aplicación',
-    personalizeExperience: 'Personalizar su experiencia',
-    communication: 'Comunicarse con usted sobre actualizaciones',
-    analytics: 'Analítica e investigación',
-    dataSecurity: 'Seguridad de Datos',
-    dataSecurityText:
-      'Utilizamos medidas comercialmente aceptables para proteger sus datos, pero recuerde que ningún método de transmisión por Internet es 100% seguro.',
-    policyChanges: 'Cambios en la Política',
-    policyChangesText:
-      'Podemos actualizar nuestra política de privacidad de vez en cuando. Le notificaremos cualquier cambio publicando la nueva política de privacidad en esta página.',
-    contact: 'Contacto',
-    contactText:
-      'Si tiene alguna pregunta sobre esta política de privacidad, póngase en contacto con nosotros en: support@asket-app.com',
-    acceptance: 'Aceptación de Términos',
-    acceptanceText:
-      'Al usar la aplicación ASKET, acepta cumplir con estos Términos de Uso. Si no está de acuerdo con estos términos, no utilice nuestra aplicación.',
-    serviceDescription: 'Descripción del Servicio',
-    serviceDescriptionText:
-      'La aplicación ASKET proporciona una plataforma para crear y seguir pactos personales de ascesis, recibir consejos espirituales y seguir el progreso personal. Nos reservamos el derecho de modificar, suspender o descontinuar cualquier aspecto del servicio en cualquier momento.',
-    userAccounts: 'Cuentas de Usuario',
-    userAccountsText:
-      'Para usar algunas funciones de la aplicación, necesita crear una cuenta. Usted es responsable de mantener la confidencialidad de sus credenciales y de todas las actividades que ocurren bajo su cuenta.',
-    userContent: 'Contenido del Usuario',
-    userContentText:
-      'Usted conserva todos los derechos sobre el contenido que crea en la aplicación. Sin embargo, al crear contenido, nos otorga una licencia no exclusiva para usar, reproducir y mostrar ese contenido en relación con el funcionamiento de la aplicación.',
-    prohibitedBehavior: 'Comportamiento Prohibido',
-    prohibitedBehaviorText:
-      'Está prohibido usar la aplicación con fines ilegales o violar los derechos de otros. Contenido que:',
-    violatesLaws: 'Viola leyes o derechos de terceros',
-    threatening: 'Es amenazante, ofensivo o discriminatorio',
-    maliciousCode: 'Contiene código malicioso',
-    interferes: 'Interfiere con el funcionamiento normal de la aplicación',
-    disclaimers: 'Limitación de Responsabilidad',
-    disclaimersText:
-      "La aplicación se proporciona 'tal cual' y 'según disponibilidad'. No ofrecemos garantías sobre la precisión, integridad o fiabilidad del contenido o servicios proporcionados a través de la aplicación.",
-    termsChanges: 'Cambios en los Términos',
-    termsChangesText:
-      'Podemos modificar estos términos en cualquier momento. Al continuar usando la aplicación después de dichos cambios, acepta los términos actualizados.',
-    termination: 'Terminación',
-    terminationText:
-      'Podemos terminar o suspender su acceso a la aplicación inmediatamente, sin previo aviso ni responsabilidad, por cualquier motivo, incluida la violación de estos términos.',
-  },
+  legal: esLegalTranslations,
   emailOtp: {
     subject: 'Tu código de verificación | Asket',
     title: 'Código de verificación',

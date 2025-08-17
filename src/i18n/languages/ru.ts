@@ -1,4 +1,5 @@
 import { Translations } from '../types/translationTypes';
+import { ruLegalTranslations } from './ru-legal';
 
 export const ruTranslations: Translations = {
   welcome: {
