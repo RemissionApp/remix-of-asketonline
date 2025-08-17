@@ -31,7 +31,7 @@ const MatrixNumber: React.FC<MatrixNumberProps> = ({
 }) => {
   return (
     <g 
-      className="cursor-pointer transition-all duration-200 hover:scale-110"
+      className="cursor-pointer hover:opacity-80 transition-opacity duration-150"
       onClick={() => onClick(number, 'basic', chakra)}
     >
       <circle
@@ -42,6 +42,7 @@ const MatrixNumber: React.FC<MatrixNumberProps> = ({
         stroke="hsl(var(--border))"
         strokeWidth="2"
         className="drop-shadow-sm filter"
+        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
       />
       <text
         x={x}

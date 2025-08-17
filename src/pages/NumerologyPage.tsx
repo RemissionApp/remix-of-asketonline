@@ -11,6 +11,8 @@ import { DestinyMatrix } from '@/components/DestinyMatrix';
 import FullDestinyMatrix from '@/components/FullDestinyMatrix';
 import { Button } from '@/components/ui/button';
 import { Grid, Sparkles, Star } from 'lucide-react';
+import { calculateLifePathNumber, calculateExpressionNumber, calculatePersonalityNumber, getNumerologyMeaning, calculateFullDestinyMatrix } from '@/utils/numerologyUtils';
+import { MatrixDescription } from '@/components/MatrixDescription';
 
 const NumerologyPage = () => {
   const { userProfile, language } = useAppStore();
@@ -18,22 +20,76 @@ const NumerologyPage = () => {
   const [viewMode, setViewMode] = useState<'matrix' | 'detailed' | 'full'>('full');
 
   const getNumerologyData = () => {
-    // In a real app, this would calculate actual numerology based on user's birth date
-    // For now, we'll return mock data
+    if (!userProfile?.birthDate) {
+      return {
+        lifePathNumber: 0,
+        destinyNumber: 0,
+        soulUrgeNumber: 0,
+        personalityNumber: 0,
+        expressionNumber: 0,
+        birthDayNumber: 0,
+        attitude: 0,
+        balanceNumber: 0,
+        challenges: [0, 0, 0],
+        periods: [],
+      };
+    }
+
+    const birthDate = String(userProfile.birthDate);
+    const name = userProfile.name || '';
+    
+    // Calculate real numerology data
+    const lifePathNumber = calculateLifePathNumber(birthDate);
+    const expressionNumber = calculateExpressionNumber(name);
+    const personalityNumber = calculatePersonalityNumber(name);
+    
+    const date = new Date(birthDate);
+    const birthDay = date.getDate();
+    const birthMonth = date.getMonth() + 1;
+    const birthYear = date.getFullYear();
+    
+    // Calculate additional numbers
+    const reduceToSingleDigit = (num: number): number => {
+      if (num === 11 || num === 22 || num === 33) return num;
+      while (num > 9) {
+        let sum = 0;
+        while (num > 0) {
+          sum += num % 10;
+          num = Math.floor(num / 10);
+        }
+        num = sum;
+      }
+      return num;
+    };
+
+    const destinyNumber = reduceToSingleDigit(birthDay + birthMonth + birthYear);
+    const soulUrgeNumber = reduceToSingleDigit(lifePathNumber + expressionNumber);
+    const attitude = reduceToSingleDigit(birthDay + birthMonth);
+    const balanceNumber = reduceToSingleDigit(lifePathNumber + destinyNumber);
+    
+    // Calculate life periods
+    const firstPeriod = reduceToSingleDigit(birthMonth);
+    const secondPeriod = reduceToSingleDigit(birthDay);
+    const thirdPeriod = reduceToSingleDigit(birthYear);
+    
     return {
-      lifePathNumber: 7,
-      destinyNumber: 3,
-      soulUrgeNumber: 9,
-      personalityNumber: 5,
-      expressionNumber: 4,
-      birthDayNumber: 1,
-      attitude: 8,
-      balanceNumber: 6,
-      challenges: [2, 3, 1],
+      lifePathNumber,
+      destinyNumber,
+      soulUrgeNumber,
+      personalityNumber,
+      expressionNumber,
+      birthDayNumber: reduceToSingleDigit(birthDay),
+      attitude,
+      balanceNumber,
+      challenges: [
+        Math.abs(lifePathNumber - destinyNumber) || 1,
+        Math.abs(firstPeriod - secondPeriod) || 1,
+        Math.abs(firstPeriod - thirdPeriod) || 1
+      ],
       periods: [
-        { number: 5, ageRange: '0-28' },
-        { number: 7, ageRange: '29-56' },
-        { number: 3, ageRange: '57+' },
+        { number: firstPeriod, ageRange: '0-28' },
+        { number: secondPeriod, ageRange: '29-56' },
+        { number: thirdPeriod, ageRange: '57+' },
       ],
     };
   };
@@ -130,11 +186,19 @@ const NumerologyPage = () => {
 
         {/* Full Destiny Matrix View */}
         {viewMode === 'full' && userProfile?.birthDate && (
-          <FullDestinyMatrix 
-            birthDate={String(userProfile.birthDate)} 
-            name={userProfile.name || ''} 
-            language={language}
-          />
+          <>
+            <FullDestinyMatrix 
+              birthDate={String(userProfile.birthDate)} 
+              name={userProfile.name || ''} 
+              language={language}
+            />
+            <MatrixDescription
+              matrixData={calculateFullDestinyMatrix(String(userProfile.birthDate), userProfile.name || '')}
+              birthDate={String(userProfile.birthDate)}
+              name={userProfile.name || ''}
+              language={language}
+            />
+          </>
         )}
 
         {/* Detailed View */}
