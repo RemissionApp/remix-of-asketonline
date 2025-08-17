@@ -127,49 +127,46 @@ const NumerologyPage = () => {
       <StarField starCount={50} />
 
       <div className="flex-1 px-4 py-4 pt-20 max-w-md mx-auto w-full">
-        {/* User Info and View Toggle */}
-        <div className="flex items-center justify-center mb-6">
-          <UserAvatar size="lg" />
-          <div className="ml-4">
-            <h2 className="text-xl text-white font-serif">
-              {userProfile?.name}
-            </h2>
-            <p className="text-cosmic-secondary text-sm">
-              {userProfile?.birthDate
-                ? new Date(userProfile?.birthDate).toLocaleDateString()
-                : 'Укажите дату рождения в профиле'}
-            </p>
-          </div>
+        {/* User Info */}
+        <div className="text-center mb-6">
+          <h2 className="text-xl text-white font-serif">
+            {userProfile?.name}
+          </h2>
+          <p className="text-cosmic-secondary text-sm">
+            {userProfile?.birthDate
+              ? new Date(userProfile?.birthDate).toLocaleDateString()
+              : 'Укажите дату рождения в профиле'}
+          </p>
         </div>
 
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
-          <div className="bg-cosmic-dark/50 rounded-lg p-1 border border-cosmic-accent/20">
+          <div className="bg-cosmic-dark/80 backdrop-blur-sm rounded-lg p-1 border border-cosmic-accent/30">
             <Button
               variant={viewMode === 'full' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('full')}
-              className="px-3 py-2 text-xs"
+              className="px-4 py-2 text-sm text-white border-0"
             >
-              <Star className="w-3 h-3 mr-1" />
+              <Star className="w-4 h-4 mr-2" />
               Полная
             </Button>
             <Button
               variant={viewMode === 'matrix' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('matrix')}
-              className="px-3 py-2 text-xs"
+              className="px-4 py-2 text-sm text-white border-0"
             >
-              <Sparkles className="w-3 h-3 mr-1" />
+              <Sparkles className="w-4 h-4 mr-2" />
               Простая
             </Button>
             <Button
               variant={viewMode === 'detailed' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('detailed')}
-              className="px-3 py-2 text-xs"
+              className="px-4 py-2 text-sm text-white border-0"
             >
-              <Grid className="w-3 h-3 mr-1" />
+              <Grid className="w-4 h-4 mr-2" />
               Данные
             </Button>
           </div>
