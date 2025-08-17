@@ -177,9 +177,9 @@ const AuthCallback = () => {
 
 const App = () => {
   return (
-    <ErrorBoundary>
-      <TooltipProvider>
-        <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <QueryClientProvider client={queryClient}>
+        <ErrorBoundary>
           <BrowserRouter>
             <AppInitializer />
             <Routes>
@@ -218,9 +218,9 @@ const App = () => {
             <Toaster />
             <Sonner />
           </BrowserRouter>
-        </QueryClientProvider>
-      </TooltipProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </QueryClientProvider>
+    </TooltipProvider>
   );
 };
 
