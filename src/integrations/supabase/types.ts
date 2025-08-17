@@ -235,6 +235,71 @@ export type Database = {
         }
         Relationships: []
       }
+      numerology_descriptions: {
+        Row: {
+          created_at: string
+          description_data: Json
+          id: string
+          language: string
+          reading_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description_data: Json
+          id?: string
+          language?: string
+          reading_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description_data?: Json
+          id?: string
+          language?: string
+          reading_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "numerology_descriptions_reading_id_fkey"
+            columns: ["reading_id"]
+            isOneToOne: false
+            referencedRelation: "numerology_readings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      numerology_readings: {
+        Row: {
+          birth_date: string
+          created_at: string
+          id: string
+          matrix_data: Json
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string
+          id?: string
+          matrix_data: Json
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string
+          id?: string
+          matrix_data?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pact_days: {
         Row: {
           completed: boolean
