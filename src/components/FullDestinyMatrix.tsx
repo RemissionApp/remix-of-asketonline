@@ -121,14 +121,46 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="bg-card rounded-xl p-6 shadow-xl border">
-        <h3 className="text-2xl font-bold text-center mb-6 text-foreground">
-          {language === 'ru' ? 'Матрица Судьбы' : 
-           language === 'en' ? 'Destiny Matrix' : 'Matriz del Destino'}
-        </h3>
+      <div className="relative bg-gradient-to-br from-cosmic-dark/95 via-cosmic/90 to-cosmic-dark/95 rounded-xl p-6 shadow-2xl border border-cosmic-accent/30 overflow-hidden">
+        {/* Cosmic background with stars */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-pink-900/30"></div>
+          {/* Animated stars */}
+          {Array.from({ length: 25 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`
+              }}
+            />
+          ))}
+          {/* Larger stars */}
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={`large-${i}`}
+              className="absolute w-2 h-2 bg-cosmic-accent rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 4}s`,
+                animationDuration: `${3 + Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
         
-        <div className="flex justify-center">
-          <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto">
+        <div className="relative z-10">
+          <h3 className="text-2xl font-bold text-center mb-6 text-white drop-shadow-lg">
+            {language === 'ru' ? 'Матрица Судьбы' : 
+             language === 'en' ? 'Destiny Matrix' : 'Matriz del Destino'}
+          </h3>
+          
+          <div className="flex justify-center">
+            <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto filter drop-shadow-lg">
             {/* Background grid and structure */}
             <defs>
               <linearGradient id="moneyChannel" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -438,14 +470,15 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
                language === 'en' ? 'Money Channel' : 'Canal del Dinero'}
             </text>
           </svg>
+          </div>
         </div>
       </div>
 
       {/* Detail modal */}
       <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-cosmic-dark/95 border-cosmic-accent/30">
           <DialogHeader>
-            <DialogTitle className="text-foreground">
+            <DialogTitle className="text-cosmic-accent">
               {selectedNumber && getPositionName(selectedNumber.position)}
             </DialogTitle>
           </DialogHeader>
@@ -453,7 +486,7 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
           {selectedNumber && (
             <div className="space-y-4">
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-cosmic-accent/20 border-2 border-cosmic-accent flex items-center justify-center text-cosmic-accent text-2xl font-bold mx-auto mb-4">
                   {selectedNumber.number}
                 </div>
               </div>
@@ -463,10 +496,10 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
                   const meaning = getMatrixNumberMeaning(selectedNumber.number, 'basic', language);
                   return (
                     <>
-                      <h4 className="font-semibold text-foreground">
+                      <h4 className="font-semibold text-white">
                         {meaning.title[language as keyof typeof meaning.title]}
                       </h4>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-cosmic-secondary text-sm">
                         {meaning.description[language as keyof typeof meaning.description]}
                       </p>
                     </>

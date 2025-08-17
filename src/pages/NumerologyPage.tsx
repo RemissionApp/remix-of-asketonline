@@ -15,7 +15,7 @@ import { Grid, Sparkles, Star } from 'lucide-react';
 const NumerologyPage = () => {
   const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<'matrix' | 'detailed' | 'full'>('matrix');
+  const [viewMode, setViewMode] = useState<'matrix' | 'detailed' | 'full'>('full');
 
   const getNumerologyData = () => {
     // In a real app, this would calculate actual numerology based on user's birth date
@@ -90,15 +90,6 @@ const NumerologyPage = () => {
         <div className="flex justify-center mb-6">
           <div className="bg-cosmic-dark/50 rounded-lg p-1 border border-cosmic-accent/20">
             <Button
-              variant={viewMode === 'matrix' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('matrix')}
-              className="px-3 py-2 text-xs"
-            >
-              <Sparkles className="w-3 h-3 mr-1" />
-              Матрица
-            </Button>
-            <Button
               variant={viewMode === 'full' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('full')}
@@ -106,6 +97,15 @@ const NumerologyPage = () => {
             >
               <Star className="w-3 h-3 mr-1" />
               Полная
+            </Button>
+            <Button
+              variant={viewMode === 'matrix' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('matrix')}
+              className="px-3 py-2 text-xs"
+            >
+              <Sparkles className="w-3 h-3 mr-1" />
+              Простая
             </Button>
             <Button
               variant={viewMode === 'detailed' ? 'default' : 'ghost'}
