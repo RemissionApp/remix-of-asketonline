@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { EnergyCircle } from './EnergyCircle';
 import { CountdownTimer } from './CountdownTimer';
-import { CosmicButton } from './CosmicButton';
 import { Pact } from '@/types';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
-import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
 
@@ -93,10 +91,10 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
-          <p className="text-sm text-cosmic-secondary mb-2">
+          <p className="text-sm text-white/80 mb-2">
             {getPactTypeName(currentPact)}
           </p>
-          <h1 className="text-xl uppercase font-serif text-white mb-6">
+          <h1 className="text-xl uppercase font-serif text-white mb-6 text-shadow-lg">
             {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
           </h1>
         </div>
@@ -123,18 +121,16 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         </EnergyCircle>
 
         {currentPact.status === 'active' && (
-          <CosmicButton
-            className="mt-8"
-            variant="destructive"
+          <button
+            className="mt-8 px-4 py-2 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors"
             onClick={onBreakAscesis}
           >
-            <X size={16} />
             {language === 'ru'
               ? 'Прервать аскезу'
               : language === 'es'
                 ? 'Romper ascesis'
                 : 'Break asceticism'}
-          </CosmicButton>
+          </button>
         )}
       </div>
     );
@@ -147,7 +143,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
-          <h1 className="text-lg uppercase font-serif text-white mb-6">
+          <h1 className="text-lg uppercase font-serif text-white mb-6 text-shadow-lg truncate max-w-xs">
             {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
           </h1>
         </div>
@@ -161,7 +157,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
                 index === currentPactIndex ? 'scale-110' : 'scale-90 opacity-70'
               )}
             >
-              <p className="text-xs text-cosmic-secondary mb-2 text-center max-w-32">
+              <p className="text-xs text-white/80 mb-2 text-center max-w-32 text-shadow truncate">
                 {getPactTypeName(pact)}
               </p>
               <EnergyCircle 
@@ -191,18 +187,16 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         </div>
 
         {currentPact.status === 'active' && (
-          <CosmicButton
-            className="mt-8"
-            variant="destructive"
+          <button
+            className="mt-8 px-4 py-2 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors"
             onClick={onBreakAscesis}
           >
-            <X size={16} />
             {language === 'ru'
               ? 'Прервать аскезу'
               : language === 'es'
                 ? 'Romper ascesis'
                 : 'Break asceticism'}
-          </CosmicButton>
+          </button>
         )}
       </div>
     );
@@ -215,7 +209,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
-          <h1 className="text-lg uppercase font-serif text-white mb-6">
+          <h1 className="text-lg uppercase font-serif text-white mb-6 text-shadow-lg truncate max-w-xs">
             {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
           </h1>
         </div>
@@ -229,7 +223,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
                 index === currentPactIndex ? 'scale-110' : 'scale-90 opacity-70'
               )}
             >
-              <p className="text-xs text-cosmic-secondary mb-2 text-center">
+              <p className="text-xs text-white/80 mb-2 text-center text-shadow truncate max-w-24">
                 {getPactTypeName(pact)}
               </p>
               <EnergyCircle 
@@ -259,18 +253,16 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
         </div>
 
         {currentPact.status === 'active' && (
-          <CosmicButton
-            className="mt-8"
-            variant="destructive"
+          <button
+            className="mt-8 px-4 py-2 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors"
             onClick={onBreakAscesis}
           >
-            <X size={16} />
             {language === 'ru'
               ? 'Прервать аскезу'
               : language === 'es'
                 ? 'Romper ascesis'
                 : 'Break asceticism'}
-          </CosmicButton>
+          </button>
         )}
       </div>
     );
@@ -282,7 +274,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
       <CountdownTimer pactId={currentPact.id} />
       
       <div className="text-center">
-        <h1 className="text-lg uppercase font-serif text-white mb-6">
+        <h1 className="text-lg uppercase font-serif text-white mb-6 text-shadow-lg truncate max-w-xs">
           {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
         </h1>
       </div>
@@ -298,7 +290,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
                   index === currentPactIndex ? 'scale-110' : 'scale-90 opacity-70'
                 )}
               >
-                <p className="text-xs text-cosmic-secondary mb-2 text-center">
+                <p className="text-xs text-white/80 mb-2 text-center text-shadow truncate max-w-20">
                   {getPactTypeName(pact)}
                 </p>
                 <EnergyCircle 
@@ -365,18 +357,16 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
       </div>
 
       {currentPact.status === 'active' && (
-        <CosmicButton
-          className="mt-8"
-          variant="destructive"
+        <button
+          className="mt-8 px-4 py-2 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors"
           onClick={onBreakAscesis}
         >
-          <X size={16} />
           {language === 'ru'
             ? 'Прервать аскезу'
             : language === 'es'
               ? 'Romper ascesis'
               : 'Break asceticism'}
-        </CosmicButton>
+        </button>
       )}
     </div>
   );
