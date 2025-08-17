@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 const logger = createLogger('ErrorHandler');
 

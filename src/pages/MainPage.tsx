@@ -9,7 +9,7 @@ import { MainContent } from '@/components/MainPageComponents/MainContent';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
 import { MissionReminder } from '@/components/missions/MissionReminder';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 const MainPage: React.FC = () => {

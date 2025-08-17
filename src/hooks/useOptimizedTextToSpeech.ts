@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { logger } from '@/utils/loggerUtils';
+import { logger } from '@/utils/logger';
 
 export interface TextToSpeechOptions {
   voice?:

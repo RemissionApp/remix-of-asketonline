@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { ZodiacBadge } from './ZodiacBadge';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';

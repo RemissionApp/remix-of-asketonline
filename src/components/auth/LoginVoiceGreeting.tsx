@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 import { useTranslations } from '@/hooks/useTranslations';
 
 export interface LoginVoiceGreetingRef {

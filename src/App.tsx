@@ -11,7 +11,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 import { useTranslations } from '@/hooks/useTranslations';
 
 import { useAppStore } from './store/useAppStore';

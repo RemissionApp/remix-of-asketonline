@@ -6,7 +6,7 @@ import { HoroscopeHeader } from './HoroscopeHeader';
 import { HoroscopeContent } from './HoroscopeContent';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 interface HoroscopeDisplayProps {
   horoscope: DetailedHoroscope;

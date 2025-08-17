@@ -6,7 +6,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { useNavigate } from 'react-router-dom';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
   const logger = createLogger('ZodiacBadgeDisplay');

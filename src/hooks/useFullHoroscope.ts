@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { ZodiacSign, getZodiacSign } from '@/utils/zodiac';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 interface FullHoroscopeData {
   personalityAnalysis: string;

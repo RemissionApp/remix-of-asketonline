@@ -1,4 +1,4 @@
-import { createLogger } from './loggerUtils';
+import { createLogger } from './logger';
 
 const logger = createLogger('ErrorHandler');
 

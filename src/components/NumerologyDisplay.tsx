@@ -10,7 +10,7 @@ import {
 } from '@/utils/numerologyUtils';
 import { NumerologyContent } from './numerology/NumerologyContent';
 import { Calculator } from 'lucide-react';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 export const NumerologyDisplay: React.FC = () => {
   const logger = createLogger('NumerologyDisplay');

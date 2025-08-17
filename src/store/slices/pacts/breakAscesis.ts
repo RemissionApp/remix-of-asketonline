@@ -11,7 +11,7 @@ import {
   AppError,
   withAsyncErrorHandler,
 } from '@/utils/errorHandler';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 const logger = createLogger('BreakAscesis');
 

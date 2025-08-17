@@ -1,6 +1,6 @@
 import React from 'react';
 import { TypingEffect } from '@/components/TypingEffect';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 interface HoroscopeSectionProps {
   title: string;

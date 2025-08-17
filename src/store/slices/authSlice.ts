@@ -4,7 +4,7 @@ import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 import { AuthUser } from '@/types/api';
-import { createLogger } from '@/utils/loggerUtils';
+import { createLogger } from '@/utils/logger';
 
 const logger = createLogger('AuthSlice');
 
