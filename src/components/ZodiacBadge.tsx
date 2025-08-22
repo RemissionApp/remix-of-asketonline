@@ -5,7 +5,6 @@ import { useTranslations } from '@/hooks/useTranslations';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
@@ -52,19 +51,6 @@ export const ZodiacBadge: React.FC<ZodiacBadgeProps> = ({
     </div>
   );
 
-  if (!showTooltip) return badge;
-
-  return (
-    <Tooltip delayDuration={300}>
-      <TooltipTrigger asChild>{badge}</TooltipTrigger>
-      <TooltipContent className="bg-cosmic-accent/10 backdrop-blur-sm border-cosmic-accent/30 text-white">
-        <div className="text-center">
-          <div className="text-cosmic-accent font-medium">{zodiacName}</div>
-          <div className="text-xs text-cosmic-secondary">
-            {zodiacInfo.element} • {zodiacInfo.dates}
-          </div>
-        </div>
-      </TooltipContent>
-    </Tooltip>
-  );
+  // Временно отключаем tooltip для отладки
+  return badge;
 };

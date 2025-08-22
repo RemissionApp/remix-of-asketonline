@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
+// Removed TooltipProvider import as we temporarily disabled it
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   BrowserRouter,
@@ -47,6 +47,7 @@ const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
+  console.log('AppInitializer rendering');
   const logger = createLogger('AppInitializer');
 
   try {
@@ -176,12 +177,12 @@ const AuthCallback = () => {
 };
 
 const App = () => {
+  console.log('App component rendering');
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <BrowserRouter>
-          <TooltipProvider delayDuration={0}>
-            <AppInitializer />
+          <AppInitializer />
             <Routes>
               <Route path="/" element={<WelcomePage />} />
               <Route path="/language" element={<LanguagePage />} />
@@ -216,8 +217,7 @@ const App = () => {
             <PWAInstallPrompt />
             <PWAUpdateNotification />
             <Toaster />
-            <Sonner />
-          </TooltipProvider>
+          <Sonner />
         </BrowserRouter>
       </ErrorBoundary>
     </QueryClientProvider>
