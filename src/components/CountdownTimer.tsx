@@ -89,8 +89,8 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
       let activePact = null;
 
       if (pactId) {
-        // If a pact ID is provided, find that specific pact
-        activePact = pacts?.find(p => p.id === pactId && p.status === 'active');
+        // If a pact ID is provided, find that specific pact (regardless of status)
+        activePact = pacts?.find(p => p.id === pactId);
       } else if (pacts && pacts.length > 0) {
         // Otherwise, just get the first active pact
         activePact = pacts.find(p => p.status === 'active');
