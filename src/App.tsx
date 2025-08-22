@@ -179,8 +179,8 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <TooltipProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <TooltipProvider delayDuration={0}>
             <AppInitializer />
             <Routes>
               <Route path="/" element={<WelcomePage />} />
@@ -217,8 +217,8 @@ const App = () => {
             <PWAUpdateNotification />
             <Toaster />
             <Sonner />
-          </BrowserRouter>
-        </TooltipProvider>
+          </TooltipProvider>
+        </BrowserRouter>
       </ErrorBoundary>
     </QueryClientProvider>
   );
