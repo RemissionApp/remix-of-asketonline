@@ -87,7 +87,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
   // Single pact display
   if (pacts.length === 1) {
     return (
-      <div className="w-full flex flex-col items-center space-y-6">
+      <div className="w-full flex flex-col items-center space-y-6 relative z-50">
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
@@ -139,7 +139,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
   // Two pacts display
   if (pacts.length === 2) {
     return (
-      <div className="w-full flex flex-col items-center space-y-6">
+      <div className="w-full flex flex-col items-center space-y-6 relative z-50">
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
@@ -205,7 +205,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
   // Three pacts display
   if (pacts.length === 3) {
     return (
-      <div className="w-full flex flex-col items-center space-y-6">
+      <div className="w-full flex flex-col items-center space-y-6 relative z-50">
         <CountdownTimer pactId={currentPact.id} />
         
         <div className="text-center">
@@ -270,7 +270,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
 
   // Four or more pacts - slider display
   return (
-    <div className="w-full flex flex-col items-center space-y-6">
+    <div className="w-full flex flex-col items-center space-y-6 relative z-50">
       <CountdownTimer pactId={currentPact.id} />
       
       <div className="text-center">
