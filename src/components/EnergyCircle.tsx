@@ -35,36 +35,38 @@ export const EnergyCircle: React.FC<EnergyCircleProps> = ({
   };
 
   return (
-    <div
-      className={cn(
-        'energy-circle animate-pulse-slow',
-        sizeClasses[size],
-        onClick && 'cursor-pointer',
-        status === 'failed' && 'ring-2 ring-red-500/30',
-        className
-      )}
-      style={{
-        background: getProgressGradient(),
-        ...style,
-      }}
-      onClick={onClick}
-    >
-      <div className="absolute inset-2 rounded-full bg-cosmic-dark/80 flex items-center justify-center backdrop-blur-sm">
-        {children}
-      </div>
+    <div className="relative flex justify-center items-center p-8">
+      <div
+        className={cn(
+          'energy-circle animate-pulse-slow relative',
+          sizeClasses[size],
+          onClick && 'cursor-pointer',
+          status === 'failed' && 'ring-2 ring-red-500/30',
+          className
+        )}
+        style={{
+          background: getProgressGradient(),
+          ...style,
+        }}
+        onClick={onClick}
+      >
+        <div className="absolute inset-2 rounded-full bg-cosmic-dark/80 flex items-center justify-center backdrop-blur-sm">
+          {children}
+        </div>
 
-      {/* Orbit particles */}
-      <div
-        className="absolute w-full h-full rounded-full animate-spin-slow"
-        style={{ animationDuration: '20s' }}
-      >
-        <div className="absolute w-2 h-2 bg-cosmic-accent rounded-full top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-[1px]"></div>
-      </div>
-      <div
-        className="absolute w-full h-full rounded-full animate-spin-slow"
-        style={{ animationDuration: '15s' }}
-      >
-        <div className="absolute w-2 h-2 bg-cosmic-gold rounded-full top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-[1px]"></div>
+        {/* Orbit particles */}
+        <div
+          className="absolute w-full h-full rounded-full animate-spin-slow"
+          style={{ animationDuration: '20s' }}
+        >
+          <div className="absolute w-2 h-2 bg-cosmic-accent rounded-full top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-[1px]"></div>
+        </div>
+        <div
+          className="absolute w-full h-full rounded-full animate-spin-slow"
+          style={{ animationDuration: '15s' }}
+        >
+          <div className="absolute w-2 h-2 bg-cosmic-gold rounded-full top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-[1px]"></div>
+        </div>
       </div>
     </div>
   );

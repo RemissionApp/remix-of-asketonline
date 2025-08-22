@@ -90,7 +90,7 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
       <div className="w-full flex flex-col items-center space-y-6 relative z-50">
         <CountdownTimer pactId={currentPact.id} />
         
-        <div className="text-center">
+        <div className="text-center mb-4">
           <p className="text-sm text-white/80 mb-2">
             {getPactTypeName(currentPact)}
           </p>
@@ -99,26 +99,28 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
           </h1>
         </div>
 
-        <EnergyCircle 
-          progress={getPactProgress(currentPact)} 
-          size="lg"
-          status={currentPact.status}
-        >
-          <div className="text-center p-4">
-            <p className={cn(
-              "text-4xl font-bold font-serif",
-              currentPact.status === 'failed' ? 'text-red-300' : 'text-white'
-            )}>
-              {currentPact.days.filter(day => day.completed).length}/{currentPact.duration}
-            </p>
-            <p className={cn(
-              "text-lg mt-2",
-              currentPact.status === 'failed' ? 'text-red-400' : 'text-cosmic-accent'
-            )}>
-              {t.main?.days || 'days'}
-            </p>
-          </div>
-        </EnergyCircle>
+        <div className="w-full overflow-visible px-4">
+          <EnergyCircle 
+            progress={getPactProgress(currentPact)} 
+            size="lg"
+            status={currentPact.status}
+          >
+            <div className="text-center p-4">
+              <p className={cn(
+                "text-4xl font-bold font-serif",
+                currentPact.status === 'failed' ? 'text-red-300' : 'text-white'
+              )}>
+                {currentPact.days.filter(day => day.completed).length}/{currentPact.duration}
+              </p>
+              <p className={cn(
+                "text-lg mt-2",
+                currentPact.status === 'failed' ? 'text-red-400' : 'text-cosmic-accent'
+              )}>
+                {t.main?.days || 'days'}
+              </p>
+            </div>
+          </EnergyCircle>
+        </div>
 
         {currentPact.status === 'active' && (
           <button
