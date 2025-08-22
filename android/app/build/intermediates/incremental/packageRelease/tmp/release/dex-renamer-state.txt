@@ -1,7 +1,0 @@
-#Sun Aug 17 00:57:06 ALMT 2025
-base.0=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
-base.1=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/global_synthetics_dex/release/mergeReleaseGlobalSynthetics/classes.dex
-path.0=classes.dex
-path.1=classes.dex
-renamed.0=classes.dex
-renamed.1=classes2.dex
