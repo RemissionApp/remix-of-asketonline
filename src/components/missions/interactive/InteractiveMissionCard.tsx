@@ -13,6 +13,7 @@ import { CosmicArtifactCard } from '../rewards/CosmicArtifactCard';
 import { PathChoiceModal } from './PathChoiceModal';
 import { DailyReflectionForm } from './DailyReflectionForm';
 import { useMissionState } from '@/hooks/useMissionState';
+import { useRewardSystem } from '@/hooks/useRewardSystem';
 
 interface InteractiveMissionCardProps {
   mission: Mission;
@@ -28,6 +29,7 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
   onComplete,
 }) => {
   const { language, userProfile } = useAppStore();
+  const { onMissionComplete, onArtifactFound } = useRewardSystem();
   const [showChoiceModal, setShowChoiceModal] = React.useState(false);
   const [showReflectionForm, setShowReflectionForm] = React.useState(false);
 
@@ -256,7 +258,16 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
                 {/* Complete Day Button */}
                 {canCompleteDay && (
                   <Button
-                    onClick={completeDay}
+                    onClick={async () => {
+                      await completeDay();
+                      // Выдаем награду за завершение дня
+                      await onMissionComplete('daily');
+                      
+                      // Проверяем, если миссия полностью завершена
+                      if (currentDay >= totalDays) {
+                        await onMissionComplete('weekly');
+                      }
+                    }}
                     disabled={isSaving}
                     className="bg-cosmic-accent hover:bg-cosmic-accent/80 text-white disabled:opacity-50"
                   >
@@ -281,7 +292,15 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
 
             {isCompleted && (
               <Button
-                onClick={onComplete}
+                onClick={async () => {
+                  // Выдаем финальную награду за завершение миссии
+                  await onMissionComplete('weekly');
+                  
+                  // Выдаем артефакт за завершение миссии
+                  await onArtifactFound('rare');
+                  
+                  onComplete?.();
+                }}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
               >
                 <Trophy className="w-4 h-4 mr-2" />
