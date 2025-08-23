@@ -38,6 +38,7 @@ import MeditationProPage from './pages/MeditationProPage';
 import AffirmationsPage from './pages/AffirmationsPage';
 import CosmicMissionsPage from './pages/CosmicMissionsPage';
 import { ArtifactCollectionPage } from './pages/ArtifactCollectionPage';
+import AchievementsPage from './pages/AchievementsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
@@ -219,6 +220,7 @@ const App = () => {
               <Route path="/universe-call" element={<CallPage />} />
               <Route path="/numerology" element={<NumerologyPage />} />
               <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/artifacts" element={<ArtifactCollectionPage />} />
               {/* Legal Pages */}
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

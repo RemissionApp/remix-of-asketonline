@@ -7,6 +7,7 @@ import {
   Phone,
   Stars,
   UserRound,
+  Trophy,
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -32,6 +33,7 @@ export const BottomNavigation = memo(() => {
       | 'universe'
       | 'universe-call'
       | 'full-horoscope'
+      | 'achievements'
       | 'profile',
     path: string
   ) => {
@@ -118,6 +120,21 @@ export const BottomNavigation = memo(() => {
                 </button>
               </>
             )}
+
+            {/* Achievements button - Visible for both PRO and free users */}
+            <button
+              className={`flex flex-col items-center p-1 ${isActive('/achievements') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+              onClick={() => handleNavigation('achievements', '/achievements')}
+            >
+              <Trophy size={18} />
+              <span className="text-xs">
+                {language === 'ru'
+                  ? 'Достижения'
+                  : language === 'es'
+                    ? 'Logros'
+                    : 'Achievements'}
+              </span>
+            </button>
 
             {/* Profile button - Visible for both PRO and free users */}
             <button

@@ -29,6 +29,7 @@ export type ActiveScreen =
   | 'signup'
   | 'universe-call'
   | 'full-horoscope'
+  | 'achievements'
   | 'numerology';
 
 export interface AppState {
