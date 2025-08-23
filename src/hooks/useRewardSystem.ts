@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store/useAppStore';
 import { useUserProgress } from './useUserProgress';
-import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/components/notifications/NotificationSystem';
 import { supabase } from '@/integrations/supabase/client';
 
 interface RewardConfig {
@@ -16,7 +16,7 @@ interface RewardConfig {
 export const useRewardSystem = () => {
   const { user } = useAppStore();
   const { addExperience, createAchievement, stats, refetch } = useUserProgress();
-  const { toast } = useToast();
+  const { showAchievementUnlocked, showEnergyGained, showNotification } = useNotifications();
 
   const REWARD_CONFIGS: Record<string, RewardConfig> = {
     mission_daily: {
@@ -78,12 +78,13 @@ export const useRewardSystem = () => {
     const finalConfig = { ...config, ...customData };
 
     try {
-      // Добавляем энергию
+      // Добавляем энергию с космическим уведомлением
       if (finalConfig.energy > 0) {
         await addExperience(finalConfig.energy);
+        showEnergyGained(finalConfig.energy);
       }
 
-      // Создаем достижение если нужно
+      // Создаем достижение с космическим уведомлением
       if (finalConfig.achievement) {
         await createAchievement(
           finalConfig.type,
@@ -91,25 +92,19 @@ export const useRewardSystem = () => {
           finalConfig.achievement.description,
           finalConfig.achievement.icon
         );
+        showAchievementUnlocked(finalConfig.achievement.title, finalConfig.achievement.description);
       }
-
-      // Показываем уведомление
-      toast({
-        title: "🎉 Награда получена!",
-        description: `+${finalConfig.energy} энергии` + 
-          (finalConfig.achievement ? ` • ${finalConfig.achievement.title}` : ''),
-        duration: 3000,
-      });
 
       // Проверяем особые достижения
       await checkSpecialAchievements();
 
     } catch (error) {
       console.error('Error granting reward:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось выдать награду",
-        variant: "destructive",
+      showNotification({
+        type: 'reminder',
+        title: '❌ Ошибка награды',
+        message: 'Не удалось выдать награду',
+        duration: 3000,
       });
     }
   };

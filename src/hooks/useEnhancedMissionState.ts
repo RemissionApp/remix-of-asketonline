@@ -3,10 +3,11 @@ import { Mission, Choice, Consequence, EnhancedReward } from '@/types';
 import { usePersistentMissionState } from './usePersistentMissionState';
 import { useCosmicArtifacts } from './useCosmicArtifacts';
 import { useAppStore } from '@/store/useAppStore';
-import { toast } from 'sonner';
+import { useNotifications } from '@/components/notifications/NotificationSystem';
 
 export const useEnhancedMissionState = (mission: Mission) => {
   const { language, userProfile, updateUserProfile } = useAppStore();
+  const { showEnergyGained, showArtifactObtained, showMilestoneReached, showNotification } = useNotifications();
   const [isProcessingReward, setIsProcessingReward] = useState(false);
   
   // Use persistent mission state
@@ -46,7 +47,7 @@ export const useEnhancedMissionState = (mission: Mission) => {
     return missionState.choicesData[currentChoice.id];
   }, [getCurrentDayChoice, missionState.choicesData]);
 
-  // Process consequences from choices with persistence
+  // Process consequences from choices with cosmic notifications
   const processConsequences = useCallback(async (consequences: Consequence[]) => {
     for (const consequence of consequences) {
       switch (consequence.type) {
@@ -55,16 +56,33 @@ export const useEnhancedMissionState = (mission: Mission) => {
             await updateUserProfile({
               energyPoints: (userProfile.energyPoints || 0) + consequence.value
             });
+            // Show cosmic energy notification
+            showEnergyGained(consequence.value);
           }
           break;
         
         case 'unlock':
           console.log('Unlocking content:', consequence.value);
+          // Show unlock notification
+          showNotification({
+            type: 'milestone',
+            title: language === 'ru' ? '🔓 Контент разблокирован!' 
+                  : language === 'es' ? '🔓 ¡Contenido desbloqueado!' 
+                  : '🔓 Content Unlocked!',
+            message: consequence.value,
+            duration: 5000,
+          });
           break;
         
         case 'message':
-          toast.info(consequence.value, {
-            duration: 5000,
+          // Show cosmic message notification
+          showNotification({
+            type: 'reminder',
+            title: language === 'ru' ? '💫 Космическое сообщение' 
+                  : language === 'es' ? '💫 Mensaje cósmico' 
+                  : '💫 Cosmic Message',
+            message: consequence.value,
+            duration: 6000,
           });
           break;
         
@@ -73,14 +91,14 @@ export const useEnhancedMissionState = (mission: Mission) => {
           break;
       }
     }
-  }, [userProfile, updateUserProfile]);
+  }, [userProfile, updateUserProfile, showEnergyGained, showNotification, language]);
 
-  // Process rewards with persistence
+  // Process rewards with cosmic notifications
   const processReward = useCallback(async (reward: EnhancedReward) => {
     setIsProcessingReward(true);
     
     try {
-      // Add cosmic artifacts
+      // Add cosmic artifacts with notification
       if (reward.cosmicArtifact) {
         await cosmicArtifacts.addArtifact({
           artifactId: reward.cosmicArtifact.id,
@@ -91,39 +109,50 @@ export const useEnhancedMissionState = (mission: Mission) => {
           effects: reward.cosmicArtifact.effects,
           obtainedFromMission: mission.id,
         });
+        
+        // Show cosmic artifact notification
+        showArtifactObtained(reward.cosmicArtifact.name, reward.cosmicArtifact.rarity);
       }
 
-      // Add energy points
+      // Add energy points with notification
       if (reward.energyPoints && userProfile) {
         await updateUserProfile({
           energyPoints: (userProfile.energyPoints || 0) + reward.energyPoints
         });
+        showEnergyGained(reward.energyPoints);
       }
 
-      // Handle rank bonus
+      // Handle rank bonus with notification
       if (reward.rankBonus && userProfile) {
         await updateUserProfile({
           energyPoints: (userProfile.energyPoints || 0) + reward.rankBonus
         });
+        showNotification({
+          type: 'milestone',
+          title: language === 'ru' ? '👑 Бонус за ранг!' 
+                : language === 'es' ? '👑 ¡Bono de rango!' 
+                : '👑 Rank Bonus!',
+          message: language === 'ru' ? `+${reward.rankBonus} энергии за ваш ранг!` 
+                 : language === 'es' ? `+${reward.rankBonus} energía por tu rango!` 
+                 : `+${reward.rankBonus} energy for your rank!`,
+          duration: 4000,
+        });
       }
 
-      // Show celebration message
-      const message = language === 'ru' 
-        ? 'Вы получили награду!' 
-        : language === 'es' 
-        ? '¡Has recibido una recompensa!' 
-        : 'You received a reward!';
-      
-      toast.success(message, {
-        duration: 3000,
-      });
     } catch (error) {
       console.error('Error processing reward:', error);
-      toast.error('Error processing reward');
+      showNotification({
+        type: 'reminder',
+        title: language === 'ru' ? '❌ Ошибка' 
+              : language === 'es' ? '❌ Error' 
+              : '❌ Error',
+        message: 'Error processing reward',
+        duration: 3000,
+      });
     } finally {
       setIsProcessingReward(false);
     }
-  }, [cosmicArtifacts, userProfile, updateUserProfile, mission.id, language]);
+  }, [cosmicArtifacts, userProfile, updateUserProfile, mission.id, language, showArtifactObtained, showEnergyGained, showNotification]);
 
   // Handle user choice with persistence
   const handleChoice = useCallback(async (choiceId: string) => {
@@ -149,17 +178,27 @@ export const useEnhancedMissionState = (mission: Mission) => {
       // Process consequences
       await processConsequences(selectedChoice.consequences);
 
-      // Show success message
-      const message = language === 'ru' 
-        ? 'Выбор сделан!' 
-        : language === 'es' 
-        ? '¡Elección realizada!' 
-        : 'Choice made!';
-      
-      toast.success(message);
+      // Show cosmic success notification
+      showNotification({
+        type: 'achievement',
+        title: language === 'ru' ? '🎯 Выбор сделан!' 
+              : language === 'es' ? '🎯 ¡Elección realizada!' 
+              : '🎯 Choice Made!',
+        message: language === 'ru' ? 'Ваш выбор изменит ход миссии!' 
+               : language === 'es' ? '¡Tu elección cambiará el curso de la misión!' 
+               : 'Your choice will change the course of the mission!',
+        duration: 4000,
+      });
     } catch (error) {
       console.error('Error making choice:', error);
-      toast.error('Error making choice');
+      showNotification({
+        type: 'reminder',
+        title: language === 'ru' ? '❌ Ошибка выбора' 
+              : language === 'es' ? '❌ Error de elección' 
+              : '❌ Choice Error',
+        message: 'Error making choice',
+        duration: 3000,
+      });
     }
   }, [getCurrentDayChoice, missionState.choicesData, updateState, processConsequences, language]);
 
@@ -181,17 +220,27 @@ export const useEnhancedMissionState = (mission: Mission) => {
         }
       });
 
-      // Show success message
-      const message = language === 'ru' 
-        ? 'Размышление сохранено!' 
-        : language === 'es' 
-        ? '¡Reflexión guardada!' 
-        : 'Reflection saved!';
-      
-      toast.success(message);
+      // Show cosmic reflection notification
+      showNotification({
+        type: 'milestone',
+        title: language === 'ru' ? '💭 Размышление сохранено!' 
+              : language === 'es' ? '💭 ¡Reflexión guardada!' 
+              : '💭 Reflection Saved!',
+        message: language === 'ru' ? 'Ваши мысли записаны в космическом дневнике!' 
+               : language === 'es' ? '¡Tus pensamientos están registrados en el diario cósmico!' 
+               : 'Your thoughts are recorded in the cosmic journal!',
+        duration: 4000,
+      });
     } catch (error) {
       console.error('Error saving reflection:', error);
-      toast.error('Error saving reflection');
+      showNotification({
+        type: 'reminder',
+        title: language === 'ru' ? '❌ Ошибка сохранения' 
+              : language === 'es' ? '❌ Error de guardado' 
+              : '❌ Save Error',
+        message: 'Error saving reflection',
+        duration: 3000,
+      });
     }
   }, [getCurrentDayQuestion, missionState.reflectionsData, missionState.currentDay, updateState, language]);
 
@@ -217,18 +266,38 @@ export const useEnhancedMissionState = (mission: Mission) => {
       const milestone = mission.milestoneRewards?.find(m => m.day === missionState.currentDay);
       if (milestone) {
         await processReward(milestone.reward);
+        // Show special milestone notification
+        showMilestoneReached(
+          language === 'ru' ? `День ${missionState.currentDay}` 
+          : language === 'es' ? `Día ${missionState.currentDay}` 
+          : `Day ${missionState.currentDay}`,
+          language === 'ru' ? 'Особая награда за этап!' 
+          : language === 'es' ? '¡Recompensa especial por hito!' 
+          : 'Special milestone reward!'
+        );
       }
 
-      const message = language === 'ru' 
-        ? `День ${missionState.currentDay} завершён!` 
-        : language === 'es' 
-        ? `¡Día ${missionState.currentDay} completado!` 
-        : `Day ${missionState.currentDay} completed!`;
-      
-      toast.success(message);
+      // Show cosmic day completion notification
+      showNotification({
+        type: 'achievement',
+        title: language === 'ru' ? '🌟 День завершён!' 
+              : language === 'es' ? '🌟 ¡Día completado!' 
+              : '🌟 Day Completed!',
+        message: language === 'ru' ? `День ${missionState.currentDay} успешно завершён! Вы на шаг ближе к завершению миссии.` 
+               : language === 'es' ? `¡Día ${missionState.currentDay} completado con éxito! Estás un paso más cerca de completar la misión.` 
+               : `Day ${missionState.currentDay} successfully completed! You're one step closer to mission completion.`,
+        duration: 6000,
+      });
     } catch (error) {
       console.error('Error completing day:', error);
-      toast.error('Error completing day');
+      showNotification({
+        type: 'reminder',
+        title: language === 'ru' ? '❌ Ошибка завершения' 
+              : language === 'es' ? '❌ Error de finalización' 
+              : '❌ Completion Error',
+        message: 'Error completing day',
+        duration: 3000,
+      });
     }
   }, [missionState.currentDay, missionState.progressData, mission.milestoneRewards, updateState, processReward, language]);
 
