@@ -1,72 +1,38 @@
 import React, { memo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   Sparkles,
   MessageSquare,
-  UserRound,
-  Stars,
   Phone,
+  Stars,
+  UserRound,
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
-// Define a mapping between route paths and ActiveScreen values
-const routeToScreenMapping: Record<
-  string,
-  | 'welcome'
-  | 'language'
-  | 'onboarding'
-  | 'main'
-  | 'create-pact'
-  | 'universe'
-  | 'profile'
-  | 'comparison'
-  | 'meditation'
-  | 'login'
-  | 'signup'
-  | 'universe-call'
-  | 'full-horoscope'
-  | 'numerology'
-> = {
-  '/main': 'main',
-  '/create-pact': 'create-pact',
-  '/universe': 'universe',
-  '/universe-call': 'universe-call',
-  '/profile': 'profile',
-  '/comparison': 'comparison',
-  '/meditation': 'meditation',
-  '/full-horoscope': 'full-horoscope',
-  '/numerology': 'numerology',
-};
-
-export const BottomNavigation: React.FC = memo(() => {
-  const { setActiveScreen, activeScreen, userProfile, language } =
-    useAppStore();
-  const { t } = useTranslations();
-  const navigate = useNavigate();
+export const BottomNavigation = memo(() => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { userProfile, language, setActiveScreen } = useAppStore();
+  const { t } = useTranslations();
+  const { hasActiveSubscription } = useRevenueCat();
 
-  // Helper to determine which screen is active based on URL
-  const isActive = (path: string) => location.pathname === path;
+  // Check if a route is currently active
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
-  // Updated to match the ActiveScreen type
+  // Handle navigation with screen tracking
   const handleNavigation = (
     screen:
-      | 'welcome'
-      | 'language'
-      | 'onboarding'
       | 'main'
       | 'create-pact'
       | 'universe'
-      | 'profile'
-      | 'comparison'
-      | 'meditation'
-      | 'login'
-      | 'signup'
       | 'universe-call'
       | 'full-horoscope'
-      | 'numerology',
+      | 'profile',
     path: string
   ) => {
     // Update the active screen in the store
@@ -76,7 +42,7 @@ export const BottomNavigation: React.FC = memo(() => {
   };
 
   // Check if user has PRO subscription
-  const isPro = userProfile?.isPro || false;
+  const isPro = hasActiveSubscription;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-30 w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20 pb-safe-bottom">

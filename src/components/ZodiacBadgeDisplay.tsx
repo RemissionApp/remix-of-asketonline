@@ -6,6 +6,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { useNavigate } from 'react-router-dom';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { createLogger } from '@/utils/logger';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
@@ -14,11 +15,12 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
+  const { hasActiveSubscription } = useRevenueCat();
 
   logger.debug('Component rendering', {
     hasUserProfile: !!userProfile,
     hasBirthDate: !!userProfile?.birthDate,
-    isPro: userProfile?.isPro,
+    isPro: hasActiveSubscription,
   });
 
   // Only display if user has a birthdate
@@ -28,7 +30,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   }
 
   const handleZodiacClick = async () => {
-    if (userProfile?.isPro) {
+    if (hasActiveSubscription) {
       // Переходим сразу
       navigate('/full-horoscope');
 
@@ -58,7 +60,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
 
   const zodiacContent = (
     <div
-      className={`cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full ${userProfile?.isPro ? 'cursor-pointer hover:border-cosmic-accent/60 transition-all' : ''}`}
+      className={`cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full ${hasActiveSubscription ? 'cursor-pointer hover:border-cosmic-accent/60 transition-all' : ''}`}
       onClick={handleZodiacClick}
     >
       <div className="p-4">
@@ -90,7 +92,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   );
 
   // If user is not PRO, wrap with ProFeatureOverlay
-  if (!userProfile?.isPro) {
+  if (!hasActiveSubscription) {
     const proUnlockText =
       language === 'ru'
         ? 'Открой функции PRO'

@@ -1,11 +1,11 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useNavigate } from 'react-router-dom';
-import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { CosmicButton } from '@/components/CosmicButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useNavigate } from 'react-router-dom';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 /**
  * Component that displays the Universe chat entry point with an avatar and action buttons
@@ -14,19 +14,20 @@ const UniverseMessageBlockComponent: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const { hasActiveSubscription } = useRevenueCat();
 
-  const handleCallClick = useCallback(() => {
-    navigate('/universe-call');
-  }, [navigate]);
-
-  const handleQuestionClick = useCallback(() => {
+  const handleQuestionClick = () => {
     navigate('/universe');
-  }, [navigate]);
+  };
 
-  // Translation for the title "Диалог со вселенной"
+  const handleCallClick = () => {
+    navigate('/call');
+  };
+
+  // Get appropriate title based on language
   const universeTitle =
     language === 'ru'
-      ? 'Диалог со вселенной'
+      ? 'Диалог с Вселенной'
       : language === 'es'
         ? 'Diálogo con el Universo'
         : 'Dialogue with the Universe';
@@ -74,7 +75,7 @@ const UniverseMessageBlockComponent: React.FC = () => {
           </div>
         </div>
 
-        {userProfile?.isPro ? (
+        {hasActiveSubscription ? (
           <div className="flex flex-col sm:flex-row gap-2 mt-4">
             <CosmicButton
               onClick={handleQuestionClick}

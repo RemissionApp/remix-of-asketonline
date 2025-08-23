@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 import { AuthUser } from '@/types/api';
 import { createLogger } from '@/utils/logger';
+import { UserProfile } from '@/types';
 
 const logger = createLogger('AuthSlice');
 
@@ -17,14 +18,16 @@ const getTranslations = (language: string) => {
         codeSent: 'Код отправлен',
         codeValidated: 'Email подтвержден',
         loginSuccess: 'Вход выполнен',
-        checkEmailAndEnterCode: 'Проверьте свою почту и введите код подтверждения',
+        checkEmailAndEnterCode:
+          'Проверьте свою почту и введите код подтверждения',
         failedToSendCode: 'Не удалось отправить код подтверждения',
         failedToVerifyCode: 'Не удалось проверить код',
         invalidCode: 'Неверный код',
         checkCodeCorrectness: 'Проверьте правильность введенного кода',
         emailVerifiedSuccess: 'Ваш email успешно подтвержден',
         welcomeToAsket: 'Добро пожаловать в Аскет!',
-        emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
+        emailVerifiedSignIn:
+          'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
         verificationError: 'Произошла ошибка при проверке кода',
       };
     case 'es':
@@ -33,14 +36,16 @@ const getTranslations = (language: string) => {
         codeSent: 'Código enviado',
         codeValidated: 'Email verificado',
         loginSuccess: 'Inicio de sesión exitoso',
-        checkEmailAndEnterCode: 'Revisa tu email e ingresa el código de verificación',
+        checkEmailAndEnterCode:
+          'Revisa tu email e ingresa el código de verificación',
         failedToSendCode: 'No se pudo enviar el código de verificación',
         failedToVerifyCode: 'No se pudo verificar el código',
         invalidCode: 'Código inválido',
         checkCodeCorrectness: 'Verifica la correcta introducción del código',
         emailVerifiedSuccess: 'Tu email ha sido verificado exitosamente',
         welcomeToAsket: '¡Bienvenido a Asket!',
-        emailVerifiedSignIn: 'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
+        emailVerifiedSignIn:
+          'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
         verificationError: 'Ocurrió un error al verificar el código',
       };
     default:
@@ -49,14 +54,16 @@ const getTranslations = (language: string) => {
         codeSent: 'Code sent',
         codeValidated: 'Email verified',
         loginSuccess: 'Login successful',
-        checkEmailAndEnterCode: 'Check your email and enter the verification code',
+        checkEmailAndEnterCode:
+          'Check your email and enter the verification code',
         failedToSendCode: 'Failed to send verification code',
         failedToVerifyCode: 'Failed to verify code',
         invalidCode: 'Invalid code',
         checkCodeCorrectness: 'Check the correctness of the entered code',
         emailVerifiedSuccess: 'Your email has been successfully verified',
         welcomeToAsket: 'Welcome to Asket!',
-        emailVerifiedSignIn: 'Your email has been successfully verified. Now sign in with your credentials.',
+        emailVerifiedSignIn:
+          'Your email has been successfully verified. Now sign in with your credentials.',
         verificationError: 'An error occurred while verifying the code',
       };
   }
@@ -293,23 +300,26 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   sendOtpCode: async (email: string): Promise<boolean> => {
     try {
       const currentLanguage = get().language || 'en';
-      
-      const { data, error } = await supabase.functions.invoke('send-otp-email', {
-        body: { 
-          email,
-          language: currentLanguage
+
+      const { data, error } = await supabase.functions.invoke(
+        'send-otp-email',
+        {
+          body: {
+            email,
+            language: currentLanguage,
+          },
         }
-      });
+      );
 
       if (error) {
         console.error('Error sending OTP:', error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
-        
+
         toast({
           title: t.error,
           description: t.failedToSendCode,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return false;
       }
@@ -318,11 +328,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         console.error('OTP send failed:', data.error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
-        
+
         toast({
           title: t.error,
           description: data.error || t.failedToSendCode,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return false;
       }
@@ -339,11 +349,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       console.error('Error in sendOtpCode:', error);
       const lang = get().language || 'en';
       const t = getTranslations(lang);
-      
+
       toast({
         title: t.error,
         description: t.failedToSendCode,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return false;
     }
@@ -352,20 +362,20 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   verifyOtpCode: async (email: string, code: string): Promise<boolean> => {
     try {
       set({ loading: true });
-      
+
       const { data, error } = await supabase.functions.invoke('verify-otp', {
-        body: { email, code }
+        body: { email, code },
       });
 
       if (error) {
         console.error('Error verifying OTP:', error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
-        
+
         toast({
           title: t.error,
           description: t.failedToVerifyCode,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return false;
       }
@@ -374,11 +384,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         console.error('OTP verification failed:', data.error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
-        
+
         toast({
           title: t.invalidCode,
           description: data.error || t.checkCodeCorrectness,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return false;
       }
@@ -386,30 +396,31 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       // If we have access tokens, automatically sign in the user
       if (data.accessToken && data.refreshToken) {
         try {
-          const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-            access_token: data.accessToken,
-            refresh_token: data.refreshToken
-          });
+          const { data: sessionData, error: sessionError } =
+            await supabase.auth.setSession({
+              access_token: data.accessToken,
+              refresh_token: data.refreshToken,
+            });
 
           if (sessionError) {
             console.error('Error setting session:', sessionError);
           } else if (sessionData.user) {
-            set({ 
+            set({
               user: sessionData.user,
-              emailConfirmed: true 
+              emailConfirmed: true,
             });
-            
+
             // Load user profile
             await get().loadUserProfile();
-            
+
             const lang = get().language || 'en';
             const t = getTranslations(lang);
-            
+
             toast({
               title: t.loginSuccess,
               description: t.welcomeToAsket,
             });
-            
+
             return true;
           }
         } catch (sessionError) {
@@ -420,22 +431,22 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       // Fallback: just mark email as confirmed
       const lang = get().language || 'en';
       const t = getTranslations(lang);
-      
+
       toast({
         title: t.codeValidated,
         description: t.emailVerifiedSignIn,
       });
-      
+
       return true;
     } catch (error: any) {
       console.error('Error in verifyOtpCode:', error);
       const lang = get().language || 'en';
       const t = getTranslations(lang);
-      
+
       toast({
         title: t.error,
         description: t.verificationError,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return false;
     } finally {
@@ -443,39 +454,35 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     }
   },
 
-  updateUserProfile: async profileData => {
+  updateUserProfile: async (profileData: Partial<UserProfile>) => {
     const { user } = get();
 
     if (!user) {
-      toast({
-        title: 'Ошибка',
-        description: 'Вы должны войти в систему для обновления профиля',
-        variant: 'destructive',
-      });
+      logger.error('No user found for profile update');
       return;
     }
+
+    logger.debug('Updating profile with fields', profileData);
 
     set({ loading: true });
 
     try {
-      const updateFields: Record<string, any> = {};
-      if (profileData.name) updateFields.name = profileData.name;
-      if (profileData.birthDate)
-        updateFields.birth_date = profileData.birthDate;
-      if (profileData.goal) updateFields.goal = profileData.goal;
-      if (profileData.totalDays !== undefined)
-        updateFields.total_days = profileData.totalDays;
-      if (profileData.energyPoints !== undefined)
-        updateFields.energy_points = profileData.energyPoints;
-      if (profileData.rank) updateFields.rank = profileData.rank;
-      if (profileData.avatar_url)
-        updateFields.avatar_url = profileData.avatar_url;
+      // Обновляем данные в Supabase
+      const updateData: Record<string, string | number | null> = {};
 
-      logger.debug('Updating profile with fields', updateFields);
+      if (profileData.name !== undefined) updateData.name = profileData.name;
+      if (profileData.birthDate !== undefined) {
+        updateData.birth_date = profileData.birthDate
+          .toISOString()
+          .split('T')[0];
+      }
+      if (profileData.goal !== undefined) updateData.goal = profileData.goal;
+      if (profileData.avatar_url !== undefined)
+        updateData.avatar_url = profileData.avatar_url;
 
       const { error } = await supabase
         .from('profiles')
-        .update(updateFields)
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) throw error;
@@ -520,6 +527,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     } finally {
       set({ loading: false });
     }
+  },
+
+  // Функция для обновления только Pro статуса без показа toast
+  updateProStatus: (isPro: boolean) => {
+    set(state => ({
+      userProfile: { ...state.userProfile, isPro },
+    }));
   },
 
   loadUserProfile: async () => {

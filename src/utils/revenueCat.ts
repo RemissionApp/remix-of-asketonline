@@ -4,7 +4,9 @@ import {
   CustomerInfo,
   PurchasesError,
   PurchasesPackage,
+  MakePurchaseResult,
 } from '@revenuecat/purchases-capacitor';
+import { Capacitor } from '@capacitor/core';
 
 // Замените на ваш API ключ из RevenueCat Dashboard
 const REVENUECAT_API_KEY = 'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
@@ -29,11 +31,11 @@ export class RevenueCatService {
       // Включаем debug логи для разработки
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
 
-      // Конфигурируем RevenueCat согласно документации
-      await Purchases.configure({
-        apiKey: REVENUECAT_API_KEY,
-        appUserID: userId || null, // null для анонимного пользователя
-      });
+      if (Capacitor.getPlatform() === 'ios') {
+        // await Purchases.configure({ apiKey: <public_apple_api_key> });
+      } else if (Capacitor.getPlatform() === 'android') {
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+      }
 
       this.isConfigured = true;
       console.log('RevenueCat initialized successfully');
@@ -66,7 +68,9 @@ export class RevenueCatService {
     }
   }
 
-  async purchasePackage(packageToPurchase: PurchasesPackage) {
+  async purchasePackage(
+    packageToPurchase: PurchasesPackage
+  ): Promise<CustomerInfo> {
     try {
       const result = await Purchases.purchasePackage({
         aPackage: packageToPurchase,
@@ -91,7 +95,7 @@ export class RevenueCatService {
     }
   }
 
-  async restorePurchases() {
+  async restorePurchases(): Promise<CustomerInfo> {
     try {
       const customerInfo = await Purchases.restorePurchases();
       return customerInfo;
@@ -116,6 +120,7 @@ export class RevenueCatService {
   async getCustomerInfo() {
     try {
       const customerInfo = await Purchases.getCustomerInfo();
+      console.log('customerInfo', customerInfo);
       return customerInfo;
     } catch (error) {
       console.error('Failed to get customer info:', error);

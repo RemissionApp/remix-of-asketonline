@@ -3,6 +3,8 @@ import { Pact } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { AdaptivePactDisplay } from '@/components/AdaptivePactDisplay';
 import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { Button } from '../ui/button';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -72,6 +74,8 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
   const handleBreakAscesisClick = () => {
     setShowBreakDialog(true);
   };
+
+  const { offerings, purchasePackage } = useRevenueCat();
 
   if (!allPacts.length) return null;
 

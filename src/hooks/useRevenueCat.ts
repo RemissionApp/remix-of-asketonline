@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Purchases,
   LOG_LEVEL,
@@ -8,6 +8,8 @@ import {
 } from '@revenuecat/purchases-capacitor';
 import { revenueCatService } from '@/utils/revenueCat';
 import { useToast } from '@/hooks/use-toast';
+import { useAppStore } from '@/store/useAppStore';
+import { log } from 'console';
 
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -18,6 +20,10 @@ export const useRevenueCat = () => {
     null
   );
   const { toast } = useToast();
+  const { updateProStatus } = useAppStore();
+
+  // Используем ref для отслеживания текущего Pro статуса
+  const currentProStatusRef = useRef<boolean>(false);
 
   useEffect(() => {
     initializeRevenueCat();
@@ -29,6 +35,8 @@ export const useRevenueCat = () => {
           (updatedCustomerInfo: CustomerInfo) => {
             setCustomerInfo(updatedCustomerInfo);
             console.log('CustomerInfo updated:', updatedCustomerInfo);
+            // Синхронизируем статус Pro с app store
+            syncProStatus(updatedCustomerInfo);
           }
         );
       } catch (error) {
@@ -38,6 +46,20 @@ export const useRevenueCat = () => {
 
     setupCustomerInfoListener();
   }, []);
+
+  // Функция для синхронизации Pro статуса с app store
+  const syncProStatus = (customerInfo: CustomerInfo | null) => {
+    const hasActive =
+      customerInfo?.entitlements?.active &&
+      Object.keys(customerInfo.entitlements.active).length > 0;
+
+    // Обновляем профиль только если статус изменился
+    if (hasActive !== currentProStatusRef.current) {
+      currentProStatusRef.current = hasActive;
+      updateProStatus(hasActive);
+      console.log('Pro status updated:', hasActive);
+    }
+  };
 
   const initializeRevenueCat = async () => {
     try {
@@ -50,19 +72,21 @@ export const useRevenueCat = () => {
         await revenueCatService.checkBillingAvailability();
       setBillingAvailable(isBillingAvailable);
 
+      console.log('isBillingAvailable', isBillingAvailable);
       if (isBillingAvailable) {
         // Получаем предложения
         const offeringsData = await revenueCatService.getOfferings();
-        setOfferings(offeringsData.current ? [offeringsData.current] : []);
+        console.log('offeringsData', JSON.stringify(offeringsData, null, 2));
+        setOfferings(
+          offeringsData.all?.default ? [offeringsData.all.default] : []
+        );
 
         // Получаем информацию о пользователе
         const customerInfoData = await revenueCatService.getCustomerInfo();
-        setCustomerInfo(customerInfoData);
+        setCustomerInfo(customerInfoData.customerInfo);
 
-        toast({
-          title: 'RevenueCat инициализирован',
-          description: 'Система покупок готова к работе',
-        });
+        // Синхронизируем Pro статус при инициализации
+        syncProStatus(customerInfoData.customerInfo);
       } else {
         toast({
           title: 'Google Play Billing недоступен',
@@ -88,6 +112,9 @@ export const useRevenueCat = () => {
       setIsLoading(true);
       const result = await revenueCatService.purchasePackage(packageToPurchase);
       setCustomerInfo(result);
+
+      // Синхронизируем Pro статус после покупки
+      syncProStatus(result);
 
       toast({
         title: 'Покупка успешна!',
@@ -132,6 +159,9 @@ export const useRevenueCat = () => {
       const customerInfo = await revenueCatService.restorePurchases();
       setCustomerInfo(customerInfo);
 
+      // Синхронизируем Pro статус после восстановления
+      syncProStatus(customerInfo);
+
       toast({
         title: 'Покупки восстановлены',
         description: 'Ваши покупки успешно восстановлены',
@@ -151,9 +181,10 @@ export const useRevenueCat = () => {
     }
   };
 
-  // Проверяем, есть ли активная подписка
+  // Проверяем, есть ли активная подписка (любая)
   const hasActiveSubscription =
-    customerInfo?.entitlements.active['asket_premium_montly'];
+    customerInfo?.entitlements?.active &&
+    Object.keys(customerInfo.entitlements.active).length > 0;
 
   return {
     isInitialized,

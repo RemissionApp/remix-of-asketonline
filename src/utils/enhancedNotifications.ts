@@ -38,7 +38,8 @@ export const isNotificationSupported = (): boolean => {
  * Проверяет разрешение на уведомления
  */
 export const getNotificationPermission = (): NotificationPermission => {
-  if (!isNotificationSupported()) return 'denied';
+  if (!isNotificationSupported() || typeof Notification === 'undefined')
+    return 'denied';
   return Notification.permission;
 };
 
@@ -47,7 +48,8 @@ export const getNotificationPermission = (): NotificationPermission => {
  */
 export const requestNotificationPermission =
   async (): Promise<NotificationPermission> => {
-    if (!isNotificationSupported()) return 'denied';
+    if (!isNotificationSupported() || typeof Notification === 'undefined')
+      return 'denied';
 
     try {
       const permission = await Notification.requestPermission();
@@ -118,22 +120,25 @@ export const showEnhancedNotification = async (
         navigator.vibrate(options.vibrate);
       }
 
-      const notification = new Notification(
-        options.title,
-        basicNotificationOptions
-      );
+      // Проверяем доступность Notification API перед созданием
+      if (typeof Notification !== 'undefined') {
+        const notification = new Notification(
+          options.title,
+          basicNotificationOptions
+        );
 
-      // Добавляем обработчики событий
-      notification.onclick = event => {
-        event.preventDefault();
-        window.focus();
-        notification.close();
+        // Добавляем обработчики событий
+        notification.onclick = event => {
+          event.preventDefault();
+          window.focus();
+          notification.close();
 
-        // Обработка клика
-        if (options.data?.url) {
-          window.location.href = options.data.url;
-        }
-      };
+          // Обработка клика
+          if (options.data?.url) {
+            window.location.href = options.data.url;
+          }
+        };
+      }
     }
 
     return { success: true, permission: 'granted' };

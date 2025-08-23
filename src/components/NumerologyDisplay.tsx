@@ -1,52 +1,48 @@
 import React from 'react';
+import { Calculator } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
-import {
-  calculateLifePathNumber,
-  getNumerologyMeaning,
-  calculateExpressionNumber,
-  calculatePersonalityNumber,
-} from '@/utils/numerologyUtils';
-import { NumerologyContent } from './numerology/NumerologyContent';
-import { Calculator } from 'lucide-react';
-import { createLogger } from '@/utils/logger';
+import { NumerologyContent } from '@/components/numerology/NumerologyContent';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 export const NumerologyDisplay: React.FC = () => {
-  const logger = createLogger('NumerologyDisplay');
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
-
-  logger.debug('Component rendering', {
-    hasUserProfile: !!userProfile,
-    hasBirthDate: !!userProfile?.birthDate,
-    userName: userProfile?.name,
-  });
+  const { hasActiveSubscription } = useRevenueCat();
 
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
-    logger.debug('No birthdate found, not showing numerology');
     return null;
   }
 
-  // Calculate the life path number using our utility function
-  const lifePathNumber = calculateLifePathNumber(String(userProfile.birthDate));
+  // Calculate numerology numbers based on birth date
+  const birthDate = new Date(userProfile.birthDate);
+  const birthDateString = birthDate.toISOString().split('T')[0]; // YYYY-MM-DD format
 
-  // Calculate additional numerology numbers
+  // Calculate Life Path Number
+  const lifePathNumber = calculateLifePathNumber(birthDateString);
+
+  // Calculate Expression Number (based on full name)
   const expressionNumber = calculateExpressionNumber(userProfile.name || '');
+
+  // Calculate Personality Number (based on consonants in name)
   const personalityNumber = calculatePersonalityNumber(userProfile.name || '');
 
-  // Get the numerology meaning for the life path number
-  const numerologyMeaning = getNumerologyMeaning(lifePathNumber, language);
-
-  // Extract title and description based on language
+  // Get appropriate title and description based on language
   const title =
-    numerologyMeaning.title[language as keyof typeof numerologyMeaning.title] ||
-    numerologyMeaning.title.en;
+    language === 'ru'
+      ? 'Нумерологический анализ'
+      : language === 'es'
+        ? 'Análisis numerológico'
+        : 'Numerological Analysis';
+
   const description =
-    numerologyMeaning.description[
-      language as keyof typeof numerologyMeaning.description
-    ] || numerologyMeaning.description.en;
+    language === 'ru'
+      ? 'Откройте тайны чисел и их влияние на вашу жизнь'
+      : language === 'es'
+        ? 'Descubre los secretos de los números y su influencia en tu vida'
+        : 'Discover the secrets of numbers and their influence on your life';
 
   // Get appropriate text for "Numerology" and "Life Path" based on language
   const numerologyText =
@@ -116,7 +112,7 @@ export const NumerologyDisplay: React.FC = () => {
   );
 
   // If user is not PRO, wrap with ProFeatureOverlay
-  if (!userProfile?.isPro) {
+  if (!hasActiveSubscription) {
     const proUnlockText =
       language === 'ru'
         ? 'Открой функции PRO'
@@ -146,3 +142,113 @@ export const NumerologyDisplay: React.FC = () => {
 
   return numerologyContent;
 };
+
+// Helper functions for numerology calculations
+function calculateLifePathNumber(birthDate: string): number {
+  const numbers = birthDate.replace(/-/g, '').split('').map(Number);
+  let sum = numbers.reduce((acc, num) => acc + num, 0);
+
+  while (sum > 9 && sum !== 11 && sum !== 22) {
+    sum = sum
+      .toString()
+      .split('')
+      .map(Number)
+      .reduce((acc, num) => acc + num, 0);
+  }
+
+  return sum;
+}
+
+function calculateExpressionNumber(name: string): number {
+  const letterValues: { [key: string]: number } = {
+    a: 1,
+    b: 2,
+    c: 3,
+    d: 4,
+    e: 5,
+    f: 6,
+    g: 7,
+    h: 8,
+    i: 9,
+    j: 1,
+    k: 2,
+    l: 3,
+    m: 4,
+    n: 5,
+    o: 6,
+    p: 7,
+    q: 8,
+    r: 9,
+    s: 1,
+    t: 2,
+    u: 3,
+    v: 4,
+    w: 5,
+    x: 6,
+    y: 7,
+    z: 8,
+  };
+
+  const letters = name
+    .toLowerCase()
+    .replace(/[^a-z]/g, '')
+    .split('');
+  let sum = letters.reduce(
+    (acc, letter) => acc + (letterValues[letter] || 0),
+    0
+  );
+
+  while (sum > 9 && sum !== 11 && sum !== 22) {
+    sum = sum
+      .toString()
+      .split('')
+      .map(Number)
+      .reduce((acc, num) => acc + num, 0);
+  }
+
+  return sum;
+}
+
+function calculatePersonalityNumber(name: string): number {
+  const consonantValues: { [key: string]: number } = {
+    b: 2,
+    c: 3,
+    d: 4,
+    f: 6,
+    g: 7,
+    h: 8,
+    j: 1,
+    k: 2,
+    l: 3,
+    m: 4,
+    n: 5,
+    p: 7,
+    q: 8,
+    r: 9,
+    s: 1,
+    t: 2,
+    v: 4,
+    w: 5,
+    x: 6,
+    z: 8,
+  };
+
+  const consonants = name
+    .toLowerCase()
+    .replace(/[^bcdfghjklmnpqrstvwxz]/g, '')
+    .split('');
+  let sum = consonants.reduce(
+    (acc, consonant) => acc + (consonantValues[consonant] || 0),
+    0
+  );
+
+  while (sum > 9 && sum !== 11 && sum !== 22) {
+    sum = sum
+      .toString()
+      .split('')
+      .map(Number)
+      .reduce((acc, num) => acc + num, 0);
+  }
+
+  return sum;
+}

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 interface SubscriptionBannerProps {
   className?: string;
@@ -20,12 +21,39 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { upgradeToPro } = useAppStore();
+  const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
+    useRevenueCat();
 
-  const handleUpgrade = () => {
+  // Don't show banner if user has active subscription
+  if (hasActiveSubscription) {
+    return null;
+  }
+
+  const handleUpgrade = async () => {
     if (onUpgrade) {
       onUpgrade();
-    } else {
-      // Simulate upgrading to PRO for demo purposes
+      return;
+    }
+
+    try {
+      // Check if we have offerings available
+      if (
+        offerings &&
+        offerings.length > 0 &&
+        offerings[0].availablePackages.length > 0
+      ) {
+        // Purchase the first available package
+        await purchasePackage(offerings[0].availablePackages[0]);
+        // After successful purchase, navigate to comparison page
+        navigate('/comparison');
+      } else {
+        // Fallback to demo behavior if no offerings available
+        upgradeToPro();
+        navigate('/comparison');
+      }
+    } catch (error) {
+      console.error('Failed to purchase package:', error);
+      // Fallback to demo behavior on error
       upgradeToPro();
       navigate('/comparison');
     }
@@ -43,8 +71,10 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
               {t.subscription?.description || 'Unlock full potential with PRO'}
             </span>
           </div>
-          <CosmicButton onClick={handleUpgrade} size="sm">
-            {t.subscription?.upgradeButton || 'Upgrade Now'}
+          <CosmicButton onClick={handleUpgrade} size="sm" disabled={isLoading}>
+            {isLoading
+              ? 'Processing...'
+              : t.subscription?.upgradeButton || 'Upgrade Now'}
           </CosmicButton>
         </CardContent>
       </Card>
@@ -77,9 +107,13 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
             </div>
           </div>
 
-          <CosmicButton onClick={handleUpgrade} className="whitespace-nowrap">
+          <CosmicButton
+            onClick={handleUpgrade}
+            className="whitespace-nowrap"
+            disabled={isLoading}
+          >
             <SparklesIcon size={16} className="mr-2" />
-            Unlock PRO
+            {isLoading ? 'Processing...' : 'Unlock PRO'}
           </CosmicButton>
         </div>
       </CardContent>

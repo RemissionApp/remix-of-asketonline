@@ -35,8 +35,14 @@ export const PushNotificationManager: React.FC = () => {
 
   useEffect(() => {
     // Проверяем поддержку уведомлений
-    setIsSupported('Notification' in window && 'serviceWorker' in navigator);
-    setPermission(Notification.permission);
+    const isNotificationSupported =
+      'Notification' in window && 'serviceWorker' in navigator;
+    setIsSupported(isNotificationSupported);
+
+    // Безопасно получаем разрешение только если API доступен
+    if (isNotificationSupported && typeof Notification !== 'undefined') {
+      setPermission(Notification.permission);
+    }
 
     // Загружаем настройки из localStorage
     const savedSettings = localStorage.getItem('notification-settings');
@@ -61,7 +67,14 @@ export const PushNotificationManager: React.FC = () => {
   };
 
   const requestPermission = async () => {
-    if (!isSupported) return false;
+    if (!isSupported || typeof Notification === 'undefined') {
+      toast({
+        title: 'Уведомления не поддерживаются',
+        description: 'Push-уведомления недоступны в этой среде',
+        variant: 'destructive',
+      });
+      return false;
+    }
 
     try {
       const permission = await Notification.requestPermission();
@@ -120,9 +133,12 @@ export const PushNotificationManager: React.FC = () => {
       if (error) throw error;
 
       setIsSubscribed(true);
-      logger.info('Подписка на push-уведомления создана');
+      toast({
+        title: 'Подписка создана',
+        description: 'Вы успешно подписались на push-уведомления',
+      });
     } catch (error) {
-      logger.error('Ошибка создания подписки', error);
+      logger.error('Ошибка подписки на уведомления', error);
       toast({
         title: 'Ошибка подписки',
         description: 'Не удалось подписаться на уведомления',
@@ -131,7 +147,7 @@ export const PushNotificationManager: React.FC = () => {
     }
   };
 
-  const unsubscribe = async () => {
+  const unsubscribeFromNotifications = async () => {
     if (!('serviceWorker' in navigator)) return;
 
     try {
@@ -151,18 +167,18 @@ export const PushNotificationManager: React.FC = () => {
             .delete()
             .eq('user_id', user.id);
         }
-      }
 
-      setIsSubscribed(false);
-      toast({
-        title: 'Подписка отменена',
-        description: 'Вы больше не будете получать push-уведомления',
-      });
+        setIsSubscribed(false);
+        toast({
+          title: 'Подписка отменена',
+          description: 'Вы отписались от push-уведомлений',
+        });
+      }
     } catch (error) {
-      logger.error('Ошибка отмены подписки', error);
+      logger.error('Ошибка отписки от уведомлений', error);
       toast({
-        title: 'Ошибка',
-        description: 'Не удалось отменить подписку',
+        title: 'Ошибка отписки',
+        description: 'Не удалось отписаться от уведомлений',
         variant: 'destructive',
       });
     }
@@ -237,170 +253,166 @@ export const PushNotificationManager: React.FC = () => {
     }
   };
 
+  // Если уведомления не поддерживаются, показываем сообщение
   if (!isSupported) {
     return (
-      <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <BellOff className="w-5 h-5 text-cosmic-accent" />
-          <span className="text-white font-medium font-sans">
-            Push-уведомления недоступны
-          </span>
-        </div>
-        <p className="text-cosmic-secondary font-sans">
-          Ваш браузер не поддерживает push-уведомления
-        </p>
-      </div>
+      <Card className="bg-cosmic-dark/30 border-cosmic-accent/20">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <BellOff className="h-5 w-5 text-cosmic-secondary mr-2" />
+              <div>
+                <h3 className="font-medium text-white">Push-уведомления</h3>
+                <p className="text-sm text-cosmic-secondary">
+                  Недоступны в этой среде
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
-      <div className="flex items-center gap-3 mb-4">
-        <Bell className="w-5 h-5 text-cosmic-accent" />
-        <span className="text-white font-medium font-sans">
+    <Card className="bg-cosmic-dark/30 border-cosmic-accent/20">
+      <CardHeader>
+        <CardTitle className="flex items-center text-white">
+          <Bell className="h-5 w-5 mr-2" />
           Push-уведомления
-        </span>
-      </div>
-
-      <div className="space-y-4">
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Статус подписки */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-white font-sans">
-              Статус уведомлений
-            </p>
-            <p className="text-sm text-cosmic-secondary font-sans">
-              {permission === 'granted'
-                ? isSubscribed
-                  ? 'Активны'
-                  : 'Разрешены, но не подключены'
-                : permission === 'denied'
-                  ? 'Заблокированы'
-                  : 'Не настроены'}
+            <h4 className="font-medium text-white">Статус подписки</h4>
+            <p className="text-sm text-cosmic-secondary">
+              {isSubscribed ? 'Активна' : 'Неактивна'}
             </p>
           </div>
-
-          {permission !== 'granted' ? (
-            <Button
-              onClick={requestPermission}
-              variant="ghost"
-              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
-            >
-              Разрешить
-            </Button>
-          ) : isSubscribed ? (
-            <Button
-              variant="ghost"
-              onClick={unsubscribe}
-              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
-            >
-              Отключить
-            </Button>
-          ) : (
-            <Button
-              onClick={subscribeToNotifications}
-              variant="ghost"
-              className="text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
-            >
-              Подключить
-            </Button>
-          )}
+          <div className="flex items-center space-x-2">
+            {isSubscribed ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={unsubscribeFromNotifications}
+                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+              >
+                Отписаться
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={requestPermission}
+                disabled={permission === 'denied'}
+                className="bg-cosmic-accent text-white hover:bg-cosmic-accent/90"
+              >
+                Подписаться
+              </Button>
+            )}
+          </div>
         </div>
 
+        {/* Разрешение */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-medium text-white">Разрешение</h4>
+            <p className="text-sm text-cosmic-secondary">
+              {permission === 'granted'
+                ? 'Разрешено'
+                : permission === 'denied'
+                  ? 'Отклонено'
+                  : 'Не запрошено'}
+            </p>
+          </div>
+        </div>
+
+        {/* Настройки уведомлений */}
         {isSubscribed && (
-          <>
-            <div className="border-t border-cosmic-accent/20 pt-4">
-              <h4 className="font-medium mb-3 flex items-center gap-2 text-white font-sans">
-                <Settings className="w-4 h-4" />
-                Настройки уведомлений
-              </h4>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Ежедневные напоминания
-                  </label>
-                  <Switch
-                    checked={settings.dailyReminder}
-                    onCheckedChange={checked =>
-                      updateSettings('dailyReminder', checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Обновления аскез
-                  </label>
-                  <Switch
-                    checked={settings.pactUpdates}
-                    onCheckedChange={checked =>
-                      updateSettings('pactUpdates', checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Напоминания о медитации
-                  </label>
-                  <Switch
-                    checked={settings.meditation}
-                    onCheckedChange={checked =>
-                      updateSettings('meditation', checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Сообщения от Вселенной
-                  </label>
-                  <Switch
-                    checked={settings.universeMessages}
-                    onCheckedChange={checked =>
-                      updateSettings('universeMessages', checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Достижения
-                  </label>
-                  <Switch
-                    checked={settings.achievements}
-                    onCheckedChange={checked =>
-                      updateSettings('achievements', checked)
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-sm text-cosmic-secondary font-sans">
-                    Подписка и платежи
-                  </label>
-                  <Switch
-                    checked={settings.subscription}
-                    onCheckedChange={checked =>
-                      updateSettings('subscription', checked)
-                    }
-                  />
-                </div>
+          <div className="space-y-3">
+            <h4 className="font-medium text-white">Настройки уведомлений</h4>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">
+                  Ежедневные напоминания
+                </span>
+                <Switch
+                  checked={settings.dailyReminder}
+                  onCheckedChange={checked =>
+                    updateSettings('dailyReminder', checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">
+                  Обновления аскез
+                </span>
+                <Switch
+                  checked={settings.pactUpdates}
+                  onCheckedChange={checked =>
+                    updateSettings('pactUpdates', checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">Медитации</span>
+                <Switch
+                  checked={settings.meditation}
+                  onCheckedChange={checked =>
+                    updateSettings('meditation', checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">
+                  Сообщения Вселенной
+                </span>
+                <Switch
+                  checked={settings.universeMessages}
+                  onCheckedChange={checked =>
+                    updateSettings('universeMessages', checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">
+                  Достижения
+                </span>
+                <Switch
+                  checked={settings.achievements}
+                  onCheckedChange={checked =>
+                    updateSettings('achievements', checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-cosmic-secondary">Подписка</span>
+                <Switch
+                  checked={settings.subscription}
+                  onCheckedChange={checked =>
+                    updateSettings('subscription', checked)
+                  }
+                />
               </div>
             </div>
-
-            <div className="border-t border-cosmic-accent/20 pt-4">
-              <Button
-                onClick={sendTestNotification}
-                variant="ghost"
-                className="w-full text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/20 font-sans"
-              >
-                Отправить тестовое уведомление
-              </Button>
-            </div>
-          </>
+          </div>
         )}
-      </div>
-    </div>
+
+        {/* Тестовое уведомление */}
+        {isSubscribed && (
+          <div className="pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={sendTestNotification}
+              className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+            >
+              Отправить тестовое уведомление
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };

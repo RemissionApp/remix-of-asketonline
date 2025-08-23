@@ -65,6 +65,7 @@ export interface AppState {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
+  updateProStatus: (isPro: boolean) => void;
   syncPactsWithCurrentDate: () => Promise<void>;
   checkOnboardingStatus: () => boolean;
 

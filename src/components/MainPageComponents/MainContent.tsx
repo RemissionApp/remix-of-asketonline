@@ -16,6 +16,7 @@ import { logger } from '@/utils/logger';
 import { PurchaseTestButton } from '@/components/PurchaseTestButton';
 import { RevenueCatTest } from '@/components/RevenueCatTest';
 import { OfferingsDisplay } from '@/components/OfferingsDisplay';
+import { Button } from '../ui/button';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -44,12 +45,6 @@ export const MainContent: React.FC<MainContentProps> = ({
   getAscesisPrefix,
   formatRejection,
 }) => {
-  // Simple console logging instead of complex logger setup
-  console.log('MainContent rendering', {
-    activePactsCount: activePacts.length,
-    isLoading,
-  });
-
   return (
     <main className="flex-1 container mx-auto px-4 py-6 pt-20 flex flex-col items-center">
       {/* 1. PactDisplay - First */}
@@ -107,21 +102,6 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 9. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
-      </div>
-
-      {/* 10. RevenueCat Test */}
-      <div className="w-full max-w-lg mx-auto">
-        <RevenueCatTest />
-      </div>
-
-      {/* 11. Offerings Display */}
-      <div className="w-full max-w-lg mx-auto">
-        <OfferingsDisplay />
-      </div>
-
-      {/* 12. Purchase Test Button */}
-      <div className="w-full max-w-lg mx-auto">
-        <PurchaseTestButton />
       </div>
 
       {/* Action Buttons - Remains at the bottom */}

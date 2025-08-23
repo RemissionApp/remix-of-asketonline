@@ -27,6 +27,9 @@ export const RevenueCatTest: React.FC = () => {
       await revenueCatService.initialize();
       setIsInitialized(true);
 
+      const userInfo = await revenueCatService.getCustomerInfo();
+      console.log('User Info:', JSON.stringify(userInfo, null, 2));
+
       // Получение предложений
       const offerings = await revenueCatService.getOfferings();
       console.log('Offerings:', offerings);

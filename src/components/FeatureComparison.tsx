@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 import {
   Table,
   TableBody,
@@ -24,7 +25,9 @@ const FeatureComparison: React.FC = () => {
   const { t } = useTranslations();
   const { upgradeToPro, userProfile } = useAppStore();
   const navigate = useNavigate();
-  const isPro = userProfile.isPro;
+  const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
+    useRevenueCat();
+  const isPro = hasActiveSubscription;
 
   // Extended feature list based on the provided image
   const features = [
@@ -100,9 +103,29 @@ const FeatureComparison: React.FC = () => {
     },
   ];
 
-  const handleUpgrade = () => {
-    upgradeToPro();
-    navigate('/profile');
+  const handleUpgrade = async () => {
+    try {
+      // Check if we have offerings available
+      if (
+        offerings &&
+        offerings.length > 0 &&
+        offerings[0].availablePackages.length > 0
+      ) {
+        // Purchase the first available package
+        await purchasePackage(offerings[0].availablePackages[0]);
+        // After successful purchase, navigate to profile page
+        navigate('/profile');
+      } else {
+        // Fallback to demo behavior if no offerings available
+        upgradeToPro();
+        navigate('/profile');
+      }
+    } catch (error) {
+      console.error('Failed to purchase package:', error);
+      // Fallback to demo behavior on error
+      upgradeToPro();
+      navigate('/profile');
+    }
   };
 
   const handleGoBack = () => {
@@ -188,9 +211,10 @@ const FeatureComparison: React.FC = () => {
             <Button
               className="bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 px-8 py-6 text-lg"
               onClick={handleUpgrade}
+              disabled={isLoading}
             >
               <SparklesIcon className="mr-2" size={18} />
-              Unlock PRO ✨
+              {isLoading ? 'Processing...' : 'Unlock PRO ✨'}
             </Button>
           </div>
         )}
@@ -268,9 +292,10 @@ const FeatureComparison: React.FC = () => {
                 <Button
                   className="w-full mt-6 bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90"
                   onClick={handleUpgrade}
+                  disabled={isLoading}
                 >
                   <SparklesIcon className="mr-2" size={16} />
-                  Unlock PRO ✨
+                  {isLoading ? 'Processing...' : 'Unlock PRO ✨'}
                 </Button>
               )}
             </CardContent>
