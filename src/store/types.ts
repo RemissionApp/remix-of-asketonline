@@ -39,6 +39,7 @@ export interface AppState {
   user: User | null;
   loading: boolean;
   emailConfirmed: boolean;
+  updateProStatus: (isPro: boolean) => void;
 
   addPact: (
     pact: Omit<
@@ -65,7 +66,6 @@ export interface AppState {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
-  updateProStatus: (isPro: boolean) => void;
   syncPactsWithCurrentDate: () => Promise<void>;
   checkOnboardingStatus: () => boolean;
 

@@ -97,8 +97,8 @@ export class RevenueCatService {
 
   async restorePurchases(): Promise<CustomerInfo> {
     try {
-      const customerInfo = await Purchases.restorePurchases();
-      return customerInfo;
+      const result = await Purchases.restorePurchases();
+      return result.customerInfo;
     } catch (error: unknown) {
       console.error('Failed to restore purchases:', error);
 

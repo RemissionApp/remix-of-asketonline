@@ -107,4 +107,13 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       }
     }
   },
+
+  updateProStatus: (isPro: boolean) => {
+    set(state => ({
+      userProfile: {
+        ...state.userProfile,
+        isPro
+      }
+    }));
+  },
 }));

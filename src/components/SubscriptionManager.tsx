@@ -9,10 +9,11 @@ import {
   CardTitle,
 } from './ui/card';
 import { Badge } from './ui/badge';
+import { PACKAGE_TYPE } from '@revenuecat/purchases-capacitor';
 
 interface Package {
   identifier: string;
-  packageType: string;
+  packageType: PACKAGE_TYPE;
   product: {
     identifier: string;
     title: string;
@@ -64,8 +65,9 @@ export const SubscriptionManager: React.FC = () => {
   const handlePurchase = async (packageToPurchase: Package) => {
     try {
       setLoading(true);
+      // Use the package directly since it should be PurchasesPackage from API
       const customerInfo =
-        await revenueCatService.purchasePackage(packageToPurchase);
+        await revenueCatService.purchasePackage(packageToPurchase as any);
       setCustomerInfo(customerInfo);
       alert('Purchase successful!');
     } catch (err) {

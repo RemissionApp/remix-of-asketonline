@@ -47,7 +47,10 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <main className="flex-1 container mx-auto px-4 py-6 pt-20 flex flex-col items-center">
-      {/* 1. PactDisplay - First */}
+      {/* 1. User Greeting Section - First */}
+      <UserGreetingSection />
+
+      {/* 2. PactDisplay */}
       <div
         className={`w-full relative z-50 ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
       >
@@ -66,9 +69,6 @@ export const MainContent: React.FC<MainContentProps> = ({
           <NoPactsView />
         ) : null}
       </div>
-
-      {/* 2. User Greeting Section */}
-      <UserGreetingSection />
 
       {/* 3. Daily Advice */}
       <DailyAdviceDisplay />
