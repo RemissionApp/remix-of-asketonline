@@ -77,6 +77,8 @@ export interface AuthSlice {
   checkEmailConfirmation: () => Promise<boolean>;
   sendOtpCode: (email: string) => Promise<boolean>;
   verifyOtpCode: (email: string, code: string) => Promise<boolean>;
+  isProfileComplete: () => boolean;
+  checkOnboardingStatus: () => boolean;
 }
 
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
@@ -88,6 +90,25 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   emailConfirmed: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
+
+  // Унифицированная функция проверки завершенности профиля
+  isProfileComplete: () => {
+    const { userProfile } = get();
+    return !!(
+      userProfile &&
+      userProfile.name &&
+      userProfile.name !== 'Искатель' &&
+      userProfile.name.trim() !== '' &&
+      userProfile.birthDate
+    );
+  },
+
+  // Унифицированная функция проверки завершенности onboarding
+  checkOnboardingStatus: () => {
+    const onboarded = localStorage.getItem('onboarded');
+    const { onboardingComplete } = get();
+    return onboarded === 'true' || onboardingComplete;
+  },
 
   signIn: async (email, password) => {
     set({ loading: true });

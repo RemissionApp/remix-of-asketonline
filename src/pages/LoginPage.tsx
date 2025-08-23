@@ -69,18 +69,22 @@ const LoginPage: React.FC = () => {
             return;
           }
 
-          // Проверяем, заполнил ли пользователь профиль
-          if (
-            userProfile &&
-            userProfile.name !== 'Искатель' &&
-            userProfile.birthDate
-          ) {
-            // Пользователь имеет заполненный профиль, перенаправляем на главную или onboarding
-            navigate('/onboarding');
-          } else {
-            // Пользователю необходимо заполнить профиль
-            navigate('/profile-setup');
-          }
+      // Проверяем, заполнил ли пользователь профиль используя централизованную функцию
+      const storeState = useAppStore.getState();
+      const profileComplete = storeState.isProfileComplete();
+      
+      if (profileComplete) {
+        // Пользователь имеет заполненный профиль, проверяем onboarding
+        const onboardingComplete = storeState.checkOnboardingStatus();
+        if (onboardingComplete) {
+          navigate('/main');
+        } else {
+          navigate('/onboarding');
+        }
+      } else {
+        // Пользователю необходимо заполнить профиль
+        navigate('/profile-setup');
+      }
         } else {
           setAuthChecking(false);
         }
@@ -126,16 +130,20 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // Перенаправляем на настройку профиля, если профиль не заполнен
-      if (
-        !userProfile ||
-        userProfile.name === 'Искатель' ||
-        !userProfile.birthDate
-      ) {
+      // Используем централизованную проверку профиля
+      const storeState = useAppStore.getState();
+      const profileComplete = storeState.isProfileComplete();
+      
+      if (!profileComplete) {
         navigate('/profile-setup');
       } else {
-        // Перенаправляем на onboarding, если профиль заполнен
-        navigate('/onboarding');
+        // Профиль заполнен, проверяем onboarding
+        const onboardingComplete = storeState.checkOnboardingStatus();
+        if (onboardingComplete) {
+          navigate('/main');
+        } else {
+          navigate('/onboarding');
+        }
       }
     }
   };
@@ -183,11 +191,18 @@ const LoginPage: React.FC = () => {
         const currentUser = useAppStore.getState().user;
         if (currentUser) {
           // User is automatically logged in, navigate appropriately
-          const userProfile = useAppStore.getState().userProfile;
-          if (!userProfile || userProfile.name === 'Искатель' || !userProfile.birthDate) {
+          const storeState = useAppStore.getState();
+          const profileComplete = storeState.isProfileComplete();
+          
+          if (!profileComplete) {
             navigate('/profile-setup');
           } else {
-            navigate('/onboarding');
+            const onboardingComplete = storeState.checkOnboardingStatus();
+            if (onboardingComplete) {
+              navigate('/main');
+            } else {
+              navigate('/onboarding');
+            }
           }
         } else {
           // Fallback: user needs to sign in manually

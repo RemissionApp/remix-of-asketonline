@@ -59,17 +59,16 @@ const OnboardingPage: React.FC = () => {
         }
       }
 
-      // If profile is not completed, redirect to profile setup
-      if (
-        user &&
-        !loading &&
-        (!userProfile ||
-          !userProfile.birthDate ||
-          userProfile.name === t.auth?.defaultUserName || 'Искатель')
-      ) {
-        console.log('Profile not completed, redirecting to profile setup');
-        navigate('/profile-setup');
-        return;
+      // Use centralized profile completion check
+      if (user && !loading) {
+        const storeState = useAppStore.getState();
+        const profileComplete = storeState.isProfileComplete();
+        
+        if (!profileComplete) {
+          console.log('Profile not completed, redirecting to profile setup');
+          navigate('/profile-setup');
+          return;
+        }
       }
     };
 

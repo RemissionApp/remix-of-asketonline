@@ -160,8 +160,19 @@ const UserProfileForm: React.FC = () => {
         description: 'Ваши данные успешно сохранены',
       });
 
-      // Always navigate to main when clicking continue
-      navigate('/main');
+      // Navigate based on profile completion and onboarding status
+      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
+      const profileComplete = isProfileComplete();
+      const onboardingComplete = checkOnboardingStatus();
+      
+      if (profileComplete && !onboardingComplete) {
+        navigate('/onboarding');
+      } else if (profileComplete && onboardingComplete) {
+        navigate('/main');
+      } else {
+        // Profile still not complete, stay here
+        console.warn('Profile save successful but still not complete');
+      }
     } catch (error: any) {
       logger.error('Error saving profile', error);
       toast({
@@ -197,7 +208,7 @@ const UserProfileForm: React.FC = () => {
           onSubmit={onSubmit}
           isSaving={isSaving}
           defaultValues={{
-            name: userProfile.name !== 'Искатель' ? userProfile.name : '',
+            name: userProfile.name && userProfile.name !== 'Искатель' ? userProfile.name : '',
             birthDate: userProfile.birthDate || new Date(),
           }}
         />

@@ -7,10 +7,12 @@ import { useAppStore } from '@/store/useAppStore';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAuthDebug } from '@/hooks/useAuthDebug';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
+  useAuthDebug(); // Отладка состояния авторизации
   const {
     userProfile,
     user,
@@ -53,15 +55,14 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      // Check if profile is complete using more reliable criteria
-      const isProfileComplete = userProfile && 
-        userProfile.name && 
-        userProfile.name !== 'Искатель' && // Use hardcoded default to avoid translation issues
-        userProfile.name.trim() !== '' &&
-        userProfile.birthDate;
+      // Use centralized profile completion check from store
+      const { isProfileComplete } = useAppStore.getState();
+      const profileComplete = isProfileComplete();
 
-      if (isProfileComplete) {
-        if (!onboardingComplete) {
+      if (profileComplete) {
+        const { checkOnboardingStatus } = useAppStore.getState();
+        const isOnboardingComplete = checkOnboardingStatus();
+        if (!isOnboardingComplete) {
           navigate('/onboarding');
         } else {
           navigate('/main');
