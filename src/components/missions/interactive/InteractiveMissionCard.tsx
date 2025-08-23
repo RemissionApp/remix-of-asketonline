@@ -12,6 +12,8 @@ import { MilestoneTracker } from '../rewards/MilestoneTracker';
 import { CosmicArtifactCard } from '../rewards/CosmicArtifactCard';
 import { PathChoiceModal } from './PathChoiceModal';
 import { DailyReflectionForm } from './DailyReflectionForm';
+import { MissionDetailsModal } from '../details/MissionDetailsModal';
+import { ProgressTimeline } from '../timeline/ProgressTimeline';
 import { useMissionState } from '@/hooks/useMissionState';
 import { useRewardSystem } from '@/hooks/useRewardSystem';
 
@@ -32,6 +34,8 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
   const { onMissionComplete, onArtifactFound } = useRewardSystem();
   const [showChoiceModal, setShowChoiceModal] = React.useState(false);
   const [showReflectionForm, setShowReflectionForm] = React.useState(false);
+  const [showDetailsModal, setShowDetailsModal] = React.useState(false);
+  const [showProgressTimeline, setShowProgressTimeline] = React.useState(false);
 
   // Use the new mission state hook
   const missionState = useMissionState(mission);
@@ -279,34 +283,60 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
           )}
 
           {/* Mission Actions */}
-          <div className="flex gap-2">
-            {!isStarted && canStart && (
+          <div className="space-y-3">
+            {/* Navigation Buttons */}
+            <div className="flex gap-2">
               <Button
-                onClick={onStart}
-                className="flex-1 bg-cosmic-gold hover:bg-cosmic-gold/90 text-cosmic-dark"
+                onClick={() => setShowDetailsModal(true)}
+                variant="outline"
+                className="flex-1 border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
               >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                {language === 'ru' ? 'Начать миссию' : language === 'es' ? 'Comenzar misión' : 'Start Mission'}
+                <Target className="w-4 h-4 mr-2" />
+                {language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : 'Details'}
               </Button>
-            )}
+              
+              {isStarted && (
+                <Button
+                  onClick={() => setShowProgressTimeline(true)}
+                  variant="outline"
+                  className="flex-1 border-cosmic-gold/30 text-cosmic-gold hover:bg-cosmic-gold/10"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {language === 'ru' ? 'Прогресс' : language === 'es' ? 'Progreso' : 'Progress'}
+                </Button>
+              )}
+            </div>
 
-            {isCompleted && (
-              <Button
-                onClick={async () => {
-                  // Выдаем финальную награду за завершение миссии
-                  await onMissionComplete('weekly');
-                  
-                  // Выдаем артефакт за завершение миссии
-                  await onArtifactFound('rare');
-                  
-                  onComplete?.();
-                }}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Trophy className="w-4 h-4 mr-2" />
-                {language === 'ru' ? 'Получить награду' : language === 'es' ? 'Reclamar recompensa' : 'Claim Reward'}
-              </Button>
-            )}
+            {/* Primary Actions */}
+            <div className="flex gap-2">
+              {!isStarted && canStart && (
+                <Button
+                  onClick={onStart}
+                  className="flex-1 bg-cosmic-gold hover:bg-cosmic-gold/90 text-cosmic-dark"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  {language === 'ru' ? 'Начать миссию' : language === 'es' ? 'Comenzar misión' : 'Start Mission'}
+                </Button>
+              )}
+
+              {isCompleted && (
+                <Button
+                  onClick={async () => {
+                    // Выдаем финальную награду за завершение миссии
+                    await onMissionComplete('weekly');
+                    
+                    // Выдаем артефакт за завершение миссии
+                    await onArtifactFound('rare');
+                    
+                    onComplete?.();
+                  }}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Trophy className="w-4 h-4 mr-2" />
+                  {language === 'ru' ? 'Получить награду' : language === 'es' ? 'Reclamar recompensa' : 'Claim Reward'}
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Rewards Preview */}
@@ -359,6 +389,20 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
             handleReflection(answer);
             setShowReflectionForm(false);
           }}
+        />
+      )}
+
+      <MissionDetailsModal
+        mission={mission}
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+      />
+
+      {isStarted && (
+        <ProgressTimeline
+          mission={mission}
+          isOpen={showProgressTimeline}
+          onClose={() => setShowProgressTimeline(false)}
         />
       )}
     </>

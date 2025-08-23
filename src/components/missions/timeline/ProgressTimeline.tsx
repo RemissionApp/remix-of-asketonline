@@ -2,6 +2,7 @@ import React from 'react';
 import { Mission } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { useMissionState } from '@/hooks/useMissionState';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Circle, Clock, Star, Gift } from 'lucide-react';
@@ -9,9 +10,11 @@ import { cn } from '@/lib/utils';
 
 interface ProgressTimelineProps {
   mission: Mission;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({ mission }) => {
+export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({ mission, isOpen, onClose }) => {
   const { language } = useAppStore();
   const missionState = useMissionState(mission);
 
@@ -67,12 +70,15 @@ export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({ mission }) =
   const timelineData = generateTimelineData();
 
   return (
-    <Card className="bg-cosmic-dark/50 border-cosmic-accent/30">
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-cosmic-gold">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-cosmic-dark/95 border-cosmic-accent/30">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-cosmic-gold">
             {language === 'ru' ? 'Временная линия миссии' : language === 'es' ? 'Línea de tiempo de la misión' : 'Mission Timeline'}
-          </h3>
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4 mt-6">
           
           <div className="relative">
             {/* Progress line */}
@@ -184,7 +190,7 @@ export const ProgressTimeline: React.FC<ProgressTimelineProps> = ({ mission }) =
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 };
