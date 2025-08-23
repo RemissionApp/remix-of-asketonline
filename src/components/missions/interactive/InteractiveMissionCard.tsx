@@ -14,7 +14,7 @@ import { PathChoiceModal } from './PathChoiceModal';
 import { DailyReflectionForm } from './DailyReflectionForm';
 import { MissionDetailsModal } from '../details/MissionDetailsModal';
 import { ProgressTimeline } from '../timeline/ProgressTimeline';
-import { useMissionState } from '@/hooks/useMissionState';
+import { useEnhancedMissionState } from '@/hooks/useEnhancedMissionState';
 import { useRewardSystem } from '@/hooks/useRewardSystem';
 
 interface InteractiveMissionCardProps {
@@ -37,8 +37,8 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
   const [showDetailsModal, setShowDetailsModal] = React.useState(false);
   const [showProgressTimeline, setShowProgressTimeline] = React.useState(false);
 
-  // Use the new mission state hook
-  const missionState = useMissionState(mission);
+  // Use the enhanced persistent mission state hook
+  const missionState = useEnhancedMissionState(mission);
 
   // All data now comes from missionState hook
   const {
@@ -57,6 +57,9 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
     totalDays,
     isLoading,
     isSaving,
+    isOnline,
+    lastSyncTime,
+    forceSync,
   } = missionState;
 
   // Определим специальные миссии с фоновыми изображениями
@@ -213,9 +216,9 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
               </div>
               <Progress value={progressPercentage} className="h-2" />
               <ProgressSyncIndicator 
-                isOnline={navigator.onLine} 
+                isOnline={isOnline} 
                 syncStatus={isSaving ? 'syncing' : 'synced'} 
-                lastSyncTime={new Date()} 
+                lastSyncTime={lastSyncTime || new Date()} 
               />
             </div>
 
