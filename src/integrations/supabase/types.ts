@@ -83,6 +83,81 @@ export type Database = {
         }
         Relationships: []
       }
+      cosmic_artifacts: {
+        Row: {
+          artifact_id: string
+          description: string
+          effects: Json
+          id: string
+          is_active: boolean
+          name: string
+          obtained_at: string
+          obtained_from_mission: string | null
+          rarity: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          artifact_id: string
+          description: string
+          effects?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          obtained_at?: string
+          obtained_from_mission?: string | null
+          rarity: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          artifact_id?: string
+          description?: string
+          effects?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          obtained_at?: string
+          obtained_from_mission?: string | null
+          rarity?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_reflections: {
+        Row: {
+          answer: string
+          created_at: string
+          day_number: number
+          id: string
+          mission_id: string
+          question: string
+          reflection_type: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          day_number: number
+          id?: string
+          mission_id: string
+          question: string
+          reflection_type?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          day_number?: number
+          id?: string
+          mission_id?: string
+          question?: string
+          reflection_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       detailed_horoscopes: {
         Row: {
           content: Json
@@ -161,6 +236,36 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_choices: {
+        Row: {
+          choice_event_id: string
+          choice_id: string
+          chosen_at: string
+          consequences: Json
+          id: string
+          mission_id: string
+          user_id: string
+        }
+        Insert: {
+          choice_event_id: string
+          choice_id: string
+          chosen_at?: string
+          consequences?: Json
+          id?: string
+          mission_id: string
+          user_id: string
+        }
+        Update: {
+          choice_event_id?: string
+          choice_id?: string
+          chosen_at?: string
+          consequences?: Json
+          id?: string
+          mission_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mission_progress: {
         Row: {
           accepted_at: string
@@ -201,6 +306,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mission_progress_detailed: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          data: Json
+          day_number: number
+          id: string
+          mission_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          day_number: number
+          id?: string
+          mission_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          day_number?: number
+          id?: string
+          mission_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       missions: {
         Row: {
