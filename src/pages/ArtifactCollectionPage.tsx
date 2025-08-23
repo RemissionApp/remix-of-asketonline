@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Star, Zap, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { MissionNavigation } from '@/components/navigation/MissionNavigation';
 
 export const ArtifactCollectionPage: React.FC = () => {
   const { language } = useAppStore();
@@ -84,29 +85,20 @@ export const ArtifactCollectionPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="text-cosmic-silver hover:text-white"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {language === 'ru' ? 'Назад' : language === 'es' ? 'Volver' : 'Back'}
-        </Button>
+      {/* Navigation */}
+      <MissionNavigation />
         
-        <div>
-          <h1 className="text-3xl font-bold text-cosmic-gold">
-            🏆 {language === 'ru' ? 'Коллекция артефактов' : language === 'es' ? 'Colección de artefactos' : 'Artifact Collection'}
-          </h1>
-          <p className="text-cosmic-silver">
-            {language === 'ru' 
-              ? `Всего артефактов: ${artifacts?.length || 0} | Активных: ${activeArtifacts.length}`
-              : language === 'es' 
-              ? `Total de artefactos: ${artifacts?.length || 0} | Activos: ${activeArtifacts.length}`
-              : `Total artifacts: ${artifacts?.length || 0} | Active: ${activeArtifacts.length}`}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-cosmic-gold">
+          🏆 {language === 'ru' ? 'Коллекция артефактов' : language === 'es' ? 'Colección de artefactos' : 'Artifact Collection'}
+        </h1>
+        <p className="text-cosmic-silver">
+          {language === 'ru' 
+            ? `Всего артефактов: ${artifacts?.length || 0} | Активных: ${activeArtifacts.length}`
+            : language === 'es' 
+            ? `Total de artefactos: ${artifacts?.length || 0} | Activos: ${activeArtifacts.length}`
+            : `Total artifacts: ${artifacts?.length || 0} | Active: ${activeArtifacts.length}`}
+        </p>
       </div>
 
       {/* Stats Overview */}

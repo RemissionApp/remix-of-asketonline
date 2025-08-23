@@ -37,12 +37,14 @@ import NumerologyPage from './pages/NumerologyPage';
 import MeditationProPage from './pages/MeditationProPage';
 import AffirmationsPage from './pages/AffirmationsPage';
 import CosmicMissionsPage from './pages/CosmicMissionsPage';
+import { ArtifactCollectionPage } from './pages/ArtifactCollectionPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
+import { NotificationProvider } from './components/notifications/NotificationSystem';
 
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
 
@@ -185,8 +187,9 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <BrowserRouter>
-          <AppInitializer />
+        <NotificationProvider>
+          <BrowserRouter>
+            <AppInitializer />
             <Routes>
               <Route path="/" element={<WelcomePage />} />
               <Route path="/language" element={<LanguagePage />} />
@@ -216,6 +219,7 @@ const App = () => {
               <Route path="/universe-call" element={<CallPage />} />
               <Route path="/numerology" element={<NumerologyPage />} />
               <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
+              <Route path="/artifacts" element={<ArtifactCollectionPage />} />
               {/* Legal Pages */}
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
@@ -226,8 +230,9 @@ const App = () => {
             <PWAInstallPrompt />
             <PWAUpdateNotification />
             <Toaster />
-          <Sonner />
-        </BrowserRouter>
+            <Sonner />
+          </BrowserRouter>
+        </NotificationProvider>
       </ErrorBoundary>
     </QueryClientProvider>
   );

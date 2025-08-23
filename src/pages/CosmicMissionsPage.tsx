@@ -13,6 +13,7 @@ import {
   filterMissions,
 } from '@/components/missions/MissionsUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MissionNavigation } from '@/components/navigation/MissionNavigation';
 
 const CosmicMissionsPage: React.FC = () => {
   const { language, userProfile } = useAppStore();
@@ -24,6 +25,8 @@ const CosmicMissionsPage: React.FC = () => {
       <TopBar />
 
       <main className="flex-1 container mx-auto px-4 py-6">
+        <MissionNavigation />
+        
         <h1
           className={`text-2xl ${language === 'en' ? 'font-serif' : ''} mb-6 text-cosmic-gold`}
         >
