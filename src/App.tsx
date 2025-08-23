@@ -37,6 +37,8 @@ import NumerologyPage from './pages/NumerologyPage';
 import MeditationProPage from './pages/MeditationProPage';
 import AffirmationsPage from './pages/AffirmationsPage';
 import CosmicMissionsPage from './pages/CosmicMissionsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 
@@ -211,6 +213,9 @@ const App = () => {
               <Route path="/universe-call" element={<CallPage />} />
               <Route path="/numerology" element={<NumerologyPage />} />
               <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
+              {/* Legal Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

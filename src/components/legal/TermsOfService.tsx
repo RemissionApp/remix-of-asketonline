@@ -14,8 +14,7 @@ export const TermsOfService: React.FC = () => {
         </p>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[600px] pr-4">
-          <div className="space-y-6 text-cosmic-text">
+        <div className="space-y-6 text-cosmic-text">
             <section>
               <h3 className="text-lg font-semibold mb-3 text-cosmic-primary">
                 Введение
@@ -240,7 +239,6 @@ export const TermsOfService: React.FC = () => {
               </p>
             </section>
           </div>
-        </ScrollArea>
       </CardContent>
     </Card>
   );
