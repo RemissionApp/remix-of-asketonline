@@ -644,6 +644,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
                 achievement?: string;
               },
               completed: false,
+              difficulty: 'novice' as const,
+              category: 'ritual' as const,
+              duration: 1,
             }
           : undefined;
 

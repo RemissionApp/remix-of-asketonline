@@ -46,6 +46,9 @@ const CosmicMissionsPage: React.FC = () => {
       },
       completed: false,
       type: 'multi-day',
+      difficulty: 'novice',
+      category: 'ritual',
+      duration: 7,
       progress: Array(7)
         .fill(0)
         .map((_, i) => ({
@@ -81,6 +84,9 @@ const CosmicMissionsPage: React.FC = () => {
       },
       completed: false,
       type: 'multi-day',
+      difficulty: 'explorer',
+      category: 'mystical',
+      duration: 3,
       progress: Array(3)
         .fill(0)
         .map((_, i) => ({
@@ -116,6 +122,9 @@ const CosmicMissionsPage: React.FC = () => {
       },
       completed: false,
       type: 'multi-day',
+      difficulty: 'explorer',
+      category: 'social',
+      duration: 10,
       progress: Array(10)
         .fill(0)
         .map((_, i) => ({
@@ -156,6 +165,9 @@ const CosmicMissionsPage: React.FC = () => {
       },
       completed: false,
       type: 'single',
+      difficulty: 'novice',
+      category: 'ritual',
+      duration: 1,
     },
   ];
 

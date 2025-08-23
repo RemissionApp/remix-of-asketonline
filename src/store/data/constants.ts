@@ -55,6 +55,9 @@ export const availableMissions: Mission[] = [
       energyPoints: 30,
     },
     completed: false,
+    difficulty: 'novice',
+    category: 'ritual',
+    duration: 3,
   },
   {
     id: 'mission-2',
@@ -67,6 +70,9 @@ export const availableMissions: Mission[] = [
       achievement: 'universe-seeker',
     },
     completed: false,
+    difficulty: 'explorer',
+    category: 'social',
+    duration: 1,
   },
 ];
 
