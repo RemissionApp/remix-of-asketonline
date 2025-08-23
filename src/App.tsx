@@ -23,6 +23,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import OnboardingPage from './pages/OnboardingPage';
 import MainPage from './pages/MainPage';
 import CreatePactPage from './pages/CreatePactPage';
+import PactsPage from './pages/PactsPage';
 import UniversePage from './pages/UniversePage';
 import ProfilePage from './pages/ProfilePage';
 import NotFound from './pages/NotFound';
@@ -199,6 +200,7 @@ const App = () => {
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/main" element={<MainPage />} />
               <Route path="/create-pact" element={<CreatePactPage />} />
+              <Route path="/pacts" element={<PactsPage />} />
               <Route path="/universe" element={<UniversePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/account-settings" element={<AccountSettingsPage />} />
