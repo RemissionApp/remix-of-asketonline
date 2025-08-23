@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,10 @@ import { useTranslations } from '@/hooks/useTranslations';
 const TermsOfServicePage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic-dark text-cosmic-text">
