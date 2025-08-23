@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StarField } from '@/components/StarField';
+import { CompactLanguageSelector } from '@/components/ui/CompactLanguageSelector';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
@@ -52,7 +53,7 @@ const DeleteAccountPage: React.FC = () => {
       
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
-        <div className="p-4">
+        <div className="p-4 flex justify-between items-center">
           <Button
             variant="ghost"
             onClick={() => navigate('/profile')}
@@ -61,6 +62,7 @@ const DeleteAccountPage: React.FC = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             {t.common?.back || 'Back'}
           </Button>
+          <CompactLanguageSelector />
         </div>
 
         {/* Main Content */}
