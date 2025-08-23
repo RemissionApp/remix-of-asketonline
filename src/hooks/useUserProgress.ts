@@ -49,30 +49,70 @@ export const useUserProgress = () => {
     setIsLoading(true);
     
     try {
-      // Моковые данные для демонстрации (в реальной версии нужно создать соответствующие таблицы)
-      // Имитируем данные на основе существующих таблиц
-      const missionsData = [{ id: '1' }, { id: '2' }, { id: '3' }]; // Моковые данные
-      const artifactsData = [{ id: '1' }, { id: '2' }]; // Моковые данные
+      // Получаем завершенные миссии
+      const { data: completedMissions, error: missionsError } = await supabase
+        .from('mission_progress_detailed')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('completed', true);
 
+      if (missionsError) throw missionsError;
 
-      // Получаем общую энергию
-      const totalEnergyEarned = (missionsData?.length || 0) * 15 + (artifactsData?.length || 0) * 10;
+      // Получаем артефакты
+      const { data: artifacts, error: artifactsError } = await supabase
+        .from('cosmic_artifacts')
+        .select('*')
+        .eq('user_id', user.id);
 
-      // Рассчитываем уровень и опыт
-      const totalXP = totalEnergyEarned;
-      const { level, xpToNext } = calculateLevel(totalXP);
+      if (artifactsError) throw artifactsError;
 
-      // Получаем текущую "серию" (пока простая логика)
-      const currentStreak = Math.min((missionsData?.length || 0), 7);
+      // Получаем профиль пользователя
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Получаем достижения
+      const { data: achievements, error: achievementsError } = await supabase
+        .from('achievements')
+        .select('*')
+        .eq('user_id', user.id)
+        .not('unlocked_at', 'is', null);
+
+      if (achievementsError) throw achievementsError;
+
+      // Рассчитываем статистику
+      const missionsCompleted = completedMissions?.length || 0;
+      const artifactsCollected = artifacts?.length || 0;
+      const totalEnergyEarned = profile?.energy_points || 0;
+
+      // Рассчитываем уровень и опыт на основе энергии
+      const { level, xpToNext } = calculateLevel(totalEnergyEarned);
+
+      // Рассчитываем текущую серию (последние 7 дней выполнения миссий)
+      const recentMissions = completedMissions?.filter(mission => {
+        const completedDate = new Date(mission.completed_at);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return completedDate >= weekAgo;
+      }) || [];
+      
+      const currentStreak = Math.min(recentMissions.length, 7);
+
+      // Получаем специальные события из достижений
+      const specialEvents = achievements?.map(achievement => achievement.title) || [];
 
       setStats({
-        missionsCompleted: missionsData?.length || 0,
-        artifactsCollected: artifactsData?.length || 0,
+        missionsCompleted,
+        artifactsCollected,
         totalEnergyEarned,
         currentStreak,
-        specialEvents: [], // Пока пустой массив
+        specialEvents,
         level,
-        experiencePoints: totalXP,
+        experiencePoints: totalEnergyEarned,
         experienceToNextLevel: xpToNext,
       });
 
@@ -83,39 +123,85 @@ export const useUserProgress = () => {
     }
   };
 
-  const addExperience = (amount: number) => {
-    setStats(prev => {
-      const newTotalXP = prev.experiencePoints + amount;
-      const { level, xpToNext } = calculateLevel(newTotalXP);
-      
-      return {
-        ...prev,
-        experiencePoints: newTotalXP,
-        level,
-        experienceToNextLevel: xpToNext,
-        totalEnergyEarned: prev.totalEnergyEarned + amount,
-      };
-    });
+  const addExperience = async (amount: number) => {
+    if (!user?.id) return;
+
+    try {
+      // Обновляем энергетические очки в профиле
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          energy_points: stats.totalEnergyEarned + amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Обновляем локальное состояние
+      setStats(prev => {
+        const newTotalXP = prev.experiencePoints + amount;
+        const { level, xpToNext } = calculateLevel(newTotalXP);
+        
+        return {
+          ...prev,
+          experiencePoints: newTotalXP,
+          level,
+          experienceToNextLevel: xpToNext,
+          totalEnergyEarned: prev.totalEnergyEarned + amount,
+        };
+      });
+
+    } catch (error) {
+      console.error('Error updating experience:', error);
+    }
   };
 
-  const updateMissionCount = () => {
+  const updateMissionCount = async () => {
+    // Обновляем локальное состояние
     setStats(prev => ({
       ...prev,
       missionsCompleted: prev.missionsCompleted + 1,
     }));
     
     // Добавляем опыт за выполнение миссии
-    addExperience(15);
+    await addExperience(15);
   };
 
-  const updateArtifactCount = () => {
+  const updateArtifactCount = async () => {
+    // Обновляем локальное состояние
     setStats(prev => ({
       ...prev,
       artifactsCollected: prev.artifactsCollected + 1,
     }));
     
     // Добавляем опыт за получение артефакта
-    addExperience(10);
+    await addExperience(10);
+  };
+
+  const createAchievement = async (type: string, title: string, description: string, icon: string) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('achievements')
+        .insert({
+          user_id: user.id,
+          achievement_type: type,
+          title,
+          description,
+          icon,
+          unlocked_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      // Обновляем прогресс после создания достижения
+      await fetchUserProgress();
+
+    } catch (error) {
+      console.error('Error creating achievement:', error);
+    }
   };
 
   useEffect(() => {
@@ -129,5 +215,6 @@ export const useUserProgress = () => {
     addExperience,
     updateMissionCount,
     updateArtifactCount,
+    createAchievement,
   };
 };
