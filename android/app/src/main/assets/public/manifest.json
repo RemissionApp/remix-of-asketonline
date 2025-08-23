@@ -2,64 +2,64 @@
   "name": "Asket App",
   "short_name": "Asket",
   "description": "Asket App: Твой путь к просветлению через аскезу, медитацию и связь с Космосом. Развивайся и познавай себя.",
-  "start_url": "./",
+  "start_url": "https://asket.online/",
   "display": "standalone",
   "background_color": "#16002A",
   "theme_color": "#4A0070",
   "orientation": "portrait-primary",
-  "scope": "./",
+  "scope": "https://asket.online/",
   "lang": "ru",
   "dir": "ltr",
   "icons": [
     {
-      "src": "./favicon.ico",
+      "src": "/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "./icon-72.png",
+      "src": "/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-96.png",
+      "src": "/icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-128.png",
+      "src": "/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-144.png",
+      "src": "/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-152.png",
+      "src": "/icon-152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "./icon-384.png",
+      "src": "/icon-384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512.png", 
+      "src": "/icon-512.png", 
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
@@ -67,14 +67,14 @@
   ],
   "screenshots": [
     {
-      "src": "./screenshot-1.png",
+      "src": "/screenshot-1.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Главный экран с активными пактами"
     },
     {
-      "src": "./screenshot-2.png", 
+      "src": "/screenshot-2.png", 
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
@@ -88,29 +88,29 @@
       "name": "Создать аскезу",
       "short_name": "Аскеза",
       "description": "Создать новый пакт аскезы",
-      "url": "./create-pact",
-      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+      "url": "/create-pact",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Вопрос Вселенной",
       "short_name": "Вселенная", 
       "description": "Задать вопрос Вселенной",
-      "url": "./universe",
-      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+      "url": "/universe",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Медитация",
       "short_name": "Медитация",
       "description": "Медитативные практики",
-      "url": "./meditation", 
-      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+      "url": "/meditation", 
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Мой прогресс",
       "short_name": "Прогресс",
       "description": "Посмотреть прогресс развития",
-      "url": "./profile",
-      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+      "url": "/profile",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "prefer_related_applications": false,

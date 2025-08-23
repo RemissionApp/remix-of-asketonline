@@ -13,6 +13,9 @@ import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetin
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
 import { logger } from '@/utils/logger';
+import { PurchaseTestButton } from '@/components/PurchaseTestButton';
+import { RevenueCatTest } from '@/components/RevenueCatTest';
+import { OfferingsDisplay } from '@/components/OfferingsDisplay';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -104,6 +107,21 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 9. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
+      </div>
+
+      {/* 10. RevenueCat Test */}
+      <div className="w-full max-w-lg mx-auto">
+        <RevenueCatTest />
+      </div>
+
+      {/* 11. Offerings Display */}
+      <div className="w-full max-w-lg mx-auto">
+        <OfferingsDisplay />
+      </div>
+
+      {/* 12. Purchase Test Button */}
+      <div className="w-full max-w-lg mx-auto">
+        <PurchaseTestButton />
       </div>
 
       {/* Action Buttons - Remains at the bottom */}
