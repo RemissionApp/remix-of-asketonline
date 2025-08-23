@@ -81,8 +81,23 @@ const AccountSettingsPage: React.FC = () => {
             {/* Legal Documents */}
             <LegalDocuments />
 
-            {/* Delete Account Button */}
-            <div className="pt-6 border-t border-cosmic-accent/20">
+            {/* Data Management Section */}
+            <div className="pt-6 border-t border-cosmic-accent/20 space-y-4">
+              {/* Delete Data Button */}
+              <button
+                onClick={() => {
+                  // TODO: Implement data deletion functionality
+                  alert(t.userProfile?.deleteDataConfirm || 'Функция удаления данных будет реализована');
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-600/30 rounded-lg text-orange-400 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {t.userProfile?.deleteData || 'Очистить все данные'}
+              </button>
+              
+              {/* Delete Account Button */}
               <button
                 onClick={() => navigate('/delete-account')}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-600/30 rounded-lg text-red-400 transition-colors"

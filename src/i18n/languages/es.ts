@@ -328,6 +328,8 @@ export const esTranslations: Translations = {
     nameLabel: 'Nombre',
     birthDateLabel: 'Fecha de Nacimiento',
     namePlaceholder: 'Ingrese su nombre',
+    deleteData: 'Borrar todos los datos',
+    deleteDataConfirm: 'La funcionalidad de eliminación de datos se implementará',
     birthDatePlaceholder: 'Elija su fecha de nacimiento',
     title: 'Perfil de Usuario',
     age: 'Edad',

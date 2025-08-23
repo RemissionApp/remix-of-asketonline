@@ -328,6 +328,8 @@ export const enTranslations: Translations = {
     nameLabel: 'Your Name',
     birthDateLabel: 'Date of Birth',
     namePlaceholder: 'Enter your name',
+    deleteData: 'Clear All Data',
+    deleteDataConfirm: 'Data deletion functionality will be implemented',
     birthDatePlaceholder: 'Choose your date of birth',
     title: 'About You',
     age: 'Age',

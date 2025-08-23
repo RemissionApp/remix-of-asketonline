@@ -328,6 +328,8 @@ export const ruTranslations: Translations = {
     birthDateLabel: 'Дата рождения',
     namePlaceholder: 'Введите ваше имя',
     birthDatePlaceholder: 'Выберите дату рождения',
+    deleteData: 'Очистить все данные',
+    deleteDataConfirm: 'Функция удаления данных будет реализована',
     title: 'О тебе',
     age: 'Возраст',
     continueButton: 'Продолжить',
