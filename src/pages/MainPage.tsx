@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { MissionReminder } from '@/components/missions/MissionReminder';
 import { createLogger } from '@/utils/logger';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
+import { useUserProgress } from '@/hooks/useUserProgress';
 
 const MainPage: React.FC = () => {
   const {
@@ -29,6 +31,7 @@ const MainPage: React.FC = () => {
   const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   const { handleAsyncError } = useErrorHandler();
+  const { stats } = useUserProgress();
 
   const logger = createLogger('MainPage');
 
@@ -113,11 +116,23 @@ const MainPage: React.FC = () => {
         <TopBar />
       </div>
 
+      {/* User Level Display */}
+      <div className="fixed top-20 left-4 right-4 z-40 mt-2">
+        <UserLevelDisplay
+          level={stats.level}
+          experiencePoints={stats.experiencePoints}
+          experienceToNextLevel={stats.experienceToNextLevel}
+          totalEnergyEarned={stats.totalEnergyEarned}
+          className="mx-auto max-w-md"
+        />
+      </div>
+
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
 
-      {/* Main content */}
-      <MainContent
+      {/* Main content with top margin for level display */}
+      <div className="pt-32">
+        <MainContent
         activePacts={activePacts}
         allPacts={allPacts}
         currentPactIndex={currentPactIndex}
@@ -129,7 +144,8 @@ const MainPage: React.FC = () => {
         handleNextPact={handleNextPact}
         getAscesisPrefix={getAscesisPrefix}
         formatRejection={formatRejection}
-      />
+        />
+      </div>
 
       {/* Mission Reminder */}
       <MissionReminder />

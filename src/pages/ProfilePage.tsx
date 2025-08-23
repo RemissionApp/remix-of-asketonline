@@ -7,9 +7,12 @@ import { PWASettingsPanel } from '@/components/PWAFeatures/PWASettingsPanel';
 import { ShareButton } from '@/components/PWAFeatures/ShareButton';
 import { LogoutButton } from '@/components/ProfilePage/LogoutButton';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
+import { useUserProgress } from '@/hooks/useUserProgress';
 
 const ProfilePage: React.FC = () => {
   const { userProfile, language } = useAppStore();
+  const { stats } = useUserProgress();
 
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -29,6 +32,15 @@ const ProfilePage: React.FC = () => {
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark opacity-30" />
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-8 max-w-md mx-auto w-full space-y-6">
+        {/* User Level Display - Extended info in profile */}
+        <UserLevelDisplay
+          level={stats.level}
+          experiencePoints={stats.experiencePoints}
+          experienceToNextLevel={stats.experienceToNextLevel}
+          totalEnergyEarned={stats.totalEnergyEarned}
+          className="w-full"
+        />
+        
         <ProfileSection />
 
         {/* PWA Settings Panel */}
