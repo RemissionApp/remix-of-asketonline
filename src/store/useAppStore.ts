@@ -116,4 +116,116 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       }
     }));
   },
+
+  deleteAccount: async (password: string) => {
+    const { user } = get();
+    if (!user) throw new Error('No user found');
+
+    try {
+      // Import supabase client
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // First verify password by trying to sign in
+      const { error: passwordError } = await supabase.auth.signInWithPassword({
+        email: user.email!,
+        password: password,
+      });
+
+      if (passwordError) {
+        throw new Error('Invalid password');
+      }
+
+      // Delete all user data from tables
+      const userId = user.id;
+      
+      // Delete in order to respect foreign key constraints
+      // First get pact IDs, then delete pact_days
+      const { data: pactIds } = await supabase
+        .from('pacts')
+        .select('id')
+        .eq('user_id', userId);
+      
+      if (pactIds && pactIds.length > 0) {
+        const pactIdList = pactIds.map(p => p.id);
+        await supabase.from('pact_days').delete().in('pact_id', pactIdList);
+      }
+      await supabase.from('achievements').delete().eq('user_id', userId);
+      await supabase.from('pacts').delete().eq('user_id', userId);
+      await supabase.from('universe_questions').delete().eq('user_id', userId);
+      await supabase.from('universe_chat_messages').delete().eq('user_id', userId);
+      await supabase.from('universe_chat_sessions').delete().eq('user_id', userId);
+      await supabase.from('missions').delete().eq('user_id', userId);
+      await supabase.from('mission_progress').delete().eq('user_id', userId);
+      await supabase.from('detailed_horoscopes').delete().eq('user_id', userId);
+      await supabase.from('full_horoscopes').delete().eq('user_id', userId);
+      await supabase.from('astro_profiles').delete().eq('user_id', userId);
+      await supabase.from('numerology_readings').delete().eq('user_id', userId);
+      await supabase.from('numerology_descriptions').delete().eq('user_id', userId);
+      await supabase.from('push_subscriptions').delete().eq('user_id', userId);
+      await supabase.from('subscriptions').delete().eq('user_id', userId);
+      await supabase.from('profiles').delete().eq('id', userId);
+
+      // Delete auth user account
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
+      if (deleteError) {
+        console.error('Error deleting auth user:', deleteError);
+      }
+
+      // Clean up auth state
+      const cleanupAuthState = () => {
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+        Object.keys(sessionStorage || {}).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      };
+
+      cleanupAuthState();
+
+      // Sign out globally
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+
+      // Clear local state
+      set({
+        user: null,
+        userProfile: {
+          name: 'Искатель',
+          email: '',
+          age: null,
+          energyPoints: 0,
+          goal: 'Познать свою истинную силу',
+          isPro: false,
+          rank: 'seeker',
+          zodiacSign: '',
+          totalDays: 0,
+          achievements: [...defaultAchievements],
+          birthDate: null,
+          avatar_url: null,
+          activeMission: undefined,
+        },
+        pacts: [],
+        chatSessions: [],
+        chatMessages: [],
+        currentChatSession: null,
+      });
+
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 100);
+
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      throw error;
+    }
+  },
 }));

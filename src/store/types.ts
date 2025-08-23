@@ -121,4 +121,7 @@ export interface AppState {
   setSoundVolume: (volume: number) => void;
   loadSoundSettings: () => void;
   initializeSettings: () => void;
+
+  // Account deletion
+  deleteAccount: (password: string) => Promise<void>;
 }

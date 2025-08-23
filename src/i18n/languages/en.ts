@@ -336,6 +336,7 @@ export const enTranslations: Translations = {
     languageLabel: 'Language',
     birthDateRequired: 'Date of birth is required',
     logout: 'Logout',
+    deleteAccount: 'Delete account data',
   },
   zodiac: {
     yourZodiacSign: 'Your zodiac sign',
@@ -409,5 +410,18 @@ export const enTranslations: Translations = {
     instructionsTitle: 'Instructions',
     instructions: 'Enter this code in the Asket app to verify your email address. The code is valid for 5 minutes.',
     footerNote: 'If you didn\'t sign up for Asket, please ignore this email.',
+  },
+  deleteAccount: {
+    title: 'Delete Account',
+    warning: 'This action is irreversible!',
+    description: 'All your data including pacts, achievements, and profile information will be permanently deleted.',
+    confirmationText: 'I understand that this action is irreversible and all my data will be permanently deleted',
+    passwordLabel: 'Enter your password to confirm',
+    passwordPlaceholder: 'Your password',
+    deleteButton: 'Delete Account Permanently',
+    deleting: 'Deleting...',
+    fillAllFields: 'Please fill all fields',
+    accountDeleted: 'Account deleted successfully',
+    deleteError: 'Error deleting account',
   },
 };

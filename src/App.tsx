@@ -39,6 +39,7 @@ import AffirmationsPage from './pages/AffirmationsPage';
 import CosmicMissionsPage from './pages/CosmicMissionsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
+import DeleteAccountPage from './pages/DeleteAccountPage';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 
@@ -216,6 +217,7 @@ const App = () => {
               {/* Legal Pages */}
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+              <Route path="/delete-account" element={<DeleteAccountPage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

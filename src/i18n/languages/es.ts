@@ -375,4 +375,17 @@ export const esTranslations: Translations = {
     instructions: 'Ingresa este código en la aplicación Asket para verificar tu dirección de email. El código es válido por 5 minutos.',
     footerNote: 'Si no te registraste en Asket, ignora este email.',
   },
+  deleteAccount: {
+    title: 'Eliminar Cuenta',
+    warning: '¡Esta acción es irreversible!',
+    description: 'Todos sus datos, incluidas las ascesis, logros e información del perfil se eliminarán permanentemente.',
+    confirmationText: 'Entiendo que esta acción es irreversible y todos mis datos serán eliminados permanentemente',
+    passwordLabel: 'Ingrese su contraseña para confirmar',
+    passwordPlaceholder: 'Su contraseña',
+    deleteButton: 'Eliminar Cuenta Permanentemente',
+    deleting: 'Eliminando...',
+    fillAllFields: 'Complete todos los campos',
+    accountDeleted: 'Cuenta eliminada exitosamente',
+    deleteError: 'Error al eliminar la cuenta',
+  },
 };

@@ -252,6 +252,20 @@ export interface EmailOtpTranslations {
   footerNote: string;
 }
 
+export interface DeleteAccountTranslations {
+  title: string;
+  warning: string;
+  description: string;
+  confirmationText: string;
+  passwordLabel: string;
+  passwordPlaceholder: string;
+  deleteButton: string;
+  deleting: string;
+  fillAllFields: string;
+  accountDeleted: string;
+  deleteError: string;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
@@ -275,4 +289,5 @@ export interface Translations {
   horoscope?: HoroscopeTranslations;
   affirmations?: AffirmationsTranslations; // Add this new field to support affirmations
   emailOtp?: EmailOtpTranslations;
+  deleteAccount?: DeleteAccountTranslations;
 }
