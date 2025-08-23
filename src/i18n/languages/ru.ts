@@ -336,6 +336,7 @@ export const ruTranslations: Translations = {
     birthDateRequired: 'Дата рождения обязательна',
     logout: 'Выйти',
     deleteAccount: 'Удалить данные аккаунта',
+    accountSettings: 'Настройки аккаунта',
   },
   zodiac: {
     yourZodiacSign: 'Ваш знак зодиака',

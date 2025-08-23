@@ -336,6 +336,8 @@ export const esTranslations: Translations = {
     languageLabel: 'Idioma',
     birthDateRequired: 'La fecha de nacimiento es obligatoria',
     logout: 'Cerrar sesión',
+    deleteAccount: 'Eliminar datos de la cuenta',
+    accountSettings: 'Configuración de cuenta',
   },
   zodiac: {
     yourZodiacSign: 'Tu signo zodiacal',

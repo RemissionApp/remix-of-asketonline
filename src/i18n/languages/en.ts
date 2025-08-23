@@ -337,6 +337,7 @@ export const enTranslations: Translations = {
     birthDateRequired: 'Date of birth is required',
     logout: 'Logout',
     deleteAccount: 'Delete account data',
+    accountSettings: 'Account Settings',
   },
   zodiac: {
     yourZodiacSign: 'Your zodiac sign',

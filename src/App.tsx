@@ -40,6 +40,7 @@ import CosmicMissionsPage from './pages/CosmicMissionsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 
@@ -196,6 +197,7 @@ const App = () => {
               <Route path="/create-pact" element={<CreatePactPage />} />
               <Route path="/universe" element={<UniversePage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/account-settings" element={<AccountSettingsPage />} />
               <Route path="/comparison" element={<ComparisonPage />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route
