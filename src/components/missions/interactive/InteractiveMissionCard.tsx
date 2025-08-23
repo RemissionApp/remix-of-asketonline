@@ -207,9 +207,9 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
               </div>
               <Progress value={progressPercentage} className="h-2" />
               <ProgressSyncIndicator 
-                connected={!isLoading} 
-                lastSync={new Date()} 
-                syncing={isSaving} 
+                isOnline={navigator.onLine} 
+                syncStatus={isSaving ? 'syncing' : 'synced'} 
+                lastSyncTime={new Date()} 
               />
             </div>
 
