@@ -6,173 +6,16 @@ import { useAppStore } from '@/store/useAppStore';
 import { Mission } from '@/types';
 import { MissionsTabBar } from '@/components/missions/MissionsTabBar';
 import { MissionsList } from '@/components/missions/MissionsList';
+import { MissionCategories } from '@/components/missions/categories/MissionCategories';
+import { RecommendedMission } from '@/components/missions/recommendations/RecommendedMission';
 import {
   getPageTitle,
   filterMissions,
 } from '@/components/missions/MissionsUtils';
-import { Flag, Star, CheckCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const CosmicMissionsPage: React.FC = () => {
   const { language, userProfile } = useAppStore();
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>(
-    'all'
-  );
-
-  // Example missions data - in a real app, this would come from the store/backend
-  const missions: Mission[] = [
-    {
-      id: 'ritual-1',
-      title:
-        language === 'ru'
-          ? 'Утренний ритуал осознанности'
-          : language === 'es'
-            ? 'Ritual matutino de atención plena'
-            : 'Morning mindfulness ritual',
-      description:
-        language === 'ru'
-          ? 'Практикуйте 5-минутную медитацию каждое утро в течение 7 дней'
-          : language === 'es'
-            ? 'Practica 5 minutos de meditación cada mañana durante 7 días'
-            : 'Practice 5-minute meditation every morning for 7 days',
-      requirements: [
-        language === 'ru'
-          ? 'Медитируйте 5 минут каждое утро'
-          : language === 'es'
-            ? 'Medita 5 minutos cada mañana'
-            : 'Meditate for 5 minutes each morning',
-      ],
-      reward: {
-        energyPoints: 40,
-      },
-      completed: false,
-      type: 'multi-day',
-      difficulty: 'novice',
-      category: 'ritual',
-      duration: 7,
-      progress: Array(7)
-        .fill(0)
-        .map((_, i) => ({
-          day: i + 1,
-          completed: false,
-          date: '',
-        })),
-    },
-    {
-      id: 'challenge-1',
-      title:
-        language === 'ru'
-          ? 'Космический челлендж тишины'
-          : language === 'es'
-            ? 'Desafío cósmico del silencio'
-            : 'Cosmic silence challenge',
-      description:
-        language === 'ru'
-          ? 'Проведите один час в полной тишине каждый день в течение 3 дней'
-          : language === 'es'
-            ? 'Pasa una hora en silencio completo cada día durante 3 días'
-            : 'Spend one hour in complete silence every day for 3 days',
-      requirements: [
-        language === 'ru'
-          ? 'Один час без разговоров и гаджетов'
-          : language === 'es'
-            ? 'Una hora sin hablar ni usar dispositivos'
-            : 'One hour without talking or using devices',
-      ],
-      reward: {
-        energyPoints: 25,
-        achievement: 'inner-silence',
-      },
-      completed: false,
-      type: 'multi-day',
-      difficulty: 'explorer',
-      category: 'mystical',
-      duration: 3,
-      progress: Array(3)
-        .fill(0)
-        .map((_, i) => ({
-          day: i + 1,
-          completed: false,
-          date: '',
-        })),
-    },
-    {
-      id: 'chain-1',
-      title:
-        language === 'ru'
-          ? 'Цепочка благодарности'
-          : language === 'es'
-            ? 'Cadena de gratitud'
-            : 'Gratitude chain',
-      description:
-        language === 'ru'
-          ? 'Запишите три вещи, за которые вы благодарны, каждый день в течение 10 дней'
-          : language === 'es'
-            ? 'Escribe tres cosas por las que estés agradecido cada día durante 10 días'
-            : 'Write down three things you are grateful for every day for 10 days',
-      requirements: [
-        language === 'ru'
-          ? 'Запишите 3 благодарности ежедневно'
-          : language === 'es'
-            ? 'Escribe 3 gratitudes diariamente'
-            : 'Write 3 gratitudes daily',
-      ],
-      reward: {
-        energyPoints: 50,
-        achievement: 'gratitude-master',
-      },
-      completed: false,
-      type: 'multi-day',
-      difficulty: 'explorer',
-      category: 'social',
-      duration: 10,
-      progress: Array(10)
-        .fill(0)
-        .map((_, i) => ({
-          day: i + 1,
-          completed: false,
-          date: '',
-        })),
-    },
-    {
-      id: 'single-1',
-      title:
-        language === 'ru'
-          ? 'Ритуал очищения пространства'
-          : language === 'es'
-            ? 'Ritual de limpieza de espacio'
-            : 'Space cleansing ritual',
-      description:
-        language === 'ru'
-          ? 'Очистите свое жизненное пространство с помощью энергетического ритуала'
-          : language === 'es'
-            ? 'Limpia tu espacio vital con un ritual energético'
-            : 'Cleanse your living space with an energy ritual',
-      requirements: [
-        language === 'ru'
-          ? 'Удалите ненужные предметы'
-          : language === 'es'
-            ? 'Elimina objetos innecesarios'
-            : 'Remove unnecessary items',
-
-        language === 'ru'
-          ? 'Проведите энергетическую очистку'
-          : language === 'es'
-            ? 'Realiza una limpieza energética'
-            : 'Perform an energy cleanse',
-      ],
-      reward: {
-        energyPoints: 15,
-      },
-      completed: false,
-      type: 'single',
-      difficulty: 'novice',
-      category: 'ritual',
-      duration: 1,
-    },
-  ];
-
-  // Filter missions based on active tab
-  const filteredMissions = filterMissions(missions, activeTab);
 
   return (
     <div className="min-h-screen flex flex-col relative pb-16">
@@ -187,11 +30,46 @@ const CosmicMissionsPage: React.FC = () => {
           {getPageTitle(language)}
         </h1>
 
-        {/* Tabs for filtering missions */}
-        <MissionsTabBar activeTab={activeTab} setActiveTab={setActiveTab} />
+        {/* Enhanced Mission Interface */}
+        <Tabs defaultValue="recommended" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 bg-cosmic-accent/10 border border-cosmic-accent/20">
+            <TabsTrigger 
+              value="recommended" 
+              className="data-[state=active]:bg-cosmic-gold data-[state=active]:text-cosmic-dark"
+            >
+              {language === 'ru' ? 'Рекомендации' : language === 'es' ? 'Recomendaciones' : 'Recommended'}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="browse" 
+              className="data-[state=active]:bg-cosmic-gold data-[state=active]:text-cosmic-dark"
+            >
+              {language === 'ru' ? 'Обзор' : language === 'es' ? 'Explorar' : 'Browse'}
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Missions list */}
-        <MissionsList missions={filteredMissions} />
+          <TabsContent value="recommended" className="space-y-6">
+            <RecommendedMission />
+            
+            {userProfile?.activeMission && (
+              <div className="bg-cosmic-indigo/10 border border-cosmic-indigo/20 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-cosmic-indigo mb-2">
+                  {language === 'ru' ? 'Активная миссия' : language === 'es' ? 'Misión activa' : 'Active Mission'}
+                </h3>
+                <p className="text-cosmic-silver text-sm">
+                  {language === 'ru' 
+                    ? 'У вас есть активная миссия. Завершите её, чтобы принять новую.'
+                    : language === 'es'
+                      ? 'Tienes una misión activa. Complétala para aceptar una nueva.'
+                      : 'You have an active mission. Complete it to accept a new one.'}
+                </p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="browse" className="space-y-6">
+            <MissionCategories />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <BottomNavigation />
