@@ -40,7 +40,7 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
       onPlay();
     } else {
       // Default play action
-      console.log(`Playing meditation: ${title}`);
+      
     }
   };
 

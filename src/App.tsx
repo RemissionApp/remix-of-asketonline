@@ -49,13 +49,13 @@ import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 import { NotificationProvider } from './components/notifications/NotificationSystem';
 
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
+import { performanceMonitor } from './utils/performance';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
 
 // Компонент глобальной инициализации приложения
 const AppInitializer = () => {
-  console.log('AppInitializer rendering');
   const logger = createLogger('AppInitializer');
 
   try {
@@ -76,6 +76,9 @@ const AppInitializer = () => {
 
       // Инициализируем push-уведомления
       NotificationIntegrations.initializeAll();
+      
+      // Инициализируем мониторинг производительности
+      performanceMonitor.initWebVitals();
 
       // Настраиваем слушатель изменений состояния аутентификации
       const {
@@ -185,7 +188,6 @@ const AuthCallback = () => {
 };
 
 const App = () => {
-  console.log('App component rendering');
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>

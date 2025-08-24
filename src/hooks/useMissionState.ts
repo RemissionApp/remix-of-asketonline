@@ -67,7 +67,7 @@ export const useMissionState = (mission: Mission) => {
         
         case 'unlock':
           // Handle content unlocking logic
-          console.log('Unlocking content:', consequence.value);
+          
           break;
         
         case 'message':

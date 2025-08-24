@@ -62,7 +62,7 @@ export const useEnhancedMissionState = (mission: Mission) => {
           break;
         
         case 'unlock':
-          console.log('Unlocking content:', consequence.value);
+          
           // Show unlock notification
           showNotification({
             type: 'milestone',

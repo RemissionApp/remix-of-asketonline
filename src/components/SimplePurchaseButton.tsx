@@ -15,7 +15,7 @@ export const SimplePurchaseButton: React.FC = () => {
 
   const handlePurchase = async () => {
     if (!offerings.length || !offerings[0].availablePackages.length) {
-      console.log('Нет доступных предложений');
+      
       return;
     }
 

@@ -15,7 +15,7 @@ const LOG_LEVELS: LogLevel = {
 };
 
 const isDevelopment = import.meta.env.DEV;
-const currentLogLevel = isDevelopment ? LOG_LEVELS.DEBUG : LOG_LEVELS.ERROR;
+const currentLogLevel = isDevelopment ? LOG_LEVELS.DEBUG : LOG_LEVELS.NONE;
 
 class Logger {
   private context?: string;
@@ -31,24 +31,25 @@ class Logger {
   }
 
   error(message: string, error?: Error | unknown, data?: any) {
-    if (currentLogLevel >= LOG_LEVELS.ERROR) {
+    // В production логируем только критические ошибки  
+    if (isDevelopment || currentLogLevel >= LOG_LEVELS.ERROR) {
       console.error(this.formatMessage('ERROR', message), error, data);
+    }
 
-      // В продакшене можно отправлять в сервис мониторинга
-      if (!isDevelopment && error instanceof Error) {
-        this.sendToMonitoring('error', message, error, data);
-      }
+    // В продакшене отправляем в сервис мониторинга
+    if (!isDevelopment && error instanceof Error) {
+      this.sendToMonitoring('error', message, error, data);
     }
   }
 
   warn(message: string, data?: any) {
-    if (currentLogLevel >= LOG_LEVELS.WARN) {
+    if (isDevelopment && currentLogLevel >= LOG_LEVELS.WARN) {
       console.warn(this.formatMessage('WARN', message), data);
     }
   }
 
   info(message: string, data?: any) {
-    if (currentLogLevel >= LOG_LEVELS.INFO) {
+    if (isDevelopment && currentLogLevel >= LOG_LEVELS.INFO) {
       console.info(this.formatMessage('INFO', message), data);
     }
   }
@@ -80,15 +81,12 @@ export const logger = new Logger();
 
 // Утилита для создания контекстных логгеров
 export const createLogger = (context: string) => {
+  const contextLogger = new Logger(context);
   return {
-    info: (message: string, data?: any) =>
-      logger.info(`[${context}] ${message}`, data),
-    warn: (message: string, data?: any) =>
-      logger.warn(`[${context}] ${message}`, data),
-    error: (message: string, error?: Error | unknown, data?: any) =>
-      logger.error(`[${context}] ${message}`, error, data),
-    debug: (message: string, data?: any) =>
-      logger.debug(`[${context}] ${message}`, data),
+    info: (message: string, data?: any) => contextLogger.info(message, data),
+    warn: (message: string, data?: any) => contextLogger.warn(message, data),
+    error: (message: string, error?: Error | unknown, data?: any) => contextLogger.error(message, error, data),
+    debug: (message: string, data?: any) => contextLogger.debug(message, data),
   };
 };
 

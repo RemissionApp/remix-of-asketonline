@@ -15,7 +15,7 @@ export const HoroscopeProOverlay: React.FC<HoroscopeProOverlayProps> = ({
   language,
   zodiacInfo,
 }) => {
-  console.log('Rendering ProOverlay for zodiacInfo:', zodiacInfo);
+  
 
   return (
     <ProFeatureOverlay
