@@ -98,17 +98,23 @@ export const useOptimizedDatabase = () => {
           .eq('id', userId)
       ];
 
-      // Check if pact is completed
-      if (incompleteDays.length === 1) {
-        updates.push(
-          supabase
-            .from('pacts')
-            .update({ status: 'completed' })
-            .eq('id', pactId)
-        );
+      // Execute all updates
+      const results = await Promise.all(updates);
+      
+      // Check for errors in any of the updates
+      for (const result of results) {
+        if (result.error) throw result.error;
       }
 
-      await Promise.all(updates);
+      // Check if pact is completed (if this was the last day)
+      if (incompleteDays.length === 1) {
+        const { error: pactError } = await supabase
+          .from('pacts')
+          .update({ status: 'completed' })
+          .eq('id', pactId);
+        
+        if (pactError) throw pactError;
+      }
 
       const totalCompletedDays = await supabase
         .from('pact_days')
