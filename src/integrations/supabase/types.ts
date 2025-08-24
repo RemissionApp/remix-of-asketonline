@@ -752,7 +752,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_verification_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: string
+      }
+      validate_verification_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
