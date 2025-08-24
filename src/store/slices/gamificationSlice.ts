@@ -23,16 +23,17 @@ export const createGamificationSlice: StateCreator<
   [],
   GamificationSlice
 > = (set, get) => ({
-  // Add energy points
+  // Add energy points (deprecated - use useOptimizedProfileCache)
   addEnergyPoints: async points => {
+    console.warn('addEnergyPoints is deprecated. Use useOptimizedProfileCache.updateEnergy instead.');
+    
     const { user, userProfile } = get();
-
     if (!user) return;
 
     try {
       const newTotal = (userProfile.energyPoints || 0) + points;
 
-      // Update in database
+      // Quick fallback update
       const { error } = await supabase
         .from('profiles')
         .update({ energy_points: newTotal })
@@ -40,7 +41,6 @@ export const createGamificationSlice: StateCreator<
 
       if (error) throw error;
 
-      // Update local state
       set(state => ({
         userProfile: {
           ...state.userProfile,

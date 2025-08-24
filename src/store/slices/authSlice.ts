@@ -455,30 +455,23 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   },
 
   updateUserProfile: async (profileData: Partial<UserProfile>) => {
+    // This function is deprecated. Use useOptimizedProfileCache instead.
+    // Keeping for backward compatibility only.
+    logger.warn('updateUserProfile is deprecated. Use useOptimizedProfileCache instead.');
+    
+    // Fallback implementation for compatibility
     const { user } = get();
-
-    if (!user) {
-      logger.error('No user found for profile update');
-      return;
-    }
-
-    logger.debug('Updating profile with fields', profileData);
-
-    set({ loading: true });
+    if (!user) return;
 
     try {
-      // Обновляем данные в Supabase
       const updateData: Record<string, string | number | null> = {};
 
       if (profileData.name !== undefined) updateData.name = profileData.name;
       if (profileData.birthDate !== undefined) {
-        updateData.birth_date = profileData.birthDate
-          .toISOString()
-          .split('T')[0];
+        updateData.birth_date = profileData.birthDate?.toISOString().split('T')[0] || null;
       }
       if (profileData.goal !== undefined) updateData.goal = profileData.goal;
-      if (profileData.avatar_url !== undefined)
-        updateData.avatar_url = profileData.avatar_url;
+      if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url;
 
       const { error } = await supabase
         .from('profiles')
@@ -490,11 +483,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       set(state => ({
         userProfile: { ...state.userProfile, ...profileData },
       }));
-
-      toast({
-        title: 'Профиль обновлен',
-        description: 'Ваш профиль был успешно обновлен',
-      });
 
       // Предварительная загрузка гороскопа если установлена дата рождения
       if (profileData.birthDate) {
@@ -524,8 +512,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             : 'Не удалось обновить профиль',
         variant: 'destructive',
       });
-    } finally {
-      set({ loading: false });
     }
   },
 

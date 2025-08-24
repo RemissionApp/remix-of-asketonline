@@ -3,6 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
 import { persistentStorage } from '@/utils/persistentStorage';
 import { Mission } from '@/types';
+import { useOptimizedMissionData } from './useOptimizedMissionData';
+
+// This hook is deprecated. Use useOptimizedMissionData instead.
+// Keeping for backward compatibility.
 
 interface MissionStateCache {
   currentDay: number;
@@ -29,11 +33,18 @@ const SYNC_INTERVAL = 30000; // 30 seconds
 const OFFLINE_RETRY_INTERVAL = 5000; // 5 seconds
 
 export const usePersistentMissionState = (mission: Mission): PersistentMissionState => {
+  console.warn('usePersistentMissionState is deprecated. Use useOptimizedMissionData instead.');
+  
   const { user } = useAppStore();
+  
+  // Use the new optimized hook internally
+  const optimizedData = useOptimizedMissionData(user?.id, mission);
+  
+  // Transform to old interface for compatibility
   const [state, setState] = useState<MissionStateCache>({
-    currentDay: 1,
-    lastSyncTime: 0,
-    isCompleted: false,
+    currentDay: optimizedData.getCurrentDay(),
+    lastSyncTime: Date.now(),
+    isCompleted: optimizedData.isCompleted(),
     progressData: {},
     choicesData: {},
     reflectionsData: {},
