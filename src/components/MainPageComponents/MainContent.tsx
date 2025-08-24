@@ -3,7 +3,6 @@ import { DailyAdviceDisplay } from '@/components/DailyAdviceDisplay';
 import { NoPactsView } from '@/components/NoPactsView';
 import { PactDisplay } from '@/components/MainPageComponents/PactDisplay';
 import { Pact } from '@/types';
-import { ActionButtonsSection } from '@/components/MainPageComponents/ActionButtonsSection';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
@@ -12,11 +11,6 @@ import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsB
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
-import { logger } from '@/utils/logger';
-import { PurchaseTestButton } from '@/components/PurchaseTestButton';
-import { RevenueCatTest } from '@/components/RevenueCatTest';
-import { OfferingsDisplay } from '@/components/OfferingsDisplay';
-import { Button } from '../ui/button';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
 
@@ -114,11 +108,6 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 9. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
-      </div>
-
-      {/* Action Buttons - Remains at the bottom */}
-      <div className="mt-auto">
-        <ActionButtonsSection />
       </div>
     </main>
   );

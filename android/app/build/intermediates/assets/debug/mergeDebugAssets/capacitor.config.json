@@ -3,6 +3,6 @@
 	"appName": "Cosmic Ascension Path",
 	"webDir": "dist",
 	"server": {
-		"url": "http://192.168.1.107:3000"
+		"url": "http://192.168.0.115:3000"
 	}
 }
