@@ -138,32 +138,14 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       // Delete all user data from tables
       const userId = user.id;
       
-      // Delete in order to respect foreign key constraints
-      // First get pact IDs, then delete pact_days
-      const { data: pactIds } = await supabase
-        .from('pacts')
-        .select('id')
-        .eq('user_id', userId);
+      // Use optimized batch delete
+      const { useOptimizedDatabase } = await import('@/hooks/useOptimizedDatabase');
+      const { batchDeleteUserData } = useOptimizedDatabase();
       
-      if (pactIds && pactIds.length > 0) {
-        const pactIdList = pactIds.map(p => p.id);
-        await supabase.from('pact_days').delete().in('pact_id', pactIdList);
+      const deleteResult = await batchDeleteUserData(userId);
+      if (!deleteResult.success) {
+        throw deleteResult.error;
       }
-      await supabase.from('achievements').delete().eq('user_id', userId);
-      await supabase.from('pacts').delete().eq('user_id', userId);
-      await supabase.from('universe_questions').delete().eq('user_id', userId);
-      await supabase.from('universe_chat_messages').delete().eq('user_id', userId);
-      await supabase.from('universe_chat_sessions').delete().eq('user_id', userId);
-      await supabase.from('missions').delete().eq('user_id', userId);
-      await supabase.from('mission_progress').delete().eq('user_id', userId);
-      await supabase.from('detailed_horoscopes').delete().eq('user_id', userId);
-      await supabase.from('full_horoscopes').delete().eq('user_id', userId);
-      await supabase.from('astro_profiles').delete().eq('user_id', userId);
-      await supabase.from('numerology_readings').delete().eq('user_id', userId);
-      await supabase.from('numerology_descriptions').delete().eq('user_id', userId);
-      await supabase.from('push_subscriptions').delete().eq('user_id', userId);
-      await supabase.from('subscriptions').delete().eq('user_id', userId);
-      await supabase.from('profiles').delete().eq('id', userId);
 
       // Delete auth user account
       const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);

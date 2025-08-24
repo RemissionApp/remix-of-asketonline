@@ -49,51 +49,39 @@ export const useUserProgress = () => {
     setIsLoading(true);
     
     try {
-      // Получаем завершенные миссии
-      const { data: completedMissions, error: missionsError } = await supabase
-        .from('mission_progress_detailed')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('completed', true);
+      // Use optimized cached database operations
+      const { useOptimizedDatabase } = await import('@/hooks/useOptimizedDatabase');
+      const { getCachedUserProgress } = useOptimizedDatabase();
+      
+      const progressData = await getCachedUserProgress(user.id);
+      
+      // Get additional detailed data for calculations
+      const [completedMissions, achievements] = await Promise.all([
+        supabase
+          .from('mission_progress_detailed')
+          .select('completed_at')
+          .eq('user_id', user.id)
+          .eq('completed', true),
+        supabase
+          .from('achievements')
+          .select('title')
+          .eq('user_id', user.id)
+          .not('unlocked_at', 'is', null)
+      ]);
 
-      if (missionsError) throw missionsError;
+      if (completedMissions.error) throw completedMissions.error;
+      if (achievements.error) throw achievements.error;
 
-      // Получаем артефакты
-      const { data: artifacts, error: artifactsError } = await supabase
-        .from('cosmic_artifacts')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (artifactsError) throw artifactsError;
-
-      // Получаем профиль пользователя
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      // Получаем достижения
-      const { data: achievements, error: achievementsError } = await supabase
-        .from('achievements')
-        .select('*')
-        .eq('user_id', user.id)
-        .not('unlocked_at', 'is', null);
-
-      if (achievementsError) throw achievementsError;
-
-      // Рассчитываем статистику
-      const missionsCompleted = completedMissions?.length || 0;
-      const artifactsCollected = artifacts?.length || 0;
-      const totalEnergyEarned = profile?.energy_points || 0;
+      // Рассчитываем статистику из кэшированных данных
+      const missionsCompleted = progressData.completedMissionsCount;
+      const artifactsCollected = progressData.artifactsCount;
+      const totalEnergyEarned = progressData.profile?.energy_points || 0;
 
       // Рассчитываем уровень и опыт на основе энергии
       const { level, xpToNext } = calculateLevel(totalEnergyEarned);
 
       // Рассчитываем текущую серию (последние 7 дней выполнения миссий)
-      const recentMissions = completedMissions?.filter(mission => {
+      const recentMissions = completedMissions.data?.filter(mission => {
         const completedDate = new Date(mission.completed_at);
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
@@ -103,7 +91,7 @@ export const useUserProgress = () => {
       const currentStreak = Math.min(recentMissions.length, 7);
 
       // Получаем специальные события из достижений
-      const specialEvents = achievements?.map(achievement => achievement.title) || [];
+      const specialEvents = achievements.data?.map(achievement => achievement.title) || [];
 
       setStats({
         missionsCompleted,
