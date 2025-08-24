@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FullDestinyMatrixData } from '@/utils/numerologyUtils';
@@ -75,7 +75,7 @@ interface NumerologyDescription {
   };
 }
 
-export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({ 
+const MemoizedMatrixDescription: React.FC<MatrixDescriptionProps> = ({ 
   matrixData, 
   birthDate, 
   name, 
@@ -88,15 +88,16 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
   const [showFallback, setShowFallback] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadOrGenerateDescription();
-    }, 1000); // Delay to show fallback first
-    
-    return () => clearTimeout(timer);
-  }, [matrixData, birthDate, name, language]);
+  // Memoize props to prevent unnecessary re-renders
+  const memoizedProps = useMemo(() => ({
+    matrixData,
+    birthDate,
+    name,
+    language
+  }), [matrixData, birthDate, name, language]);
 
-  const loadOrGenerateDescription = async () => {
+  // Stable callback for loading/generating description
+  const loadOrGenerateDescription = useCallback(async () => {
     if (!userProfile?.id) {
       setLoading(false);
       return;
@@ -108,9 +109,9 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
         .from('numerology_readings')
         .upsert({
           user_id: userProfile.id,
-          birth_date: birthDate,
-          name: name,
-          matrix_data: matrixData
+          birth_date: memoizedProps.birthDate,
+          name: memoizedProps.name,
+          matrix_data: memoizedProps.matrixData
         })
         .select()
         .single();
@@ -123,7 +124,7 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
         .select('*')
         .eq('user_id', userProfile.id)
         .eq('reading_id', reading.id)
-        .eq('language', language)
+        .eq('language', memoizedProps.language)
         .maybeSingle();
 
       if (existingDescription) {
@@ -139,9 +140,10 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
       setLoading(false);
       toast.error('Ошибка при загрузке описания матрицы');
     }
-  };
+  }, [userProfile?.id, memoizedProps]);
 
-  const generateDescription = async (readingId: string) => {
+  // Stable callback for generating description
+  const generateDescription = useCallback(async (readingId: string) => {
     if (!userProfile?.id) {
       return;
     }
@@ -151,10 +153,10 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
 
       const { data, error } = await supabase.functions.invoke('generate-numerology-description', {
         body: {
-          matrixData,
+          matrixData: memoizedProps.matrixData,
           userId: userProfile.id,
           readingId,
-          language
+          language: memoizedProps.language
         }
       });
 
@@ -183,9 +185,10 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
       setGenerating(false);
       setLoading(false);
     }
-  };
+  }, [userProfile?.id, memoizedProps, retryCount]);
 
-  const handleRegenerate = async () => {
+  // Stable callback for regenerating description
+  const handleRegenerate = useCallback(async () => {
     if (!userProfile?.id) return;
 
     try {
@@ -201,22 +204,31 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
       console.error('Error regenerating description:', error);
       toast.error('Ошибка при перегенерации описания');
     }
-  };
+  }, [userProfile?.id, loadOrGenerateDescription]);
+
+  // Effect with dependency on memoized props
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadOrGenerateDescription();
+    }, 1000); // Delay to show fallback first
+    
+    return () => clearTimeout(timer);
+  }, [loadOrGenerateDescription]);
 
   // Show fallback description immediately while loading
   if (showFallback && !description) {
     return (
       <div className="space-y-6">
         <NumerologyDiagnostic 
-          matrixData={matrixData}
-          birthDate={birthDate}
-          name={name}
-          language={language}
+          matrixData={memoizedProps.matrixData}
+          birthDate={memoizedProps.birthDate}
+          name={memoizedProps.name}
+          language={memoizedProps.language}
         />
         
         <FallbackMatrixDescription 
-          matrixData={matrixData}
-          name={name}
+          matrixData={memoizedProps.matrixData}
+          name={memoizedProps.name}
         />
         
         {loading && (
@@ -242,10 +254,10 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
     return (
       <div className="space-y-4">
         <NumerologyDiagnostic 
-          matrixData={matrixData}
-          birthDate={birthDate}
-          name={name}
-          language={language}
+          matrixData={memoizedProps.matrixData}
+          birthDate={memoizedProps.birthDate}
+          name={memoizedProps.name}
+          language={memoizedProps.language}
         />
         
         <Card className="bg-cosmic-dark/80 backdrop-blur-sm border-cosmic-accent/30">
@@ -276,10 +288,10 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
     return (
       <div className="space-y-6">
         <NumerologyDiagnostic 
-          matrixData={matrixData}
-          birthDate={birthDate}
-          name={name}
-          language={language}
+          matrixData={memoizedProps.matrixData}
+          birthDate={memoizedProps.birthDate}
+          name={memoizedProps.name}
+          language={memoizedProps.language}
         />
         
         <div className="flex justify-end mb-4">
@@ -297,7 +309,7 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
         
         <RussianMatrixDescription 
           fullDescription={description.fullDescription}
-          name={name}
+          name={memoizedProps.name}
         />
       </div>
     );
@@ -515,3 +527,13 @@ export const MatrixDescription: React.FC<MatrixDescriptionProps> = ({
     </div>
   );
 };
+
+// Export memoized component with shallow comparison
+export const MatrixDescription = React.memo(MemoizedMatrixDescription, (prevProps, nextProps) => {
+  return (
+    prevProps.birthDate === nextProps.birthDate &&
+    prevProps.name === nextProps.name &&
+    prevProps.language === nextProps.language &&
+    JSON.stringify(prevProps.matrixData) === JSON.stringify(nextProps.matrixData)
+  );
+});

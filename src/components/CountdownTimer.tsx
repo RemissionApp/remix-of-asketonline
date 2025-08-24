@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useDebouncedValue } from '@/utils/reactOptimizations';
 
 interface TimeLeft {
   days: number;
@@ -15,7 +16,7 @@ interface CountdownTimerProps {
   pactId?: string; // Optional pact ID to specify which pact to count down for
 }
 
-export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
+const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -25,122 +26,76 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   });
   const { language, pacts } = useAppStore();
   const { t } = useTranslations();
+  
+  // Debounce milliseconds for better performance
+  const debouncedMilliseconds = useDebouncedValue(timeLeft.milliseconds, 50);
 
-  // Get translations for time units
-  const getDaysLabel = () => {
-    switch (language) {
-      case 'ru':
-        return 'д';
-      case 'es':
-        return 'd';
-      default:
-        return 'd';
-    }
-  };
+  // Memoize label functions to prevent recreating on each render
+  const timeLabels = useMemo(() => ({
+    days: language === 'ru' ? 'д' : 'd',
+    hours: language === 'ru' ? 'ч' : 'h', 
+    minutes: language === 'ru' ? 'м' : 'm',
+    seconds: language === 'ru' ? 'с' : 's',
+    milliseconds: language === 'ru' ? 'мс' : 'ms'
+  }), [language]);
 
-  const getHoursLabel = () => {
-    switch (language) {
-      case 'ru':
-        return 'ч';
-      case 'es':
-        return 'h';
-      default:
-        return 'h';
+  // Memoize active pact lookup
+  const activePact = useMemo(() => {
+    if (!pacts?.length) return null;
+    
+    if (pactId) {
+      return pacts.find(p => p.id === pactId) || null;
     }
-  };
+    
+    return pacts.find(p => p.status === 'active') || null;
+  }, [pacts, pactId]);
 
-  const getMinutesLabel = () => {
-    switch (language) {
-      case 'ru':
-        return 'м';
-      case 'es':
-        return 'm';
-      default:
-        return 'm';
+  // Stable callback for time calculation
+  const calculateTimeLeft = useCallback(() => {
+    if (!activePact) {
+      setTimeLeft({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      });
+      return;
     }
-  };
 
-  const getSecondsLabel = () => {
-    switch (language) {
-      case 'ru':
-        return 'с';
-      case 'es':
-        return 's';
-      default:
-        return 's';
-    }
-  };
+    const now = new Date();
+    const createdAtDate = new Date(activePact.created_at);
+    const endDate = new Date(createdAtDate);
+    endDate.setDate(createdAtDate.getDate() + activePact.duration);
 
-  const getMillisecondsLabel = () => {
-    switch (language) {
-      case 'ru':
-        return 'мс';
-      case 'es':
-        return 'ms';
-      default:
-        return 'ms';
+    const difference = endDate.getTime() - now.getTime();
+
+    if (difference > 0) {
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+      const milliseconds = Math.floor((difference % 1000) / 10);
+
+      setTimeLeft({ days, hours, minutes, seconds, milliseconds });
+    } else {
+      setTimeLeft({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      });
     }
-  };
+  }, [activePact]);
 
   // Calculate time until pact ends
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      // Find the current active pact
-      let activePact = null;
-
-      if (pactId) {
-        // If a pact ID is provided, find that specific pact (regardless of status)
-        activePact = pacts?.find(p => p.id === pactId);
-      } else if (pacts && pacts.length > 0) {
-        // Otherwise, just get the first active pact
-        activePact = pacts.find(p => p.status === 'active');
-      }
-
-      if (!activePact) {
-        // If no active pact is found, set all values to 0
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          milliseconds: 0,
-        });
-        return;
-      }
-
-      // Calculate end date based on creation date and duration
-      const now = new Date();
-      const createdAtDate = new Date(activePact.created_at);
-      const endDate = new Date(createdAtDate);
-      endDate.setDate(createdAtDate.getDate() + activePact.duration);
-
-      // Calculate time difference
-      const difference = endDate.getTime() - now.getTime();
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
-        const milliseconds = Math.floor((difference % 1000) / 10); // Get only tens of milliseconds (2 digits)
-
-        setTimeLeft({ days, hours, minutes, seconds, milliseconds });
-      } else {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          milliseconds: 0,
-        });
-      }
-    };
-
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 10); // Update frequently for milliseconds
-
+    // Reduce update frequency - every 100ms instead of 10ms for better performance
+    const timer = setInterval(calculateTimeLeft, 100);
     return () => clearInterval(timer);
-  }, [pactId, pacts]);
+  }, [calculateTimeLeft]);
 
   return (
     <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
@@ -152,7 +107,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
               {timeLeft.days.toString().padStart(2, '0')}
             </span>
             <span className="text-cosmic-secondary text-[10px]">
-              {getDaysLabel()}
+              {timeLabels.days}
             </span>
           </div>
           <span className="text-cosmic-accent">:</span>
@@ -161,7 +116,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
               {timeLeft.hours.toString().padStart(2, '0')}
             </span>
             <span className="text-cosmic-secondary text-[10px]">
-              {getHoursLabel()}
+              {timeLabels.hours}
             </span>
           </div>
           <span className="text-cosmic-accent">:</span>
@@ -170,7 +125,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
               {timeLeft.minutes.toString().padStart(2, '0')}
             </span>
             <span className="text-cosmic-secondary text-[10px]">
-              {getMinutesLabel()}
+              {timeLabels.minutes}
             </span>
           </div>
           <span className="text-cosmic-accent">:</span>
@@ -179,16 +134,16 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
               {timeLeft.seconds.toString().padStart(2, '0')}
             </span>
             <span className="text-cosmic-secondary text-[10px]">
-              {getSecondsLabel()}
+              {timeLabels.seconds}
             </span>
           </div>
           <span className="text-cosmic-accent">:</span>
           <div className="flex flex-col items-center">
             <span className="text-cosmic-accent font-medium">
-              {timeLeft.milliseconds.toString().padStart(2, '0')}
+              {debouncedMilliseconds.toString().padStart(2, '0')}
             </span>
             <span className="text-cosmic-secondary text-[10px]">
-              {getMillisecondsLabel()}
+              {timeLabels.milliseconds}
             </span>
           </div>
         </div>
@@ -196,3 +151,6 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     </div>
   );
 };
+
+// Export memoized component
+export const CountdownTimer = React.memo(MemoizedCountdownTimer);

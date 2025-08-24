@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { EnergyCircle } from './EnergyCircle';
 import { CountdownTimer } from './CountdownTimer';
 import { Pact } from '@/types';
@@ -16,7 +16,7 @@ interface AdaptivePactDisplayProps {
   formatRejection: (text: string) => string;
 }
 
-export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
+const MemoizedAdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
   pacts,
   currentPactIndex,
   onPactChange,
@@ -26,14 +26,18 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    align: 'center',
-    containScroll: 'trimSnaps',
+  // Memoize embla options to prevent recreating
+  const emblaOptions = useMemo(() => ({ 
+    align: 'center' as const,
+    containScroll: 'trimSnaps' as const,
     skipSnaps: false,
     startIndex: currentPactIndex
-  });
+  }), [currentPactIndex]);
+  
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
-  const currentPact = pacts[currentPactIndex];
+  // Memoize current pact
+  const currentPact = useMemo(() => pacts[currentPactIndex], [pacts, currentPactIndex]);
 
   // Update embla when currentPactIndex changes externally
   useEffect(() => {
@@ -59,28 +63,32 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
     };
   }, [emblaApi, onSelect]);
 
-  const handlePactClick = (index: number) => {
+  // Stable callback for pact click
+  const handlePactClick = useCallback((index: number) => {
     onPactChange(index);
-  };
+  }, [onPactChange]);
 
-  const getCircleSize = () => {
+  // Memoize circle size calculation
+  const circleSize = useMemo(() => {
     if (pacts.length === 1) return 'lg';
     if (pacts.length === 2) return 'md';
     return 'sm';
-  };
+  }, [pacts.length]);
 
-  const getPactProgress = (pact: Pact) => {
+  // Memoize progress calculation
+  const getPactProgress = useCallback((pact: Pact) => {
     const completedDays = pact.days.filter(day => day.completed).length;
     return Math.round((completedDays / pact.duration) * 100);
-  };
+  }, []);
 
-  const getPactTypeName = (pact: Pact) => {
+  // Memoize pact type name calculation
+  const getPactTypeName = useCallback((pact: Pact) => {
     const typeLabel = pact.type === 'spiritual' 
       ? (language === 'ru' ? 'Духовная' : language === 'es' ? 'Espiritual' : 'Spiritual')
       : (language === 'ru' ? 'Физическая' : language === 'es' ? 'Física' : 'Physical');
     
     return `${typeLabel} • ${formatRejection(pact.title || '')}`;
-  };
+  }, [language, formatRejection]);
 
   if (!currentPact) return null;
 
@@ -373,3 +381,6 @@ export const AdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
     </div>
   );
 };
+
+// Export memoized component
+export const AdaptivePactDisplay = React.memo(MemoizedAdaptivePactDisplay);
