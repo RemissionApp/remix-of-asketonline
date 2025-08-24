@@ -116,22 +116,12 @@ const MainPage: React.FC = () => {
         <TopBar />
       </div>
 
-      {/* User Level Display */}
-      <div className="fixed top-20 left-4 right-4 z-40 mt-2">
-        <UserLevelDisplay
-          level={stats.level}
-          experiencePoints={stats.experiencePoints}
-          experienceToNextLevel={stats.experienceToNextLevel}
-          totalEnergyEarned={stats.totalEnergyEarned}
-          className="mx-auto max-w-md"
-        />
-      </div>
 
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
 
-      {/* Main content with top margin for level display */}
-      <div className="pt-32">
+      {/* Main content */}
+      <div>
         <MainContent
         activePacts={activePacts}
         allPacts={allPacts}

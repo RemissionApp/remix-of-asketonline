@@ -105,8 +105,8 @@ export const UserLevelDisplay: React.FC<UserLevelDisplayProps> = ({
     : 100;
 
   return (
-    <Card className={cn('bg-cosmic-dark/60 border-cosmic-accent/30', className)}>
-      <CardContent className="p-4 space-y-4">
+    <div className={cn('cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6', className)}>
+      <div className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-cosmic-accent/20">
@@ -167,7 +167,7 @@ export const UserLevelDisplay: React.FC<UserLevelDisplayProps> = ({
             <span>{getText('totalEnergy')}: {totalEnergyEarned}</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

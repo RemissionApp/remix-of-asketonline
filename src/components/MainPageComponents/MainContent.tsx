@@ -17,6 +17,8 @@ import { PurchaseTestButton } from '@/components/PurchaseTestButton';
 import { RevenueCatTest } from '@/components/RevenueCatTest';
 import { OfferingsDisplay } from '@/components/OfferingsDisplay';
 import { Button } from '../ui/button';
+import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
+import { useUserProgress } from '@/hooks/useUserProgress';
 
 interface MainContentProps {
   activePacts: Pact[];
@@ -45,6 +47,7 @@ export const MainContent: React.FC<MainContentProps> = ({
   getAscesisPrefix,
   formatRejection,
 }) => {
+  const { stats } = useUserProgress();
   return (
     <main className="flex-1 container mx-auto px-4 py-6 pt-20 flex flex-col items-center">
       {/* 1. User Greeting Section - First */}
@@ -72,6 +75,15 @@ export const MainContent: React.FC<MainContentProps> = ({
 
       {/* 3. Daily Advice */}
       <DailyAdviceDisplay />
+
+      {/* 3.1. User Level Display */}
+      <UserLevelDisplay
+        level={stats?.level || 1}
+        experiencePoints={stats?.experiencePoints || 0}
+        experienceToNextLevel={stats?.experienceToNextLevel || 100}
+        totalEnergyEarned={stats?.totalEnergyEarned || 0}
+        className="w-full max-w-lg mx-auto"
+      />
 
       {/* 3. Active Mission Widget (if available) */}
       <ActiveMissionWidget />
