@@ -29,7 +29,7 @@ export const NoPactsView: React.FC<NoPactsViewProps> = ({
 
   return (
     <div className="text-center">
-      <h1 className="text-2xl font-serif text-white mb-4">{t.main.noPacts}</h1>
+      <h1 className="text-2xl font-serif text-foreground mb-4">{t.main.noPacts}</h1>
 
       <CosmicButton
         onClick={handleCreatePact}
