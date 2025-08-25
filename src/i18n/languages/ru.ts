@@ -69,6 +69,13 @@ export const ruTranslations: Translations = {
     // Loading states
     processing: 'Обработка...',
     signingIn: 'Выполняется вход...',
+    checkingAuth: 'Проверка авторизации...',
+    confirmEmail: 'Подтвердите email',
+    checkYourEmail: 'Проверьте вашу почту',
+    emailConfirmationSent: 'На ваш email отправлено письмо с подтверждением. Пожалуйста, проверьте почту и перейдите по ссылке в письме для активации аккаунта.',
+    returnToLogin: 'Вернуться к форме входа',
+    backToSignup: '← Назад к регистрации',
+    enterEmailForReset: 'Пожалуйста, введите email для восстановления пароля',
     // Default user names
     defaultUserName: 'Искатель',
   },
@@ -216,6 +223,9 @@ export const ruTranslations: Translations = {
     errorSendingMessage: 'Не удалось отправить сообщение',
     welcomeMessage:
       'Тишина звезд окутывает тебя. В этом пространстве рождаются ответы на вопросы, которые ты еще не задал.',
+    defaultWelcomeMessage: 'Здравствуйте! Я готова помочь вам найти ответы на вопросы. О чем бы вы хотели поговорить сегодня?',
+    newChatCreated: 'Создан новый диалог',
+    errorCreatingChat: 'Ошибка создания нового диалога',
   },
   profile: {
     title: 'Профиль',
@@ -238,6 +248,9 @@ export const ruTranslations: Translations = {
     play: 'Включить',
     unlock: 'Разблокировать',
     pageTitle: 'Медитации',
+    freeMeditations: 'Бесплатные медитации',
+    exploreProCollection: 'Исследуйте нашу коллекцию PRO медитаций для более глубоких практик',
+    goToPro: 'Перейти к PRO медитациям',
     categories: {
       all: 'Все',
       basic: 'Базовые',
@@ -339,6 +352,9 @@ export const ruTranslations: Translations = {
     logout: 'Выйти',
     deleteAccount: 'Удалить данные аккаунта',
     accountSettings: 'Настройки аккаунта',
+    notifications: 'Уведомления',
+    developerMode: 'Developer Mode',
+    dataDeleteImplementation: 'Функция удаления данных будет реализована',
   },
   zodiac: {
     yourZodiacSign: 'Ваш знак зодиака',
@@ -356,6 +372,34 @@ export const ruTranslations: Translations = {
     learnMore: 'Подробнее',
     proTitle: 'Нумерологический анализ',
     proMessage: 'Разблокируй PRO чтобы получить полный нумерологический разбор',
+    lifePath: 'Путь жизни',
+    analysis: 'Нумерологический анализ',
+    viewModes: {
+      full: 'Полная',
+      simple: 'Простая',
+      data: 'Данные'
+    },
+    numbers: {
+      lifePath: 'Путь жизни',
+      destiny: 'Число судьбы',
+      soul: 'Число души',
+      personality: 'Число личности',
+      expression: 'Число экспрессии'
+    },
+    descriptions: {
+      lifePath: 'Число Пути Жизни — ваше самое важное число. Оно описывает природную склонность вашего существа, оно влияет на все стороны вашего существования.',
+      destiny: 'Число Судьбы определяет цель вашей жизни, к чему вы стремитесь, какие таланты и способности вам помогут в этом, какие уроки нужно пройти.',
+      soul: 'Число Души показывает глубинные желания и устремления, наши истинные мотивы поступков и решений, всё то, что находится глубоко внутри нас.',
+      personality: 'Число Личности показывает, как вас воспринимают другие люди, какое впечатление вы производите на окружающих при первой встрече.',
+      expression: 'Число Экспрессии описывает ваши таланты, способности и инструменты, которые помогут вам следовать своему Пути Жизни.'
+    },
+    lifePeriods: {
+      title: 'Периоды жизни',
+      forming: 'Формирующий период',
+      productive: 'Продуктивный период',
+      wisdom: 'Период мудрости'
+    },
+    enterBirthDateInProfile: 'Укажите дату рождения в профиле'
   },
   common: {
     cancel: 'Отмена',
@@ -505,5 +549,10 @@ export const ruTranslations: Translations = {
     instructionsTitle: 'Инструкции',
     instructions: 'Введите этот код в приложении Аскет для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
     footerNote: 'Если вы не регистрировались в Аскет, проигнорируйте это письмо.',
+  },
+  notFound: {
+    title: '404',
+    message: 'Упс! Страница не найдена',
+    returnHome: 'Вернуться на главную',
   },
 };

@@ -13,9 +13,11 @@ import { Button } from '@/components/ui/button';
 import { Grid, Sparkles, Star } from 'lucide-react';
 import { calculateLifePathNumber, calculateExpressionNumber, calculatePersonalityNumber, getNumerologyMeaning, calculateFullDestinyMatrix } from '@/utils/numerologyUtils';
 import { MatrixDescription } from '@/components/MatrixDescription';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const NumerologyPage = () => {
   const { userProfile, language } = useAppStore();
+  const { t } = useTranslations();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'matrix' | 'detailed' | 'full'>('full');
 
@@ -122,7 +124,7 @@ const NumerologyPage = () => {
 
   const numerologyContent = (
     <div className="min-h-screen flex flex-col bg-cosmic pb-20">
-      <PageHeader title="Нумерологический анализ" />
+      <PageHeader title={t.numerology.analysis} />
 
       <StarField starCount={50} />
 
@@ -149,7 +151,7 @@ const NumerologyPage = () => {
               className="px-4 py-2 text-sm text-white border-0"
             >
               <Star className="w-4 h-4 mr-2" />
-              Полная
+              {t.numerology.viewModes.full}
             </Button>
             <Button
               variant={viewMode === 'matrix' ? 'default' : 'ghost'}

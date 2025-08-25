@@ -70,6 +70,13 @@ export const esTranslations: Translations = {
     // Loading states
     processing: 'Procesando...',
     signingIn: 'Iniciando sesión...',
+    checkingAuth: 'Verificando autorización...',
+    confirmEmail: 'Confirmar email',
+    checkYourEmail: 'Revisa tu email',
+    emailConfirmationSent: 'Se ha enviado un email de confirmación a tu dirección de correo. Por favor revisa tu email y haz clic en el enlace para activar tu cuenta.',
+    returnToLogin: 'Volver al formulario de inicio de sesión',
+    backToSignup: '← Volver al registro',
+    enterEmailForReset: 'Por favor ingresa el email para recuperar contraseña',
     // Default user names
     defaultUserName: 'Buscador',
   },
@@ -215,6 +222,9 @@ export const esTranslations: Translations = {
     errorSendingMessage: 'Error al enviar el mensaje',
     welcomeMessage:
       'El silencio de las estrellas te rodea. En este espacio, nacen respuestas a preguntas que aún no has formulado.',
+    defaultWelcomeMessage: '¡Hola! Estoy lista para ayudarte a encontrar respuestas a tus preguntas. ¿De qué te gustaría hablar hoy?',
+    newChatCreated: 'Nueva conversación creada',
+    errorCreatingChat: 'Error al crear nueva conversación',
   },
   profile: {
     title: 'Perfil',
@@ -237,6 +247,9 @@ export const esTranslations: Translations = {
     play: 'Reproducir',
     unlock: 'Desbloquear',
     pageTitle: 'Meditaciones',
+    freeMeditations: 'Meditaciones gratuitas',
+    exploreProCollection: 'Explora nuestra colección PRO de meditaciones para prácticas más profundas',
+    goToPro: 'Ir a meditaciones PRO',
     categories: {
       all: 'Todas',
       basic: 'Básicas',
@@ -340,6 +353,9 @@ export const esTranslations: Translations = {
     logout: 'Cerrar sesión',
     deleteAccount: 'Eliminar datos de la cuenta',
     accountSettings: 'Configuración de cuenta',
+    notifications: 'Notificaciones',
+    developerMode: 'Modo desarrollador',
+    dataDeleteImplementation: 'La funcionalidad de eliminación de datos será implementada',
   },
   zodiac: {
     yourZodiacSign: 'Tu signo zodiacal',
@@ -357,6 +373,34 @@ export const esTranslations: Translations = {
     learnMore: 'Más información',
     proTitle: 'Análisis numerológico',
     proMessage: 'Desbloquea PRO para obtener un análisis numerológico completo',
+    lifePath: 'Camino de vida',
+    analysis: 'Análisis numerológico',
+    viewModes: {
+      full: 'Completo',
+      simple: 'Simple',
+      data: 'Datos'
+    },
+    numbers: {
+      lifePath: 'Camino de vida',
+      destiny: 'Número del destino',
+      soul: 'Número del alma',
+      personality: 'Número de personalidad',
+      expression: 'Número de expresión'
+    },
+    descriptions: {
+      lifePath: 'El Número del Camino de Vida es tu número más importante. Describe la inclinación natural de tu ser y influye en todos los aspectos de tu existencia.',
+      destiny: 'El Número del Destino determina el propósito de tu vida, hacia qué te diriges, qué talentos y habilidades te ayudarán, qué lecciones necesitas aprender.',
+      soul: 'El Número del Alma muestra deseos y aspiraciones profundos, nuestros verdaderos motivos para acciones y decisiones, todo lo que está profundo dentro de nosotros.',
+      personality: 'El Número de Personalidad muestra cómo otros te perciben, qué impresión causas en otros al primer encuentro.',
+      expression: 'El Número de Expresión describe tus talentos, habilidades y herramientas que te ayudarán a seguir tu Camino de Vida.'
+    },
+    lifePeriods: {
+      title: 'Períodos de vida',
+      forming: 'Período formativo',
+      productive: 'Período productivo',
+      wisdom: 'Período de sabiduría'
+    },
+    enterBirthDateInProfile: 'Ingrese fecha de nacimiento en el perfil'
   },
   common: {
     cancel: 'Cancelar',
@@ -391,5 +435,10 @@ export const esTranslations: Translations = {
     fillAllFields: 'Complete todos los campos',
     accountDeleted: 'Cuenta eliminada exitosamente',
     deleteError: 'Error al eliminar la cuenta',
+  },
+  notFound: {
+    title: '404',
+    message: '¡Ups! Página no encontrada',
+    returnHome: 'Volver al inicio',
   },
 };

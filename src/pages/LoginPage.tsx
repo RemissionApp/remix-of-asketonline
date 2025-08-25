@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
 
     if (!email || !password) {
       toast({
-        title: 'Ошибка',
+        title: t.auth.error,
         description: 'Пожалуйста, введите email и пароль',
         variant: 'destructive',
       });
@@ -283,7 +283,7 @@ const LoginPage: React.FC = () => {
         <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-cosmic-secondary">Проверка авторизации...</p>
+            <p className="text-cosmic-secondary">{t.auth.checkingAuth}</p>
           </div>
         </div>
       </div>

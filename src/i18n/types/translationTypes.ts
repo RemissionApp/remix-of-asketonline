@@ -100,6 +100,9 @@ export interface UniverseTranslations {
   chatTitlePlaceholder: string;
   errorSendingMessage: string;
   welcomeMessage: string;
+  defaultWelcomeMessage: string;
+  newChatCreated: string;
+  errorCreatingChat: string;
 }
 
 export interface LegalTranslations {
@@ -233,6 +236,9 @@ export interface MeditationTranslations {
   play: string;
   unlock: string;
   pageTitle: string;
+  freeMeditations: string;
+  exploreProCollection: string;
+  goToPro: string;
   categories: MeditationCategoriesTranslations;
   morning: MeditationTypeTranslations;
   evening: MeditationTypeTranslations;
@@ -266,6 +272,48 @@ export interface DeleteAccountTranslations {
   deleteError: string;
 }
 
+export interface NumerologyTranslations {
+  title: string;
+  description: string;
+  learnMore: string;
+  proTitle: string;
+  proMessage: string;
+  lifePath: string;
+  analysis: string;
+  viewModes: {
+    full: string;
+    simple: string;
+    data: string;
+  };
+  numbers: {
+    lifePath: string;
+    destiny: string;
+    soul: string;
+    personality: string;
+    expression: string;
+  };
+  descriptions: {
+    lifePath: string;
+    destiny: string;
+    soul: string;
+    personality: string;
+    expression: string;
+  };
+  lifePeriods: {
+    title: string;
+    forming: string;
+    productive: string;
+    wisdom: string;
+  };
+  enterBirthDateInProfile: string;
+}
+
+export interface NotFoundTranslations {
+  title: string;
+  message: string;
+  returnHome: string;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
@@ -283,11 +331,12 @@ export interface Translations {
   minimumPeriod?: string;
   userProfile?: Record<string, string>;
   zodiac?: Record<string, string>;
-  numerology?: Record<string, string>;
+  numerology?: NumerologyTranslations;
   legal?: LegalTranslations;
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
   affirmations?: AffirmationsTranslations; // Add this new field to support affirmations
   emailOtp?: EmailOtpTranslations;
   deleteAccount?: DeleteAccountTranslations;
+  notFound?: NotFoundTranslations;
 }

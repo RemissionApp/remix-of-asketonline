@@ -34,7 +34,7 @@ const MeditationPage: React.FC = () => {
       <StarField starCount={100} />
 
       <PageHeader
-        title="Бесплатные медитации"
+        title={t.meditation.freeMeditations}
         onBackClick={() => navigate('/main')}
       />
 
@@ -66,9 +66,8 @@ const MeditationPage: React.FC = () => {
                   meditations={freeMeditations}
                 >
                   <div className="text-center mt-8">
-                    <p className="text-cosmic-secondary mb-3">
-                      Исследуйте нашу коллекцию PRO медитаций для более глубоких
-                      практик
+                     <p className="text-cosmic-secondary mb-3">
+                      {t.meditation.exploreProCollection}
                     </p>
                     <Button
                       variant="default"
@@ -76,7 +75,7 @@ const MeditationPage: React.FC = () => {
                       className="bg-cosmic-gold/80 hover:bg-cosmic-gold text-cosmic-dark"
                     >
                       <Crown size={16} className="mr-2" />
-                      Перейти к PRO медитациям
+                      {t.meditation.goToPro}
                     </Button>
                   </div>
                 </MeditationTabContent>

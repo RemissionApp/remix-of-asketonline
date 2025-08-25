@@ -69,6 +69,13 @@ export const enTranslations: Translations = {
     // Loading states
     processing: 'Processing...',
     signingIn: 'Signing in...',
+    checkingAuth: 'Checking authorization...',
+    confirmEmail: 'Confirm email',
+    checkYourEmail: 'Check your email',
+    emailConfirmationSent: 'An email with confirmation has been sent to your email address. Please check your email and click the link to activate your account.',
+    returnToLogin: 'Return to login form',
+    backToSignup: '← Back to registration',
+    enterEmailForReset: 'Please enter email for password recovery',
     // Default user names
     defaultUserName: 'Seeker',
   },
@@ -216,6 +223,9 @@ export const enTranslations: Translations = {
     errorSendingMessage: 'Failed to send message',
     welcomeMessage:
       'The silence of stars surrounds you. In this space, answers are born to questions you have not yet asked.',
+    defaultWelcomeMessage: 'Hello! I\'m ready to help you find answers to your questions. What would you like to talk about today?',
+    newChatCreated: 'New chat created',
+    errorCreatingChat: 'Error creating new chat',
   },
 
   profile: {
@@ -239,6 +249,9 @@ export const enTranslations: Translations = {
     play: 'Play',
     unlock: 'Unlock',
     pageTitle: 'Meditations',
+    freeMeditations: 'Free meditations',
+    exploreProCollection: 'Explore our PRO meditation collection for deeper practices',
+    goToPro: 'Go to PRO meditations',
     categories: {
       all: 'All',
       basic: 'Basic',
@@ -340,6 +353,9 @@ export const enTranslations: Translations = {
     logout: 'Logout',
     deleteAccount: 'Delete account data',
     accountSettings: 'Account Settings',
+    notifications: 'Notifications',
+    developerMode: 'Developer Mode',
+    dataDeleteImplementation: 'Data deletion feature will be implemented',
   },
   zodiac: {
     yourZodiacSign: 'Your zodiac sign',
@@ -358,6 +374,33 @@ export const enTranslations: Translations = {
     proTitle: 'Numerological Analysis',
     proMessage: 'Unlock PRO to get a complete numerological analysis',
     lifePath: 'Life Path',
+    analysis: 'Numerological Analysis',
+    viewModes: {
+      full: 'Full',
+      simple: 'Simple',
+      data: 'Data'
+    },
+    numbers: {
+      lifePath: 'Life Path',
+      destiny: 'Destiny Number',
+      soul: 'Soul Number',
+      personality: 'Personality Number',
+      expression: 'Expression Number'
+    },
+    descriptions: {
+      lifePath: 'The Life Path Number is your most important number. It describes the natural inclination of your being and influences all aspects of your existence.',
+      destiny: 'The Destiny Number determines the purpose of your life, what you strive for, what talents and abilities will help you, what lessons you need to learn.',
+      soul: 'The Soul Number shows deep desires and aspirations, our true motives for actions and decisions, everything that is deep inside us.',
+      personality: 'The Personality Number shows how others perceive you, what impression you make on others at first meeting.',
+      expression: 'The Expression Number describes your talents, abilities and tools that will help you follow your Life Path.'
+    },
+    lifePeriods: {
+      title: 'Life Periods',
+      forming: 'Forming Period',
+      productive: 'Productive Period',
+      wisdom: 'Wisdom Period'
+    },
+    enterBirthDateInProfile: 'Please enter birth date in profile'
   },
   common: {
     cancel: 'Cancel',
@@ -426,5 +469,10 @@ export const enTranslations: Translations = {
     fillAllFields: 'Please fill all fields',
     accountDeleted: 'Account deleted successfully',
     deleteError: 'Error deleting account',
+  },
+  notFound: {
+    title: '404',
+    message: 'Oops! Page not found',
+    returnHome: 'Return to Home',
   },
 };
