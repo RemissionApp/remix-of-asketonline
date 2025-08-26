@@ -3,8 +3,6 @@ import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
 import { ProfileSection } from '@/components/ProfilePage/ProfileSection';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { PWASettingsPanel } from '@/components/PWAFeatures/PWASettingsPanel';
-import { ShareButton } from '@/components/PWAFeatures/ShareButton';
 import { LogoutButton } from '@/components/ProfilePage/LogoutButton';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
@@ -42,12 +40,6 @@ const ProfilePage: React.FC = () => {
         />
         
         <ProfileSection />
-
-        {/* PWA Settings Panel */}
-        <PWASettingsPanel />
-
-        {/* Share App Button */}
-        <ShareButton type="app" variant="outline" className="w-full" />
 
         {/* Logout button at the bottom */}
         <LogoutButton />
