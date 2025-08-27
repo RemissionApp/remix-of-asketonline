@@ -14,6 +14,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { supabase } from '@/lib/supabase';
+import { AuthLoadingIndicator } from '@/components/LoadingStates/AuthLoadingIndicator';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ const MainPage: React.FC = () => {
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasValidSession, setHasValidSession] = useState(false);
   
   // Hook calls
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
@@ -56,52 +58,72 @@ const MainPage: React.FC = () => {
     }
   };
 
-  // Check if user is logged in and load user profile if needed
+  // Check if user is logged in and load user data
   useEffect(() => {
     const initializeUserData = async () => {
-      logger.debug('Initializing user data');
+      logger.debug('Starting MainPage initialization');
       setIsLoading(true);
 
       try {
-        // Check real Supabase session first
+        // First, verify we have a valid Supabase session
         const { data: session, error: sessionError } = await supabase.auth.getSession();
         
+        logger.debug('Session check in MainPage', {
+          hasSession: !!session?.session,
+          hasUser: !!session?.session?.user,
+          userId: session?.session?.user?.id,
+          sessionError: sessionError?.message
+        });
+        
         if (sessionError || !session?.session?.user) {
-          console.log('MainPage: No valid Supabase session, redirecting to login');
+          logger.warn('No valid Supabase session in MainPage, redirecting to login');
+          setHasValidSession(false);
           navigate('/login');
           return;
         }
+        
+        setHasValidSession(true);
 
-        // If user is logged in but we don't have profile data yet, load it
-        if (user && !userProfile) {
-          logger.debug('Loading user profile');
+        // Load user profile if we don't have it yet
+        if (!userProfile) {
+          logger.debug('Loading user profile in MainPage');
           await handleAsyncError(() => loadUserProfile(), {
             component: 'MainPage',
             action: 'loadUserProfile',
           });
         }
 
-        // Then sync pacts with current date
-        logger.debug('Syncing pacts with current date');
-        console.log('MainPage: Syncing pacts with current date');
-        syncPactsWithCurrentDate();
+        // Sync pacts with current date to ensure all data is up to date
+        logger.debug('Syncing pacts with current date in MainPage');
+        await handleAsyncError(() => syncPactsWithCurrentDate(), {
+          component: 'MainPage', 
+          action: 'syncPactsWithCurrentDate',
+        });
+        
+        logger.debug('MainPage initialization completed successfully');
       } catch (error) {
-        logger.error('Failed to initialize user data', error);
+        logger.error('Failed to initialize MainPage user data', error);
+        // Don't redirect on errors here, let user stay and try refresh
       } finally {
         setIsLoading(false);
-        logger.debug('User data initialization complete');
       }
     };
 
-    initializeUserData();
-  }, [
-    user,
-    userProfile,
-    loadUserProfile,
-    syncPactsWithCurrentDate,
-    handleAsyncError,
-    navigate,
-  ]);
+    // Only initialize if we have a user in store (from AppInitializer)
+    if (user) {
+      initializeUserData();
+    } else {
+      logger.debug('No user in store, checking session...');
+      // If no user in store, check if we need to redirect
+      supabase.auth.getSession().then(({ data: session, error }) => {
+        if (error || !session?.session?.user) {
+          logger.debug('No session found, redirecting to login');
+          navigate('/login');
+        }
+      });
+      setIsLoading(false);
+    }
+  }, [user, userProfile, loadUserProfile, syncPactsWithCurrentDate, handleAsyncError, navigate, logger]);
 
   // Get all pacts (including failed ones for the slider)
   const allPacts = pacts || [];
@@ -178,12 +200,13 @@ const MainPage: React.FC = () => {
       {/* Main content */}
       <div>
         {isLoading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <div className="animate-spin w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full mx-auto"></div>
-              <p className="text-muted-foreground">Загрузка аскез...</p>
-            </div>
-          </div>
+          <AuthLoadingIndicator
+            isLoading={isLoading}
+            hasUser={!!user}
+            hasSession={hasValidSession}
+            userProfile={userProfile}
+            pactsCount={allPacts.length}
+          />
         ) : (
           <MainContent
             activePacts={activePacts}
