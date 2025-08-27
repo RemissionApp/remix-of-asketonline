@@ -71,7 +71,16 @@ const UserProfileForm: React.FC = () => {
       });
 
       // Navigate based on profile completion and onboarding status
-      const profileComplete = isProfileComplete();
+      // Используем обновленные данные из React Query cache для проверки
+      const updatedProfile = profile ? { ...profile, ...values } : values;
+      const profileComplete = !!(
+        updatedProfile &&
+        updatedProfile.name &&
+        updatedProfile.name !== 'Искатель' &&
+        updatedProfile.name.trim() !== '' &&
+        updatedProfile.birthDate
+      );
+      
       const onboardingComplete = checkOnboardingStatus();
       
       if (profileComplete && !onboardingComplete) {
@@ -80,7 +89,11 @@ const UserProfileForm: React.FC = () => {
         navigate('/main');
       } else {
         // Profile still not complete, stay here
-        logger.warn('Profile save successful but still not complete');
+        logger.warn('Profile save successful but still not complete', {
+          name: updatedProfile.name,
+          hasBirthDate: !!updatedProfile.birthDate,
+          profileComplete
+        });
       }
     } catch (error: any) {
       logger.error('Error saving profile', error);

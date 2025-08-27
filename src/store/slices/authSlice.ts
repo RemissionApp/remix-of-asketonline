@@ -100,14 +100,50 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
   // Унифицированная функция проверки завершенности профиля
   isProfileComplete: () => {
-    const { userProfile } = get();
-    return !!(
-      userProfile &&
-      userProfile.name &&
-      userProfile.name !== 'Искатель' &&
-      userProfile.name.trim() !== '' &&
-      userProfile.birthDate
-    );
+    const { user } = get();
+    
+    // Если нет пользователя, профиль точно не завершен
+    if (!user?.id) return false;
+    
+    try {
+      // Получаем данные из React Query cache
+      const { useQueryClient } = require('@tanstack/react-query');
+      const { profileQueryKeys } = require('@/hooks/useOptimizedProfileCache');
+      
+      const queryClient = useQueryClient();
+      const profile = queryClient.getQueryData(profileQueryKeys.detail(user.id));
+      
+      // Если данных в cache нет, проверяем fallback в store
+      if (!profile) {
+        const { userProfile } = get();
+        return !!(
+          userProfile &&
+          userProfile.name &&
+          userProfile.name !== 'Искатель' &&
+          userProfile.name.trim() !== '' &&
+          userProfile.birthDate
+        );
+      }
+      
+      // Проверяем данные из React Query cache
+      return !!(
+        profile &&
+        profile.name &&
+        profile.name !== 'Искатель' &&
+        profile.name.trim() !== '' &&
+        profile.birthDate
+      );
+    } catch (error) {
+      // Fallback к проверке store если что-то пошло не так
+      const { userProfile } = get();
+      return !!(
+        userProfile &&
+        userProfile.name &&
+        userProfile.name !== 'Искатель' &&
+        userProfile.name.trim() !== '' &&
+        userProfile.birthDate
+      );
+    }
   },
 
   // Унифицированная функция проверки завершенности onboarding
