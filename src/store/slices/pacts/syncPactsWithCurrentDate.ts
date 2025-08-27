@@ -16,7 +16,12 @@ export const createSyncPactsSlice = (
     const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } =
       get();
 
-    if (!user) return;
+    console.log('SyncPacts: Starting sync', { hasUser: !!user });
+
+    if (!user) {
+      console.log('SyncPacts: No user, skipping sync');
+      return;
+    }
 
     set({ loading: true });
 
@@ -34,14 +39,19 @@ export const createSyncPactsSlice = (
       if (pactsError) throw pactsError;
 
       if (!pacts || pacts.length === 0) {
+        console.log('SyncPacts: No active pacts found');
         set({ loading: false });
         return;
       }
+
+      console.log('SyncPacts: Found active pacts:', pacts.length);
 
       let totalNewCompletedDays = 0;
 
       // For each pact, check for days that should be automatically marked as completed
       for (const pact of pacts) {
+        console.log('SyncPacts: Processing pact', pact.id);
+        
         const { data: days, error: daysError } = await supabase
           .from('pact_days')
           .select('id, date')
@@ -134,7 +144,9 @@ export const createSyncPactsSlice = (
       }
 
       // Reload pacts to reflect changes
+      console.log('SyncPacts: Reloading pacts to reflect changes');
       await loadPacts();
+      console.log('SyncPacts: Sync completed successfully');
     } catch (error: any) {
       console.error('Error syncing pacts:', error);
     } finally {

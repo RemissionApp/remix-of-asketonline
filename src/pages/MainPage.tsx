@@ -18,6 +18,7 @@ const MainPage: React.FC = () => {
   const {
     pacts = [],
     syncPactsWithCurrentDate,
+    loadPacts,
     language,
     user,
     loadUserProfile,
@@ -34,6 +35,20 @@ const MainPage: React.FC = () => {
   const { stats } = useUserProgress();
 
   const logger = createLogger('MainPage');
+
+  // Debug function to force reload pacts
+  const handleRefreshData = async () => {
+    console.log('MainPage: Force refreshing pacts data');
+    setIsLoading(true);
+    try {
+      await loadPacts();
+      console.log('MainPage: Force refresh completed');
+    } catch (error) {
+      console.error('MainPage: Force refresh failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Check if user is logged in and load user profile if needed
   useEffect(() => {
@@ -53,6 +68,7 @@ const MainPage: React.FC = () => {
 
         // Then sync pacts with current date
         logger.debug('Syncing pacts with current date');
+        console.log('MainPage: Syncing pacts with current date');
         syncPactsWithCurrentDate();
       } catch (error) {
         logger.error('Failed to initialize user data', error);
@@ -75,19 +91,21 @@ const MainPage: React.FC = () => {
   const allPacts = pacts || [];
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
 
+  // Get current pact from all pacts for slider
+  const currentPact = allPacts[currentPactIndex] || null;
+
   // Debug logging for pacts state
   useEffect(() => {
     console.log('MainPage - Pacts state:', {
       totalPacts: allPacts.length,
       activePacts: activePacts.length,
-      pactsData: allPacts.map(p => ({ id: p.id, title: p.title, status: p.status })),
+      pactsData: allPacts.map(p => ({ id: p.id, title: p.title, status: p.status, days_total: p.days_total, days_completed: p.days_completed })),
+      currentPactIndex,
+      currentPact: currentPact ? { id: currentPact.id, title: currentPact.title } : null,
       isLoading,
       user: !!user,
     });
-  }, [allPacts, activePacts, isLoading, user]);
-
-  // Get current pact from all pacts for slider
-  const currentPact = allPacts[currentPactIndex] || null;
+  }, [allPacts, activePacts, currentPactIndex, currentPact, isLoading, user]);
 
   // Change handlers for the carousel - now works with all pacts
   const handlePrevPact = () => {
@@ -131,21 +149,40 @@ const MainPage: React.FC = () => {
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
 
+      {/* Debug refresh button - remove in production */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={handleRefreshData}
+          className="bg-primary/20 hover:bg-primary/30 text-primary px-3 py-1 rounded-md text-sm"
+        >
+          Обновить данные
+        </button>
+      </div>
+
       {/* Main content */}
       <div>
-        <MainContent
-        activePacts={activePacts}
-        allPacts={allPacts}
-        currentPactIndex={currentPactIndex}
-        currentPact={currentPact}
-        dailyQuote={dailyQuote}
-        isLoading={isLoading}
-        showEnergyEffect={showEnergyEffect}
-        handlePrevPact={handlePrevPact}
-        handleNextPact={handleNextPact}
-        getAscesisPrefix={getAscesisPrefix}
-        formatRejection={formatRejection}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center space-y-4">
+              <div className="animate-spin w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full mx-auto"></div>
+              <p className="text-muted-foreground">Загрузка аскез...</p>
+            </div>
+          </div>
+        ) : (
+          <MainContent
+            activePacts={activePacts}
+            allPacts={allPacts}
+            currentPactIndex={currentPactIndex}
+            currentPact={currentPact}
+            dailyQuote={dailyQuote}
+            isLoading={isLoading}
+            showEnergyEffect={showEnergyEffect}
+            handlePrevPact={handlePrevPact}
+            handleNextPact={handleNextPact}
+            getAscesisPrefix={getAscesisPrefix}
+            formatRejection={formatRejection}
+          />
+        )}
       </div>
 
       {/* Mission Reminder */}

@@ -50,6 +50,20 @@ export const createLoadPactsSlice = (
 
           if (daysError) throw daysError;
 
+          // Calculate completed days
+          const completedDays = days?.filter(d => d.completed).length || 0;
+          const lastCompletedDay = days?.filter(d => d.completed).sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          )[0];
+
+          console.log('LoadPacts: Processing pact', {
+            pactId: pact.id,
+            title: pact.title,
+            totalDays: days?.length || 0,
+            completedDays,
+            lastCompletedDate: lastCompletedDay?.date || '',
+          });
+
           // Transform to our app's format
           return {
             id: pact.id,
@@ -62,8 +76,8 @@ export const createLoadPactsSlice = (
                 pact.duration * 24 * 60 * 60 * 1000
             ).toISOString(),
             days_total: pact.duration,
-            days_completed: 0,
-            last_completed_date: '',
+            days_completed: completedDays,
+            last_completed_date: lastCompletedDay?.date || '',
             rejection: pact.title,
             status: pact.status as
               | 'active'
