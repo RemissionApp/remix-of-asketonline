@@ -68,8 +68,6 @@ const AppInitializer = () => {
     } = useAppStore();
 
     useEffect(() => {
-      let isComponentMounted = true;
-      
       // Инициализируем настройки из localStorage
       initializeSettings();
       
@@ -86,33 +84,17 @@ const AppInitializer = () => {
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (!isComponentMounted) return;
-        
-        logger.info('Auth state changed', { 
-          event, 
-          userId: session?.user?.id,
-          hasSession: !!session,
-          emailConfirmed: session?.user?.email_confirmed_at ? 'confirmed' : 'pending'
-        });
+        logger.info('Auth state changed', { event, userId: session?.user?.id });
 
-        if (event === 'SIGNED_IN' && session?.user) {
-          // Синхронно обновляем пользователя в store
+        if (event === 'SIGNED_IN' && session) {
           setUser(session.user);
-          
+
           // Отложенная загрузка данных пользователя для предотвращения deadlock
-          setTimeout(async () => {
-            if (isComponentMounted) {
-              try {
-                await loadUserProfile();
-                logger.debug('User profile loaded after sign in');
-              } catch (error) {
-                logger.error('Failed to load user profile after sign in', error);
-              }
-            }
+          setTimeout(() => {
+            loadUserProfile();
           }, 0);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-          logger.debug('User signed out, cleared user state');
         }
       });
 
@@ -121,34 +103,16 @@ const AppInitializer = () => {
         try {
           const { data, error } = await supabase.auth.getSession();
           if (error) {
-            logger.error('Error getting session during initialization', error);
+            logger.error('Ошибка получения сессии', error);
             return;
           }
 
-          logger.debug('Session check result', {
-            hasSession: !!data.session,
-            hasUser: !!data.session?.user,
-            userId: data.session?.user?.id,
-            emailConfirmed: data.session?.user?.email_confirmed_at ? 'confirmed' : 'pending'
-          });
-
-          if (data.session?.user && isComponentMounted) {
+          if (data.session?.user) {
             setUser(data.session.user);
-            
-            // Загружаем профиль пользователя
-            setTimeout(async () => {
-              if (isComponentMounted) {
-                try {
-                  await loadUserProfile();
-                  logger.debug('User profile loaded during initialization');
-                } catch (error) {
-                  logger.error('Failed to load user profile during initialization', error);
-                }
-              }
-            }, 0);
+            await loadUserProfile();
           }
         } catch (error) {
-          logger.error('Failed to check session during initialization', error);
+          logger.error('Не удалось проверить сессию', error);
         }
       };
 
@@ -156,10 +120,9 @@ const AppInitializer = () => {
 
       // Отписываемся при размонтировании
       return () => {
-        isComponentMounted = false;
         subscription.unsubscribe();
       };
-    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings, logger]);
+    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings]);
 
     return null;
   } catch (error) {

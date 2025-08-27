@@ -12,16 +12,17 @@ export const createLoadPactsSlice = (
   get: () => AppState
 ): LoadPactsSlice => ({
   loadPacts: async () => {
-    // Get current session directly from Supabase (most reliable)
-    const { data: session, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error('LoadPacts: Session error:', sessionError);
+    const { user } = get();
+
+    if (!user) {
+      console.log('LoadPacts: No user found, skipping load');
       return;
     }
-    
-    if (!session?.session?.user) {
-      console.log('LoadPacts: No valid Supabase session found');
+
+    // Double-check actual Supabase session
+    const { data: session, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.session?.user) {
+      console.log('LoadPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
       return;
     }
 

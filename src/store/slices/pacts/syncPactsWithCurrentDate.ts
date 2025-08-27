@@ -13,23 +13,24 @@ export const createSyncPactsSlice = (
   get: () => AppState
 ): SyncPactsSlice => ({
   syncPactsWithCurrentDate: async () => {
-    const { loadPacts, addEnergyPoints, checkRankProgress, userProfile } = get();
+    const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } =
+      get();
 
-    // Get current session directly from Supabase (most reliable)
-    const { data: session, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error('SyncPacts: Session error:', sessionError);
+    console.log('SyncPacts: Starting sync', { hasUser: !!user });
+
+    if (!user) {
+      console.log('SyncPacts: No user, skipping sync');
       return;
     }
-    
-    if (!session?.session?.user) {
-      console.log('SyncPacts: No valid Supabase session found');
+
+    // Double-check actual Supabase session
+    const { data: session, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.session?.user) {
+      console.log('SyncPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
       return;
     }
 
     const currentUserId = session.session.user.id;
-    console.log('SyncPacts: Starting sync for user:', currentUserId);
 
     set({ loading: true });
 
