@@ -175,31 +175,38 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     try {
       cleanupAuthState();
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+      const currentLanguage = get().language || 'en';
+
+      // Use new edge function that creates user and sends OTP in one call
+      const { data, error } = await supabase.functions.invoke(
+        'create-user-with-otp',
+        {
+          body: {
+            email,
+            password,
+            language: currentLanguage,
+          },
+        }
+      );
+
+      if (error) {
+        console.error('Error creating user with OTP:', error);
+        throw new Error('Не удалось создать аккаунт');
+      }
+
+      if (!data.success) {
+        console.error('User creation failed:', data.error);
+        throw new Error(data.error || 'Не удалось создать аккаунт');
+      }
+
+      // Don't set user yet - they need to verify OTP first
+      set({ emailConfirmed: false });
+
+      toast({
+        title: 'Код отправлен',
+        description: 'Проверьте свою почту и введите код подтверждения',
       });
 
-      if (error) throw error;
-
-      set({ user: data.user });
-
-      if (data.session) {
-        toast({
-          title: 'Регистрация выполнена',
-          description:
-            'Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль.',
-        });
-
-        set({ activeScreen: 'profile', emailConfirmed: true });
-      } else {
-        set({ emailConfirmed: false });
-        toast({
-          title: 'Регистрация выполнена',
-          description:
-            'Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения.',
-        });
-      }
     } catch (error) {
       logger.error('Sign up failed', error);
       toast({
@@ -208,6 +215,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           error instanceof Error ? error.message : 'Не удалось создать аккаунт',
         variant: 'destructive',
       });
+      throw error;
     } finally {
       set({ loading: false });
     }

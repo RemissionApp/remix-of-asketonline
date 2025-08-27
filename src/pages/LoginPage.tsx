@@ -163,11 +163,13 @@ const LoginPage: React.FC = () => {
     // Очищаем состояние аутентификации перед регистрацией
     cleanupAuthState();
 
-    await signUp(email, password);
-    // Send OTP code instead of email confirmation
-    const otpSent = await sendOtpCode(email);
-    if (otpSent) {
+    try {
+      await signUp(email, password);
+      // New signUp function already creates user and sends OTP
       setOtpSent(true);
+    } catch (error) {
+      // Error is already handled in signUp function
+      console.error('Signup error:', error);
     }
   };
 
