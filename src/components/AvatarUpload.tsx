@@ -69,15 +69,22 @@ const AvatarUpload: React.FC = () => {
       await updateProfileAsync({ avatar_url: publicUrl });
 
       console.log('Avatar uploaded successfully:', publicUrl);
+      
+      // Force refresh profile cache to get latest data
+      const { refreshProfile } = useOptimizedProfileCache(user as any);
+      await new Promise(resolve => setTimeout(resolve, 200)); // Small delay for DB propagation
+      refreshProfile();
+      
       toast({
         title: 'Аватар загружен',
         description: 'Ваш аватар был успешно обновлен',
       });
 
-      // Trigger refresh to ensure immediate display
+      // Trigger multiple refresh events to ensure immediate display
+      window.dispatchEvent(new Event('avatar-updated'));
       setTimeout(() => {
         window.dispatchEvent(new Event('avatar-updated'));
-      }, 100);
+      }, 300);
 
       // Clean up
       setShowConfirm(false);

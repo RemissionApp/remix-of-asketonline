@@ -142,21 +142,31 @@ export const useOptimizedProfileCache = (user: AuthUser | null) => {
     onSuccess: (updates) => {
       logger.debug('Profile updated successfully', updates);
       
-      // Sync with Zustand store after successful update
-      const currentProfile = queryClient.getQueryData(
-        profileQueryKeys.detail(user!.id)
-      ) as UserProfile;
-      
-      if (currentProfile) {
-        const { updateUserProfileStore } = appStore;
-        updateUserProfileStore(currentProfile);
-        logger.debug('Synced profile with Zustand store', currentProfile);
-      }
-      
-      toast({
-        title: 'Профиль обновлен',
-        description: 'Ваш профиль был успешно обновлен',
+      // Force refresh to get latest data from DB
+      queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.detail(user!.id),
       });
+      
+      // Wait for invalidation and then sync with store
+      setTimeout(() => {
+        const currentProfile = queryClient.getQueryData(
+          profileQueryKeys.detail(user!.id)
+        ) as UserProfile;
+        
+        if (currentProfile) {
+          const { updateUserProfileStore } = appStore;
+          updateUserProfileStore(currentProfile);
+          logger.debug('Synced profile with Zustand store', currentProfile);
+        }
+      }, 100);
+      
+      // Show success message only for non-avatar updates to avoid spam
+      if (!updates.avatar_url) {
+        toast({
+          title: 'Профиль обновлен',
+          description: 'Ваш профиль был успешно обновлен',
+        });
+      }
     },
     onSettled: () => {
       // Refetch after mutation

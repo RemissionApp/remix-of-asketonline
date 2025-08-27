@@ -31,10 +31,13 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   // Use cached profile if available, fallback to store
   const currentProfile = cachedProfile || userProfile;
 
-  // Listen for avatar updates and refresh profile cache
+  // Listen for avatar updates and force refresh
   React.useEffect(() => {
     const handleAvatarUpdate = () => {
+      logger.debug('Avatar update event received, refreshing profile');
       refreshProfile();
+      // Force component rerender by triggering state change
+      setForceRefresh(prev => prev + 1);
     };
 
     window.addEventListener('avatar-updated', handleAvatarUpdate);
@@ -42,6 +45,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       window.removeEventListener('avatar-updated', handleAvatarUpdate);
     };
   }, [refreshProfile]);
+
+  // Force refresh state to trigger rerenders
+  const [forceRefresh, setForceRefresh] = React.useState(0);
 
   // Define size classes
   const sizeClasses = {
@@ -59,15 +65,18 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     enlightened: 'border-cosmic-gold',
   };
 
-  // Get avatar URL from current profile (cached or store)
+  // Get avatar URL from current profile (cached or store) with cache busting
   const getAvatarUrl = (): string => {
     // Check if current profile has an avatar_url
     if (currentProfile?.avatar_url) {
-      logger.debug('Using avatar from profile', {
-        avatar_url: currentProfile.avatar_url,
+      // Add cache busting timestamp to force image refresh
+      const cacheBustingUrl = `${currentProfile.avatar_url}?v=${Date.now()}`;
+      logger.debug('Using avatar from profile with cache busting', {
+        original_url: currentProfile.avatar_url,
+        cache_busted_url: cacheBustingUrl,
         source: cachedProfile ? 'cache' : 'store'
       });
-      return currentProfile.avatar_url;
+      return cacheBustingUrl;
     }
 
     // If no custom avatar, use rank-based default avatar
@@ -105,6 +114,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <div className="relative">
       <Avatar
+        key={`avatar-${forceRefresh}-${currentProfile?.avatar_url || 'default'}`}
         className={cn(
           sizeClasses[size],
           borderClass,
@@ -112,7 +122,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           className
         )}
       >
-        <AvatarImage src={getAvatarUrl()} alt={`${currentProfile?.name || 'User'} avatar`} />
+        <AvatarImage 
+          src={getAvatarUrl()} 
+          alt={`${currentProfile?.name || 'User'} avatar`}
+          onLoad={() => logger.debug('Avatar image loaded successfully')}
+          onError={() => logger.warn('Avatar image failed to load')}
+        />
         <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
           {(currentProfile?.name || 'US').substring(0, 2).toUpperCase()}
         </AvatarFallback>
