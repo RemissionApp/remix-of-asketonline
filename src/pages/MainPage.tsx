@@ -15,6 +15,12 @@ import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
 
 const MainPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { handleAsyncError } = useErrorHandler();
+  const logger = createLogger('MainPage');
+
+  // Get app store state
   const {
     pacts = [],
     syncPactsWithCurrentDate,
@@ -25,16 +31,15 @@ const MainPage: React.FC = () => {
     userProfile,
     setActiveScreen,
   } = useAppStore();
+
+  // Local state
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  
+  // Hook calls
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
-  const { handleAsyncError } = useErrorHandler();
   const { stats } = useUserProgress();
-
-  const logger = createLogger('MainPage');
 
   // Debug function to force reload pacts
   const handleRefreshData = async () => {

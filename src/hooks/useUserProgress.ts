@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
-import { useOptimizedDatabase } from '@/hooks/useOptimizedDatabase';
 
 interface UserProgressStats {
   missionsCompleted: number;
@@ -55,10 +54,21 @@ export const useUserProgress = () => {
         .from('user_progress_summary')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (!progressData) {
         console.warn('No progress data found for user');
+        // Initialize default values if no data exists
+        setStats({
+          missionsCompleted: 0,
+          artifactsCollected: 0,
+          totalEnergyEarned: 0,
+          currentStreak: 0,
+          specialEvents: [],
+          level: 1,
+          experiencePoints: 0,
+          experienceToNextLevel: 100,
+        });
         return;
       }
       
