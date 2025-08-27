@@ -298,6 +298,10 @@ export const ruTranslations: Translations = {
   },
   subscription: {
     title: 'PRO Подписка',
+    webMessage: 'Функции подписки доступны только в мобильном приложении.',
+    webInstructions: 'Скачайте наше мобильное приложение, чтобы перейти на Pro и разблокировать все функции.',
+  },
+  dataExport: {
     description: 'Откройте полный потенциал приложения с PRO-подпиской',
     upgradeButton: 'Активировать PRO',
     proFeatures: 'Особенности PRO',

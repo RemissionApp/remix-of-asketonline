@@ -6,6 +6,7 @@ import {
   PurchasesOffering,
   PurchasesPackage,
 } from '@revenuecat/purchases-capacitor';
+import { Capacitor } from '@capacitor/core';
 import { revenueCatService } from '@/utils/revenueCat';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
@@ -14,7 +15,7 @@ import { log } from 'console';
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOffering[]>([]);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null | any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [billingAvailable, setBillingAvailable] = useState<boolean | null>(
     null
@@ -31,7 +32,8 @@ export const useRevenueCat = () => {
     // Добавляем слушатель изменений CustomerInfo согласно документации
     const setupCustomerInfoListener = async () => {
       // Skip on web platform
-      if (typeof window !== 'undefined' && !(window as any).Capacitor) {
+      if (Capacitor.getPlatform() === 'web') {
+        console.log('RevenueCat hook: Skipping listener setup on web platform');
         return;
       }
 
@@ -53,7 +55,7 @@ export const useRevenueCat = () => {
   }, []);
 
   // Функция для синхронизации Pro статуса с app store
-  const syncProStatus = (customerInfo: CustomerInfo | null) => {
+  const syncProStatus = (customerInfo: CustomerInfo | null | any) => {
     const hasActive =
       customerInfo?.entitlements?.active &&
       Object.keys(customerInfo.entitlements.active).length > 0;
@@ -68,8 +70,8 @@ export const useRevenueCat = () => {
 
   const initializeRevenueCat = async () => {
     // Check if we're running on web and skip initialization
-    if (typeof window !== 'undefined' && !(window as any).Capacitor) {
-      console.log('RevenueCat: Skipping initialization on web platform');
+    if (Capacitor.getPlatform() === 'web') {
+      console.log('RevenueCat hook: Skipping initialization on web platform');
       setIsInitialized(false);
       setBillingAvailable(false);
       return;
@@ -96,10 +98,11 @@ export const useRevenueCat = () => {
 
         // Получаем информацию о пользователе
         const customerInfoData = await revenueCatService.getCustomerInfo();
-        setCustomerInfo(customerInfoData.customerInfo);
-
-        // Синхронизируем Pro статус при инициализации
-        syncProStatus(customerInfoData.customerInfo);
+        if (customerInfoData.customerInfo) {
+          setCustomerInfo(customerInfoData.customerInfo);
+          // Синхронизируем Pro статус при инициализации
+          syncProStatus(customerInfoData.customerInfo);
+        }
       } else {
         toast({
           title: 'Google Play Billing недоступен',
@@ -113,7 +116,7 @@ export const useRevenueCat = () => {
       setIsInitialized(false);
       setBillingAvailable(false);
       // Silently fail on web, only show toast on native platforms
-      if (typeof window !== 'undefined' && (window as any).Capacitor) {
+      if (Capacitor.getPlatform() !== 'web') {
         toast({
           title: 'Ошибка инициализации',
           description: 'Не удалось инициализировать систему покупок',

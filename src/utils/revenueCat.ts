@@ -24,12 +24,17 @@ export class RevenueCatService {
     return RevenueCatService.instance;
   }
 
+  private isWebPlatform(): boolean {
+    return Capacitor.getPlatform() === 'web';
+  }
+
   async initialize(userId?: string): Promise<void> {
     if (this.isConfigured) return;
 
     // Skip initialization on web platform
-    if (Capacitor.getPlatform() === 'web') {
-      throw new Error('Web not supported in this plugin.');
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform detected, skipping initialization');
+      return;
     }
 
     try {
@@ -51,6 +56,14 @@ export class RevenueCatService {
   }
 
   async getOfferings() {
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - returning mock offerings');
+      return {
+        current: null,
+        all: {},
+      };
+    }
+
     try {
       const offerings = await Purchases.getOfferings();
       return offerings;
@@ -76,6 +89,10 @@ export class RevenueCatService {
   async purchasePackage(
     packageToPurchase: PurchasesPackage
   ): Promise<CustomerInfo> {
+    if (this.isWebPlatform()) {
+      throw new Error('Покупки доступны только в мобильном приложении');
+    }
+
     try {
       const result = await Purchases.purchasePackage({
         aPackage: packageToPurchase,
@@ -101,6 +118,10 @@ export class RevenueCatService {
   }
 
   async restorePurchases(): Promise<CustomerInfo> {
+    if (this.isWebPlatform()) {
+      throw new Error('Восстановление покупок доступно только в мобильном приложении');
+    }
+
     try {
       const result = await Purchases.restorePurchases();
       return result.customerInfo;
@@ -123,6 +144,16 @@ export class RevenueCatService {
   }
 
   async getCustomerInfo() {
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - returning mock customer info');
+      return {
+        customerInfo: {
+          entitlements: { active: {} },
+          activeSubscriptions: [],
+        },
+      };
+    }
+
     try {
       const customerInfo = await Purchases.getCustomerInfo();
       console.log('customerInfo', customerInfo);
@@ -134,6 +165,16 @@ export class RevenueCatService {
   }
 
   async identifyUser(userId: string) {
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - skipping user identification');
+      return {
+        customerInfo: {
+          entitlements: { active: {} },
+          activeSubscriptions: [],
+        },
+      };
+    }
+
     try {
       const customerInfo = await Purchases.logIn({ appUserID: userId });
       return customerInfo;
@@ -145,6 +186,11 @@ export class RevenueCatService {
 
   // Новый метод для проверки доступности Google Play Billing
   async checkBillingAvailability(): Promise<boolean> {
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - billing not available');
+      return false;
+    }
+
     try {
       await this.getOfferings();
       return true;
@@ -166,8 +212,9 @@ export class RevenueCatService {
     callback: (customerInfo: CustomerInfo) => void
   ) {
     // Skip on web platform
-    if (Capacitor.getPlatform() === 'web') {
-      throw new Error('Web not supported in this plugin.');
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - skipping customer info listener');
+      return;
     }
     
     try {

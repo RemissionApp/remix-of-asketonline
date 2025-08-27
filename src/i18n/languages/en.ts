@@ -298,6 +298,11 @@ export const enTranslations: Translations = {
     },
   },
   subscription: {
+    title: 'Pro Subscription',
+    webMessage: 'Subscription features are available only in the mobile app.',
+    webInstructions: 'Download our mobile app to upgrade to Pro and unlock all features.',
+  },
+  dataExport: {
     title: 'PRO Subscription',
     description: 'Unlock the full potential of the app with PRO subscription',
     upgradeButton: 'Activate PRO',
