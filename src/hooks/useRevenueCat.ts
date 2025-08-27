@@ -110,7 +110,9 @@ export const useRevenueCat = () => {
       }
     } catch (error) {
       console.error('Ошибка инициализации RevenueCat:', error);
-      // Only show toast on native platforms
+      setIsInitialized(false);
+      setBillingAvailable(false);
+      // Silently fail on web, only show toast on native platforms
       if (typeof window !== 'undefined' && (window as any).Capacitor) {
         toast({
           title: 'Ошибка инициализации',

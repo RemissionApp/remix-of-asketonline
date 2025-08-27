@@ -27,6 +27,11 @@ export class RevenueCatService {
   async initialize(userId?: string): Promise<void> {
     if (this.isConfigured) return;
 
+    // Skip initialization on web platform
+    if (Capacitor.getPlatform() === 'web') {
+      throw new Error('Web not supported in this plugin.');
+    }
+
     try {
       // Включаем debug логи для разработки
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
@@ -160,6 +165,11 @@ export class RevenueCatService {
   async addCustomerInfoUpdateListener(
     callback: (customerInfo: CustomerInfo) => void
   ) {
+    // Skip on web platform
+    if (Capacitor.getPlatform() === 'web') {
+      throw new Error('Web not supported in this plugin.');
+    }
+    
     try {
       await Purchases.addCustomerInfoUpdateListener(callback);
     } catch (error) {

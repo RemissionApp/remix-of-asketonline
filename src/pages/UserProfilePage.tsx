@@ -36,14 +36,19 @@ const UserProfilePage: React.FC = () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const sessionUser = sessionData?.session?.user;
 
+      console.log('Auth check - session user:', sessionUser?.id);
+      console.log('Auth check - profile complete:', userProfile);
+
       // If no session found, redirect to login
       if (!sessionUser) {
+        console.log('No session user, redirecting to login');
         navigate('/login');
         return;
       }
 
       // Check if email is confirmed (cached result if available)
       const isConfirmed = emailConfirmed || await checkEmailConfirmation();
+      console.log('Email confirmed:', isConfirmed);
 
       if (!isConfirmed) {
         toast({
@@ -58,15 +63,20 @@ const UserProfilePage: React.FC = () => {
       // Use centralized profile completion check from store
       const { isProfileComplete } = useAppStore.getState();
       const profileComplete = isProfileComplete();
+      console.log('Profile complete check:', profileComplete);
 
       if (profileComplete) {
         const { checkOnboardingStatus } = useAppStore.getState();
         const isOnboardingComplete = checkOnboardingStatus();
+        console.log('Onboarding complete:', isOnboardingComplete);
+        
         if (!isOnboardingComplete) {
           navigate('/onboarding');
         } else {
           navigate('/main');
         }
+      } else {
+        console.log('Profile incomplete, staying on profile page');
       }
 
       setAuthChecking(false);
