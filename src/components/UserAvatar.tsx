@@ -26,10 +26,22 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   const { userProfile, user } = useAppStore();
   
   // Use optimized profile cache to get latest data
-  const { profile: cachedProfile } = useOptimizedProfileCache(user as any);
+  const { profile: cachedProfile, refreshProfile } = useOptimizedProfileCache(user as any);
   
   // Use cached profile if available, fallback to store
   const currentProfile = cachedProfile || userProfile;
+
+  // Listen for avatar updates and refresh profile cache
+  React.useEffect(() => {
+    const handleAvatarUpdate = () => {
+      refreshProfile();
+    };
+
+    window.addEventListener('avatar-updated', handleAvatarUpdate);
+    return () => {
+      window.removeEventListener('avatar-updated', handleAvatarUpdate);
+    };
+  }, [refreshProfile]);
 
   // Define size classes
   const sizeClasses = {

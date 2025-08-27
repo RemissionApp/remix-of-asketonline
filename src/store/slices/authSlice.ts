@@ -81,6 +81,7 @@ export interface AuthSlice {
   updateUserProfile: (
     profileData: Partial<import('@/types').UserProfile>
   ) => Promise<void>;
+  updateUserProfileStore: (profile: UserProfile) => void;
   checkEmailConfirmation: () => Promise<boolean>;
   sendOtpCode: (email: string) => Promise<boolean>;
   verifyOtpCode: (email: string, code: string) => Promise<boolean>;
@@ -595,6 +596,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   updateProStatus: (isPro: boolean) => {
     set(state => ({
       userProfile: { ...state.userProfile, isPro },
+    }));
+  },
+
+  // Функция для синхронизации профиля из React Query с Zustand store
+  updateUserProfileStore: (profile: UserProfile) => {
+    logger.debug('Syncing profile from React Query to Zustand store', profile);
+    set(state => ({
+      userProfile: { ...state.userProfile, ...profile },
     }));
   },
 

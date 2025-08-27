@@ -74,6 +74,11 @@ const AvatarUpload: React.FC = () => {
         description: 'Ваш аватар был успешно обновлен',
       });
 
+      // Trigger refresh to ensure immediate display
+      setTimeout(() => {
+        window.dispatchEvent(new Event('avatar-updated'));
+      }, 100);
+
       // Clean up
       setShowConfirm(false);
       setSelectedFile(null);

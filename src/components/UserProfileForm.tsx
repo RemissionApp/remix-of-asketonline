@@ -29,6 +29,7 @@ const UserProfileForm: React.FC = () => {
     updateProfile,
     updateProfileAsync,
     isUpdating,
+    refreshProfile,
   } = useOptimizedProfileCache(user as any);
 
   // Calculate age when profile data changes
@@ -70,31 +71,34 @@ const UserProfileForm: React.FC = () => {
         birthDate: values.birthDate,
       });
 
-      // Navigate based on profile completion and onboarding status
-      // Используем обновленные данные из React Query cache для проверки
-      const updatedProfile = profile ? { ...profile, ...values } : values;
-      const profileComplete = !!(
-        updatedProfile &&
-        updatedProfile.name &&
-        updatedProfile.name !== 'Искатель' &&
-        updatedProfile.name.trim() !== '' &&
-        updatedProfile.birthDate
-      );
+      // Refresh profile to get latest data from database
+      refreshProfile();
       
-      const onboardingComplete = checkOnboardingStatus();
-      
-      if (profileComplete && !onboardingComplete) {
-        navigate('/onboarding');
-      } else if (profileComplete && onboardingComplete) {
-        navigate('/main');
-      } else {
-        // Profile still not complete, stay here
-        logger.warn('Profile save successful but still not complete', {
-          name: updatedProfile.name,
-          hasBirthDate: !!updatedProfile.birthDate,
-          profileComplete
+      // Wait a bit for the refresh to complete, then check profile completion
+      setTimeout(() => {
+        const profileComplete = isProfileComplete();
+        const onboardingComplete = checkOnboardingStatus();
+        
+        logger.debug('Navigation decision after profile update', {
+          profileComplete,
+          onboardingComplete,
+          name: values.name,
+          hasBirthDate: !!values.birthDate
         });
-      }
+        
+        if (profileComplete && !onboardingComplete) {
+          navigate('/onboarding');
+        } else if (profileComplete && onboardingComplete) {
+          navigate('/main');
+        } else {
+          // Profile still not complete, stay here
+          logger.warn('Profile save successful but still not complete', {
+            name: values.name,
+            hasBirthDate: !!values.birthDate,
+            profileComplete
+          });
+        }
+      }, 100);
     } catch (error: any) {
       logger.error('Error saving profile', error);
       // Error toast is handled by the optimized cache

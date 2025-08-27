@@ -52,7 +52,7 @@ const fetchProfile = async (userId: string): Promise<UserProfile> => {
 // Optimized profile cache hook
 export const useOptimizedProfileCache = (user: AuthUser | null) => {
   const queryClient = useQueryClient();
-  const { userProfile, ...appStore } = useAppStore();
+  const appStore = useAppStore();
 
   // Profile query with caching
   const profileQuery = useQuery({
@@ -141,6 +141,18 @@ export const useOptimizedProfileCache = (user: AuthUser | null) => {
     },
     onSuccess: (updates) => {
       logger.debug('Profile updated successfully', updates);
+      
+      // Sync with Zustand store after successful update
+      const currentProfile = queryClient.getQueryData(
+        profileQueryKeys.detail(user!.id)
+      ) as UserProfile;
+      
+      if (currentProfile) {
+        const { updateUserProfileStore } = appStore;
+        updateUserProfileStore(currentProfile);
+        logger.debug('Synced profile with Zustand store', currentProfile);
+      }
+      
       toast({
         title: 'Профиль обновлен',
         description: 'Ваш профиль был успешно обновлен',
@@ -288,6 +300,10 @@ export const useOptimizedProfileCache = (user: AuthUser | null) => {
         profileQueryKeys.detail(user?.id || ''),
         profile
       );
+      
+      // Also sync with Zustand store
+      const { updateUserProfileStore } = appStore;
+      updateUserProfileStore(profile);
     },
   };
 };
