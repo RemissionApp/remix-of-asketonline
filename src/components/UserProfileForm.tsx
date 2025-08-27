@@ -11,13 +11,14 @@ import ProfileForm from './ProfileForm';
 import ProfileDataDisplay from './ProfileDataDisplay';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useOptimizedProfileCache } from '@/hooks/useOptimizedProfileCache';
+import { useProfileCompletion } from '@/hooks/useProfileCompletion';
 import * as z from 'zod';
 
 const UserProfileForm: React.FC = () => {
   const logger = createLogger('UserProfileForm');
   const navigate = useNavigate();
   const location = useLocation();
-  const { userProfile, user, isProfileComplete, checkOnboardingStatus } = useAppStore();
+  const { userProfile, user, checkOnboardingStatus } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   const [editingBirthDate, setEditingBirthDate] = useState(false);
@@ -32,6 +33,9 @@ const UserProfileForm: React.FC = () => {
     refreshProfile,
   } = useOptimizedProfileCache(user as any);
 
+  // Use profile completion hook for reactive checking
+  const { isProfileComplete: profileComplete } = useProfileCompletion();
+
   // Calculate age when profile data changes
   useEffect(() => {
     if (profile?.birthDate) {
@@ -41,6 +45,28 @@ const UserProfileForm: React.FC = () => {
       setAge(null);
     }
   }, [profile?.birthDate]);
+
+  // Handle automatic navigation when profile becomes complete
+  useEffect(() => {
+    if (profileComplete && user && !isUpdating) {
+      const onboardingComplete = checkOnboardingStatus();
+      
+      logger.debug('Profile completion status changed', {
+        profileComplete,
+        onboardingComplete,
+        profileName: profile?.name,
+        profileBirthDate: !!profile?.birthDate
+      });
+      
+      if (!onboardingComplete) {
+        logger.info('Profile complete, navigating to onboarding');
+        navigate('/onboarding');
+      } else {
+        logger.info('Profile and onboarding complete, navigating to main');
+        navigate('/main');
+      }
+    }
+  }, [profileComplete, user, isUpdating, profile?.name, profile?.birthDate]);
 
   // Define proper types for form submission
   interface ProfileFormData {
@@ -71,34 +97,30 @@ const UserProfileForm: React.FC = () => {
         birthDate: values.birthDate,
       });
 
-      // Refresh profile to get latest data from database
-      refreshProfile();
+      // Profile data is automatically synced via useOptimizedProfileCache
+      // Check navigation based on completion status
+      const onboardingComplete = checkOnboardingStatus();
       
-      // Wait a bit for the refresh to complete, then check profile completion
-      setTimeout(() => {
-        const profileComplete = isProfileComplete();
-        const onboardingComplete = checkOnboardingStatus();
-        
-        logger.debug('Navigation decision after profile update', {
-          profileComplete,
-          onboardingComplete,
+      logger.debug('Navigation decision after profile update', {
+        profileComplete,
+        onboardingComplete,
+        name: values.name,
+        hasBirthDate: !!values.birthDate
+      });
+      
+      // Navigate immediately based on current data
+      if (profileComplete && !onboardingComplete) {
+        navigate('/onboarding');
+      } else if (profileComplete && onboardingComplete) {
+        navigate('/main');
+      } else {
+        // Profile completion will be checked reactively via useProfileCompletion
+        logger.info('Profile updated, waiting for completion check', {
           name: values.name,
-          hasBirthDate: !!values.birthDate
+          hasBirthDate: !!values.birthDate,
+          currentComplete: profileComplete
         });
-        
-        if (profileComplete && !onboardingComplete) {
-          navigate('/onboarding');
-        } else if (profileComplete && onboardingComplete) {
-          navigate('/main');
-        } else {
-          // Profile still not complete, stay here
-          logger.warn('Profile save successful but still not complete', {
-            name: values.name,
-            hasBirthDate: !!values.birthDate,
-            profileComplete
-          });
-        }
-      }, 100);
+      }
     } catch (error: any) {
       logger.error('Error saving profile', error);
       // Error toast is handled by the optimized cache
