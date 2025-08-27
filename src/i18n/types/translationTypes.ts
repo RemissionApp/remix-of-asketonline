@@ -335,8 +335,9 @@ export interface Translations {
   legal?: LegalTranslations;
   common?: CommonTranslations;
   horoscope?: HoroscopeTranslations;
-  affirmations?: AffirmationsTranslations; // Add this new field to support affirmations
+  affirmations?: AffirmationsTranslations;
   emailOtp?: EmailOtpTranslations;
   deleteAccount?: DeleteAccountTranslations;
   notFound?: NotFoundTranslations;
+  dataExport?: Record<string, string>;
 }

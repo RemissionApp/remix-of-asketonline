@@ -4,18 +4,21 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { UploadButton } from './avatar/UploadButton';
 import { ConfirmUpload } from './avatar/ConfirmUpload';
+import { useOptimizedProfileCache } from '@/hooks/useOptimizedProfileCache';
 import {
   ensureAvatarBucket,
   uploadAvatarFile,
-  updateProfileAvatar,
 } from '@/utils/avatarStorage';
 
 const AvatarUpload: React.FC = () => {
-  const { user, userProfile, updateUserProfile } = useAppStore();
+  const { user } = useAppStore();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  
+  // Use optimized profile cache for avatar updates
+  const { updateProfileAsync } = useOptimizedProfileCache(user as any);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -62,14 +65,8 @@ const AvatarUpload: React.FC = () => {
       // Upload the file
       const publicUrl = await uploadAvatarFile(user.id, selectedFile);
 
-      // Update profile with new avatar URL
-      await updateProfileAvatar(user.id, publicUrl);
-
-      // Update local state
-      updateUserProfile({
-        ...userProfile,
-        avatar_url: publicUrl,
-      });
+      // Update profile using optimized cache
+      await updateProfileAsync({ avatar_url: publicUrl });
 
       // Clean up
       setShowConfirm(false);
@@ -78,11 +75,6 @@ const AvatarUpload: React.FC = () => {
         URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
       }
-
-      toast({
-        title: 'Аватар обновлен',
-        description: 'Ваш аватар успешно загружен',
-      });
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
       toast({

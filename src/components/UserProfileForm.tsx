@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
-import { formatDate } from '@/utils/dateFormatUtils';
 import { createLogger } from '@/utils/logger';
 import AvatarUpload from './AvatarUpload';
 import ZodiacInfo from './ZodiacInfo';
@@ -12,94 +10,36 @@ import BirthDateEditor from './BirthDateEditor';
 import ProfileForm from './ProfileForm';
 import ProfileDataDisplay from './ProfileDataDisplay';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useOptimizedProfileCache } from '@/hooks/useOptimizedProfileCache';
 import * as z from 'zod';
 
 const UserProfileForm: React.FC = () => {
   const logger = createLogger('UserProfileForm');
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    updateUserProfile,
-    userProfile,
-    language,
-    onboardingComplete,
-    setOnboardingComplete,
-    user,
-    loadUserProfile,
-  } = useAppStore();
+  const { userProfile, user, isProfileComplete, checkOnboardingStatus } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [editingBirthDate, setEditingBirthDate] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    birthDate: new Date(),
-  });
 
-  // Load user profile data when component mounts
+  // Use optimized profile cache - cast user to AuthUser type
+  const {
+    profile,
+    isLoading,
+    updateProfile,
+    updateProfileAsync,
+    isUpdating,
+  } = useOptimizedProfileCache(user as any);
+
+  // Calculate age when profile data changes
   useEffect(() => {
-    const loadProfile = async () => {
-      if (!user) return;
-
-      setIsLoading(true);
-      try {
-        // First, try to load from the store
-        await loadUserProfile();
-
-        logger.debug('Profile loaded from store', {
-          profileName: userProfile.name,
-        });
-
-        // Then fetch the latest data from Supabase
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('name, birth_date, avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          logger.error('Error fetching profile', error);
-          return;
-        }
-
-        logger.debug('Profile data from Supabase', { profileData });
-
-        if (profileData) {
-          // Convert birth_date string from Supabase to a Date object
-          const birthDate = profileData.birth_date
-            ? new Date(profileData.birth_date)
-            : null;
-
-          // Update the store and local form data
-          await updateUserProfile({
-            name: profileData.name || userProfile.name,
-            birthDate: birthDate || userProfile.birthDate,
-            avatar_url: profileData.avatar_url || userProfile.avatar_url,
-          });
-
-          setFormData({
-            name: profileData.name || userProfile.name || '',
-            birthDate: birthDate || userProfile.birthDate || new Date(),
-          });
-
-          // Calculate and set age
-          if (birthDate) {
-            const calculatedAge = differenceInYears(new Date(), birthDate);
-            setAge(calculatedAge);
-          }
-        }
-      } catch (err) {
-        logger.error('Exception fetching profile', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (user) {
-      loadProfile();
+    if (profile?.birthDate) {
+      const calculatedAge = differenceInYears(new Date(), profile.birthDate);
+      setAge(calculatedAge);
+    } else {
+      setAge(null);
     }
-  }, [user, userProfile.avatar_url, loadUserProfile, updateUserProfile]);
+  }, [profile?.birthDate]);
 
   // Define proper types for form submission
   interface ProfileFormData {
@@ -118,53 +58,19 @@ const UserProfileForm: React.FC = () => {
       return;
     }
 
-    setIsSaving(true);
-
     try {
       logger.info('Saving profile data', {
         name: values.name,
         hasBirthDate: !!values.birthDate,
       });
 
-      // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
-
-      // Update directly in Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: values.name,
-          birth_date: formattedBirthDate,
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        throw error;
-      }
-
-      // Also update the local store
-      await updateUserProfile({
+      // Use optimized profile update
+      await updateProfileAsync({
         name: values.name,
         birthDate: values.birthDate,
-      });
-
-      // Update local form data
-      setFormData({
-        name: values.name,
-        birthDate: values.birthDate,
-      });
-
-      // Calculate and set age
-      const calculatedAge = differenceInYears(new Date(), values.birthDate);
-      setAge(calculatedAge);
-
-      toast({
-        title: 'Профиль обновлен',
-        description: 'Ваши данные успешно сохранены',
       });
 
       // Navigate based on profile completion and onboarding status
-      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
       const profileComplete = isProfileComplete();
       const onboardingComplete = checkOnboardingStatus();
       
@@ -174,17 +80,11 @@ const UserProfileForm: React.FC = () => {
         navigate('/main');
       } else {
         // Profile still not complete, stay here
-        console.warn('Profile save successful but still not complete');
+        logger.warn('Profile save successful but still not complete');
       }
     } catch (error: any) {
       logger.error('Error saving profile', error);
-      toast({
-        title: 'Ошибка',
-        description: error.message || 'Не удалось сохранить профиль',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSaving(false);
+      // Error toast is handled by the optimized cache
     }
   };
 
@@ -202,7 +102,7 @@ const UserProfileForm: React.FC = () => {
 
       <ProfileDataDisplay age={age} />
 
-      {isLoading || isSaving ? (
+      {isLoading || isUpdating ? (
         <div className="flex justify-center items-center h-32">
           <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full"></div>
           <span className="ml-2 text-cosmic-secondary">
@@ -212,15 +112,15 @@ const UserProfileForm: React.FC = () => {
       ) : (
         <ProfileForm
           onSubmit={onSubmit}
-          isSaving={isSaving}
+          isSaving={isUpdating}
           defaultValues={{
-            name: userProfile.name && userProfile.name !== 'Искатель' ? userProfile.name : '',
-            birthDate: userProfile.birthDate || new Date(),
+            name: profile?.name && profile.name !== 'Искатель' ? profile.name : '',
+            birthDate: profile?.birthDate || new Date(),
           }}
         />
       )}
 
-      {userProfile?.birthDate && (
+      {profile?.birthDate && (
         <div className="mt-8">
           <h3 className="text-xl font-serif text-white mb-4">Знак зодиака</h3>
           <ZodiacInfo />
