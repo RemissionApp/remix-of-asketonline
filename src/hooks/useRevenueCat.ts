@@ -30,6 +30,11 @@ export const useRevenueCat = () => {
 
     // Добавляем слушатель изменений CustomerInfo согласно документации
     const setupCustomerInfoListener = async () => {
+      // Skip on web platform
+      if (typeof window !== 'undefined' && !(window as any).Capacitor) {
+        return;
+      }
+
       try {
         await revenueCatService.addCustomerInfoUpdateListener(
           (updatedCustomerInfo: CustomerInfo) => {
@@ -62,6 +67,14 @@ export const useRevenueCat = () => {
   };
 
   const initializeRevenueCat = async () => {
+    // Check if we're running on web and skip initialization
+    if (typeof window !== 'undefined' && !(window as any).Capacitor) {
+      console.log('RevenueCat: Skipping initialization on web platform');
+      setIsInitialized(false);
+      setBillingAvailable(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       await revenueCatService.initialize();
@@ -97,11 +110,14 @@ export const useRevenueCat = () => {
       }
     } catch (error) {
       console.error('Ошибка инициализации RevenueCat:', error);
-      toast({
-        title: 'Ошибка инициализации',
-        description: 'Не удалось инициализировать систему покупок',
-        variant: 'destructive',
-      });
+      // Only show toast on native platforms
+      if (typeof window !== 'undefined' && (window as any).Capacitor) {
+        toast({
+          title: 'Ошибка инициализации',
+          description: 'Не удалось инициализировать систему покупок',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setIsLoading(false);
     }

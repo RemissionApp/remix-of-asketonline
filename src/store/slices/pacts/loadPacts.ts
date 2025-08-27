@@ -14,7 +14,12 @@ export const createLoadPactsSlice = (
   loadPacts: async () => {
     const { user } = get();
 
-    if (!user) return;
+    if (!user) {
+      console.log('LoadPacts: No user found, skipping load');
+      return;
+    }
+
+    console.log('LoadPacts: Starting to load pacts for user:', user.id);
 
     try {
       // Get all pacts
@@ -27,9 +32,12 @@ export const createLoadPactsSlice = (
       if (pactsError) throw pactsError;
 
       if (!pacts || pacts.length === 0) {
+        console.log('LoadPacts: No pacts found for user');
         set({ pacts: [] });
         return;
       }
+
+      console.log('LoadPacts: Found pacts:', pacts.length);
 
       // For each pact, get its days
       const pactsWithDays = await Promise.all(
@@ -76,6 +84,7 @@ export const createLoadPactsSlice = (
       );
 
       // Update local state
+      console.log('LoadPacts: Setting pacts in store:', pactsWithDays.length);
       set({ pacts: pactsWithDays });
     } catch (error) {
       console.error('Error loading pacts:', error);

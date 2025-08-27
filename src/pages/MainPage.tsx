@@ -75,6 +75,17 @@ const MainPage: React.FC = () => {
   const allPacts = pacts || [];
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
 
+  // Debug logging for pacts state
+  useEffect(() => {
+    console.log('MainPage - Pacts state:', {
+      totalPacts: allPacts.length,
+      activePacts: activePacts.length,
+      pactsData: allPacts.map(p => ({ id: p.id, title: p.title, status: p.status })),
+      isLoading,
+      user: !!user,
+    });
+  }, [allPacts, activePacts, isLoading, user]);
+
   // Get current pact from all pacts for slider
   const currentPact = allPacts[currentPactIndex] || null;
 
