@@ -192,8 +192,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       if (error) {
         console.error('Error creating user with OTP:', error);
         
-        // Handle network/function errors
-        if (error.message.includes('FunctionsHttpError')) {
+        // Handle FunctionsHttpError specifically (409 status for existing user)
+        if (error.context?.status === 409) {
+          console.log('User already exists (409 status)');
+          throw new Error('EXISTING_USER');
+        }
+        
+        // Handle other function errors
+        if (error.message?.includes('FunctionsHttpError')) {
           throw new Error('Не удалось подключиться к серверу. Попробуйте позже.');
         }
         

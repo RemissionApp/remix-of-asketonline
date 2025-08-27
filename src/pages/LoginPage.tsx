@@ -170,16 +170,39 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error('Signup error:', error);
       
-      // If user already exists, offer to switch to login
+      // If user already exists, offer to switch to login and send OTP
       if (error instanceof Error && error.message === 'EXISTING_USER') {
+        // Automatically switch to login tab
+        setActiveTab('login');
+        
+        // Show simple message first, then add button for OTP
+        toast({
+          title: 'Пользователь уже существует',
+          description: 'Переключаемся на вход в систему.',
+          variant: 'default',
+        });
+        
+        // Add option to send OTP after a delay
         setTimeout(() => {
-          setActiveTab('login');
           toast({
-            title: 'Попробуйте войти',
-            description: 'Используйте свои существующие данные для входа в систему.',
-            variant: 'default',
+            title: 'Получить код для входа?',
+            description: 'Нажмите на кнопку ниже, чтобы получить код подтверждения на email.',
+            action: (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const sent = await sendOtpCode(email);
+                  if (sent) {
+                    setOtpSent(true);
+                  }
+                }}
+              >
+                Отправить код
+              </Button>
+            )
           });
-        }, 2000);
+        }, 1000);
       }
     }
   };

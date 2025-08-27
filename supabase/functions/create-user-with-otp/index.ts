@@ -165,15 +165,15 @@ const handler = async (req: Request): Promise<Response> => {
       
       // Handle specific error cases
       if (userError.message?.includes('already been registered') || userError.code === 'email_exists') {
-        console.log('User already exists, returning specific error');
+        console.log('User already exists, returning 409 status');
         return new Response(
           JSON.stringify({ 
             success: false, 
             error: 'USER_ALREADY_EXISTS',
-            message: userError.message || 'A user with this email address has already been registered'
+            message: 'Пользователь с таким email уже зарегистрирован'
           }),
           {
-            status: 409, // Conflict
+            status: 409, // Conflict - this will be handled by frontend as FunctionsHttpError
             headers: { "Content-Type": "application/json", ...corsHeaders },
           }
         );
