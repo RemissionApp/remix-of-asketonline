@@ -191,12 +191,28 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (error) {
         console.error('Error creating user with OTP:', error);
+        
+        // Handle network/function errors
+        if (error.message.includes('FunctionsHttpError')) {
+          throw new Error('Не удалось подключиться к серверу. Попробуйте позже.');
+        }
+        
         throw new Error('Не удалось создать аккаунт');
       }
 
       if (!data.success) {
         console.error('User creation failed:', data.error);
-        throw new Error(data.error || 'Не удалось создать аккаунт');
+        
+        // Handle specific error cases from the edge function
+        if (data.error === 'USER_ALREADY_EXISTS') {
+          throw new Error('EXISTING_USER');
+        }
+        
+        if (data.error === 'AUTH_ERROR') {
+          throw new Error(data.message || 'Ошибка аутентификации');
+        }
+        
+        throw new Error(data.message || 'Не удалось создать аккаунт');
       }
 
       // Don't set user yet - they need to verify OTP first
@@ -209,12 +225,22 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
     } catch (error) {
       logger.error('Sign up failed', error);
-      toast({
-        title: 'Ошибка регистрации',
-        description:
-          error instanceof Error ? error.message : 'Не удалось создать аккаунт',
-        variant: 'destructive',
-      });
+      
+      // Handle specific error cases with user-friendly messages
+      if (error instanceof Error && error.message === 'EXISTING_USER') {
+        toast({
+          title: 'Пользователь уже существует',
+          description: 'Аккаунт с этим email уже зарегистрирован. Попробуйте войти в систему.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Ошибка регистрации',
+          description:
+            error instanceof Error ? error.message : 'Не удалось создать аккаунт',
+          variant: 'destructive',
+        });
+      }
       throw error;
     } finally {
       set({ loading: false });

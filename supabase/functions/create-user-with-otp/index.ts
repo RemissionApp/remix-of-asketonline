@@ -162,6 +162,38 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (userError) {
       console.error('Failed to create user:', userError);
+      
+      // Handle specific error cases
+      if (userError.message?.includes('already been registered') || userError.code === 'email_exists') {
+        console.log('User already exists, returning specific error');
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'USER_ALREADY_EXISTS',
+            message: userError.message || 'A user with this email address has already been registered'
+          }),
+          {
+            status: 409, // Conflict
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+      
+      // Handle other auth errors
+      if (userError.status) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'AUTH_ERROR',
+            message: userError.message || 'Authentication error occurred'
+          }),
+          {
+            status: userError.status,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+      
       throw new Error(userError.message || 'Failed to create user');
     }
 

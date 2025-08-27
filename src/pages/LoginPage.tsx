@@ -168,8 +168,19 @@ const LoginPage: React.FC = () => {
       // New signUp function already creates user and sends OTP
       setOtpSent(true);
     } catch (error) {
-      // Error is already handled in signUp function
       console.error('Signup error:', error);
+      
+      // If user already exists, offer to switch to login
+      if (error instanceof Error && error.message === 'EXISTING_USER') {
+        setTimeout(() => {
+          setActiveTab('login');
+          toast({
+            title: 'Попробуйте войти',
+            description: 'Используйте свои существующие данные для входа в систему.',
+            variant: 'default',
+          });
+        }, 2000);
+      }
     }
   };
 
@@ -404,8 +415,8 @@ const LoginPage: React.FC = () => {
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
-                  <TabsTrigger value="login">{t.auth.signIn}</TabsTrigger>
-                  <TabsTrigger value="signup">{t.auth.signUp}</TabsTrigger>
+                  <TabsTrigger value="login" data-state={activeTab === 'login' ? 'active' : 'inactive'}>{t.auth.signIn}</TabsTrigger>
+                  <TabsTrigger value="signup" data-state={activeTab === 'signup' ? 'active' : 'inactive'}>{t.auth.signUp}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="login">
