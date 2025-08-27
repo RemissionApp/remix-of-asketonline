@@ -19,14 +19,22 @@ export const createLoadPactsSlice = (
       return;
     }
 
-    console.log('LoadPacts: Starting to load pacts for user:', user.id);
+    // Double-check actual Supabase session
+    const { data: session, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.session?.user) {
+      console.log('LoadPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
+      return;
+    }
+
+    const currentUserId = session.session.user.id;
+    console.log('LoadPacts: Starting to load pacts for user:', currentUserId);
 
     try {
-      // Get all pacts
+      // Get all pacts using the current session user ID
       const { data: pacts, error: pactsError } = await supabase
         .from('pacts')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', currentUserId)
         .order('created_at', { ascending: false });
 
       if (pactsError) throw pactsError;

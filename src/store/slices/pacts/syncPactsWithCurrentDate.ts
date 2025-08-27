@@ -23,6 +23,15 @@ export const createSyncPactsSlice = (
       return;
     }
 
+    // Double-check actual Supabase session
+    const { data: session, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.session?.user) {
+      console.log('SyncPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
+      return;
+    }
+
+    const currentUserId = session.session.user.id;
+
     set({ loading: true });
 
     try {
@@ -33,7 +42,7 @@ export const createSyncPactsSlice = (
       const { data: pacts, error: pactsError } = await supabase
         .from('pacts')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('user_id', currentUserId)
         .eq('status', 'active');
 
       if (pactsError) throw pactsError;
@@ -101,7 +110,7 @@ export const createSyncPactsSlice = (
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('total_days, energy_points')
-          .eq('id', user.id)
+          .eq('id', currentUserId)
           .single();
 
         if (profileError) throw profileError;
@@ -116,7 +125,7 @@ export const createSyncPactsSlice = (
             total_days: newTotalDays,
             energy_points: newEnergyPoints,
           })
-          .eq('id', user.id);
+          .eq('id', currentUserId);
 
         if (updateProfileError) throw updateProfileError;
 
@@ -129,7 +138,7 @@ export const createSyncPactsSlice = (
           const { error: rankError } = await supabase
             .from('profiles')
             .update({ rank: newRank })
-            .eq('id', user.id);
+            .eq('id', currentUserId);
 
           if (rankError) throw rankError;
 

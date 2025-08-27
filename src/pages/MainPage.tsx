@@ -13,6 +13,7 @@ import { createLogger } from '@/utils/logger';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
+import { supabase } from '@/lib/supabase';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -62,6 +63,15 @@ const MainPage: React.FC = () => {
       setIsLoading(true);
 
       try {
+        // Check real Supabase session first
+        const { data: session, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.session?.user) {
+          console.log('MainPage: No valid Supabase session, redirecting to login');
+          navigate('/login');
+          return;
+        }
+
         // If user is logged in but we don't have profile data yet, load it
         if (user && !userProfile) {
           logger.debug('Loading user profile');
@@ -90,6 +100,7 @@ const MainPage: React.FC = () => {
     loadUserProfile,
     syncPactsWithCurrentDate,
     handleAsyncError,
+    navigate,
   ]);
 
   // Get all pacts (including failed ones for the slider)
