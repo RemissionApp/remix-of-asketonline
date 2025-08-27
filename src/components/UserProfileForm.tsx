@@ -101,8 +101,14 @@ const UserProfileForm: React.FC = () => {
     }
   }, [user, userProfile.avatar_url, loadUserProfile, updateUserProfile]);
 
+  // Define proper types for form submission
+  interface ProfileFormData {
+    name: string;
+    birthDate: Date;
+  }
+
   // Handle form submission
-  const onSubmit = async (values: z.infer<any>) => {
+  const onSubmit = async (values: ProfileFormData) => {
     if (!user) {
       toast({
         title: 'Ошибка',
@@ -196,9 +202,12 @@ const UserProfileForm: React.FC = () => {
 
       <ProfileDataDisplay age={age} />
 
-      {isLoading ? (
+      {isLoading || isSaving ? (
         <div className="flex justify-center items-center h-32">
           <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full"></div>
+          <span className="ml-2 text-cosmic-secondary">
+            {isLoading ? 'Загрузка...' : 'Сохранение...'}
+          </span>
         </div>
       ) : (
         <ProfileForm

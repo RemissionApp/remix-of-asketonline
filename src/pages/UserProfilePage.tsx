@@ -37,7 +37,6 @@ const UserProfilePage: React.FC = () => {
       const sessionUser = sessionData?.session?.user;
 
       console.log('Auth check - session user:', sessionUser?.id);
-      console.log('Auth check - profile complete:', userProfile);
 
       // If no session found, redirect to login
       if (!sessionUser) {
@@ -61,12 +60,11 @@ const UserProfilePage: React.FC = () => {
       }
 
       // Use centralized profile completion check from store
-      const { isProfileComplete } = useAppStore.getState();
+      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
       const profileComplete = isProfileComplete();
       console.log('Profile complete check:', profileComplete);
 
       if (profileComplete) {
-        const { checkOnboardingStatus } = useAppStore.getState();
         const isOnboardingComplete = checkOnboardingStatus();
         console.log('Onboarding complete:', isOnboardingComplete);
         
@@ -86,7 +84,7 @@ const UserProfilePage: React.FC = () => {
     } finally {
       authCheckRef.current = false;
     }
-  }, [navigate, userProfile, onboardingComplete, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
+  }, [navigate, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
 
   // Check authentication when conditions are ready
   useEffect(() => {
