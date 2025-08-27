@@ -18,7 +18,7 @@ const AvatarUpload: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   
   // Use optimized profile cache for avatar updates
-  const { updateProfileAsync } = useOptimizedProfileCache(user as any);
+  const { updateProfileAsync, refreshProfile } = useOptimizedProfileCache(user as any);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -70,21 +70,13 @@ const AvatarUpload: React.FC = () => {
 
       console.log('Avatar uploaded successfully:', publicUrl);
       
-      // Force refresh profile cache to get latest data
-      const { refreshProfile } = useOptimizedProfileCache(user as any);
-      await new Promise(resolve => setTimeout(resolve, 200)); // Small delay for DB propagation
+      // Refresh profile data after update
       refreshProfile();
       
       toast({
         title: 'Аватар загружен',
         description: 'Ваш аватар был успешно обновлен',
       });
-
-      // Trigger multiple refresh events to ensure immediate display
-      window.dispatchEvent(new Event('avatar-updated'));
-      setTimeout(() => {
-        window.dispatchEvent(new Event('avatar-updated'));
-      }, 300);
 
       // Clean up
       setShowConfirm(false);
