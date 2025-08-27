@@ -353,7 +353,7 @@ export const ruTranslations: Translations = {
     deleteAccount: 'Удалить данные аккаунта',
     accountSettings: 'Настройки аккаунта',
     notifications: 'Уведомления',
-    developerMode: 'Developer Mode',
+    developerMode: 'Режим разработчика',
     dataDeleteImplementation: 'Функция удаления данных будет реализована',
   },
   zodiac: {

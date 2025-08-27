@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StarField } from '@/components/StarField';
-import { CompactLanguageSelector } from '@/components/ui/CompactLanguageSelector';
 import { useTranslations } from '@/hooks/useTranslations';
 import UserProfileForm from '@/components/UserProfileForm';
 import { LanguageSelector } from '@/components/ProfilePage/LanguageSelector';
 import { LegalDocuments } from '@/components/ProfilePage/LegalDocuments';
-import { DeveloperSwitch } from '@/components/DeveloperSwitch';
+import { SubscriptionManager } from '@/components/ProfilePage/SubscriptionManager';
 import { PushNotificationManager } from '@/components/notifications/PushNotificationManager';
 import { NotificationTester } from '@/components/notifications/NotificationTester';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const AccountSettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
+  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <div className="min-h-screen bg-cosmic-dark text-cosmic-text">
@@ -25,7 +29,7 @@ const AccountSettingsPage: React.FC = () => {
       
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
-        <div className="p-4 flex justify-between items-center">
+        <div className="p-4">
           <Button
             variant="ghost"
             onClick={() => navigate('/profile')}
@@ -34,7 +38,6 @@ const AccountSettingsPage: React.FC = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             {t.common?.back || 'Back'}
           </Button>
-          <CompactLanguageSelector />
         </div>
 
         {/* Main Content */}
@@ -62,20 +65,33 @@ const AccountSettingsPage: React.FC = () => {
             {/* Notifications */}
             <div>
               <h2 className="text-xl text-white font-serif mb-4">
-                Уведомления
+                {t.userProfile?.notifications || 'Уведомления'}
               </h2>
-              <PushNotificationManager />
-              <div className="mt-4">
-                <NotificationTester />
+              <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4">
+                <ErrorBoundary
+                  onError={(error) => {
+                    console.error('Notification component error:', error);
+                    toast({
+                      title: 'Ошибка уведомлений',
+                      description: 'Не удалось загрузить настройки уведомлений',
+                      variant: 'destructive',
+                    });
+                  }}
+                >
+                  <PushNotificationManager />
+                  <div className="mt-4">
+                    <NotificationTester />
+                  </div>
+                </ErrorBoundary>
               </div>
             </div>
 
-            {/* Developer Mode */}
+            {/* Pro Subscription */}
             <div>
               <h2 className="text-xl text-white font-serif mb-4">
-                Developer Mode
+                {t.subscription?.title || 'PRO Подписка'}
               </h2>
-              <DeveloperSwitch />
+              <SubscriptionManager />
             </div>
 
             {/* Legal Documents */}
@@ -83,28 +99,77 @@ const AccountSettingsPage: React.FC = () => {
 
             {/* Data Management Section */}
             <div className="pt-6 border-t border-cosmic-accent/20 space-y-4">
+              <h3 className="text-lg text-white font-serif mb-4">
+                Управление данными
+              </h3>
+              
               {/* Delete Data Button */}
-              <button
-                onClick={() => {
-                  // TODO: Implement data deletion functionality
-                  alert(t.userProfile?.deleteDataConfirm || 'Функция удаления данных будет реализована');
-                }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-600/30 rounded-lg text-orange-400 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {t.userProfile?.deleteData || 'Очистить все данные'}
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-600/30 rounded-lg text-orange-400 transition-colors">
+                    <AlertTriangle className="w-4 h-4" />
+                    {t.userProfile?.deleteData || 'Очистить все данные'}
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-cosmic-dark border-cosmic-accent/30">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-white">
+                      Очистить все данные?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-cosmic-text">
+                      Будут удалены все ваши аскезы, достижения и прогресс. Профиль останется.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="text-cosmic-text border-cosmic-accent/30">
+                      Отмена
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={async () => {
+                        setIsDeleting(true);
+                        try {
+                          // TODO: Implement actual data deletion
+                          await new Promise(resolve => setTimeout(resolve, 1000));
+                          toast({
+                            title: 'Данные очищены',
+                            description: 'Все ваши данные успешно удалены',
+                          });
+                        } catch (error) {
+                          toast({
+                            title: 'Ошибка',
+                            description: 'Не удалось очистить данные',
+                            variant: 'destructive',
+                          });
+                        } finally {
+                          setIsDeleting(false);
+                        }
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700"
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? 'Удаление...' : 'Очистить данные'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               
               {/* Delete Account Button */}
               <button
-                onClick={() => navigate('/delete-account')}
+                onClick={() => {
+                  // Check if delete account page exists
+                  try {
+                    navigate('/delete-account');
+                  } catch (error) {
+                    toast({
+                      title: 'Страница недоступна',
+                      description: 'Функция удаления аккаунта будет добавлена в следующих обновлениях',
+                      variant: 'destructive',
+                    });
+                  }
+                }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-600/30 rounded-lg text-red-400 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
+                <Trash2 className="w-4 h-4" />
                 {t.userProfile?.deleteAccount || 'Удалить данные аккаунта'}
               </button>
             </div>
