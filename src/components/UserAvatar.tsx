@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { SpiritualRank } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
+import { useOptimizedProfileCache } from '@/hooks/useOptimizedProfileCache';
 import { ZodiacBadge } from './ZodiacBadge';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
@@ -23,6 +24,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const logger = createLogger('UserAvatar');
   const { userProfile, user } = useAppStore();
+  
+  // Use optimized profile cache to get latest data
+  const { profile: cachedProfile } = useOptimizedProfileCache(user as any);
+  
+  // Use cached profile if available, fallback to store
+  const currentProfile = cachedProfile || userProfile;
 
   // Define size classes
   const sizeClasses = {
@@ -40,21 +47,23 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     enlightened: 'border-cosmic-gold',
   };
 
-  // Get avatar URL from userProfile if available
+  // Get avatar URL from current profile (cached or store)
   const getAvatarUrl = (): string => {
-    // Check if userProfile has an avatar_url
-    if (userProfile?.avatar_url) {
-      logger.debug('Using avatar from userProfile', {
-        avatar_url: userProfile.avatar_url,
+    // Check if current profile has an avatar_url
+    if (currentProfile?.avatar_url) {
+      logger.debug('Using avatar from profile', {
+        avatar_url: currentProfile.avatar_url,
+        source: cachedProfile ? 'cache' : 'store'
       });
-      return userProfile.avatar_url;
+      return currentProfile.avatar_url;
     }
 
     // If no custom avatar, use rank-based default avatar
     logger.debug('Using default avatar based on rank', {
-      rank: userProfile?.rank,
+      rank: currentProfile?.rank,
+      source: cachedProfile ? 'cache' : 'store'
     });
-    return getAvatarImagePath(userProfile.rank as SpiritualRank);
+    return getAvatarImagePath(currentProfile?.rank as SpiritualRank || 'seeker');
   };
 
   // Get path to avatar image based on rank
@@ -76,10 +85,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   const borderClass = showRankBorder
-    ? `border-2 ${rankBorderColor[userProfile.rank as keyof typeof rankBorderColor] || 'border-amber-400'}`
+    ? `border-2 ${rankBorderColor[currentProfile?.rank as keyof typeof rankBorderColor] || 'border-amber-400'}`
     : '';
 
-  const hasZodiac = !!userProfile?.birthDate;
+  const hasZodiac = !!currentProfile?.birthDate;
 
   return (
     <div className="relative">
@@ -91,9 +100,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           className
         )}
       >
-        <AvatarImage src={getAvatarUrl()} alt={`${userProfile.name} avatar`} />
+        <AvatarImage src={getAvatarUrl()} alt={`${currentProfile?.name || 'User'} avatar`} />
         <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
-          {userProfile.name.substring(0, 2).toUpperCase()}
+          {(currentProfile?.name || 'US').substring(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
 

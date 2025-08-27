@@ -68,6 +68,12 @@ const AvatarUpload: React.FC = () => {
       // Update profile using optimized cache
       await updateProfileAsync({ avatar_url: publicUrl });
 
+      console.log('Avatar uploaded successfully:', publicUrl);
+      toast({
+        title: 'Аватар загружен',
+        description: 'Ваш аватар был успешно обновлен',
+      });
+
       // Clean up
       setShowConfirm(false);
       setSelectedFile(null);
