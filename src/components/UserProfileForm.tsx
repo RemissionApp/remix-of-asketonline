@@ -121,10 +121,7 @@ const UserProfileForm: React.FC = () => {
       });
 
       // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = formatDate(values.birthDate, 'en', false)
-        .split('/')
-        .reverse()
-        .join('-');
+      const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
 
       // Update directly in Supabase
       const { error } = await supabase
