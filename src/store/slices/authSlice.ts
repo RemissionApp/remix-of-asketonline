@@ -127,7 +127,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      cleanupAuthState();
+      await cleanupAuthState();
 
       try {
         await supabase.auth.signOut({ scope: 'global' });
@@ -179,7 +179,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      cleanupAuthState();
+      await cleanupAuthState();
 
       const currentLanguage = get().language || 'en';
 
@@ -267,7 +267,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      cleanupAuthState();
+      await cleanupAuthState();
       await supabase.auth.signOut({ scope: 'global' });
 
       set({

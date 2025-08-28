@@ -46,28 +46,27 @@ const UserProfilePage: React.FC = () => {
       }
 
       // Check if email is confirmed (cached result if available)
-      const isConfirmed = emailConfirmed || await checkEmailConfirmation();
+      const isConfirmed = emailConfirmed || (await checkEmailConfirmation());
       console.log('Email confirmed:', isConfirmed);
 
       if (!isConfirmed) {
-        toast({
-          title: t.auth.emailRequired,
-          description: t.auth.checkEmailAndEnterCode,
-          variant: 'warning',
-        });
+        // Пользователь авторизован, но email не подтвержден
+        // Перенаправляем на страницу входа для ввода кода подтверждения
+        console.log('Email не подтвержден, перенаправляем на страницу входа');
         navigate('/login');
         return;
       }
 
       // Use centralized profile completion check from store
-      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
+      const { isProfileComplete, checkOnboardingStatus } =
+        useAppStore.getState();
       const profileComplete = isProfileComplete();
       console.log('Profile complete check:', profileComplete);
 
       if (profileComplete) {
         const isOnboardingComplete = checkOnboardingStatus();
         console.log('Onboarding complete:', isOnboardingComplete);
-        
+
         if (!isOnboardingComplete) {
           navigate('/onboarding');
         } else {
@@ -84,7 +83,13 @@ const UserProfilePage: React.FC = () => {
     } finally {
       authCheckRef.current = false;
     }
-  }, [navigate, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
+  }, [
+    navigate,
+    emailConfirmed,
+    checkEmailConfirmation,
+    t.auth.emailRequired,
+    t.auth.checkEmailAndEnterCode,
+  ]);
 
   // Check authentication when conditions are ready
   useEffect(() => {

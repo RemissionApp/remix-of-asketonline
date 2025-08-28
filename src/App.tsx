@@ -28,6 +28,7 @@ import UniversePage from './pages/UniversePage';
 import ProfilePage from './pages/ProfilePage';
 import NotFound from './pages/NotFound';
 import ComparisonPage from './pages/ComparisonPage';
+import PaywallPage from './pages/PaywallPage';
 import MeditationPage from './pages/MeditationPage';
 import NewMeditationPage from './pages/NewMeditationPage';
 import DetailedHoroscopePage from './pages/DetailedHoroscopePage';
@@ -154,7 +155,7 @@ const AuthCallback = () => {
 
           if (data?.session?.user) {
             // Очищаем состояние аутентификации для предотвращения проблем
-            cleanupAuthState();
+            await cleanupAuthState();
 
             // Загружаем данные профиля пользователя
             await loadUserProfile();
@@ -210,6 +211,7 @@ const App = () => {
                 element={<AccountSettingsPage />}
               />
               <Route path="/comparison" element={<ComparisonPage />} />
+              <Route path="/paywall" element={<PaywallPage />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route
                 path="/meditation/session"

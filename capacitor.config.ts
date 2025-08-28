@@ -13,6 +13,9 @@ const config: CapacitorConfig = {
       appId: 'com.asket.cosmicascension',
       channel: 'development',
     },
+    Purchases: {
+      appId: 'com.asket.cosmicascension',
+    },
   },
 };
 

@@ -45,7 +45,16 @@ export class RevenueCatService {
       if (Capacitor.getPlatform() === 'ios') {
         // await Purchases.configure({ apiKey: <public_apple_api_key> });
       } else if (Capacitor.getPlatform() === 'android') {
-        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        // Передаем appUserID во время конфигурации, если userId передан
+        if (userId) {
+          await Purchases.configure({
+            apiKey: REVENUECAT_API_KEY,
+            appUserID: userId,
+          });
+          console.log('RevenueCat: Configured with user ID', userId);
+        } else {
+          await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        }
       }
 
       this.isConfigured = true;
@@ -120,7 +129,9 @@ export class RevenueCatService {
 
   async restorePurchases(): Promise<CustomerInfo> {
     if (this.isWebPlatform()) {
-      throw new Error('Восстановление покупок доступно только в мобильном приложении');
+      throw new Error(
+        'Восстановление покупок доступно только в мобильном приложении'
+      );
     }
 
     try {
@@ -151,7 +162,17 @@ export class RevenueCatService {
         customerInfo: {
           entitlements: { active: {} },
           activeSubscriptions: [],
-        },
+          allPurchasedProductIdentifiers: [],
+          latestExpirationDate: null,
+          firstSeen: new Date().toISOString(),
+          originalAppUserId: '',
+          requestDate: new Date().toISOString(),
+          allExpirationDates: {},
+          allPurchaseDates: {},
+          nonSubscriptionTransactions: [],
+          originalPurchaseDate: null,
+          managementURL: null,
+        } as CustomerInfo,
       };
     }
 
@@ -275,12 +296,33 @@ export class RevenueCatService {
       console.log('RevenueCat: Web platform - skipping customer info listener');
       return;
     }
-    
+
     try {
       await Purchases.addCustomerInfoUpdateListener(callback);
     } catch (error) {
       console.error('Failed to add customer info update listener:', error);
       throw error;
+    }
+  }
+
+  // Метод для сброса состояния RevenueCat при смене пользователя
+  async resetState(): Promise<void> {
+    if (this.isWebPlatform()) {
+      console.log('RevenueCat: Web platform - skipping reset');
+      return;
+    }
+
+    try {
+      // Сбрасываем флаг конфигурации
+      this.isConfigured = false;
+
+      // Очищаем идентификацию пользователя
+      await Purchases.logOut();
+
+      console.log('RevenueCat state reset successfully');
+    } catch (error) {
+      console.error('Failed to reset RevenueCat state:', error);
+      // Не выбрасываем ошибку, так как это может быть нормальным поведением
     }
   }
 }

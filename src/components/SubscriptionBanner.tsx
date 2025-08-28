@@ -20,7 +20,7 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
 }) => {
   const { t } = useTranslations();
   const navigate = useNavigate();
-  const { upgradeToPro } = useAppStore();
+
   const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
     useRevenueCat();
 
@@ -36,26 +36,17 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
     }
 
     try {
-      // Check if we have offerings available
-      if (
-        offerings &&
-        offerings.length > 0 &&
-        offerings[0].availablePackages.length > 0
-      ) {
-        // Purchase the first available package
-        await purchasePackage(offerings[0].availablePackages[0]);
-        // After successful purchase, navigate to comparison page
-        navigate('/comparison');
-      } else {
-        // Fallback to demo behavior if no offerings available
-        upgradeToPro();
-        navigate('/comparison');
-      }
+      // Show RevenueCat paywall instead of navigating to comparison page
+      const { presentPaywall } = useRevenueCat();
+      await presentPaywall();
     } catch (error) {
-      console.error('Failed to purchase package:', error);
-      // Fallback to demo behavior on error
-      upgradeToPro();
-      navigate('/comparison');
+      console.error('Failed to show paywall:', error);
+      // Show error toast
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось показать страницу покупок',
+        variant: 'destructive',
+      });
     }
   };
 

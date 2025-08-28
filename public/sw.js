@@ -18,7 +18,7 @@ self.addEventListener('install', (event) => {
       const cache = await caches.open(CACHE_NAME);
       console.log('Service Worker: Caching files');
       await cache.addAll(urlsToCache);
-      
+
       // Принудительно активируем новый service worker
       self.skipWaiting();
     })()
@@ -42,7 +42,7 @@ self.addEventListener('fetch', (event) => {
         } catch (error) {
           // Если сеть недоступна, показываем offline страницу
           console.log('Fetch failed; returning offline page instead.', error);
-          
+
           const cache = await caches.open(CACHE_NAME);
           const cachedResponse = await cache.match(OFFLINE_URL);
           return cachedResponse;
@@ -55,19 +55,19 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         const cachedResponse = await cache.match(event.request);
-        
+
         if (cachedResponse) {
           return cachedResponse;
         }
-        
+
         try {
           const networkResponse = await fetch(event.request);
-          
+
           // Кэшируем только GET запросы с успешными ответами
           if (networkResponse.status === 200 && event.request.method === 'GET') {
             cache.put(event.request, networkResponse.clone());
           }
-          
+
           return networkResponse;
         } catch (error) {
           console.log('Fetch failed:', error);
@@ -97,7 +97,7 @@ self.addEventListener('activate', (event) => {
 // Push уведомления с детализированными типами
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  
+
   const defaultOptions = {
     icon: '/icon-192.png',
     badge: '/icon-72.png',
@@ -135,7 +135,7 @@ self.addEventListener('push', (event) => {
         requireInteraction: true
       };
       break;
-      
+
     case 'pact_start':
       title = 'Начало аскезы';
       body = `Ваша аскеза "${data.pactTitle}" начинается сегодня!`;
@@ -144,7 +144,7 @@ self.addEventListener('push', (event) => {
         requireInteraction: true
       };
       break;
-      
+
     case 'pact_complete':
       title = 'Аскеза завершена!';
       body = `Поздравляем! Вы успешно завершили "${data.pactTitle}"`;
@@ -153,7 +153,7 @@ self.addEventListener('push', (event) => {
         requireInteraction: true
       };
       break;
-      
+
     case 'meditation_reminder':
       title = 'Время медитации';
       body = 'Найдите несколько минут для медитативной практики';
@@ -161,7 +161,7 @@ self.addEventListener('push', (event) => {
         tag: 'meditation-reminder'
       };
       break;
-      
+
     case 'universe_message':
       title = 'Сообщение от Вселенной';
       body = data.message || 'У вас есть новое напутствие';
@@ -170,7 +170,7 @@ self.addEventListener('push', (event) => {
         requireInteraction: true
       };
       break;
-      
+
     case 'achievement':
       title = 'Новое достижение!';
       body = `Вы получили достижение: ${data.achievementTitle}`;
@@ -179,7 +179,7 @@ self.addEventListener('push', (event) => {
         requireInteraction: true
       };
       break;
-      
+
     case 'subscription_reminder':
       title = 'Напоминание о подписке';
       body = data.message || 'Ваша PRO-подписка скоро истекает';
@@ -188,9 +188,9 @@ self.addEventListener('push', (event) => {
       };
       break;
   }
-  
+
   const options = { ...defaultOptions, ...customOptions, body };
-  
+
   event.waitUntil(
     self.registration.showNotification(title, options)
   );
@@ -200,10 +200,10 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification click received.');
   event.notification.close();
-  
+
   const { type, pactId, achievementId } = event.notification.data;
   let url = '/';
-  
+
   // Определяем URL для перехода
   switch (type) {
     case 'daily_reminder':
@@ -221,10 +221,10 @@ self.addEventListener('notificationclick', (event) => {
       url = '/profile';
       break;
     case 'subscription_reminder':
-      url = '/comparison';
+      url = '/paywall';
       break;
   }
-  
+
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {
       // Проверяем, есть ли уже открытая вкладка
@@ -233,7 +233,7 @@ self.addEventListener('notificationclick', (event) => {
           return client.focus();
         }
       }
-      
+
       // Открываем новую вкладку
       if (clients.openWindow) {
         return clients.openWindow(url);

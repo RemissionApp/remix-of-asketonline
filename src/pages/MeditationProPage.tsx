@@ -15,10 +15,13 @@ import { useProMeditations } from '@/data/meditationData';
 import { PageHeader } from '@/components/PageHeader';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useToast } from '@/hooks/use-toast';
 
 const MeditationProPage: React.FC = () => {
-  const { userProfile, upgradeToPro } = useAppStore();
+  const { userProfile } = useAppStore();
   const { t } = useTranslations();
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('morning');
   const navigate = useNavigate();
 
@@ -28,9 +31,18 @@ const MeditationProPage: React.FC = () => {
   // Get meditation data
   const proMeditations = useProMeditations(isPro);
 
-  const handleUpgrade = () => {
-    // For demo purposes, upgrade the user immediately
-    upgradeToPro();
+  const handleUpgrade = async () => {
+    try {
+      const { presentPaywall } = useRevenueCat();
+      await presentPaywall();
+    } catch (error) {
+      console.error('Failed to show paywall:', error);
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось показать страницу покупок',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleNavigateToFreePage = () => {

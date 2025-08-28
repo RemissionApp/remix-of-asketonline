@@ -117,7 +117,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
               : 'Unlock PRO to get full access to horoscope'
         }
         className="mb-6 w-full"
-        navigateTo="/comparison"
+        showPaywall={true}
         showUnlockPrompt={true}
         unlockText={proUnlockText}
       >

@@ -16,19 +16,29 @@ import { RevenueCatUI } from '@revenuecat/purchases-capacitor-ui';
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOffering[]>([]);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null | any>(null);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null | any>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [billingAvailable, setBillingAvailable] = useState<boolean | null>(
     null
   );
   const { toast } = useToast();
-  const { updateProStatus } = useAppStore();
+  const { updateProStatus, user } = useAppStore();
 
   // Используем ref для отслеживания текущего Pro статуса
   const currentProStatusRef = useRef<boolean>(false);
 
   useEffect(() => {
-    initializeRevenueCat();
+    // Сбрасываем состояние при смене пользователя
+    if (user) {
+      setIsInitialized(false);
+      setCustomerInfo(null);
+      setOfferings([]);
+      currentProStatusRef.current = false;
+
+      initializeRevenueCat();
+    }
 
     // Добавляем слушатель изменений CustomerInfo согласно документации
     const setupCustomerInfoListener = async () => {
@@ -53,7 +63,7 @@ export const useRevenueCat = () => {
     };
 
     setupCustomerInfoListener();
-  }, []);
+  }, [user]); // Добавляем user как зависимость
 
   // Функция для синхронизации Pro статуса с app store
   const syncProStatus = (customerInfo: CustomerInfo | null | any) => {
@@ -80,7 +90,8 @@ export const useRevenueCat = () => {
 
     try {
       setIsLoading(true);
-      await revenueCatService.initialize();
+      // Передаем userId для правильной идентификации пользователя
+      await revenueCatService.initialize(user?.id);
       setIsInitialized(true);
 
       // Проверка доступности Google Play Billing

@@ -131,7 +131,7 @@ export const NumerologyDisplay: React.FC = () => {
               : 'Unlock PRO to get full access to numerology'
         }
         className="mb-6 w-full"
-        navigateTo="/comparison"
+        showPaywall={true}
         showUnlockPrompt={true}
         unlockText={proUnlockText}
       >

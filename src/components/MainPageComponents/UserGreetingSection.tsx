@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { PaywallButton } from '../PaywallButton';
-import { PaywallTest } from '../PaywallTest';
 
 const MemoizedUserGreetingSection: React.FC = () => {
   const { userProfile, language } = useAppStore();
@@ -73,10 +72,6 @@ const MemoizedUserGreetingSection: React.FC = () => {
         <PaywallButton variant="premium" size="lg" className="w-full" />
       </div>
 
-      {/* 11. Paywall Test (для разработки) */}
-      <div className="w-full max-w-lg mx-auto mt-6">
-        <PaywallTest />
-      </div>
       <h2
         className={`${fontClass} text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}
       >

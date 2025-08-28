@@ -9,8 +9,18 @@ import { LanguageSelector } from '@/components/ProfilePage/LanguageSelector';
 import { LegalDocuments } from '@/components/ProfilePage/LegalDocuments';
 import { SubscriptionManager } from '@/components/ProfilePage/SubscriptionManager';
 import { PushNotificationManager } from '@/components/notifications/PushNotificationManager';
-import { NotificationTester } from '@/components/notifications/NotificationTester';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -23,10 +33,10 @@ const AccountSettingsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-cosmic-dark text-cosmic-text">
       <StarField starCount={50} />
-      
+
       {/* Cosmic background */}
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark opacity-30" />
-      
+
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <div className="p-4">
@@ -69,7 +79,7 @@ const AccountSettingsPage: React.FC = () => {
               </h2>
               <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-4">
                 <ErrorBoundary
-                  onError={(error) => {
+                  onError={error => {
                     console.error('Notification component error:', error);
                     toast({
                       title: 'Ошибка уведомлений',
@@ -79,9 +89,6 @@ const AccountSettingsPage: React.FC = () => {
                   }}
                 >
                   <PushNotificationManager />
-                  <div className="mt-4">
-                    <NotificationTester />
-                  </div>
                 </ErrorBoundary>
               </div>
             </div>
@@ -102,7 +109,7 @@ const AccountSettingsPage: React.FC = () => {
               <h3 className="text-lg text-white font-serif mb-4">
                 Управление данными
               </h3>
-              
+
               {/* Delete Data Button */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -117,7 +124,8 @@ const AccountSettingsPage: React.FC = () => {
                       Очистить все данные?
                     </AlertDialogTitle>
                     <AlertDialogDescription className="text-cosmic-text">
-                      Будут удалены все ваши аскезы, достижения и прогресс. Профиль останется.
+                      Будут удалены все ваши аскезы, достижения и прогресс.
+                      Профиль останется.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -129,7 +137,9 @@ const AccountSettingsPage: React.FC = () => {
                         setIsDeleting(true);
                         try {
                           // TODO: Implement actual data deletion
-                          await new Promise(resolve => setTimeout(resolve, 1000));
+                          await new Promise(resolve =>
+                            setTimeout(resolve, 1000)
+                          );
                           toast({
                             title: 'Данные очищены',
                             description: 'Все ваши данные успешно удалены',
@@ -152,7 +162,7 @@ const AccountSettingsPage: React.FC = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              
+
               {/* Delete Account Button */}
               <button
                 onClick={() => {
@@ -162,7 +172,8 @@ const AccountSettingsPage: React.FC = () => {
                   } catch (error) {
                     toast({
                       title: 'Страница недоступна',
-                      description: 'Функция удаления аккаунта будет добавлена в следующих обновлениях',
+                      description:
+                        'Функция удаления аккаунта будет добавлена в следующих обновлениях',
                       variant: 'destructive',
                     });
                   }

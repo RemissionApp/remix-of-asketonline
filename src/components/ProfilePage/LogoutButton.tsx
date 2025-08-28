@@ -12,7 +12,7 @@ export const LogoutButton: React.FC = () => {
 
   const handleLogout = async () => {
     // Очищаем состояние аутентификации перед выходом
-    cleanupAuthState();
+    await cleanupAuthState();
 
     // Выполняем выход
     await signOut();

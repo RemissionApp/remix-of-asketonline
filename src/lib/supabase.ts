@@ -15,8 +15,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 /**
  * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации
  */
-export const cleanupAuthState = () => {
+export const cleanupAuthState = async () => {
   try {
+    // Сбрасываем состояние RevenueCat при смене пользователя
+    try {
+      const { revenueCatService } = await import('@/utils/revenueCat');
+      await revenueCatService.resetState();
+    } catch (error) {
+      console.warn('Failed to reset RevenueCat state:', error);
+    }
+
     // Удаляем все стандартные токены аутентификации
     localStorage.removeItem('supabase.auth.token');
 

@@ -23,7 +23,7 @@ import {
 
 const FeatureComparison: React.FC = () => {
   const { t } = useTranslations();
-  const { upgradeToPro, userProfile } = useAppStore();
+  const { userProfile } = useAppStore();
   const navigate = useNavigate();
   const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
     useRevenueCat();
@@ -116,15 +116,21 @@ const FeatureComparison: React.FC = () => {
         // After successful purchase, navigate to profile page
         navigate('/profile');
       } else {
-        // Fallback to demo behavior if no offerings available
-        upgradeToPro();
-        navigate('/profile');
+        // Show error toast if no offerings available
+        toast({
+          title: 'Ошибка',
+          description: 'Покупки временно недоступны',
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       console.error('Failed to purchase package:', error);
-      // Fallback to demo behavior on error
-      upgradeToPro();
-      navigate('/profile');
+      // Show error toast on error
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось совершить покупку',
+        variant: 'destructive',
+      });
     }
   };
 
