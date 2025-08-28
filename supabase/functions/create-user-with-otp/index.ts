@@ -1,17 +1,18 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { Resend } from "npm:resend@2.0.0";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { Resend } from 'npm:resend@2.0.0';
 
 const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface CreateUserRequest {
@@ -142,7 +143,11 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, password, language = 'en' }: CreateUserRequest = await req.json();
+    const {
+      email,
+      password,
+      language = 'en',
+    }: CreateUserRequest = await req.json();
 
     if (!email || !password) {
       throw new Error('Email and password are required');
@@ -151,49 +156,53 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Creating user: ${email}`);
 
     // Create user via admin API without sending confirmation email
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: false, // Don't auto-confirm email
-      user_metadata: {
-        language: language
-      }
-    });
+    const { data: userData, error: userError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: false, // Don't auto-confirm email
+        user_metadata: {
+          language: language,
+        },
+      });
 
     if (userError) {
       console.error('Failed to create user:', userError);
-      
+
       // Handle specific error cases
-      if (userError.message?.includes('already been registered') || userError.code === 'email_exists') {
+      if (
+        userError.message?.includes('already been registered') ||
+        userError.code === 'email_exists'
+      ) {
         console.log('User already exists, returning 409 status');
         return new Response(
-          JSON.stringify({ 
-            success: false, 
+          JSON.stringify({
+            success: false,
             error: 'USER_ALREADY_EXISTS',
-            message: 'Пользователь с таким email уже зарегистрирован'
+            message: 'Пользователь с таким email уже зарегистрирован',
           }),
           {
             status: 409, // Conflict - this will be handled by frontend as FunctionsHttpError
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
           }
         );
       }
-      
+
       // Handle other auth errors
       if (userError.status) {
         return new Response(
-          JSON.stringify({ 
-            success: false, 
+          JSON.stringify({
+            success: false,
             error: 'AUTH_ERROR',
-            message: userError.message || 'Authentication error occurred'
+            message: userError.message || 'Authentication error occurred',
           }),
           {
             status: userError.status,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
           }
         );
       }
-      
+
       throw new Error(userError.message || 'Failed to create user');
     }
 
@@ -207,11 +216,13 @@ const handler = async (req: Request): Promise<Response> => {
     const otpCode = generateOtpCode();
 
     // Store verification code in database
-    const { data: codeData, error: codeError } = await supabaseAdmin
-      .rpc('create_verification_code', {
+    const { data: codeData, error: codeError } = await supabaseAdmin.rpc(
+      'create_verification_code',
+      {
         p_email: email,
-        p_code: otpCode
-      });
+        p_code: otpCode,
+      }
+    );
 
     if (codeError) {
       console.error('Failed to create verification code:', codeError);
@@ -219,7 +230,10 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
       } catch (deleteError) {
-        console.error('Failed to cleanup user after code creation error:', deleteError);
+        console.error(
+          'Failed to cleanup user after code creation error:',
+          deleteError
+        );
       }
       throw new Error('Failed to create verification code');
     }
@@ -228,9 +242,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with OTP
     const emailTemplate = getEmailTemplate(otpCode, language);
-    
+
     const emailResult = await resend.emails.send({
-      from: 'Asket <noreply@asket.ru>',
+      from: 'Asket <noreply@remissionsoft.net>',
       to: [email],
       subject: emailTemplate.subject,
       html: emailTemplate.html,
@@ -253,29 +267,31 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Verification email sent successfully to: ${email}`);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'User created and verification code sent',
-      userId: userData.user.id,
-      emailId: emailResult.data?.id
-    }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
-
-  } catch (error: any) {
-    console.error("Error in create-user-with-otp function:", error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || 'Failed to create user' 
+      JSON.stringify({
+        success: true,
+        message: 'User created and verification code sent',
+        userId: userData.user.id,
+        emailId: emailResult.data?.id,
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders,
+        },
+      }
+    );
+  } catch (error: any) {
+    console.error('Error in create-user-with-otp function:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message || 'Failed to create user',
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       }
     );
   }

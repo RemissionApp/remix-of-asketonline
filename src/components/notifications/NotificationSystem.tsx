@@ -1,14 +1,12 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { useAppStore } from '@/store/useAppStore';
+import React, { createContext, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Bell, Gift, Star, Zap, Trophy } from 'lucide-react';
 
 interface Notification {
   id: string;
   type: 'achievement' | 'artifact' | 'milestone' | 'energy' | 'reminder';
   title: string;
   message: string;
-  icon?: React.ReactNode;
+  icon?: string;
   action?: () => void;
   actionLabel?: string;
   duration?: number;
@@ -16,11 +14,23 @@ interface Notification {
 
 interface NotificationContextType {
   showNotification: (notification: Omit<Notification, 'id'>) => void;
-  showAchievementUnlocked: (title: string, description: string) => void;
-  showArtifactObtained: (name: string, rarity: string) => void;
-  showMilestoneReached: (milestone: string, reward: string) => void;
-  showEnergyGained: (amount: number) => void;
-  showDailyReminder: (message: string) => void;
+  showAchievementUnlocked: (
+    title: string,
+    description: string,
+    language?: string
+  ) => void;
+  showArtifactObtained: (
+    name: string,
+    rarity: string,
+    language?: string
+  ) => void;
+  showMilestoneReached: (
+    milestone: string,
+    reward: string,
+    language?: string
+  ) => void;
+  showEnergyGained: (amount: number, language?: string) => void;
+  showDailyReminder: (message: string, language?: string) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
@@ -28,7 +38,9 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider');
+    throw new Error(
+      'useNotifications must be used within NotificationProvider'
+    );
   }
   return context;
 };
@@ -37,116 +49,127 @@ interface NotificationProviderProps {
   children: React.ReactNode;
 }
 
-export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const { language } = useAppStore();
+export const NotificationProvider: React.FC<NotificationProviderProps> = ({
+  children,
+}) => {
+  const showNotification = useCallback(
+    (notification: Omit<Notification, 'id'>) => {
+      toast(notification.title, {
+        description: notification.message,
+        duration: notification.duration || 5000,
+        action:
+          notification.action && notification.actionLabel
+            ? {
+                label: notification.actionLabel,
+                onClick: notification.action,
+              }
+            : undefined,
+      });
+    },
+    []
+  );
 
-  const showNotification = useCallback((notification: Omit<Notification, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    
-    const content = (
-      <div className="flex items-start gap-3">
-        {notification.icon && (
-          <div className="flex-shrink-0 text-cosmic-gold">
-            {notification.icon}
-          </div>
-        )}
-        <div className="flex-1">
-          <h4 className="font-semibold text-cosmic-gold mb-1">
-            {notification.title}
-          </h4>
-          <p className="text-cosmic-silver text-sm">
-            {notification.message}
-          </p>
-          {notification.action && notification.actionLabel && (
-            <button
-              onClick={notification.action}
-              className="mt-2 px-3 py-1 bg-cosmic-accent hover:bg-cosmic-accent/80 text-white text-xs rounded transition-colors"
-            >
-              {notification.actionLabel}
-            </button>
-          )}
-        </div>
-      </div>
-    );
+  const showAchievementUnlocked = useCallback(
+    (title: string, description: string, language: string = 'en') => {
+      showNotification({
+        type: 'achievement',
+        title:
+          language === 'ru'
+            ? '🏆 Достижение разблокировано!'
+            : language === 'es'
+              ? '🏆 ¡Logro desbloqueado!'
+              : '🏆 Achievement Unlocked!',
+        message: `${title}: ${description}`,
+        icon: '🏆',
+        duration: 8000,
+      });
+    },
+    [showNotification]
+  );
 
-    toast.custom(() => content, {
-      duration: notification.duration || 5000,
-      style: {
-        background: 'hsl(var(--cosmic-dark))',
-        border: '1px solid hsl(var(--cosmic-accent) / 0.3)',
-        color: 'white',
-      },
-    });
-  }, []);
+  const showArtifactObtained = useCallback(
+    (name: string, rarity: string, language: string = 'en') => {
+      const rarityEmojis = {
+        common: '⚪',
+        rare: '🔵',
+        epic: '🟣',
+        legendary: '🟡',
+      };
 
-  const showAchievementUnlocked = useCallback((title: string, description: string) => {
-    showNotification({
-      type: 'achievement',
-      title: language === 'ru' ? '🏆 Достижение разблокировано!' 
-           : language === 'es' ? '🏆 ¡Logro desbloqueado!' 
-           : '🏆 Achievement Unlocked!',
-      message: `${title}: ${description}`,
-      icon: <Trophy className="w-6 h-6" />,
-      duration: 8000,
-    });
-  }, [language, showNotification]);
+      showNotification({
+        type: 'artifact',
+        title:
+          language === 'ru'
+            ? '🔮 Новый артефакт!'
+            : language === 'es'
+              ? '🔮 ¡Nuevo artefacto!'
+              : '🔮 New Artifact!',
+        message: `${rarityEmojis[rarity as keyof typeof rarityEmojis] || '✨'} ${name} (${rarity})`,
+        icon: '🔮',
+        duration: 6000,
+      });
+    },
+    [showNotification]
+  );
 
-  const showArtifactObtained = useCallback((name: string, rarity: string) => {
-    const rarityEmojis = {
-      common: '⚪',
-      rare: '🔵',
-      epic: '🟣',
-      legendary: '🟡',
-    };
+  const showMilestoneReached = useCallback(
+    (milestone: string, reward: string, language: string = 'en') => {
+      showNotification({
+        type: 'milestone',
+        title:
+          language === 'ru'
+            ? '🎯 Этап достигнут!'
+            : language === 'es'
+              ? '🎯 ¡Hito alcanzado!'
+              : '🎯 Milestone Reached!',
+        message: `${milestone}: ${reward}`,
+        icon: '🎯',
+        duration: 7000,
+      });
+    },
+    [showNotification]
+  );
 
-    showNotification({
-      type: 'artifact',
-      title: language === 'ru' ? '🔮 Новый артефакт!' 
-           : language === 'es' ? '🔮 ¡Nuevo artefacto!' 
-           : '🔮 New Artifact!',
-      message: `${rarityEmojis[rarity as keyof typeof rarityEmojis] || '✨'} ${name} (${rarity})`,
-      icon: <Star className="w-6 h-6" />,
-      duration: 6000,
-    });
-  }, [language, showNotification]);
+  const showEnergyGained = useCallback(
+    (amount: number, language: string = 'en') => {
+      showNotification({
+        type: 'energy',
+        title:
+          language === 'ru'
+            ? '⚡ Энергия получена!'
+            : language === 'es'
+              ? '⚡ ¡Energía obtenida!'
+              : '⚡ Energy Gained!',
+        message:
+          language === 'ru'
+            ? `+${amount} энергии`
+            : language === 'es'
+              ? `+${amount} energía`
+              : `+${amount} energy`,
+        icon: '⚡',
+        duration: 3000,
+      });
+    },
+    [showNotification]
+  );
 
-  const showMilestoneReached = useCallback((milestone: string, reward: string) => {
-    showNotification({
-      type: 'milestone',
-      title: language === 'ru' ? '🎯 Этап достигнут!' 
-           : language === 'es' ? '🎯 ¡Hito alcanzado!' 
-           : '🎯 Milestone Reached!',
-      message: `${milestone}: ${reward}`,
-      icon: <Gift className="w-6 h-6" />,
-      duration: 7000,
-    });
-  }, [language, showNotification]);
-
-  const showEnergyGained = useCallback((amount: number) => {
-    showNotification({
-      type: 'energy',
-      title: language === 'ru' ? '⚡ Энергия получена!' 
-           : language === 'es' ? '⚡ ¡Energía obtenida!' 
-           : '⚡ Energy Gained!',
-      message: language === 'ru' ? `+${amount} энергии` 
-             : language === 'es' ? `+${amount} energía` 
-             : `+${amount} energy`,
-      icon: <Zap className="w-6 h-6" />,
-      duration: 3000,
-    });
-  }, [language, showNotification]);
-
-  const showDailyReminder = useCallback((message: string) => {
-    showNotification({
-      type: 'reminder',
-      title: language === 'ru' ? '🔔 Напоминание' 
-           : language === 'es' ? '🔔 Recordatorio' 
-           : '🔔 Reminder',
-      message,
-      icon: <Bell className="w-6 h-6" />,
-      duration: 10000,
-    });
-  }, [language, showNotification]);
+  const showDailyReminder = useCallback(
+    (message: string, language: string = 'en') => {
+      showNotification({
+        type: 'reminder',
+        title:
+          language === 'ru'
+            ? '🔔 Напоминание'
+            : language === 'es'
+              ? '🔔 Recordatorio'
+              : '🔔 Reminder',
+        message,
+        icon: '🔔',
+        duration: 10000,
+      });
+    },
+    [showNotification]
+  );
 
   const value: NotificationContextType = {
     showNotification,

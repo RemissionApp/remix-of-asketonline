@@ -102,10 +102,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   // Проверка завершенности профиля для использования в store (без React hooks)
   isProfileComplete: () => {
     const { user, userProfile } = get();
-    
+
     // Если нет пользователя, профиль точно не завершен
     if (!user?.id) return false;
-    
+
     // Проверяем данные из Zustand store
     return !!(
       userProfile &&
@@ -197,33 +197,35 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (error) {
         console.error('Error creating user with OTP:', error);
-        
+
         // Handle FunctionsHttpError specifically (409 status for existing user)
         if (error.context?.status === 409) {
           console.log('User already exists (409 status)');
           throw new Error('EXISTING_USER');
         }
-        
+
         // Handle other function errors
         if (error.message?.includes('FunctionsHttpError')) {
-          throw new Error('Не удалось подключиться к серверу. Попробуйте позже.');
+          throw new Error(
+            'Не удалось подключиться к серверу. Попробуйте позже.'
+          );
         }
-        
+
         throw new Error('Не удалось создать аккаунт');
       }
 
       if (!data.success) {
         console.error('User creation failed:', data.error);
-        
+
         // Handle specific error cases from the edge function
         if (data.error === 'USER_ALREADY_EXISTS') {
           throw new Error('EXISTING_USER');
         }
-        
+
         if (data.error === 'AUTH_ERROR') {
           throw new Error(data.message || 'Ошибка аутентификации');
         }
-        
+
         throw new Error(data.message || 'Не удалось создать аккаунт');
       }
 
@@ -234,22 +236,24 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         title: 'Код отправлен',
         description: 'Проверьте свою почту и введите код подтверждения',
       });
-
     } catch (error) {
       logger.error('Sign up failed', error);
-      
+
       // Handle specific error cases with user-friendly messages
       if (error instanceof Error && error.message === 'EXISTING_USER') {
         toast({
           title: 'Пользователь уже существует',
-          description: 'Аккаунт с этим email уже зарегистрирован. Попробуйте войти в систему.',
+          description:
+            'Аккаунт с этим email уже зарегистрирован. Попробуйте войти в систему.',
           variant: 'destructive',
         });
       } else {
         toast({
           title: 'Ошибка регистрации',
           description:
-            error instanceof Error ? error.message : 'Не удалось создать аккаунт',
+            error instanceof Error
+              ? error.message
+              : 'Не удалось создать аккаунт',
           variant: 'destructive',
         });
       }
@@ -503,8 +507,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   updateUserProfile: async (profileData: Partial<UserProfile>) => {
     // This function is deprecated. Use useOptimizedProfileCache instead.
     // Keeping for backward compatibility only.
-    logger.warn('updateUserProfile is deprecated. Use useOptimizedProfileCache instead.');
-    
+    logger.warn(
+      'updateUserProfile is deprecated. Use useOptimizedProfileCache instead.'
+    );
+
     // Fallback implementation for compatibility
     const { user } = get();
     if (!user) return;
@@ -514,10 +520,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (profileData.name !== undefined) updateData.name = profileData.name;
       if (profileData.birthDate !== undefined) {
-        updateData.birth_date = profileData.birthDate?.toISOString().split('T')[0] || null;
+        updateData.birth_date =
+          profileData.birthDate?.toISOString().split('T')[0] || null;
       }
       if (profileData.goal !== undefined) updateData.goal = profileData.goal;
-      if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url;
+      if (profileData.avatar_url !== undefined)
+        updateData.avatar_url = profileData.avatar_url;
 
       const { error } = await supabase
         .from('profiles')

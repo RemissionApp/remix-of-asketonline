@@ -174,3 +174,4 @@ npm install @revenuecat/purchases-capacitor@latest @revenuecat/purchases-capacit
 **Общий результат: 100% соответствие документации** ✅
 
 
+

@@ -23,23 +23,6 @@
                     }
                 },
                 {
-                    "source": "/Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@capacitor/android/capacitor/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml",
-                    "from": {
-                        "startLines": "2,3,4,5",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "100,175,251,331",
-                        "endColumns": "74,75,79,79",
-                        "endOffsets": "170,246,326,406"
-                    },
-                    "to": {
-                        "startLines": "110,111,112,522",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "8153,8228,8304,36685",
-                        "endColumns": "74,75,79,79",
-                        "endOffsets": "8223,8299,8379,36760"
-                    }
-                },
-                {
                     "source": "/Users/zhalgas/.gradle/caches/8.11.1/transforms/ef234481c09f01fb9f0508a5da2b1126/transformed/core-splashscreen-1.0.1/res/values/values.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,21,23,32,45",
@@ -56,6 +39,23 @@
                         "endLines": "45,46,77,78,79,80,280,281,282,283,284,285,286,380,822,823,824,1655,1657,2009,2022,2026",
                         "endColumns": "59,58,68,71,62,71,73,75,75,76,70,68,70,67,80,91,92,12,12,12,12,12",
                         "endOffsets": "4716,4775,5823,5895,5958,6030,19914,19990,20066,20143,20214,20283,20354,25661,56005,56097,56190,108643,108764,134907,135682,135955"
+                    }
+                },
+                {
+                    "source": "/Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/.pnpm/@capacitor+android@7.4.2_@capacitor+core@7.4.2/node_modules/@capacitor/android/capacitor/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "100,175,251,331",
+                        "endColumns": "74,75,79,79",
+                        "endOffsets": "170,246,326,406"
+                    },
+                    "to": {
+                        "startLines": "110,111,112,522",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "8153,8228,8304,36685",
+                        "endColumns": "74,75,79,79",
+                        "endOffsets": "8223,8299,8379,36760"
                     }
                 },
                 {

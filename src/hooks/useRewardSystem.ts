@@ -4,7 +4,12 @@ import { useNotifications } from '@/components/notifications/NotificationSystem'
 import { supabase } from '@/integrations/supabase/client';
 
 interface RewardConfig {
-  type: 'mission_complete' | 'artifact_found' | 'level_up' | 'streak' | 'special';
+  type:
+    | 'mission_complete'
+    | 'artifact_found'
+    | 'level_up'
+    | 'streak'
+    | 'special';
   energy: number;
   achievement?: {
     title: string;
@@ -14,9 +19,11 @@ interface RewardConfig {
 }
 
 export const useRewardSystem = () => {
-  const { user } = useAppStore();
-  const { addExperience, createAchievement, stats, refetch } = useUserProgress();
-  const { showAchievementUnlocked, showEnergyGained, showNotification } = useNotifications();
+  const { user, language } = useAppStore();
+  const { addExperience, createAchievement, stats, refetch } =
+    useUserProgress();
+  const { showAchievementUnlocked, showEnergyGained, showNotification } =
+    useNotifications();
 
   const REWARD_CONFIGS: Record<string, RewardConfig> = {
     mission_daily: {
@@ -25,17 +32,17 @@ export const useRewardSystem = () => {
       achievement: {
         title: 'Ежедневный Искатель',
         description: 'Выполнена ежедневная миссия',
-        icon: '🌟'
-      }
+        icon: '🌟',
+      },
     },
     mission_weekly: {
-      type: 'mission_complete', 
+      type: 'mission_complete',
       energy: 50,
       achievement: {
         title: 'Недельный Воин',
         description: 'Выполнена недельная миссия',
-        icon: '⚔️'
-      }
+        icon: '⚔️',
+      },
     },
     artifact_rare: {
       type: 'artifact_found',
@@ -43,8 +50,8 @@ export const useRewardSystem = () => {
       achievement: {
         title: 'Собиратель Редкостей',
         description: 'Найден редкий артефакт',
-        icon: '💎'
-      }
+        icon: '💎',
+      },
     },
     streak_7: {
       type: 'streak',
@@ -52,8 +59,8 @@ export const useRewardSystem = () => {
       achievement: {
         title: 'Недельная Серия',
         description: '7 дней подряд выполнения миссий',
-        icon: '🔥'
-      }
+        icon: '🔥',
+      },
     },
     level_up: {
       type: 'level_up',
@@ -61,12 +68,15 @@ export const useRewardSystem = () => {
       achievement: {
         title: 'Новый Уровень',
         description: 'Достигнут новый уровень развития',
-        icon: '⬆️'
-      }
-    }
+        icon: '⬆️',
+      },
+    },
   };
 
-  const grantReward = async (rewardKey: string, customData?: Partial<RewardConfig>) => {
+  const grantReward = async (
+    rewardKey: string,
+    customData?: Partial<RewardConfig>
+  ) => {
     if (!user?.id) return;
 
     const config = REWARD_CONFIGS[rewardKey];
@@ -81,7 +91,7 @@ export const useRewardSystem = () => {
       // Добавляем энергию с космическим уведомлением
       if (finalConfig.energy > 0) {
         await addExperience(finalConfig.energy);
-        showEnergyGained(finalConfig.energy);
+        showEnergyGained(finalConfig.energy, language);
       }
 
       // Создаем достижение с космическим уведомлением
@@ -92,12 +102,15 @@ export const useRewardSystem = () => {
           finalConfig.achievement.description,
           finalConfig.achievement.icon
         );
-        showAchievementUnlocked(finalConfig.achievement.title, finalConfig.achievement.description);
+        showAchievementUnlocked(
+          finalConfig.achievement.title,
+          finalConfig.achievement.description,
+          language
+        );
       }
 
       // Проверяем особые достижения
       await checkSpecialAchievements();
-
     } catch (error) {
       console.error('Error granting reward:', error);
       showNotification({
@@ -120,8 +133,8 @@ export const useRewardSystem = () => {
         achievement: {
           title: 'Опытный Искатель',
           description: '10 выполненных миссий',
-          icon: '🏆'
-        }
+          icon: '🏆',
+        },
       });
     }
 
@@ -133,8 +146,8 @@ export const useRewardSystem = () => {
         achievement: {
           title: 'Коллекционер',
           description: '5 собранных артефактов',
-          icon: '🗿'
-        }
+          icon: '🗿',
+        },
       });
     }
 
@@ -154,19 +167,23 @@ export const useRewardSystem = () => {
           achievement: {
             title: `Уровень ${currentLevel}`,
             description: `Достигнут ${currentLevel} уровень развития`,
-            icon: '⭐'
-          }
+            icon: '⭐',
+          },
         });
       }
     }
   };
 
-  const onMissionComplete = async (missionType: 'daily' | 'weekly' = 'daily') => {
+  const onMissionComplete = async (
+    missionType: 'daily' | 'weekly' = 'daily'
+  ) => {
     await grantReward(`mission_${missionType}`);
     await refetch(); // Обновляем прогресс
   };
 
-  const onArtifactFound = async (rarity: 'common' | 'rare' | 'epic' = 'rare') => {
+  const onArtifactFound = async (
+    rarity: 'common' | 'rare' | 'epic' = 'rare'
+  ) => {
     await grantReward(`artifact_${rarity}`);
     await refetch(); // Обновляем прогресс
   };

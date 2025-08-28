@@ -59,24 +59,24 @@ const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
 
   try {
-    const { 
-      checkOnboardingStatus, 
-      user, 
-      loadUserProfile, 
+    const {
+      checkOnboardingStatus,
+      user,
+      loadUserProfile,
       setUser,
-      initializeSettings 
+      initializeSettings,
     } = useAppStore();
 
     useEffect(() => {
       // Инициализируем настройки из localStorage
       initializeSettings();
-      
+
       // Проверяем состояние onboarding при загрузке приложения
       checkOnboardingStatus();
 
       // Инициализируем push-уведомления
       NotificationIntegrations.initializeAll();
-      
+
       // Инициализируем мониторинг производительности
       performanceMonitor.initWebVitals();
 
@@ -176,7 +176,7 @@ const AuthCallback = () => {
   }, [location, navigate, updateUserProfile, user, loadUserProfile]);
 
   const { t } = useTranslations();
-  
+
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
@@ -191,8 +191,8 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <NotificationProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <NotificationProvider>
             <AppInitializer />
             <Routes>
               <Route path="/" element={<WelcomePage />} />
@@ -205,7 +205,10 @@ const App = () => {
               <Route path="/pacts" element={<PactsPage />} />
               <Route path="/universe" element={<UniversePage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/account-settings" element={<AccountSettingsPage />} />
+              <Route
+                path="/account-settings"
+                element={<AccountSettingsPage />}
+              />
               <Route path="/comparison" element={<ComparisonPage />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route
@@ -228,17 +231,20 @@ const App = () => {
               <Route path="/artifacts" element={<ArtifactCollectionPage />} />
               {/* Legal Pages */}
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+              <Route
+                path="/terms-of-service"
+                element={<TermsOfServicePage />}
+              />
               <Route path="/delete-account" element={<DeleteAccountPage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <PWAInstallPrompt />
             <PWAUpdateNotification />
-            <Toaster />
-            <Sonner />
-          </BrowserRouter>
-        </NotificationProvider>
+          </NotificationProvider>
+          <Toaster />
+          <Sonner />
+        </BrowserRouter>
       </ErrorBoundary>
     </QueryClientProvider>
   );
