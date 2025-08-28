@@ -1,8 +1,5 @@
 {
 	"appId": "com.asket.cosmicascension",
 	"appName": "Cosmic Ascension Path",
-	"webDir": "dist",
-	"server": {
-		"url": "http://192.168.0.115:3000"
-	}
+	"webDir": "dist"
 }

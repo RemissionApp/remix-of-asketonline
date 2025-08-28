@@ -11,6 +11,7 @@ import { revenueCatService } from '@/utils/revenueCat';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
 import { log } from 'console';
+import { RevenueCatUI } from '@revenuecat/purchases-capacitor-ui';
 
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -202,6 +203,57 @@ export const useRevenueCat = () => {
     }
   };
 
+  // Новый метод для показа Paywall
+  const presentPaywall = async (offeringIdentifier?: string) => {
+    try {
+      setIsLoading(true);
+
+      console.log('Starting Paywall');
+
+      console.log('offerings:', JSON.stringify(offerings, null, 2));
+
+      const { result } = await RevenueCatUI.presentPaywall();
+
+      // const result = await revenueCatService.presentPaywall();
+
+      // if (result) {
+      //   setCustomerInfo(result);
+      //   syncProStatus(result);
+
+      //   toast({
+      //     title: 'Покупка успешна!',
+      //     description: 'Спасибо за покупку!',
+      //   });
+      // }
+
+      return result;
+    } catch (error: unknown) {
+      console.error('Ошибка показа Paywall:', error);
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'userCancelled' in error &&
+        error.userCancelled
+      ) {
+        console.log('Пользователь отменил Paywall');
+      } else {
+        toast({
+          title: 'Ошибка Paywall',
+          description:
+            error instanceof Error
+              ? error.message
+              : 'Не удалось показать Paywall',
+          variant: 'destructive',
+        });
+      }
+
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Проверяем, есть ли активная подписка (любая)
   const hasActiveSubscription =
     customerInfo?.entitlements?.active &&
@@ -214,6 +266,7 @@ export const useRevenueCat = () => {
     isLoading,
     billingAvailable,
     hasActiveSubscription,
+    presentPaywall, // Новый метод
     purchasePackage,
     restorePurchases,
   };

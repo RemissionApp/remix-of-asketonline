@@ -3,6 +3,7 @@
 	"appName": "Cosmic Ascension Path",
 	"webDir": "dist",
 	"packageClassList": [
-		"PurchasesPlugin"
+		"PurchasesPlugin",
+		"RevenueCatUIPlugin"
 	]
 }

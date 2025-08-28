@@ -6,6 +6,7 @@ import {
   PurchasesPackage,
   MakePurchaseResult,
 } from '@revenuecat/purchases-capacitor';
+import { RevenueCatUI } from '@revenuecat/purchases-capacitor-ui';
 import { Capacitor } from '@capacitor/core';
 
 // Замените на ваш API ключ из RevenueCat Dashboard
@@ -203,6 +204,64 @@ export class RevenueCatService {
       ) {
         return false;
       }
+      throw error;
+    }
+  }
+
+  // Новый метод для показа Paywall
+  async presentPaywall(
+    offeringIdentifier?: string
+  ): Promise<CustomerInfo | null> {
+    try {
+      console.log('Presenting RevenueCat Paywall...');
+
+      let offering;
+      if (offeringIdentifier) {
+        // Получаем полный объект offering по identifier
+        const offerings = await this.getOfferings();
+        offering = offerings.all?.[offeringIdentifier] || offerings.current;
+      }
+
+      const result = await RevenueCatUI.presentPaywall({
+        offering: offering,
+      });
+
+      console.log('Paywall result:', result);
+
+      // Проверяем результат paywall
+      if (result.result === 'PURCHASED' || result.result === 'RESTORED') {
+        // Получаем обновленную информацию о пользователе
+        const customerInfo = await this.getCustomerInfo();
+        return customerInfo.customerInfo;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Failed to present paywall:', error);
+
+      // Проверяем, была ли покупка отменена пользователем
+      if (
+        error &&
+        typeof error === 'object' &&
+        'userCancelled' in error &&
+        error.userCancelled
+      ) {
+        console.log('User cancelled paywall');
+        return null;
+      }
+
+      throw error;
+    }
+  }
+
+  // Метод для получения информации о Paywall
+  async getPaywallInfo(offeringIdentifier?: string) {
+    try {
+      // RevenueCatUI не имеет метода getPaywallInfo, используем getOfferings
+      const offerings = await this.getOfferings();
+      return offerings;
+    } catch (error) {
+      console.error('Failed to get paywall info:', error);
       throw error;
     }
   }

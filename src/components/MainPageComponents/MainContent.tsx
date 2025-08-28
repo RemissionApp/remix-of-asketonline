@@ -12,6 +12,8 @@ import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetin
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
+import { PaywallButton } from '@/components/PaywallButton';
+import { PaywallTest } from '@/components/PaywallTest';
 import { useUserProgress } from '@/hooks/useUserProgress';
 
 interface MainContentProps {
@@ -108,6 +110,11 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 9. Affirmations Block */}
       <div className="w-full max-w-lg mx-auto">
         <AffirmationsBlock />
+      </div>
+
+      {/* 10. Paywall Test (для разработки) */}
+      <div className="w-full max-w-lg mx-auto mt-6">
+        <PaywallTest />
       </div>
     </main>
   );
