@@ -10,18 +10,22 @@ export const NavigationAudioManager: React.FC = () => {
   useEffect(() => {
     const activeCount = getActiveAudioCount();
     
-    if (activeCount > 0) {
+    // Don't stop audio on certain pages where it should continue
+    const persistAudioPages = ['/create-pact'];
+    const shouldPersistAudio = persistAudioPages.some(page => 
+      location.pathname.startsWith(page)
+    );
+    
+    if (activeCount > 0 && !shouldPersistAudio) {
       logger.info('Route changed, stopping all audio:', {
-        from: location.pathname,
+        to: location.pathname,
         activeAudioInstances: activeCount,
       });
       
-      // Small delay to ensure smooth transition
-      const timeoutId = setTimeout(() => {
-        stopAllAudio();
-      }, 50);
-
-      return () => clearTimeout(timeoutId);
+      // Immediate stop for route changes
+      stopAllAudio();
+    } else if (shouldPersistAudio) {
+      logger.debug('Preserving audio on page:', location.pathname);
     }
   }, [location.pathname, stopAllAudio, getActiveAudioCount]);
 

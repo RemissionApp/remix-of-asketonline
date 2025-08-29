@@ -39,16 +39,19 @@ export const BottomNavigation = memo(() => {
       | 'profile',
     path: string
   ) => {
-    // Stop all audio before navigation
-    stopAllAudio();
+    // Don't stop audio when navigating to/from create-pact page
+    const currentPath = location.pathname;
+    const isCreatePactNavigation = currentPath === '/create-pact' || path === '/create-pact';
+    
+    if (!isCreatePactNavigation) {
+      stopAllAudio();
+    }
     
     // Update the active screen in the store
     setActiveScreen(screen);
     
-    // Small delay to ensure audio is stopped before navigation
-    setTimeout(() => {
-      navigate(path);
-    }, 50);
+    // Navigate immediately for better UX
+    navigate(path);
   };
 
   // Check if user has PRO subscription

@@ -20,7 +20,7 @@ export interface TextToSpeechOptions {
 export const useOptimizedTextToSpeech = () => {
   const instanceId = useId();
   const { soundEnabled, soundVolume } = useAppStore();
-  const { registerAudioInstance, unregisterAudioInstance, stopAllExcept } = useGlobalAudioManager();
+  const { registerAudioInstance, unregisterAudioInstance, stopAllExcept, isInstanceRegistered } = useGlobalAudioManager();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -196,6 +196,11 @@ export const useOptimizedTextToSpeech = () => {
       // Stop any other audio instances before starting
       stopAllExcept(instanceId);
 
+      // Register this instance immediately when starting playback
+      if (!isInstanceRegistered(instanceId)) {
+        registerAudioInstance(instanceId, stopSpeech);
+      }
+
       if (currentAudio || isProcessingQueue) {
         stopSpeech();
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -263,9 +268,11 @@ export const useOptimizedTextToSpeech = () => {
     unregisterAudioInstance(instanceId);
   };
 
-  // Register this instance with global manager
+  // Register this instance with global manager only when active
   useEffect(() => {
-    if (isPlaying || isProcessingQueue) {
+    // Only register when actually playing, not just when state changes
+    if ((isPlaying || isProcessingQueue) && !isInstanceRegistered(instanceId)) {
+      logger.debug('Registering audio instance from useEffect:', instanceId);
       registerAudioInstance(instanceId, stopSpeech);
     }
 
@@ -274,7 +281,7 @@ export const useOptimizedTextToSpeech = () => {
         unregisterAudioInstance(instanceId);
       }
     };
-  }, [isPlaying, isProcessingQueue, instanceId, registerAudioInstance, unregisterAudioInstance]);
+  }, [isPlaying, isProcessingQueue, instanceId, registerAudioInstance, unregisterAudioInstance, isInstanceRegistered]);
 
   // Auto cleanup on unmount
   useEffect(() => {
