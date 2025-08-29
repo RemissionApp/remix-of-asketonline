@@ -9,6 +9,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { PactCard } from '@/components/pacts/PactCard';
 import { PactCreationForm } from '@/components/pacts/PactCreationForm';
 import { NoPactsView } from '@/components/NoPactsView';
+import { PactStats } from '@/components/PactDisplay';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -138,6 +139,11 @@ const PactsPage: React.FC = () => {
       <PageHeader title={getText('title')} />
 
       <div className="relative z-10 flex-1 container mx-auto px-4 pt-20 py-8">
+        {/* Pact Statistics */}
+        <div className="mb-6">
+          <PactStats pacts={pacts} variant="full" />
+        </div>
+
         {/* Header Actions */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">

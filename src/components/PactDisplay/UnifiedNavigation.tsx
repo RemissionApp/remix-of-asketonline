@@ -41,21 +41,56 @@ export const UnifiedNavigation: React.FC<UnifiedNavigationProps> = ({
     }
   }, [onPrevious, onNext]);
 
-  // Get dot color based on pact status
+  // Get dot color and tooltip based on pact status
   const getDotColor = useCallback((pact: Pact, isActive: boolean) => {
-    if (isActive) return 'bg-cosmic-accent scale-125';
+    if (isActive) return 'bg-cosmic-accent scale-125 shadow-lg shadow-cosmic-accent/30';
     
     switch (pact.status) {
       case 'failed':
-        return 'bg-red-500/70';
+        return 'bg-red-500/70 hover:bg-red-500/90';
       case 'completed':
-        return 'bg-green-500/70';
+        return 'bg-green-500/70 hover:bg-green-500/90';
       case 'planned':
-        return 'bg-cosmic-secondary/30';
+        return 'bg-cosmic-secondary/30 hover:bg-cosmic-secondary/50';
       default:
-        return 'bg-cosmic-secondary/50';
+        return 'bg-cosmic-secondary/50 hover:bg-cosmic-secondary/70';
     }
   }, []);
+
+  // Get tooltip text for pact status
+  const getStatusTooltip = useCallback((pact: Pact) => {
+    const completedDays = pact.days_completed ?? pact.days?.filter(day => day.completed).length ?? 0;
+    const totalDays = pact.days_total ?? pact.duration ?? 1;
+    const progress = Math.round((completedDays / totalDays) * 100);
+
+    const statusText = {
+      ru: {
+        active: 'Активная',
+        completed: 'Завершена',
+        failed: 'Прервана',
+        planned: 'Запланирована'
+      },
+      es: {
+        active: 'Activa',
+        completed: 'Completada',
+        failed: 'Interrumpida',
+        planned: 'Planificada'
+      },
+      en: {
+        active: 'Active',
+        completed: 'Completed',
+        failed: 'Failed',
+        planned: 'Planned'
+      }
+    }[language] || {
+      active: 'Active',
+      completed: 'Completed',
+      failed: 'Failed',
+      planned: 'Planned'
+    };
+
+    return `${pact.title} - ${statusText[pact.status]} (${completedDays}/${totalDays} дней - ${progress}%)`;
+  }, [language]);
 
   // Single pact: show create new pact placeholder
   if (pacts.length <= 1) {
@@ -121,7 +156,7 @@ export const UnifiedNavigation: React.FC<UnifiedNavigationProps> = ({
           <button
             key={pact.id}
             className={cn(
-              'rounded-full transition-all duration-200 cursor-pointer',
+              'rounded-full transition-all duration-200 cursor-pointer relative',
               'hover:scale-110 focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50',
               getDotColor(pact, index === currentIndex)
             )}
@@ -132,7 +167,13 @@ export const UnifiedNavigation: React.FC<UnifiedNavigationProps> = ({
             }}
             onClick={() => onPactSelect(index)}
             aria-label={`Go to pact ${index + 1}: ${pact.title}`}
-          />
+            title={getStatusTooltip(pact)}
+          >
+            {/* Status indicator ring for active pact */}
+            {index === currentIndex && pact.status === 'active' && (
+              <div className="absolute inset-0 rounded-full border-2 border-cosmic-accent animate-pulse" />
+            )}
+          </button>
         ))}
       </div>
       
