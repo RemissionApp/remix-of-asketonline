@@ -17,7 +17,7 @@ export const EmptyChatState: React.FC = () => {
       </div>
 
       <h3 className="text-xl font-serif text-cosmic-accent mb-2 text-center">
-        Диалог со Вселенной
+        Звонок Вселенной
       </h3>
       <p className="text-cosmic-secondary text-center max-w-md mb-2">
         Задайте вопрос, и Вселенная ответит вам через язык звёзд, метафор и

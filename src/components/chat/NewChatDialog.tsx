@@ -40,7 +40,7 @@ export const NewChatDialog: React.FC<NewChatDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white">
         <h3 className="text-lg font-medium text-cosmic-accent mb-4">
-          {t.universe?.newChatTitle || 'Новый диалог со Вселенной'}
+          {t.universe?.newChatTitle || 'Новый звонок Вселенной'}
         </h3>
         <Label htmlFor="chat-title" className="text-cosmic-secondary text-sm">
           {t.universe?.chatTitleLabel || 'Название диалога'}
