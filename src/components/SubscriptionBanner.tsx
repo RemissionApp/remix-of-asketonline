@@ -6,6 +6,7 @@ import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { toast } from '@/hooks/use-toast';
 
 interface SubscriptionBannerProps {
   className?: string;

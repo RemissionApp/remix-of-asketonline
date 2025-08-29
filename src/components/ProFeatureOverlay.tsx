@@ -3,6 +3,7 @@ import { LockIcon, SparklesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { toast } from '@/hooks/use-toast';
 
 interface ProFeatureOverlayProps {
   title?: string;
