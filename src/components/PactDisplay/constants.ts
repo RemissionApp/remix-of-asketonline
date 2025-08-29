@@ -4,17 +4,43 @@
  */
 
 export const PACT_DISPLAY_CONSTANTS = {
-  // Layout dimensions
-  CONTAINER_HEIGHT: 500,
-  CONTAINER_MAX_WIDTH: 400,
-  ENERGY_CIRCLE_SIZE: 'lg' as const,
-  NAVIGATION_HEIGHT: 80,
+  // Responsive layout dimensions
+  CONTAINER: {
+    HEIGHT: {
+      MOBILE: 320,
+      TABLET: 400,
+      DESKTOP: 450,
+    },
+    MAX_WIDTH: 400,
+  },
+  ENERGY_CIRCLE_SIZE: {
+    MOBILE: 'sm' as const,
+    TABLET: 'md' as const,
+    DESKTOP: 'lg' as const,
+  },
+  NAVIGATION_HEIGHT: {
+    MOBILE: 50,
+    TABLET: 65,
+    DESKTOP: 80,
+  },
   
-  // Spacing
+  // Responsive spacing
   SPACING: {
-    SECTION: 24,
-    ELEMENT: 16,
-    COMPACT: 8,
+    SECTION: {
+      MOBILE: 12,
+      TABLET: 16,
+      DESKTOP: 24,
+    },
+    ELEMENT: {
+      MOBILE: 8,
+      TABLET: 12,
+      DESKTOP: 16,
+    },
+    COMPACT: {
+      MOBILE: 4,
+      TABLET: 6,
+      DESKTOP: 8,
+    },
   },
   
   // Animation durations (ms)
@@ -25,12 +51,12 @@ export const PACT_DISPLAY_CONSTANTS = {
     TIMER_UPDATE: 100,
   },
   
-  // Typography
+  // Responsive typography
   TYPOGRAPHY: {
-    TITLE_SIZE: 'text-xl',
-    PROGRESS_SIZE: 'text-4xl',
-    COUNTER_SIZE: 'text-lg',
-    DESCRIPTION_SIZE: 'text-sm',
+    TITLE_SIZE: 'text-lg md:text-xl',
+    PROGRESS_SIZE: 'text-2xl sm:text-3xl md:text-4xl',
+    COUNTER_SIZE: 'text-base md:text-lg',
+    DESCRIPTION_SIZE: 'text-xs sm:text-sm',
   },
   
   // Status colors (using semantic tokens)

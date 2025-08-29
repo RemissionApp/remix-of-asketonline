@@ -128,11 +128,11 @@ export const UnifiedCountdownTimer: React.FC<UnifiedCountdownTimerProps> = ({
 
   return (
     <div className={cn(
-      "w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2 transition-all duration-300",
+      "w-full bg-cosmic-dark/60 backdrop-blur-sm py-0.5 sm:py-1 px-1.5 sm:px-2 transition-all duration-300",
       className
     )}>
       <div className="flex items-center justify-center text-xs">
-        <Clock size={16} className="text-cosmic-secondary mr-1 animate-pulse" />
+        <Clock size={12} className="text-cosmic-secondary mr-1 animate-pulse sm:mr-1 md:mr-1" />
         <div className="flex items-center space-x-2">
           {/* Days */}
           <div className="flex flex-col items-center">

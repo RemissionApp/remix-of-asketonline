@@ -29,7 +29,7 @@ export const UnifiedBreakButton: React.FC<UnifiedBreakButtonProps> = ({
   return (
     <button
       className={cn(
-        "flex items-center space-x-2 px-4 py-2 rounded-lg transition-all",
+        "flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg transition-all",
         "bg-red-600/20 border border-red-500/30 text-red-400",
         "hover:bg-red-600/30 hover:border-red-500/50 hover:text-red-300",
         "hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400/50",
@@ -41,8 +41,8 @@ export const UnifiedBreakButton: React.FC<UnifiedBreakButtonProps> = ({
       onClick={onBreakAscesis}
       aria-label={`${buttonText}: ${pact.title}`}
     >
-      <X size={16} className="transition-transform group-hover:rotate-90" />
-      <span className="text-sm font-medium">{buttonText}</span>
+      <X size={14} className="transition-transform group-hover:rotate-90 sm:w-4 sm:h-4" />
+      <span className="text-xs sm:text-sm font-medium">{buttonText}</span>
     </button>
   );
 };

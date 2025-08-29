@@ -78,18 +78,18 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
     <div 
       className="w-full flex flex-col items-center relative"
       style={{ 
-        minHeight: PACT_DISPLAY_CONSTANTS.CONTAINER_HEIGHT,
-        maxWidth: PACT_DISPLAY_CONSTANTS.CONTAINER_MAX_WIDTH 
+        minHeight: PACT_DISPLAY_CONSTANTS.CONTAINER.HEIGHT.MOBILE,
+        maxWidth: PACT_DISPLAY_CONSTANTS.CONTAINER.MAX_WIDTH 
       }}
     >
       {/* Timer */}
       <UnifiedCountdownTimer 
         pact={currentPact} 
-        className="mb-4 transition-all duration-300"
+        className="mb-2 sm:mb-3 md:mb-4 transition-all duration-300"
       />
       
       {/* Pact Information */}
-      <div className="text-center mb-6 px-4">
+      <div className="text-center mb-3 sm:mb-4 md:mb-6 px-2 sm:px-3 md:px-4">
         <p className={cn(
           "text-sm mb-2 transition-colors duration-300",
           statusColors.accent
@@ -98,7 +98,7 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
         </p>
         <h1 className={cn(
           PACT_DISPLAY_CONSTANTS.TYPOGRAPHY.TITLE_SIZE,
-          "uppercase font-serif mb-6 text-shadow-lg transition-colors duration-300",
+          "uppercase font-serif mb-3 sm:mb-4 md:mb-6 text-shadow-lg transition-colors duration-300",
           statusColors.primary
         )}>
           {`${getAscesisPrefix()} ${formatRejection(currentPact.title || '')}`}
@@ -106,14 +106,14 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
       </div>
 
       {/* Energy Circle */}
-      <div className="w-full overflow-visible px-4 flex justify-center mb-6">
+      <div className="w-full overflow-visible px-2 sm:px-3 md:px-4 flex justify-center mb-3 sm:mb-4 md:mb-6">
         <EnergyCircle 
           progress={progress} 
-          size={PACT_DISPLAY_CONSTANTS.ENERGY_CIRCLE_SIZE}
+          size="sm"
           status={currentPact.status as any}
-          className="transition-all duration-500"
+          className="transition-all duration-500 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
         >
-          <div className="text-center p-4">
+          <div className="text-center p-2 sm:p-3 md:p-4">
             <p className={cn(
               PACT_DISPLAY_CONSTANTS.TYPOGRAPHY.PROGRESS_SIZE,
               "font-bold font-serif tabular-nums transition-colors duration-300",
@@ -123,7 +123,7 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
             </p>
             <p className={cn(
               PACT_DISPLAY_CONSTANTS.TYPOGRAPHY.COUNTER_SIZE,
-              "mt-2 transition-colors duration-300",
+              "mt-1 sm:mt-1.5 md:mt-2 transition-colors duration-300",
               statusColors.accent
             )}>
               {t.main?.days || 'days'}
@@ -135,7 +135,7 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
       {/* Universal Navigation - Always reserve space */}
       <div 
         className="w-full flex justify-center"
-        style={{ minHeight: PACT_DISPLAY_CONSTANTS.NAVIGATION_HEIGHT }}
+        style={{ minHeight: PACT_DISPLAY_CONSTANTS.NAVIGATION_HEIGHT.MOBILE }}
       >
         <UnifiedNavigation
           pacts={pacts}
@@ -168,7 +168,7 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
       )}
 
       {/* Break Ascesis Button - Always reserve space */}
-      <div className="mt-6 min-h-[44px] flex items-center">
+      <div className="mt-3 sm:mt-4 md:mt-6 min-h-[36px] sm:min-h-[40px] md:min-h-[44px] flex items-center">
         <UnifiedBreakButton
           pact={currentPact}
           onBreakAscesis={onBreakAscesis}
