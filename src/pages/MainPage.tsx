@@ -81,10 +81,21 @@ const MainPage: React.FC = () => {
           });
         }
 
+        // First load all pacts, then sync with current date
+        logger.debug('Loading pacts');
+        console.log('MainPage: Loading pacts first');
+        await handleAsyncError(() => loadPacts(), {
+          component: 'MainPage',
+          action: 'loadPacts',
+        });
+
         // Then sync pacts with current date
         logger.debug('Syncing pacts with current date');
         console.log('MainPage: Syncing pacts with current date');
-        syncPactsWithCurrentDate();
+        await handleAsyncError(() => syncPactsWithCurrentDate(), {
+          component: 'MainPage', 
+          action: 'syncPactsWithCurrentDate',
+        });
       } catch (error) {
         logger.error('Failed to initialize user data', error);
       } finally {

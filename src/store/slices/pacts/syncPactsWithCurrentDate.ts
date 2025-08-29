@@ -152,9 +152,11 @@ export const createSyncPactsSlice = (
         }
       }
 
-      // Reload pacts to reflect changes
-      console.log('SyncPacts: Reloading pacts to reflect changes');
-      await loadPacts();
+      // Only reload pacts if there were changes
+      if (totalNewCompletedDays > 0) {
+        console.log('SyncPacts: Reloading pacts to reflect changes');
+        await loadPacts();
+      }
       console.log('SyncPacts: Sync completed successfully');
     } catch (error: any) {
       console.error('Error syncing pacts:', error);
