@@ -60,67 +60,86 @@ const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
 
   try {
+  const {
+    checkOnboardingStatus,
+    user,
+    setUser,
+    initializeSettings,
+    loadUserProfile,
+  } = useAppStore();
+
+  useEffect(() => {
+    // Initialize settings from localStorage
+    initializeSettings();
+
+    // Check onboarding status on app load
+    checkOnboardingStatus();
+
+    // Initialize push notifications
+    NotificationIntegrations.initializeAll();
+
+    // Initialize performance monitoring
+    performanceMonitor.initWebVitals();
+
+    // Set up auth state change listener FIRST
     const {
-      checkOnboardingStatus,
-      user,
-      setUser,
-      initializeSettings,
-    } = useAppStore();
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      logger.info('Auth state changed', { event, userId: session?.user?.id, hasSession: !!session });
 
-    useEffect(() => {
-      // Initialize settings from localStorage
-      initializeSettings();
-
-      // Check onboarding status on app load
-      checkOnboardingStatus();
-
-      // Initialize push notifications
-      NotificationIntegrations.initializeAll();
-
-      // Initialize performance monitoring
-      performanceMonitor.initWebVitals();
-
-      // Set up auth state change listener FIRST
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange(async (event, session) => {
-        logger.info('Auth state changed', { event, userId: session?.user?.id, hasSession: !!session });
-
-        // Only update state synchronously, defer all async operations
-        if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        }
-      });
-
-      // THEN check current session
-      const checkSession = async () => {
-        try {
-          const { data, error } = await supabase.auth.getSession();
-          if (error) {
-            logger.error('Error getting session', error);
-            return;
+      // Handle auth state changes synchronously
+      if (event === 'SIGNED_IN' && session?.user) {
+        setUser(session.user);
+        
+        // Load user profile after setting user (defer to prevent blocking)
+        setTimeout(async () => {
+          try {
+            await loadUserProfile();
+            logger.debug('Profile loaded after auth state change');
+          } catch (error) {
+            logger.error('Failed to load profile after auth change', error);
           }
+        }, 0);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
 
-          if (data.session?.user) {
-            logger.info('Found existing session', { userId: data.session.user.id });
-            setUser(data.session.user);
-          } else {
-            logger.info('No existing session found');
-          }
-        } catch (error) {
-          logger.error('Failed to check session', error);
+    // THEN check current session
+    const checkSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          logger.error('Error getting session', error);
+          return;
         }
-      };
 
-      checkSession();
+        if (data.session?.user) {
+          logger.info('Found existing session', { userId: data.session.user.id });
+          setUser(data.session.user);
+          
+          // Load profile for existing session
+          try {
+            await loadUserProfile();
+            logger.debug('Profile loaded for existing session');
+          } catch (error) {
+            logger.error('Failed to load profile for existing session', error);
+          }
+        } else {
+          logger.info('No existing session found');
+        }
+      } catch (error) {
+        logger.error('Failed to check session', error);
+      }
+    };
 
-      // Unsubscribe on unmount
-      return () => {
-        subscription.unsubscribe();
-      };
-    }, [checkOnboardingStatus, setUser, initializeSettings]);
+    checkSession();
+
+    // Unsubscribe on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [checkOnboardingStatus, setUser, initializeSettings, loadUserProfile]);
 
     return null;
   } catch (error) {

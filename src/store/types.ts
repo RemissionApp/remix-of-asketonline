@@ -39,6 +39,7 @@ export interface AppState {
   userProfile: UserProfile;
   user: User | null;
   loading: boolean;
+  profileLoading: boolean;
   emailConfirmed: boolean;
   updateProStatus: (isPro: boolean) => void;
 

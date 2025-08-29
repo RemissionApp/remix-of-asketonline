@@ -72,6 +72,7 @@ const getTranslations = (language: string) => {
 export interface AuthSlice {
   user: AuthUser | null;
   loading: boolean;
+  profileLoading: boolean;
   emailConfirmed: boolean;
   setUser: (user: AuthUser | null) => void;
   signIn: (email: string, password: string) => Promise<boolean>;
@@ -95,6 +96,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 ) => ({
   user: null,
   loading: false,
+  profileLoading: false,
   emailConfirmed: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
@@ -590,6 +592,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     if (!user) return;
 
     logger.debug('Loading user profile', { userId: user.id });
+    set({ profileLoading: true });
 
     try {
       const { data, error } = await supabase
@@ -743,6 +746,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       }
     } catch (error) {
       logger.error('Error loading user profile', error);
+    } finally {
+      set({ profileLoading: false });
     }
   },
 });
