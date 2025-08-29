@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useGlobalAudioManager } from '@/contexts/AudioContext';
 import {
   Home,
   Sparkles,
@@ -19,6 +20,7 @@ export const BottomNavigation = memo(() => {
   const { userProfile, language, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const { hasActiveSubscription } = useRevenueCat();
+  const { stopAllAudio } = useGlobalAudioManager();
 
   // Check if a route is currently active
   const isActive = (path: string) => {
@@ -37,10 +39,16 @@ export const BottomNavigation = memo(() => {
       | 'profile',
     path: string
   ) => {
+    // Stop all audio before navigation
+    stopAllAudio();
+    
     // Update the active screen in the store
     setActiveScreen(screen);
-    // Navigate to the corresponding route
-    navigate(path);
+    
+    // Small delay to ensure audio is stopped before navigation
+    setTimeout(() => {
+      navigate(path);
+    }, 50);
   };
 
   // Check if user has PRO subscription

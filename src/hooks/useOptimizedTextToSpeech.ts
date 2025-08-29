@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { logger } from '@/utils/logger';
+import { useGlobalAudioManager } from '@/contexts/AudioContext';
+import { safeAudioCleanup } from '@/utils/audioCleanup';
 
 export interface TextToSpeechOptions {
   voice?:
@@ -16,7 +18,10 @@ export interface TextToSpeechOptions {
 }
 
 export const useOptimizedTextToSpeech = () => {
+  const instanceId = useId();
   const { soundEnabled, soundVolume } = useAppStore();
+  const { registerAudioInstance, unregisterAudioInstance, stopAllExcept } = useGlobalAudioManager();
+  
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
@@ -188,6 +193,9 @@ export const useOptimizedTextToSpeech = () => {
         text.substring(0, 50) + '...'
       );
 
+      // Stop any other audio instances before starting
+      stopAllExcept(instanceId);
+
       if (currentAudio || isProcessingQueue) {
         stopSpeech();
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -240,33 +248,40 @@ export const useOptimizedTextToSpeech = () => {
 
     // Stop current audio efficiently
     if (currentAudio) {
-      try {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        URL.revokeObjectURL(currentAudio.src);
-      } catch (e) {
-        logger.warn('Error stopping current audio:', e);
-      }
+      safeAudioCleanup(currentAudio);
       setCurrentAudio(null);
     }
 
     // Clear queue efficiently
     if (audioQueue.length > 0) {
-      audioQueue.forEach(audio => {
-        try {
-          audio.pause();
-          audio.currentTime = 0;
-          URL.revokeObjectURL(audio.src);
-        } catch (e) {
-          logger.warn('Error cleaning up audio from queue:', e);
-        }
-      });
+      audioQueue.forEach(audio => safeAudioCleanup(audio));
       setAudioQueue([]);
     }
 
     setIsPlaying(false);
     setIsProcessingQueue(false);
+    unregisterAudioInstance(instanceId);
   };
+
+  // Register this instance with global manager
+  useEffect(() => {
+    if (isPlaying || isProcessingQueue) {
+      registerAudioInstance(instanceId, stopSpeech);
+    }
+
+    return () => {
+      if (isPlaying || isProcessingQueue) {
+        unregisterAudioInstance(instanceId);
+      }
+    };
+  }, [isPlaying, isProcessingQueue, instanceId, registerAudioInstance, unregisterAudioInstance]);
+
+  // Auto cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, []);
 
   return {
     generateAndPlaySpeech,

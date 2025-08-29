@@ -48,6 +48,8 @@ import AccountSettingsPage from './pages/AccountSettingsPage';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 import { NotificationProvider } from './components/notifications/NotificationSystem';
+import { AudioProvider } from './contexts/AudioContext';
+import { NavigationAudioManager } from './components/navigation/NavigationAudioManager';
 
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
 import { performanceMonitor } from './utils/performance';
@@ -210,9 +212,11 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
           <BrowserRouter>
-            <NotificationProvider>
-              <AppInitializer />
-              <Routes>
+            <AudioProvider>
+              <NotificationProvider>
+                <AppInitializer />
+                <NavigationAudioManager />
+                <Routes>
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/language" element={<LanguagePage />} />
                 <Route path="/login" element={<LoginPage />} />
@@ -258,9 +262,10 @@ const App = () => {
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <PWAInstallPrompt />
-              <PWAUpdateNotification />
-            </NotificationProvider>
+                <PWAInstallPrompt />
+                <PWAUpdateNotification />
+              </NotificationProvider>
+            </AudioProvider>
             <Toaster />
             <Sonner />
           </BrowserRouter>
