@@ -49,6 +49,7 @@ import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 import { NotificationProvider } from './components/notifications/NotificationSystem';
 import { AudioProvider } from './contexts/AudioContext';
+import { SingletonAudioProvider } from './contexts/SingletonAudioContext';
 import { NavigationAudioManager } from './components/navigation/NavigationAudioManager';
 
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
@@ -213,7 +214,8 @@ const App = () => {
         <ErrorBoundary>
           <BrowserRouter>
             <AudioProvider>
-              <NotificationProvider>
+              <SingletonAudioProvider>
+                <NotificationProvider>
                 <AppInitializer />
                 <NavigationAudioManager />
                 <Routes>
@@ -264,7 +266,8 @@ const App = () => {
               </Routes>
                 <PWAInstallPrompt />
                 <PWAUpdateNotification />
-              </NotificationProvider>
+                </NotificationProvider>
+              </SingletonAudioProvider>
             </AudioProvider>
             <Toaster />
             <Sonner />
