@@ -14,30 +14,70 @@ export const createLoadPactsSlice = (
   loadPacts: async () => {
     const { user } = get();
 
+    console.log('LoadPacts: Starting load process', {
+      hasStoreUser: !!user,
+      storeUserId: user?.id,
+    });
+
     if (!user) {
-      console.log('LoadPacts: No user found, skipping load');
+      console.log('LoadPacts: No user in store, skipping load');
       return;
     }
 
-    // Double-check actual Supabase session
+    // Double-check actual Supabase session and compare user IDs
     const { data: session, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session?.session?.user) {
-      console.log('LoadPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
+      console.log('LoadPacts: No valid Supabase session found', { 
+        sessionError: sessionError?.message,
+        hasSession: !!session?.session,
+        hasUser: !!session?.session?.user
+      });
       return;
     }
 
     const currentUserId = session.session.user.id;
-    console.log('LoadPacts: Starting to load pacts for user:', currentUserId);
+    console.log('LoadPacts: Session validation successful', {
+      currentUserId,
+      storeUserId: user.id,
+      userIdsMatch: currentUserId === user.id,
+    });
+
+    if (currentUserId !== user.id) {
+      console.error('LoadPacts: User ID mismatch between store and session', {
+        storeUserId: user.id,
+        sessionUserId: currentUserId,
+      });
+      return;
+    }
 
     try {
       // Get all pacts using the current session user ID
+      console.log('LoadPacts: Executing pacts query', {
+        userId: currentUserId,
+        query: `SELECT * FROM pacts WHERE user_id = '${currentUserId}' ORDER BY created_at DESC`,
+      });
+
       const { data: pacts, error: pactsError } = await supabase
         .from('pacts')
         .select('*')
         .eq('user_id', currentUserId)
         .order('created_at', { ascending: false });
 
-      if (pactsError) throw pactsError;
+      if (pactsError) {
+        console.error('LoadPacts: Database error', pactsError);
+        throw pactsError;
+      }
+
+      console.log('LoadPacts: Raw pacts data from database:', {
+        pactsCount: pacts?.length || 0,
+        pacts: pacts?.map(p => ({
+          id: p.id,
+          title: p.title,
+          status: p.status,
+          duration: p.duration,
+          created_at: p.created_at,
+        })) || [],
+      });
 
       if (!pacts || pacts.length === 0) {
         console.log('LoadPacts: No pacts found for user');

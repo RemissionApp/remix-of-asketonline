@@ -16,21 +16,35 @@ export const createSyncPactsSlice = (
     const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } =
       get();
 
-    console.log('SyncPacts: Starting sync', { hasUser: !!user });
+    console.log('SyncPacts: Starting sync', { 
+      hasUser: !!user,
+      userId: user?.id 
+    });
 
     if (!user) {
-      console.log('SyncPacts: No user, skipping sync');
+      console.log('SyncPacts: No user in store, skipping sync');
       return;
     }
 
-    // Double-check actual Supabase session
+    // Validate Supabase session
     const { data: session, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session?.session?.user) {
-      console.log('SyncPacts: No valid Supabase session found', { sessionError, hasSession: !!session?.session });
+      console.log('SyncPacts: Invalid session during sync', { 
+        sessionError: sessionError?.message,
+        hasSession: !!session?.session 
+      });
       return;
     }
 
     const currentUserId = session.session.user.id;
+    
+    if (currentUserId !== user.id) {
+      console.error('SyncPacts: User ID mismatch during sync', {
+        storeUserId: user.id,
+        sessionUserId: currentUserId,
+      });
+      return;
+    }
 
     set({ loading: true });
 

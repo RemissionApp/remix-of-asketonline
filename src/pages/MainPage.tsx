@@ -42,38 +42,71 @@ const MainPage: React.FC = () => {
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   const { stats } = useUserProgress();
 
-  // Debug function to force reload pacts
+  // Force reload function with session validation
   const handleRefreshData = async () => {
     console.log('MainPage: Force refreshing pacts data');
     setIsLoading(true);
+    
     try {
+      // Validate session first
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session?.session?.user) {
+        console.log('MainPage: Invalid session during refresh, redirecting to login');
+        navigate('/login');
+        return;
+      }
+
+      // Clear any cached data and reload
+      console.log('MainPage: Session valid, reloading data');
+      await loadUserProfile();
       await loadPacts();
+      await syncPactsWithCurrentDate();
+      
       console.log('MainPage: Force refresh completed');
+      toast({
+        title: 'Данные обновлены',
+        description: 'Все данные успешно перезагружены',
+      });
     } catch (error) {
       console.error('MainPage: Force refresh failed:', error);
+      toast({
+        title: 'Ошибка обновления',
+        description: 'Не удалось обновить данные',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Check if user is logged in and load user profile if needed
+  // Simplified initialization - only load data when user is present
   useEffect(() => {
     const initializeUserData = async () => {
-      logger.debug('Initializing user data');
+      if (!user) {
+        logger.debug('No user found, redirecting to login');
+        navigate('/login');
+        return;
+      }
+
       setIsLoading(true);
+      logger.debug('Initializing user data for user:', user.id);
 
       try {
-        // Check real Supabase session first
+        // Validate current session before loading data
         const { data: session, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError || !session?.session?.user) {
-          console.log('MainPage: No valid Supabase session, redirecting to login');
+          console.log('MainPage: Invalid session, redirecting to login');
           navigate('/login');
           return;
         }
 
-        // If user is logged in but we don't have profile data yet, load it
-        if (user && !userProfile) {
+        const currentUserId = session.session.user.id;
+        console.log('MainPage: Session validated for user:', currentUserId);
+
+        // Load user profile if not loaded
+        if (!userProfile) {
           logger.debug('Loading user profile');
           await handleAsyncError(() => loadUserProfile(), {
             component: 'MainPage',
@@ -81,38 +114,37 @@ const MainPage: React.FC = () => {
           });
         }
 
-        // First load all pacts, then sync with current date
-        logger.debug('Loading pacts');
-        console.log('MainPage: Loading pacts first');
+        // Load pacts with session validation
+        logger.debug('Loading pacts with validated session');
         await handleAsyncError(() => loadPacts(), {
           component: 'MainPage',
           action: 'loadPacts',
         });
 
-        // Then sync pacts with current date
+        // Sync pacts with current date
         logger.debug('Syncing pacts with current date');
-        console.log('MainPage: Syncing pacts with current date');
         await handleAsyncError(() => syncPactsWithCurrentDate(), {
           component: 'MainPage', 
           action: 'syncPactsWithCurrentDate',
         });
       } catch (error) {
         logger.error('Failed to initialize user data', error);
+        // On critical errors, redirect to login
+        navigate('/login');
       } finally {
         setIsLoading(false);
         logger.debug('User data initialization complete');
       }
     };
 
-    initializeUserData();
-  }, [
-    user,
-    userProfile,
-    loadUserProfile,
-    syncPactsWithCurrentDate,
-    handleAsyncError,
-    navigate,
-  ]);
+    // Only initialize if we have a user
+    if (user) {
+      initializeUserData();
+    } else {
+      setIsLoading(false);
+      navigate('/login');
+    }
+  }, [user]); // Only depend on user - profile loading happens inside
 
   // Get all pacts (including failed ones for the slider)
   const allPacts = pacts || [];

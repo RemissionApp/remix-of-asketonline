@@ -63,7 +63,6 @@ const AppInitializer = () => {
     const {
       checkOnboardingStatus,
       user,
-      loadUserProfile,
       setUser,
       initializeSettings,
     } = useAppStore();
@@ -81,25 +80,21 @@ const AppInitializer = () => {
       // Initialize performance monitoring
       performanceMonitor.initWebVitals();
 
-      // Set up auth state change listener
+      // Set up auth state change listener FIRST
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
-        logger.info('Auth state changed', { event, userId: session?.user?.id });
+        logger.info('Auth state changed', { event, userId: session?.user?.id, hasSession: !!session });
 
-        if (event === 'SIGNED_IN' && session) {
+        // Only update state synchronously, defer all async operations
+        if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user);
-
-          // Delayed user data loading to prevent deadlock
-          setTimeout(() => {
-            loadUserProfile();
-          }, 0);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
       });
 
-      // Check current session on initialization
+      // THEN check current session
       const checkSession = async () => {
         try {
           const { data, error } = await supabase.auth.getSession();
@@ -109,8 +104,10 @@ const AppInitializer = () => {
           }
 
           if (data.session?.user) {
+            logger.info('Found existing session', { userId: data.session.user.id });
             setUser(data.session.user);
-            await loadUserProfile();
+          } else {
+            logger.info('No existing session found');
           }
         } catch (error) {
           logger.error('Failed to check session', error);
@@ -123,7 +120,7 @@ const AppInitializer = () => {
       return () => {
         subscription.unsubscribe();
       };
-    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings]);
+    }, [checkOnboardingStatus, setUser, initializeSettings]);
 
     return null;
   } catch (error) {
