@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { usePracticeSteps } from '@/hooks/usePracticeSteps';
+import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 import { PracticeStepContent } from './affirmations/PracticeStepContent';
 import { PracticeCompletionState } from './affirmations/PracticeCompletionState';
 import { PracticeModalFooter } from './affirmations/PracticeModalFooter';
@@ -35,6 +36,7 @@ export const AffirmationPracticeModal: React.FC<
   const { t } = useTranslations();
   const { steps } = usePracticeSteps(language);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useOptimizedTextToSpeech();
 
   const currentStep = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
@@ -54,11 +56,12 @@ export const AffirmationPracticeModal: React.FC<
   };
 
   const handleComplete = () => {
-    // Stop background audio when practice is completed
+    // Stop background audio and TTS when practice is completed
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    stopSpeech();
     onClose();
     setStep(0);
     setCompleted(false);
@@ -82,8 +85,9 @@ export const AffirmationPracticeModal: React.FC<
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
+      stopSpeech();
     }
-  }, [isOpen, completed]);
+  }, [isOpen, completed, stopSpeech]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -127,6 +131,11 @@ export const AffirmationPracticeModal: React.FC<
                 visualGuide={currentStep.visualGuide}
                 guideImage={affirmation.guideImage}
                 language={language}
+                affirmationText={affirmation.text}
+                isStep3={step === 2}
+                onPlayAffirmation={() => generateAndPlaySpeech(affirmation.text, { voice: 'Custom', model: 'eleven_multilingual_v2' })}
+                isGeneratingVoice={isGenerating}
+                isPlayingVoice={isPlaying}
               />
             </div>
           )}
