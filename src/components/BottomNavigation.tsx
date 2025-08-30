@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useGlobalAudioManager } from '@/contexts/AudioContext';
 import {
   Home,
   Sparkles,
@@ -20,7 +19,6 @@ export const BottomNavigation = memo(() => {
   const { userProfile, language, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const { hasActiveSubscription } = useRevenueCat();
-  const { stopAllAudio } = useGlobalAudioManager();
 
   // Check if a route is currently active
   const isActive = (path: string) => {
@@ -39,18 +37,9 @@ export const BottomNavigation = memo(() => {
       | 'profile',
     path: string
   ) => {
-    // Don't stop audio when navigating to/from create-pact page
-    const currentPath = location.pathname;
-    const isCreatePactNavigation = currentPath === '/create-pact' || path === '/create-pact';
-    
-    if (!isCreatePactNavigation) {
-      stopAllAudio();
-    }
-    
     // Update the active screen in the store
     setActiveScreen(screen);
-    
-    // Navigate immediately for better UX
+    // Navigate to the corresponding route
     navigate(path);
   };
 

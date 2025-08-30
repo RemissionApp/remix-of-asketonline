@@ -30,8 +30,8 @@ const CreatePactPage: React.FC = () => {
       // Останавливаем предыдущий звук
       stopSpeech();
       
-      // Увеличенная задержка для предотвращения дублирования
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Небольшая задержка для плавности
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       try {
         const stepPhrase = getStepPhrase(step);
@@ -46,9 +46,7 @@ const CreatePactPage: React.FC = () => {
       }
     };
 
-    // Debounce to prevent rapid step changes
-    const timeoutId = setTimeout(playStepAudio, 100);
-    return () => clearTimeout(timeoutId);
+    playStepAudio();
   }, [step, generateAndPlaySpeech, stopSpeech]);
 
   const getWelcomePhrase = () => {

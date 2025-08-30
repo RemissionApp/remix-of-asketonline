@@ -87,121 +87,63 @@ export const createLoadPactsSlice = (
 
       console.log('LoadPacts: Found pacts:', pacts.length);
 
-      // Process each pact individually with error handling
-      const pactResults = await Promise.allSettled(
-        pacts.map(async (pact, index) => {
-          try {
-            console.log(`LoadPacts: Processing pact ${index + 1}/${pacts.length}`, {
-              pactId: pact.id,
-              title: pact.title,
-              status: pact.status,
-              duration: pact.duration,
-            });
+      // For each pact, get its days
+      const pactsWithDays = await Promise.all(
+        pacts.map(async pact => {
+          const { data: days, error: daysError } = await supabase
+            .from('pact_days')
+            .select('*')
+            .eq('pact_id', pact.id)
+            .order('date', { ascending: true });
 
-            const { data: days, error: daysError } = await supabase
-              .from('pact_days')
-              .select('*')
-              .eq('pact_id', pact.id)
-              .order('date', { ascending: true });
+          if (daysError) throw daysError;
 
-            if (daysError) {
-              console.warn(`LoadPacts: Error loading days for pact ${pact.id}:`, daysError);
-              // Continue with empty days array instead of failing
-            }
+          // Calculate completed days
+          const completedDays = days?.filter(d => d.completed).length || 0;
+          const lastCompletedDay = days?.filter(d => d.completed).sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          )[0];
 
-            // Calculate completed days with fallback
-            const safeDays = days || [];
-            const completedDays = safeDays.filter(d => d?.completed).length;
-            const lastCompletedDay = safeDays
-              .filter(d => d?.completed)
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+          console.log('LoadPacts: Processing pact', {
+            pactId: pact.id,
+            title: pact.title,
+            totalDays: days?.length || 0,
+            completedDays,
+            lastCompletedDate: lastCompletedDay?.date || '',
+          });
 
-            console.log('LoadPacts: Successfully processed pact', {
-              pactId: pact.id,
-              title: pact.title,
-              totalDays: safeDays.length,
-              completedDays,
-              lastCompletedDate: lastCompletedDay?.date || 'None',
-            });
-
-            // Transform to our app's format with safe defaults
-            return {
-              id: pact.id,
-              title: pact.title || 'Untitled Pact',
-              description: '',
-              created_at: pact.created_at,
-              start_date: pact.created_at,
-              end_date: new Date(
-                new Date(pact.created_at).getTime() +
-                  (pact.duration || 21) * 24 * 60 * 60 * 1000
-              ).toISOString(),
-              days_total: pact.duration || 21,
-              days_completed: completedDays,
-              last_completed_date: lastCompletedDay?.date || '',
-              rejection: pact.title || 'Untitled Pact',
-              status: (pact.status || 'active') as
-                | 'active'
-                | 'completed'
-                | 'failed'
-                | 'planned',
-              type: '',
-              duration: pact.duration || 21,
-              reward: pact.reward || '',
-              days: safeDays.map(d => ({
-                id: d?.id || '',
-                date: d?.date || '',
-                completed: Boolean(d?.completed),
-              })),
-            };
-          } catch (error) {
-            console.error(`LoadPacts: Failed to process pact ${pact.id}:`, error);
-            
-            // Return minimal pact data as fallback
-            return {
-              id: pact.id,
-              title: pact.title || 'Untitled Pact',
-              description: '',
-              created_at: pact.created_at,
-              start_date: pact.created_at,
-              end_date: new Date(
-                new Date(pact.created_at).getTime() +
-                  (pact.duration || 21) * 24 * 60 * 60 * 1000
-              ).toISOString(),
-              days_total: pact.duration || 21,
-              days_completed: 0,
-              last_completed_date: '',
-              rejection: pact.title || 'Untitled Pact',
-              status: (pact.status || 'active') as
-                | 'active'
-                | 'completed'
-                | 'failed'
-                | 'planned',
-              type: '',
-              duration: pact.duration || 21,
-              reward: pact.reward || '',
-              days: [],
-            };
-          }
+          // Transform to our app's format
+          return {
+            id: pact.id,
+            title: pact.title,
+            description: '',
+            created_at: pact.created_at,
+            start_date: pact.created_at,
+            end_date: new Date(
+              new Date(pact.created_at).getTime() +
+                pact.duration * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            days_total: pact.duration,
+            days_completed: completedDays,
+            last_completed_date: lastCompletedDay?.date || '',
+            rejection: pact.title,
+            status: pact.status as
+              | 'active'
+              | 'completed'
+              | 'failed'
+              | 'planned',
+            type: '',
+            duration: pact.duration,
+            reward: pact.reward || '',
+            days:
+              days?.map(d => ({
+                id: d.id,
+                date: d.date,
+                completed: d.completed,
+              })) || [],
+          };
         })
       );
-
-      // Extract successful results and log any failures
-      const pactsWithDays = pactResults
-        .map((result, index) => {
-          if (result.status === 'fulfilled') {
-            return result.value;
-          } else {
-            console.error(`LoadPacts: Failed to process pact at index ${index}:`, result.reason);
-            return null;
-          }
-        })
-        .filter(Boolean);
-
-      console.log('LoadPacts: Processing complete', {
-        totalPacts: pacts.length,
-        successfullyProcessed: pactsWithDays.length,
-        failed: pacts.length - pactsWithDays.length,
-      });
 
       // Update local state
       console.log('LoadPacts: Setting pacts in store:', pactsWithDays.length);

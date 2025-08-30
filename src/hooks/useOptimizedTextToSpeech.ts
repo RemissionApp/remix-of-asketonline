@@ -1,9 +1,7 @@
-import { useState, useEffect, useId, useRef } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { logger } from '@/utils/logger';
-import { useSingletonAudio } from '@/contexts/SingletonAudioContext';
-import { safeAudioCleanup } from '@/utils/audioCleanup';
 
 export interface TextToSpeechOptions {
   voice?:
@@ -18,31 +16,23 @@ export interface TextToSpeechOptions {
 }
 
 export const useOptimizedTextToSpeech = () => {
-  const instanceId = useId();
   const { soundEnabled, soundVolume } = useAppStore();
-  const { setActiveAudio, stopCurrentAudio, getCurrentInstanceId, isAudioActive } = useSingletonAudio();
-  
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
+    null
+  );
   const [audioQueue, setAudioQueue] = useState<HTMLAudioElement[]>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
-  const currentSessionId = useRef<string | null>(null);
 
   const splitTextIntoParagraphs = (text: string): string[] => {
-    // Don't split short texts
-    if (text.length < 200) {
-      return [text];
-    }
-    
     const cleanedText = text.replace(/#{1,6}\s*/g, '');
     const paragraphs = cleanedText
       .split(/\n\s*\n|\.\s{2,}/)
       .map(p => p.trim())
-      .filter(p => p.length > 30);
+      .filter(p => p.length > 20);
 
-    // Limit to maximum 2 segments to prevent too many API calls
-    return paragraphs.slice(0, 2);
+    return paragraphs;
   };
 
   const generateAudioForParagraph = async (
@@ -102,7 +92,7 @@ export const useOptimizedTextToSpeech = () => {
     }
   };
 
-  const playAudioQueue = async (audioQueue: HTMLAudioElement[], sessionId: string) => {
+  const playAudioQueue = async (audioQueue: HTMLAudioElement[]) => {
     if (!soundEnabled || audioQueue.length === 0) {
       setIsPlaying(false);
       setIsProcessingQueue(false);
@@ -112,12 +102,6 @@ export const useOptimizedTextToSpeech = () => {
     setIsProcessingQueue(true);
 
     for (let i = 0; i < audioQueue.length; i++) {
-      // Check if session is still current
-      if (currentSessionId.current !== sessionId) {
-        logger.info('Session changed, stopping audio queue');
-        break;
-      }
-
       const audio = audioQueue[i];
 
       if (!audio) {
@@ -126,8 +110,6 @@ export const useOptimizedTextToSpeech = () => {
       }
 
       try {
-        // Stop any other singleton audio and set this as active
-        setActiveAudio(audio, instanceId);
         setCurrentAudio(audio);
         setIsPlaying(true);
 
@@ -159,7 +141,6 @@ export const useOptimizedTextToSpeech = () => {
           audio.onended = () => {
             clearTimeout(timeout);
             URL.revokeObjectURL(audio.src);
-            setActiveAudio(null, instanceId);
             resolve();
           };
           audio.onerror = e => {
@@ -181,7 +162,6 @@ export const useOptimizedTextToSpeech = () => {
     }
 
     setCurrentAudio(null);
-    setActiveAudio(null, instanceId);
     setIsPlaying(false);
     setIsProcessingQueue(false);
     setAudioQueue([]);
@@ -201,23 +181,12 @@ export const useOptimizedTextToSpeech = () => {
       return;
     }
 
-    // Check if we need to interrupt another session
-    if (isGenerating) {
-      logger.info('Already generating, ignoring new request');
-      return;
-    }
-
     try {
       setIsGenerating(true);
-      
-      // Create new session ID
-      const sessionId = `${instanceId}-${Date.now()}`;
-      currentSessionId.current = sessionId;
-      
-      logger.debug('Starting speech generation for text:', text.substring(0, 50) + '...');
-
-      // Stop any existing singleton audio
-      stopCurrentAudio();
+      logger.debug(
+        'Starting speech generation for text:',
+        text.substring(0, 50) + '...'
+      );
 
       if (currentAudio || isProcessingQueue) {
         stopSpeech();
@@ -227,36 +196,24 @@ export const useOptimizedTextToSpeech = () => {
       const paragraphs = splitTextIntoParagraphs(text);
       const audioSegments: HTMLAudioElement[] = [];
 
-      // Generate audio sequentially to prevent API overload
-      for (const paragraph of paragraphs) {
-        // Check if session is still current
-        if (currentSessionId.current !== sessionId) {
-          logger.info('Session interrupted, stopping generation');
-          return;
-        }
+      const audioPromises = paragraphs.map(paragraph =>
+        generateAudioForParagraph(paragraph, options)
+      );
 
-        const audio = await generateAudioForParagraph(paragraph, options);
+      const results = await Promise.all(audioPromises);
+
+      for (const audio of results) {
         if (audio) {
           audioSegments.push(audio);
         }
-        
-        // Small delay between requests to prevent rate limiting
-        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       if (audioSegments.length === 0) {
         throw new Error('Failed to generate any audio segments');
       }
 
-      // Check if session is still current before playing
-      if (currentSessionId.current !== sessionId) {
-        logger.info('Session interrupted, not playing audio');
-        audioSegments.forEach(audio => safeAudioCleanup(audio));
-        return;
-      }
-
       setAudioQueue(audioSegments);
-      await playAudioQueue(audioSegments, sessionId);
+      await playAudioQueue(audioSegments);
     } catch (error) {
       logger.error('Error generating or playing speech:', error);
       setIsPlaying(false);
@@ -269,9 +226,6 @@ export const useOptimizedTextToSpeech = () => {
   };
 
   const stopSpeech = () => {
-    // Invalidate current session
-    currentSessionId.current = null;
-    
     // Debounce multiple rapid calls
     if (
       !currentAudio &&
@@ -284,33 +238,35 @@ export const useOptimizedTextToSpeech = () => {
 
     logger.info('Stopping speech playback');
 
-    // Stop singleton audio
-    stopCurrentAudio();
-
     // Stop current audio efficiently
     if (currentAudio) {
-      safeAudioCleanup(currentAudio);
+      try {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        URL.revokeObjectURL(currentAudio.src);
+      } catch (e) {
+        logger.warn('Error stopping current audio:', e);
+      }
       setCurrentAudio(null);
     }
 
     // Clear queue efficiently
     if (audioQueue.length > 0) {
-      audioQueue.forEach(audio => safeAudioCleanup(audio));
+      audioQueue.forEach(audio => {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          URL.revokeObjectURL(audio.src);
+        } catch (e) {
+          logger.warn('Error cleaning up audio from queue:', e);
+        }
+      });
       setAudioQueue([]);
     }
 
     setIsPlaying(false);
     setIsProcessingQueue(false);
   };
-
-  // No need for global audio manager registration with singleton system
-
-  // Auto cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopSpeech();
-    };
-  }, []);
 
   return {
     generateAndPlaySpeech,
