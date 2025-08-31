@@ -286,7 +286,7 @@ export const PactOath: React.FC<PactOathProps> = ({
       {/* Cosmic background */}
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/10 to-cosmic-dark opacity-80" />
 
-      <div className="relative z-10 w-full max-w-lg p-4">
+      <div className="relative z-10 w-full max-w-lg p-3 sm:p-4">
         <button
           className="absolute top-4 left-4 p-2 text-cosmic-accent"
           onClick={onBack}
@@ -299,16 +299,16 @@ export const PactOath: React.FC<PactOathProps> = ({
             isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h1 className="text-3xl font-serif text-white mb-3 cosmic-gradient-text">
+          <h1 className="text-2xl sm:text-3xl font-serif text-white mb-3 cosmic-gradient-text">
             {t.pactOath?.title || 'Contract with the Universe'}
           </h1>
 
-          <p className="text-cosmic-secondary mb-12">
+          <p className="text-sm sm:text-base text-cosmic-secondary mb-8 sm:mb-12">
             {t.pactOath?.subtitle || 'Before you begin, take an oath'}
           </p>
 
-          <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-6">
-            <p className="text-white text-lg mb-6 whitespace-pre-line">
+          <div className="cosmic-card backdrop-blur-md bg-cosmic-dark/40 mb-4 sm:mb-6">
+            <p className="text-white text-sm sm:text-lg mb-4 sm:mb-6 whitespace-pre-line leading-relaxed">
               {getOathText()}
             </p>
           </div>
@@ -318,24 +318,24 @@ export const PactOath: React.FC<PactOathProps> = ({
           </CosmicButton>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent className="bg-cosmic-dark border-cosmic-accent text-white max-w-md">
+            <DialogContent className="bg-cosmic-dark border-cosmic-accent text-white max-w-md mx-2 sm:mx-auto">
               <DialogHeader>
-                <DialogTitle className="cosmic-gradient-text text-xl">
+                <DialogTitle className="cosmic-gradient-text text-lg sm:text-xl">
                   {t.pactOath?.title || 'Contract with the Universe'}
                 </DialogTitle>
-                <DialogDescription className="text-cosmic-secondary">
+                <DialogDescription className="text-cosmic-secondary text-sm sm:text-base">
                   {getDialogInstructions()}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="my-4 p-4 bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-md max-h-60 overflow-y-auto">
-                <p className="whitespace-pre-line">{getOathText()}</p>
+              <div className="my-4 p-3 sm:p-4 bg-cosmic-dark/50 border border-cosmic-accent/30 rounded-md max-h-48 sm:max-h-60 overflow-y-auto">
+                <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed">{getOathText()}</p>
               </div>
 
               <div className="flex flex-col gap-4 mt-4 w-full">
                 <Button
                   onClick={!readConfirmed ? handleConfirmReading : undefined}
-                  className={`w-full py-3 ${readConfirmed ? 'bg-green-600 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                  className={`w-full py-2 sm:py-3 text-sm sm:text-base ${readConfirmed ? 'bg-green-600 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
                   disabled={readConfirmed}
                 >
                   {getConfirmButtonText()}
@@ -344,7 +344,7 @@ export const PactOath: React.FC<PactOathProps> = ({
                 {readConfirmed && (
                   <Button
                     onClick={handleSignContract}
-                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full py-2 sm:py-3 text-sm sm:text-base bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     {getSignButtonText()}
                   </Button>

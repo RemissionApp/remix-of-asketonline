@@ -204,7 +204,7 @@ const CreatePactPage: React.FC = () => {
       case 0:
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
-            <h2 className="text-3xl font-serif text-white mb-8 text-center leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-serif text-white mb-6 sm:mb-8 text-center leading-tight">
               {t.createPact?.stepOneTitle || 'Choose ascesis type'}
             </h2>
 
@@ -238,11 +238,11 @@ const CreatePactPage: React.FC = () => {
                 placeholder={
                   t.createPact?.placeholders?.title || 'Enter a title...'
                 }
-                className="cosmic-input w-full mb-6 text-lg"
+                className="cosmic-input w-full mb-6 text-base sm:text-lg"
               />
             )}
 
-            <div className="text-sm text-cosmic-secondary mb-8 text-center leading-relaxed">
+            <div className="text-xs sm:text-sm text-cosmic-secondary mb-6 sm:mb-8 text-center leading-relaxed">
               <p className="whitespace-pre-line text-justify font-sans">
                 {t.createPact?.ascesisWarning ||
                   'Ascesis is not just abstinence, but a tool for spiritual growth and self-improvement.'}
@@ -253,7 +253,7 @@ const CreatePactPage: React.FC = () => {
       case 1:
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
-            <h2 className="text-3xl font-serif text-white mb-8 text-center leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-serif text-white mb-6 sm:mb-8 text-center leading-tight">
               {t.createPact?.stepTwoTitle || 'Choose duration'}
             </h2>
 
@@ -261,7 +261,7 @@ const CreatePactPage: React.FC = () => {
               {[30, 60, 90].map(days => (
                 <button
                   key={days}
-                  className={`flex-1 py-4 px-2 rounded-lg border text-lg font-medium ${
+                  className={`flex-1 py-3 sm:py-4 px-2 rounded-lg border text-base sm:text-lg font-medium ${
                     duration === days
                       ? 'border-cosmic-accent bg-cosmic-accent/20 text-white'
                       : 'border-cosmic-accent/30 text-cosmic-secondary'
@@ -271,14 +271,14 @@ const CreatePactPage: React.FC = () => {
                     setDurationText(days.toString());
                   }}
                 >
-                  <span className="block text-xl font-bold">{days}</span>
-                  <span className="block text-sm">{getDaysText(days)}</span>
+                  <span className="block text-lg sm:text-xl font-bold">{days}</span>
+                  <span className="block text-xs sm:text-sm">{getDaysText(days)}</span>
                 </button>
               ))}
             </div>
 
             <div className="mb-8">
-              <label className="block text-cosmic-secondary text-base mb-3 text-center font-medium">
+              <label className="block text-cosmic-secondary text-sm sm:text-base mb-3 text-center font-medium">
                 {t.createPact?.customDays || 'Set custom days'}
               </label>
               <input
@@ -286,7 +286,7 @@ const CreatePactPage: React.FC = () => {
                 value={durationText}
                 onChange={handleDurationTextChange}
                 onBlur={handleDurationBlur}
-                className="cosmic-input w-full text-lg text-center"
+                className="cosmic-input w-full text-base sm:text-lg text-center"
                 placeholder={
                   language === 'ru'
                     ? 'Введите количество дней (мин. 30)'
@@ -295,7 +295,7 @@ const CreatePactPage: React.FC = () => {
                       : 'Enter number of days (min. 30)'
                 }
               />
-              <p className="text-sm text-cosmic-secondary mt-2 text-center font-sans">
+              <p className="text-xs sm:text-sm text-cosmic-secondary mt-2 text-center font-sans">
                 {t.minimumPeriod || 'Minimum ascesis period is 30 days'}
               </p>
             </div>
@@ -303,8 +303,8 @@ const CreatePactPage: React.FC = () => {
             <div className="w-32 h-32 mx-auto">
               <div className="energy-circle w-32 h-32 animate-circle-expand">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-white">{duration}</p>
-                  <p className="text-sm text-cosmic-accent font-medium">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{duration}</p>
+                  <p className="text-xs sm:text-sm text-cosmic-accent font-medium">
                     {getDaysText(duration)}
                   </p>
                 </div>
@@ -315,11 +315,11 @@ const CreatePactPage: React.FC = () => {
       case 2:
         return (
           <div className="animate-fade-in mx-auto w-full max-w-md text-center">
-            <h2 className="text-3xl font-serif text-white mb-6 text-center leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-serif text-white mb-4 sm:mb-6 text-center leading-tight">
               {t.createPact?.stepThreeTitle || 'Create contract'}
             </h2>
 
-            <p className="text-lg text-cosmic-secondary mb-8 text-center font-medium">
+            <p className="text-base sm:text-lg text-cosmic-secondary mb-6 sm:mb-8 text-center font-medium">
               {t.createPact?.notAsking ||
                 "I'm not asking for anything in return"}
             </p>
@@ -331,20 +331,20 @@ const CreatePactPage: React.FC = () => {
                 t.createPact?.placeholders?.reward ||
                 'What you will get in return...'
               }
-              className="cosmic-input w-full h-40 resize-none mb-4 text-base leading-relaxed"
+              className="cosmic-input w-full h-32 sm:h-40 resize-none mb-4 text-sm sm:text-base leading-relaxed"
             />
 
-            <div className="text-sm text-cosmic-secondary mb-8 text-center leading-relaxed">
+            <div className="text-xs sm:text-sm text-cosmic-secondary mb-6 sm:mb-8 text-center leading-relaxed">
               {language === 'ru' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Цель:</span>
+                  <span className="font-semibold text-sm sm:text-base">Цель:</span>
                   {'\n'}
                   Должна быть сформулирована чётко и как можно подробнее.
                   Желание может быть абсолютно любым, но Вселенная любит шутить.
                   Поэтому, чем точнее вы мысленно опишете или проговорите
                   конечный результат, тем больше вероятность получить желаемое.
                   {'\n\n'}
-                  <span className="font-semibold text-base">
+                  <span className="font-semibold text-sm sm:text-base">
                     Главное правило:
                   </span>
                   {'\n'}
@@ -353,14 +353,14 @@ const CreatePactPage: React.FC = () => {
                 </p>
               ) : language === 'es' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Objetivo:</span>
+                  <span className="font-semibold text-sm sm:text-base">Objetivo:</span>
                   {'\n'}
                   Debe formularse claramente y con el mayor detalle posible. El
                   deseo puede ser absolutamente cualquiera, pero al Universo le
                   gusta bromear. Por lo tanto, cuanto más precisamente describa
                   o articule mentalmente el resultado final, mayor será la
                   probabilidad de obtener lo que desea.{'\n\n'}
-                  <span className="font-semibold text-base">
+                  <span className="font-semibold text-sm sm:text-base">
                     La regla principal:
                   </span>
                   {'\n'}
@@ -369,14 +369,14 @@ const CreatePactPage: React.FC = () => {
                 </p>
               ) : (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-base">Goal:</span>
+                  <span className="font-semibold text-sm sm:text-base">Goal:</span>
                   {'\n'}
                   It must be formulated clearly and in as much detail as
                   possible. The desire can be absolutely anything, but the
                   Universe loves to joke. Therefore, the more precisely you
                   mentally describe or articulate the end result, the more
                   likely you are to get what you want.{'\n\n'}
-                  <span className="font-semibold text-base">
+                  <span className="font-semibold text-sm sm:text-base">
                     The main rule:
                   </span>
                   {'\n'}
@@ -415,7 +415,7 @@ const CreatePactPage: React.FC = () => {
           />
 
           {/* Main content */}
-          <div className="relative z-10 flex-1 flex flex-col px-4 pt-20 py-4 mx-auto w-full items-center justify-center">
+          <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-4 pt-16 sm:pt-20 py-4 mx-auto w-full items-center justify-center">
             {renderStep()}
           </div>
 

@@ -132,7 +132,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full justify-between text-left font-normal bg-cosmic-dark/50 border-cosmic-accent/30',
+            'w-full justify-between text-left font-normal bg-cosmic-dark/50 border-cosmic-accent/30 text-sm sm:text-base',
             className
           )}
           onClick={() => setOpen(!open)}
@@ -140,7 +140,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
           {value.length > 0 ? (
             <div className="flex flex-wrap gap-1 w-full">
               {value.length > 2 ? (
-                <Badge className="rounded-md bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30">
+                <Badge className="rounded-md bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 text-xs sm:text-sm">
                   {getSelectedCountText(value.length)}
                 </Badge>
               ) : (
@@ -149,7 +149,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
                   return (
                     <Badge
                       key={val}
-                      className="rounded-md bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30"
+                      className="rounded-md bg-cosmic-accent/20 text-cosmic-accent hover:bg-cosmic-accent/30 text-xs sm:text-sm"
                     >
                       {option?.label || val}
                       <button
@@ -177,9 +177,9 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
           <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-cosmic-dark/90 border-cosmic-accent/30">
+      <PopoverContent className="w-full p-0 bg-cosmic-dark/90 border-cosmic-accent/30 text-sm sm:text-base">
         <Command className="bg-transparent">
-          <CommandInput placeholder={getPlaceholder()} className="text-white" />
+          <CommandInput placeholder={getPlaceholder()} className="text-white text-sm sm:text-base" />
           <CommandList>
             <CommandEmpty>{getNoMatchesText()}</CommandEmpty>
             <CommandGroup className="max-h-60 overflow-auto">
@@ -187,7 +187,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
                 <CommandItem
                   key={option.value}
                   onSelect={() => toggleOption(option.value)}
-                  className="text-white"
+                  className="text-white text-sm sm:text-base"
                 >
                   <Check
                     className={cn(
@@ -207,7 +207,7 @@ const MultiSelectWithCustomInput: React.FC<MultiSelectWithCustomInputProps> = ({
               onChange={e => setCustomValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={getInputPlaceholder()}
-              className="flex-1 bg-cosmic-dark/50 border-cosmic-accent/30 text-white"
+              className="flex-1 bg-cosmic-dark/50 border-cosmic-accent/30 text-white text-sm sm:text-base"
             />
             <Button
               type="button"
