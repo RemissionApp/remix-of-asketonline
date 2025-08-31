@@ -12,6 +12,7 @@ export interface OptimizedUISlice {
   setOnboardingComplete: (completed: boolean) => void;
   setLanguage: (language: AppLanguage) => void;
   setDailyQuote: (quote: string) => void;
+  checkOnboardingStatus: () => boolean;
 }
 
 export const createOptimizedUISlice: StateCreator<
@@ -39,5 +40,10 @@ export const createOptimizedUISlice: StateCreator<
   setActiveScreen: screen => set({ activeScreen: screen }),
   setDailyQuote: quote => set({ dailyQuote: quote }),
 
-  // Removed duplicate checkOnboardingStatus - using the one from authSlice
+  checkOnboardingStatus: () => {
+    const storedValue = localStorage.getItem('onboarded');
+    const isComplete = storedValue === 'true';
+    set({ onboardingComplete: isComplete });
+    return isComplete;
+  },
 });

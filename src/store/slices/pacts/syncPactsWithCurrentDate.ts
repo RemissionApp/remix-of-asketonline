@@ -16,35 +16,7 @@ export const createSyncPactsSlice = (
     const { user, loadPacts, addEnergyPoints, checkRankProgress, userProfile } =
       get();
 
-    console.log('SyncPacts: Starting sync', { 
-      hasUser: !!user,
-      userId: user?.id 
-    });
-
-    if (!user) {
-      console.log('SyncPacts: No user in store, skipping sync');
-      return;
-    }
-
-    // Validate Supabase session
-    const { data: session, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session?.session?.user) {
-      console.log('SyncPacts: Invalid session during sync', { 
-        sessionError: sessionError?.message,
-        hasSession: !!session?.session 
-      });
-      return;
-    }
-
-    const currentUserId = session.session.user.id;
-    
-    if (currentUserId !== user.id) {
-      console.error('SyncPacts: User ID mismatch during sync', {
-        storeUserId: user.id,
-        sessionUserId: currentUserId,
-      });
-      return;
-    }
+    if (!user) return;
 
     set({ loading: true });
 
@@ -56,25 +28,20 @@ export const createSyncPactsSlice = (
       const { data: pacts, error: pactsError } = await supabase
         .from('pacts')
         .select('id')
-        .eq('user_id', currentUserId)
+        .eq('user_id', user.id)
         .eq('status', 'active');
 
       if (pactsError) throw pactsError;
 
       if (!pacts || pacts.length === 0) {
-        console.log('SyncPacts: No active pacts found');
         set({ loading: false });
         return;
       }
-
-      console.log('SyncPacts: Found active pacts:', pacts.length);
 
       let totalNewCompletedDays = 0;
 
       // For each pact, check for days that should be automatically marked as completed
       for (const pact of pacts) {
-        console.log('SyncPacts: Processing pact', pact.id);
-        
         const { data: days, error: daysError } = await supabase
           .from('pact_days')
           .select('id, date')
@@ -124,7 +91,7 @@ export const createSyncPactsSlice = (
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('total_days, energy_points')
-          .eq('id', currentUserId)
+          .eq('id', user.id)
           .single();
 
         if (profileError) throw profileError;
@@ -139,7 +106,7 @@ export const createSyncPactsSlice = (
             total_days: newTotalDays,
             energy_points: newEnergyPoints,
           })
-          .eq('id', currentUserId);
+          .eq('id', user.id);
 
         if (updateProfileError) throw updateProfileError;
 
@@ -152,7 +119,7 @@ export const createSyncPactsSlice = (
           const { error: rankError } = await supabase
             .from('profiles')
             .update({ rank: newRank })
-            .eq('id', currentUserId);
+            .eq('id', user.id);
 
           if (rankError) throw rankError;
 
@@ -166,12 +133,8 @@ export const createSyncPactsSlice = (
         }
       }
 
-      // Only reload pacts if there were changes
-      if (totalNewCompletedDays > 0) {
-        console.log('SyncPacts: Reloading pacts to reflect changes');
-        await loadPacts();
-      }
-      console.log('SyncPacts: Sync completed successfully');
+      // Reload pacts to reflect changes
+      await loadPacts();
     } catch (error: any) {
       console.error('Error syncing pacts:', error);
     } finally {

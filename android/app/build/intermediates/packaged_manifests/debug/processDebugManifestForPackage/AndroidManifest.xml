@@ -5,7 +5,7 @@
     android:versionName="1.2" >
 
     <uses-sdk
-        android:minSdkVersion="24"
+        android:minSdkVersion="23"
         android:targetSdkVersion="35" />
 
     <!-- Permissions -->
@@ -65,14 +65,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity
-            android:name="com.revenuecat.purchases.ui.revenuecatui.activity.PaywallActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.revenuecat.purchases.ui.revenuecatui.customercenter.CustomerCenterActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.NoTitleBar" />
-
         <receiver
             android:name="com.amazon.device.iap.ResponseReceiver"
             android:exported="true"
@@ -124,13 +116,6 @@
                 android:name="androidx.profileinstaller.ProfileInstallerInitializer"
                 android:value="androidx.startup" />
         </provider>
-
-        <uses-library
-            android:name="androidx.window.extensions"
-            android:required="false" />
-        <uses-library
-            android:name="androidx.window.sidecar"
-            android:required="false" />
 
         <receiver
             android:name="androidx.profileinstaller.ProfileInstallReceiver"

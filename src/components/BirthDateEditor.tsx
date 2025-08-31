@@ -40,7 +40,10 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({
 
     try {
       // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = tempBirthDate.toISOString().split('T')[0];
+      const formattedBirthDate = formatDate(tempBirthDate, 'en', false)
+        .split('/')
+        .reverse()
+        .join('-');
 
       // Update directly in Supabase
       const { error } = await supabase

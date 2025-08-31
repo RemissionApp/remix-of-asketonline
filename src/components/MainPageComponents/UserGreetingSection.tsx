@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
-import { PaywallButton } from '../PaywallButton';
 
 const MemoizedUserGreetingSection: React.FC = () => {
   const { userProfile, language } = useAppStore();
@@ -17,17 +16,14 @@ const MemoizedUserGreetingSection: React.FC = () => {
   }, []);
 
   // Memoize formatting options
-  const formatOptions = useMemo(
-    (): Intl.DateTimeFormatOptions => ({
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    []
-  );
+  const formatOptions = useMemo((): Intl.DateTimeFormatOptions => ({
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }), []);
 
   // Memoize locale
   const locale = useMemo(() => {
@@ -41,23 +37,15 @@ const MemoizedUserGreetingSection: React.FC = () => {
 
   // Memoize greeting text based on language
   const greeting = useMemo(() => {
-    return language === 'ru'
-      ? 'Приветствую тебя!'
-      : language === 'es'
-        ? '¡Te saludo!'
-        : 'Greetings!';
+    return language === 'ru' ? 'Приветствую тебя!' : 
+           language === 'es' ? '¡Te saludo!' : 'Greetings!';
   }, [language]);
 
   // Memoize username
   const userName = useMemo(() => {
-    return (
-      userProfile?.name ||
-      (language === 'ru'
-        ? 'Искатель'
-        : language === 'es'
-          ? 'Buscador'
-          : 'Seeker')
-    );
+    return userProfile?.name ||
+           (language === 'ru' ? 'Искатель' : 
+            language === 'es' ? 'Buscador' : 'Seeker');
   }, [userProfile?.name, language]);
 
   // Memoize font class based on language
@@ -67,19 +55,10 @@ const MemoizedUserGreetingSection: React.FC = () => {
 
   return (
     <div className="mb-6 text-center p-4 relative z-10">
-      {/* 10. Paywall Button */}
-      <div className="w-full max-w-lg mx-auto mt-6">
-        <PaywallButton variant="premium" size="lg" className="w-full" />
-      </div>
-
-      <h2
-        className={`${fontClass} text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}
-      >
+      <h2 className={`${fontClass} text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
         {greeting}
       </h2>
-      <h3
-        className={`${fontClass} text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}
-      >
+      <h3 className={`${fontClass} text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
         {userName}
       </h3>
       <div className="flex items-center justify-center mt-3 text-slate-300 text-sm font-medium">

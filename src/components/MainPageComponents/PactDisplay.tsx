@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Pact } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
-import { UnifiedPactDisplay } from '@/components/PactDisplay';
+import { AdaptivePactDisplay } from '@/components/AdaptivePactDisplay';
 import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { Button } from '../ui/button';
 
 interface PactDisplayProps {
   activePacts: Pact[];
@@ -80,7 +81,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <UnifiedPactDisplay
+      <AdaptivePactDisplay
         pacts={allPacts}
         currentPactIndex={currentPactIndex}
         onPactChange={handlePactIndexChange}

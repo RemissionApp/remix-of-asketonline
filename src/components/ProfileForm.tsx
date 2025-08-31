@@ -25,13 +25,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { formatDateLong, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 import { useNavigate } from 'react-router-dom';
 
-interface ProfileFormData {
-  name: string;
-  birthDate: Date;
-}
-
 interface ProfileFormProps {
-  onSubmit: (values: ProfileFormData) => Promise<void>;
+  onSubmit: (values: z.infer<any>) => Promise<void>;
   isSaving: boolean;
   defaultValues?: {
     name: string;
@@ -80,7 +75,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 
   // Handle form submission without navigation (let parent handle it)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    await onSubmit(values as ProfileFormData);
+    await onSubmit(values);
   };
 
   return (

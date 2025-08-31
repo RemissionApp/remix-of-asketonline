@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { usePracticeSteps } from '@/hooks/usePracticeSteps';
-import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 import { PracticeStepContent } from './affirmations/PracticeStepContent';
 import { PracticeCompletionState } from './affirmations/PracticeCompletionState';
 import { PracticeModalFooter } from './affirmations/PracticeModalFooter';
@@ -35,8 +34,6 @@ export const AffirmationPracticeModal: React.FC<
   const [completed, setCompleted] = useState(false);
   const { t } = useTranslations();
   const { steps } = usePracticeSteps(language);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useOptimizedTextToSpeech();
 
   const currentStep = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
@@ -56,49 +53,13 @@ export const AffirmationPracticeModal: React.FC<
   };
 
   const handleComplete = () => {
-    // Stop background audio and TTS when practice is completed
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    stopSpeech();
     onClose();
     setStep(0);
     setCompleted(false);
   };
 
-  // Start background audio when modal opens
-  useEffect(() => {
-    if (isOpen && !completed) {
-      if (audioRef.current) {
-        audioRef.current.play().catch(error => {
-          console.log('Audio autoplay prevented:', error);
-        });
-      }
-    }
-  }, [isOpen, completed]);
-
-  // Stop audio when modal closes or practice completes
-  useEffect(() => {
-    if (!isOpen || completed) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      stopSpeech();
-    }
-  }, [isOpen, completed, stopSpeech]);
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      {/* Background OM audio */}
-      <audio
-        ref={audioRef}
-        src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/meditation/OM.mp3"
-        loop
-        preload="auto"
-      />
-      
       <DialogContent className="sm:max-w-lg bg-gradient-to-br from-cosmic-dark to-gray-900 border-cosmic-accent/40 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl text-cosmic-accent font-medium">
@@ -131,11 +92,6 @@ export const AffirmationPracticeModal: React.FC<
                 visualGuide={currentStep.visualGuide}
                 guideImage={affirmation.guideImage}
                 language={language}
-                affirmationText={affirmation.text}
-                isStep3={step === 2}
-                onPlayAffirmation={() => generateAndPlaySpeech(affirmation.text, { voice: 'Custom', model: 'eleven_multilingual_v2' })}
-                isGeneratingVoice={isGenerating}
-                isPlayingVoice={isPlaying}
               />
             </div>
           )}

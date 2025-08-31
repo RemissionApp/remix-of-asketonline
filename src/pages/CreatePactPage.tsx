@@ -8,14 +8,14 @@ import { useTranslations } from '@/hooks/useTranslations';
 import MultiSelectWithCustomInput from '@/components/MultiSelectWithCustomInput';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { PageHeader } from '@/components/PageHeader';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
-  const { generateAndPlaySpeech, stopSpeech } = useOptimizedTextToSpeech();
+  const { generateAndPlaySpeech } = useTextToSpeech();
 
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -24,30 +24,33 @@ const CreatePactPage: React.FC = () => {
   const [reward, setReward] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // Универсальное воспроизведение звука для каждого шага
+  // Воспроизведение приветственной фразы при загрузке страницы
   useEffect(() => {
-    const playStepAudio = async () => {
-      // Останавливаем предыдущий звук
-      stopSpeech();
-      
-      // Небольшая задержка для плавности
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      try {
-        const stepPhrase = getStepPhrase(step);
-        if (stepPhrase) {
-          generateAndPlaySpeech(stepPhrase, {
-            voice: 'Custom',
-            model: 'eleven_multilingual_v2',
-          });
-        }
-      } catch (error) {
-        console.error(`Error playing audio for step ${step}:`, error);
-      }
-    };
+    const welcomePhrase = getWelcomePhrase();
+    try {
+      generateAndPlaySpeech(welcomePhrase, {
+        voice: 'Custom',
+        model: 'eleven_multilingual_v2',
+      });
+    } catch (error) {
+      console.error('Error playing welcome phrase:', error);
+    }
+  }, []);
 
-    playStepAudio();
-  }, [step, generateAndPlaySpeech, stopSpeech]);
+  // Воспроизведение инструкций при переходе на шаг формулировки цели
+  useEffect(() => {
+    if (step === 2) {
+      const goalInstructionsPhrase = getGoalInstructionsPhrase();
+      try {
+        generateAndPlaySpeech(goalInstructionsPhrase, {
+          voice: 'Custom',
+          model: 'eleven_multilingual_v2',
+        });
+      } catch (error) {
+        console.error('Error playing goal instructions phrase:', error);
+      }
+    }
+  }, [step]);
 
   const getWelcomePhrase = () => {
     switch (language) {
@@ -60,32 +63,6 @@ const CreatePactPage: React.FC = () => {
     }
   };
 
-  const getStepPhrase = (currentStep: number) => {
-    switch (currentStep) {
-      case 0:
-        return getWelcomePhrase();
-      case 1:
-        return getDurationPhrase();
-      case 2:
-        return getGoalInstructionsPhrase();
-      case 3:
-        return getOathPhrase();
-      default:
-        return null;
-    }
-  };
-
-  const getDurationPhrase = () => {
-    switch (language) {
-      case 'ru':
-        return 'Выберите продолжительность вашей аскезы. Помните: минимальный период составляет 30 дней. Чем дольше период, тем сильнее изменения в вашей жизни. Выбирайте осознанно.';
-      case 'es':
-        return 'Elige la duración de tu ascesis. Recuerda: el período mínimo es de 30 días. Cuanto más largo sea el período, más fuertes serán los cambios en tu vida. Elige conscientemente.';
-      default:
-        return 'Choose the duration of your ascesis. Remember: the minimum period is 30 days. The longer the period, the stronger the changes in your life. Choose consciously.';
-    }
-  };
-
   const getGoalInstructionsPhrase = () => {
     switch (language) {
       case 'ru':
@@ -94,17 +71,6 @@ const CreatePactPage: React.FC = () => {
         return 'Ahora formula tu objetivo. Recuerda: el objetivo debe formularse claramente y con el mayor detalle posible. El deseo puede ser absolutamente cualquiera, pero al Universo le gusta bromear. Por lo tanto, cuanto más precisamente describas el resultado final, mayor será la probabilidad de obtener lo que deseas.';
       default:
         return 'Now formulate your goal. Remember: the goal must be formulated clearly and in as much detail as possible. The desire can be absolutely anything, but the Universe loves to joke. Therefore, the more precisely you describe the end result, the more likely you are to get what you want.';
-    }
-  };
-
-  const getOathPhrase = () => {
-    switch (language) {
-      case 'ru':
-        return 'Повторите клятву за мной. Я буду читать с паузами, а вы повторяйте каждую фразу. Это важный момент - ваш договор с Вселенной должен быть заключен осознанно и искренне.';
-      case 'es':
-        return 'Repite el juramento después de mí. Leeré con pausas, y tú repites cada frase. Este es un momento importante: tu contrato con el Universo debe hacerse consciente y sinceramente.';
-      default:
-        return 'Repeat the oath after me. I will read with pauses, and you repeat each phrase. This is an important moment - your contract with the Universe must be made consciously and sincerely.';
     }
   };
 
@@ -166,10 +132,7 @@ const CreatePactPage: React.FC = () => {
     }
   };
 
-  const handleNext = async () => {
-    // Останавливаем текущий звук
-    stopSpeech();
-    
+  const handleNext = () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
@@ -187,10 +150,7 @@ const CreatePactPage: React.FC = () => {
     }
   };
 
-  const handleBack = async () => {
-    // Останавливаем текущий звук
-    stopSpeech();
-    
+  const handleBack = () => {
     if (step > 0) {
       setStep(step - 1);
     } else {

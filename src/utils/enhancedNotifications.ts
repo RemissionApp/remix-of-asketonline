@@ -252,7 +252,7 @@ export const notificationTemplates = {
     badge: '/icon-72.png',
     tag: 'subscription',
     vibrate: [150, 100, 150],
-    data: { type: 'subscription_reminder', url: '/paywall' },
+    data: { type: 'subscription_reminder', url: '/comparison' },
     actions: [
       { action: 'renew', title: 'Продлить' },
       { action: 'remind_later', title: 'Напомнить позже' },

@@ -39,7 +39,6 @@ export interface AppState {
   userProfile: UserProfile;
   user: User | null;
   loading: boolean;
-  profileLoading: boolean;
   emailConfirmed: boolean;
   updateProStatus: (isPro: boolean) => void;
 
@@ -68,7 +67,6 @@ export interface AppState {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
-  updateUserProfileStore: (profile: UserProfile) => void;
   syncPactsWithCurrentDate: () => Promise<void>;
   checkOnboardingStatus: () => boolean;
 

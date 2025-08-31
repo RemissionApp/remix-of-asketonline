@@ -351,7 +351,7 @@ function getNotificationUrl(type: string, data?: Record<string, any>): string {
     case 'achievement':
       return `${baseUrl}/profile`;
     case 'subscription_reminder':
-      return `${baseUrl}/paywall`;
+      return `${baseUrl}/comparison`;
     case 'test':
       return `${baseUrl}/profile`;
     default:

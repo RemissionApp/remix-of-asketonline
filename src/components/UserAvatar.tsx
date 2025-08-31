@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { SpiritualRank } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
-import { useOptimizedProfileCache } from '@/hooks/useOptimizedProfileCache';
 import { ZodiacBadge } from './ZodiacBadge';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
@@ -24,30 +23,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const logger = createLogger('UserAvatar');
   const { userProfile, user } = useAppStore();
-  
-  // Use optimized profile cache to get latest data
-  const { profile: cachedProfile, refreshProfile } = useOptimizedProfileCache(user as any);
-  
-  // Use cached profile if available, fallback to store
-  const currentProfile = cachedProfile || userProfile;
-
-  // Listen for avatar updates and force refresh
-  React.useEffect(() => {
-    const handleAvatarUpdate = () => {
-      logger.debug('Avatar update event received, refreshing profile');
-      refreshProfile();
-      // Force component rerender by triggering state change
-      setForceRefresh(prev => prev + 1);
-    };
-
-    window.addEventListener('avatar-updated', handleAvatarUpdate);
-    return () => {
-      window.removeEventListener('avatar-updated', handleAvatarUpdate);
-    };
-  }, [refreshProfile]);
-
-  // Force refresh state to trigger rerenders
-  const [forceRefresh, setForceRefresh] = React.useState(0);
 
   // Define size classes
   const sizeClasses = {
@@ -65,26 +40,21 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     enlightened: 'border-cosmic-gold',
   };
 
-  // Get avatar URL from current profile (cached or store) with cache busting
+  // Get avatar URL from userProfile if available
   const getAvatarUrl = (): string => {
-    // Check if current profile has an avatar_url
-    if (currentProfile?.avatar_url) {
-      // Add cache busting timestamp to force image refresh
-      const cacheBustingUrl = `${currentProfile.avatar_url}?v=${Date.now()}`;
-      logger.debug('Using avatar from profile with cache busting', {
-        original_url: currentProfile.avatar_url,
-        cache_busted_url: cacheBustingUrl,
-        source: cachedProfile ? 'cache' : 'store'
+    // Check if userProfile has an avatar_url
+    if (userProfile?.avatar_url) {
+      logger.debug('Using avatar from userProfile', {
+        avatar_url: userProfile.avatar_url,
       });
-      return cacheBustingUrl;
+      return userProfile.avatar_url;
     }
 
     // If no custom avatar, use rank-based default avatar
     logger.debug('Using default avatar based on rank', {
-      rank: currentProfile?.rank,
-      source: cachedProfile ? 'cache' : 'store'
+      rank: userProfile?.rank,
     });
-    return getAvatarImagePath(currentProfile?.rank as SpiritualRank || 'seeker');
+    return getAvatarImagePath(userProfile.rank as SpiritualRank);
   };
 
   // Get path to avatar image based on rank
@@ -106,15 +76,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   const borderClass = showRankBorder
-    ? `border-2 ${rankBorderColor[currentProfile?.rank as keyof typeof rankBorderColor] || 'border-amber-400'}`
+    ? `border-2 ${rankBorderColor[userProfile.rank as keyof typeof rankBorderColor] || 'border-amber-400'}`
     : '';
 
-  const hasZodiac = !!currentProfile?.birthDate;
+  const hasZodiac = !!userProfile?.birthDate;
 
   return (
     <div className="relative">
       <Avatar
-        key={`avatar-${forceRefresh}-${currentProfile?.avatar_url || 'default'}`}
         className={cn(
           sizeClasses[size],
           borderClass,
@@ -122,14 +91,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           className
         )}
       >
-        <AvatarImage 
-          src={getAvatarUrl()} 
-          alt={`${currentProfile?.name || 'User'} avatar`}
-          onLoad={() => logger.debug('Avatar image loaded successfully')}
-          onError={() => logger.warn('Avatar image failed to load')}
-        />
+        <AvatarImage src={getAvatarUrl()} alt={`${userProfile.name} avatar`} />
         <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
-          {(currentProfile?.name || 'US').substring(0, 2).toUpperCase()}
+          {userProfile.name.substring(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
 

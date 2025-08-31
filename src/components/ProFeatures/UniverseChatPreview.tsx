@@ -88,10 +88,10 @@ export const UniverseChatPreview: React.FC = () => {
   if (!userProfile?.isPro) {
     return (
       <ProFeatureOverlay
-        title={t.universe?.chatProTitle || 'Звонок Вселенной'}
+        title={t.universe?.chatProTitle || 'Диалог со Вселенной'}
         message={
           t.universe?.chatProMessage ||
-          'Разблокируй PRO чтобы звонить Вселенной'
+          'Разблокируй PRO чтобы вести диалог со Вселенной'
         }
       >
         {chatPreviewContent}

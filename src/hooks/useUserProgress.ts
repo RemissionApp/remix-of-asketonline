@@ -49,28 +49,11 @@ export const useUserProgress = () => {
     setIsLoading(true);
     
     try {
-      // Get cached user progress directly to avoid conditional hook call
-      const { data: progressData } = await supabase
-        .from('user_progress_summary')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+      // Use optimized cached database operations
+      const { useOptimizedDatabase } = await import('@/hooks/useOptimizedDatabase');
+      const { getCachedUserProgress } = useOptimizedDatabase();
       
-      if (!progressData) {
-        console.warn('No progress data found for user');
-        // Initialize default values if no data exists
-        setStats({
-          missionsCompleted: 0,
-          artifactsCollected: 0,
-          totalEnergyEarned: 0,
-          currentStreak: 0,
-          specialEvents: [],
-          level: 1,
-          experiencePoints: 0,
-          experienceToNextLevel: 100,
-        });
-        return;
-      }
+      const progressData = await getCachedUserProgress(user.id);
       
       // Get additional detailed data for calculations
       const [completedMissions, achievements] = await Promise.all([
@@ -89,10 +72,10 @@ export const useUserProgress = () => {
       if (completedMissions.error) throw completedMissions.error;
       if (achievements.error) throw achievements.error;
 
-      // Рассчитываем статистику из данных
-      const missionsCompleted = progressData.completed_missions_count || 0;
-      const artifactsCollected = progressData.artifacts_count || 0;
-      const totalEnergyEarned = progressData.energy_points || 0;
+      // Рассчитываем статистику из кэшированных данных
+      const missionsCompleted = progressData.completedMissionsCount;
+      const artifactsCollected = progressData.artifactsCount;
+      const totalEnergyEarned = progressData.profile?.energy_points || 0;
 
       // Рассчитываем уровень и опыт на основе энергии
       const { level, xpToNext } = calculateLevel(totalEnergyEarned);

@@ -72,9 +72,7 @@ export const createAddPactSlice = (
       }
 
       // Reload pacts
-      console.log('AddPact: Reloading pacts after creation');
       await loadPacts();
-      console.log('AddPact: Pacts reloaded successfully');
 
       toast({
         title: 'Аскеза создана',

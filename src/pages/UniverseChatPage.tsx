@@ -40,7 +40,7 @@ const UniverseChatPage = () => {
       if (!currentChatSession) {
         try {
           // Using a fallback for defaultChatTitle if it doesn't exist in translations
-          const defaultTitle = t.universe?.chatTitle || 'Звонок Вселенной';
+          const defaultTitle = t.universe?.chatTitle || 'Диалог со Вселенной';
           const sessionId = await createChatSession(defaultTitle);
 
           if (sessionId) {
@@ -134,7 +134,7 @@ const UniverseChatPage = () => {
     try {
       // Creating a new chat session
       const defaultTitle =
-        t.universe?.newChatTitle || 'Новый звонок Вселенной';
+        t.universe?.newChatTitle || 'Новый диалог со Вселенной';
       const sessionId = await createChatSession(defaultTitle);
 
       if (sessionId) {
@@ -154,7 +154,7 @@ const UniverseChatPage = () => {
       <div className="min-h-screen flex flex-col bg-cosmic pb-20">
         <StarField starCount={100} />
 
-        <PageHeader title={t.universe?.chatTitle || 'Звонок Вселенной'} />
+        <PageHeader title={t.universe?.chatTitle || 'Диалог со Вселенной'} />
 
         <div className="w-full max-w-2xl mx-auto pt-20">
           <div className="px-4 mb-24">

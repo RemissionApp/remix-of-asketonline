@@ -8,12 +8,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from '@/components/ui/input-otp';
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -45,7 +40,7 @@ const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('login');
   const [emailSent, setEmailSent] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
+  const [otpCode, setOtpCode] = useState("");
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
 
@@ -64,31 +59,32 @@ const LoginPage: React.FC = () => {
           const isConfirmed = await checkEmailConfirmation();
 
           if (!isConfirmed) {
-            // Пользователь авторизован, но email не подтвержден
-            // Остаемся на странице входа, чтобы он мог ввести код
-            console.log('Email не подтвержден, остаемся на странице входа');
-            setEmail(data.session.user.email || '');
-            setOtpSent(true);
+            toast({
+              title: 'Подтвердите email',
+              description:
+                'Пожалуйста, подтвердите ваш email перед продолжением',
+              variant: 'warning',
+            });
             setAuthChecking(false);
             return;
           }
 
-          // Проверяем, заполнил ли пользователь профиль используя централизованную функцию
-          const storeState = useAppStore.getState();
-          const profileComplete = storeState.isProfileComplete();
-
-          if (profileComplete) {
-            // Пользователь имеет заполненный профиль, проверяем onboarding
-            const onboardingComplete = storeState.checkOnboardingStatus();
-            if (onboardingComplete) {
-              navigate('/main');
-            } else {
-              navigate('/onboarding');
-            }
-          } else {
-            // Пользователю необходимо заполнить профиль
-            navigate('/profile-setup');
-          }
+      // Проверяем, заполнил ли пользователь профиль используя централизованную функцию
+      const storeState = useAppStore.getState();
+      const profileComplete = storeState.isProfileComplete();
+      
+      if (profileComplete) {
+        // Пользователь имеет заполненный профиль, проверяем onboarding
+        const onboardingComplete = storeState.checkOnboardingStatus();
+        if (onboardingComplete) {
+          navigate('/main');
+        } else {
+          navigate('/onboarding');
+        }
+      } else {
+        // Пользователю необходимо заполнить профиль
+        navigate('/profile-setup');
+      }
         } else {
           setAuthChecking(false);
         }
@@ -117,7 +113,7 @@ const LoginPage: React.FC = () => {
     voiceGreetingRef.current?.playGreeting();
 
     // Очищаем состояние аутентификации перед входом в систему
-    await cleanupAuthState();
+    cleanupAuthState();
 
     const success = await signIn(email, password);
     if (success) {
@@ -137,7 +133,7 @@ const LoginPage: React.FC = () => {
       // Используем централизованную проверку профиля
       const storeState = useAppStore.getState();
       const profileComplete = storeState.isProfileComplete();
-
+      
       if (!profileComplete) {
         navigate('/profile-setup');
       } else {
@@ -165,61 +161,24 @@ const LoginPage: React.FC = () => {
     }
 
     // Очищаем состояние аутентификации перед регистрацией
-    await cleanupAuthState();
+    cleanupAuthState();
 
-    try {
-      await signUp(email, password);
-      // New signUp function already creates user and sends OTP
+    await signUp(email, password);
+    // Send OTP code instead of email confirmation
+    const otpSent = await sendOtpCode(email);
+    if (otpSent) {
       setOtpSent(true);
-    } catch (error) {
-      console.error('Signup error:', error);
-
-      // If user already exists, offer to switch to login and send OTP
-      if (error instanceof Error && error.message === 'EXISTING_USER') {
-        // Automatically switch to login tab
-        setActiveTab('login');
-
-        // Show simple message first, then add button for OTP
-        toast({
-          title: 'Пользователь уже существует',
-          description: 'Переключаемся на вход в систему.',
-          variant: 'default',
-        });
-
-        // Add option to send OTP after a delay
-        setTimeout(() => {
-          toast({
-            title: 'Получить код для входа?',
-            description:
-              'Нажмите на кнопку ниже, чтобы получить код подтверждения на email.',
-            action: (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  const sent = await sendOtpCode(email);
-                  if (sent) {
-                    setOtpSent(true);
-                  }
-                }}
-              >
-                Отправить код
-              </Button>
-            ),
-          });
-        }, 1000);
-      }
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!otpCode || otpCode.length !== 6) {
       toast({
-        title: 'Ошибка',
-        description: 'Введите 6-значный код',
-        variant: 'destructive',
+        title: "Ошибка",
+        description: "Введите 6-значный код",
+        variant: "destructive",
       });
       return;
     }
@@ -234,7 +193,7 @@ const LoginPage: React.FC = () => {
           // User is automatically logged in, navigate appropriately
           const storeState = useAppStore.getState();
           const profileComplete = storeState.isProfileComplete();
-
+          
           if (!profileComplete) {
             navigate('/profile-setup');
           } else {
@@ -265,7 +224,7 @@ const LoginPage: React.FC = () => {
   const handleResendOtp = async () => {
     const sent = await sendOtpCode(email);
     if (sent) {
-      setOtpCode('');
+      setOtpCode("");
     }
   };
 
@@ -350,19 +309,15 @@ const LoginPage: React.FC = () => {
           <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
             <CardContent className="pt-6">
               <div className="text-center mb-6">
-                <h2 className="text-xl text-white mb-4">
-                  {t.auth.enterOtpCode}
-                </h2>
+                <h2 className="text-xl text-white mb-4">{t.auth.enterOtpCode}</h2>
                 <p className="text-cosmic-secondary">
                   {t.auth.otpSentMessage} {email}
                 </p>
               </div>
-
+              
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="otp-code" className="text-white">
-                    {t.auth.otpCodeLabel}
-                  </Label>
+                  <Label htmlFor="otp-code" className="text-white">{t.auth.otpCodeLabel}</Label>
                   <div className="flex justify-center">
                     <InputOTP
                       value={otpCode}
@@ -372,48 +327,28 @@ const LoginPage: React.FC = () => {
                       className="disabled:cursor-not-allowed"
                     >
                       <InputOTPGroup>
-                        <InputOTPSlot
-                          index={0}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
-                        <InputOTPSlot
-                          index={1}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
-                        <InputOTPSlot
-                          index={2}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
+                        <InputOTPSlot index={0} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={1} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={2} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
                       </InputOTPGroup>
                       <InputOTPSeparator />
                       <InputOTPGroup>
-                        <InputOTPSlot
-                          index={3}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
-                        <InputOTPSlot
-                          index={4}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
-                        <InputOTPSlot
-                          index={5}
-                          className="border-cosmic-accent/30 text-white bg-cosmic-dark/20"
-                        />
+                        <InputOTPSlot index={3} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={4} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
+                        <InputOTPSlot index={5} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
                       </InputOTPGroup>
                     </InputOTP>
                   </div>
                 </div>
-
-                <CosmicButton
-                  type="submit"
-                  className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80"
+                
+                <CosmicButton 
+                  type="submit" 
+                  className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
                   disabled={verifyingOtp || otpCode.length !== 6}
                 >
-                  {verifyingOtp
-                    ? `${t.auth.verifyButton}...`
-                    : t.auth.verifyButton}
+                  {verifyingOtp ? `${t.auth.verifyButton}...` : t.auth.verifyButton}
                 </CosmicButton>
-
+                
                 <div className="text-center space-y-2">
                   <Button
                     type="button"
@@ -423,14 +358,14 @@ const LoginPage: React.FC = () => {
                   >
                     {t.auth.resendCode}
                   </Button>
-
+                  
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => {
                       setOtpSent(false);
-                      setOtpCode('');
-                      setActiveTab('signup');
+                      setOtpCode("");
+                      setActiveTab("signup");
                     }}
                     className="text-sm text-cosmic-secondary hover:text-white block w-full"
                   >
@@ -467,18 +402,8 @@ const LoginPage: React.FC = () => {
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2 mb-6 bg-cosmic-dark/20">
-                  <TabsTrigger
-                    value="login"
-                    data-state={activeTab === 'login' ? 'active' : 'inactive'}
-                  >
-                    {t.auth.signIn}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="signup"
-                    data-state={activeTab === 'signup' ? 'active' : 'inactive'}
-                  >
-                    {t.auth.signUp}
-                  </TabsTrigger>
+                  <TabsTrigger value="login">{t.auth.signIn}</TabsTrigger>
+                  <TabsTrigger value="signup">{t.auth.signUp}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="login">

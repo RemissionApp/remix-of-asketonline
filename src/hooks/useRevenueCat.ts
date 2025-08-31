@@ -6,48 +6,30 @@ import {
   PurchasesOffering,
   PurchasesPackage,
 } from '@revenuecat/purchases-capacitor';
-import { Capacitor } from '@capacitor/core';
 import { revenueCatService } from '@/utils/revenueCat';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
 import { log } from 'console';
-import { RevenueCatUI } from '@revenuecat/purchases-capacitor-ui';
 
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOffering[]>([]);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null | any>(
-    null
-  );
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [billingAvailable, setBillingAvailable] = useState<boolean | null>(
     null
   );
   const { toast } = useToast();
-  const { updateProStatus, user } = useAppStore();
+  const { updateProStatus } = useAppStore();
 
   // Используем ref для отслеживания текущего Pro статуса
   const currentProStatusRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Сбрасываем состояние при смене пользователя
-    if (user) {
-      setIsInitialized(false);
-      setCustomerInfo(null);
-      setOfferings([]);
-      currentProStatusRef.current = false;
-
-      initializeRevenueCat();
-    }
+    initializeRevenueCat();
 
     // Добавляем слушатель изменений CustomerInfo согласно документации
     const setupCustomerInfoListener = async () => {
-      // Skip on web platform
-      if (Capacitor.getPlatform() === 'web') {
-        console.log('RevenueCat hook: Skipping listener setup on web platform');
-        return;
-      }
-
       try {
         await revenueCatService.addCustomerInfoUpdateListener(
           (updatedCustomerInfo: CustomerInfo) => {
@@ -63,10 +45,10 @@ export const useRevenueCat = () => {
     };
 
     setupCustomerInfoListener();
-  }, [user]); // Добавляем user как зависимость
+  }, []);
 
   // Функция для синхронизации Pro статуса с app store
-  const syncProStatus = (customerInfo: CustomerInfo | null | any) => {
+  const syncProStatus = (customerInfo: CustomerInfo | null) => {
     const hasActive =
       customerInfo?.entitlements?.active &&
       Object.keys(customerInfo.entitlements.active).length > 0;
@@ -80,18 +62,9 @@ export const useRevenueCat = () => {
   };
 
   const initializeRevenueCat = async () => {
-    // Check if we're running on web and skip initialization
-    if (Capacitor.getPlatform() === 'web') {
-      console.log('RevenueCat hook: Skipping initialization on web platform');
-      setIsInitialized(false);
-      setBillingAvailable(false);
-      return;
-    }
-
     try {
       setIsLoading(true);
-      // Передаем userId для правильной идентификации пользователя
-      await revenueCatService.initialize(user?.id);
+      await revenueCatService.initialize();
       setIsInitialized(true);
 
       // Проверка доступности Google Play Billing
@@ -110,11 +83,10 @@ export const useRevenueCat = () => {
 
         // Получаем информацию о пользователе
         const customerInfoData = await revenueCatService.getCustomerInfo();
-        if (customerInfoData.customerInfo) {
-          setCustomerInfo(customerInfoData.customerInfo);
-          // Синхронизируем Pro статус при инициализации
-          syncProStatus(customerInfoData.customerInfo);
-        }
+        setCustomerInfo(customerInfoData.customerInfo);
+
+        // Синхронизируем Pro статус при инициализации
+        syncProStatus(customerInfoData.customerInfo);
       } else {
         toast({
           title: 'Google Play Billing недоступен',
@@ -125,16 +97,11 @@ export const useRevenueCat = () => {
       }
     } catch (error) {
       console.error('Ошибка инициализации RevenueCat:', error);
-      setIsInitialized(false);
-      setBillingAvailable(false);
-      // Silently fail on web, only show toast on native platforms
-      if (Capacitor.getPlatform() !== 'web') {
-        toast({
-          title: 'Ошибка инициализации',
-          description: 'Не удалось инициализировать систему покупок',
-          variant: 'destructive',
-        });
-      }
+      toast({
+        title: 'Ошибка инициализации',
+        description: 'Не удалось инициализировать систему покупок',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -214,57 +181,6 @@ export const useRevenueCat = () => {
     }
   };
 
-  // Новый метод для показа Paywall
-  const presentPaywall = async (offeringIdentifier?: string) => {
-    try {
-      setIsLoading(true);
-
-      console.log('Starting Paywall');
-
-      console.log('offerings:', JSON.stringify(offerings, null, 2));
-
-      const { result } = await RevenueCatUI.presentPaywall();
-
-      // const result = await revenueCatService.presentPaywall();
-
-      // if (result) {
-      //   setCustomerInfo(result);
-      //   syncProStatus(result);
-
-      //   toast({
-      //     title: 'Покупка успешна!',
-      //     description: 'Спасибо за покупку!',
-      //   });
-      // }
-
-      return result;
-    } catch (error: unknown) {
-      console.error('Ошибка показа Paywall:', error);
-
-      if (
-        error &&
-        typeof error === 'object' &&
-        'userCancelled' in error &&
-        error.userCancelled
-      ) {
-        console.log('Пользователь отменил Paywall');
-      } else {
-        toast({
-          title: 'Ошибка Paywall',
-          description:
-            error instanceof Error
-              ? error.message
-              : 'Не удалось показать Paywall',
-          variant: 'destructive',
-        });
-      }
-
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Проверяем, есть ли активная подписка (любая)
   const hasActiveSubscription =
     customerInfo?.entitlements?.active &&
@@ -277,7 +193,6 @@ export const useRevenueCat = () => {
     isLoading,
     billingAvailable,
     hasActiveSubscription,
-    presentPaywall, // Новый метод
     purchasePackage,
     restorePurchases,
   };

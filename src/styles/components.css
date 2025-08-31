@@ -1,44 +1,18 @@
 @layer components {
-  /* Layout Components */
-  .cosmic-container {
-    @apply w-full max-w-4xl mx-auto px-cosmic-sm md:px-cosmic-md;
-  }
-
   .cosmic-block {
     @apply w-full max-w-lg mx-auto rounded-lg transition-all duration-300;
   }
 
   .cosmic-card {
-    @apply bg-cosmic-dark/80 backdrop-blur-md rounded-xl border border-cosmic-accent/20 shadow-lg;
-  }
-
-  .cosmic-card-sm {
-    @apply cosmic-card p-cosmic-sm;
-  }
-
-  .cosmic-card-md {
-    @apply cosmic-card p-cosmic-md;
-  }
-
-  .cosmic-card-lg {
-    @apply cosmic-card p-cosmic-lg;
-  }
-
-  /* Button System */
-  .cosmic-button-base {
-    @apply font-medium rounded-full transition-all duration-200 active:scale-95 cosmic-hover-glow;
+    @apply bg-cosmic-dark/80 backdrop-blur-md rounded-xl border border-cosmic-accent/20 p-6 shadow-lg;
   }
 
   .cosmic-button {
-    @apply cosmic-button-base px-cosmic-md py-3 bg-gradient-to-r from-cosmic-accent to-cosmic-indigo text-white hover:from-cosmic-accent2 hover:to-cosmic-deep-blue;
-  }
-
-  .cosmic-button-destructive {
-    @apply cosmic-button-base px-cosmic-md py-3 bg-gradient-to-r from-red-500/40 to-red-600/40 text-white backdrop-blur-sm border border-red-500/30 hover:from-red-500/60 hover:to-red-600/60 hover:shadow-red-500/20;
+    @apply px-6 py-3 bg-gradient-to-r from-cosmic-accent to-cosmic-indigo text-white rounded-full font-medium transition-all hover:from-cosmic-accent2 hover:to-cosmic-deep-blue hover:shadow-lg hover:shadow-cosmic-accent/30 active:scale-95;
   }
 
   .cosmic-input {
-    @apply bg-cosmic-dark/50 border border-cosmic-accent/30 text-white rounded-lg px-cosmic-sm py-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50 transition-all duration-200;
+    @apply bg-cosmic-dark/50 border border-cosmic-accent/30 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent/50;
   }
 
   .star {
@@ -58,43 +32,28 @@
       inset 0 0 10px rgba(139, 92, 246, 0.4);
   }
 
-  /* Typography System */
   .cosmic-gradient-text {
-    @apply bg-gradient-to-br from-white via-cosmic-accent to-cosmic-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-white via-cosmic-accent bg-clip-text text-transparent;
+    color: hsl(var(--cosmic-secondary));
   }
 
-  .cosmic-heading-xl {
-    @apply text-2xl md:text-3xl font-serif font-semibold cosmic-gradient-text leading-tight;
+  /* The animate-glow-pulse class is now defined in animations.css */
+
+  .cosmic-button-destructive {
+    @apply px-6 py-3 bg-gradient-to-r from-red-500/40 to-red-600/40 text-white rounded-full font-medium transition-all backdrop-blur-sm border border-red-500/30 hover:from-red-500/60 hover:to-red-600/60 hover:shadow-lg hover:shadow-red-500/20 active:scale-95;
   }
 
-  .cosmic-heading-lg {
-    @apply text-xl md:text-2xl font-serif font-medium cosmic-gradient-text leading-snug;
-  }
-
-  .cosmic-heading-md {
-    @apply text-lg md:text-xl font-sans font-medium text-white leading-normal;
-  }
-
-  /* Block Components */
+  /* Standard block heading style */
   .cosmic-block-heading {
-    @apply cosmic-heading-md flex items-center gap-cosmic-sm;
+    @apply font-sans font-medium text-base flex items-center;
   }
 
   .cosmic-block-heading-en {
-    @apply cosmic-heading-lg flex items-center gap-cosmic-sm;
+    @apply font-serif font-medium text-lg flex items-center;
   }
 
   .cosmic-block-icon-wrapper {
-    @apply bg-cosmic-accent/20 rounded-lg p-cosmic-xs flex items-center justify-center cosmic-hover-scale;
-  }
-
-  /* Spacing Utilities */
-  .cosmic-section-spacing {
-    @apply space-y-cosmic-lg;
-  }
-
-  .cosmic-grid-gap {
-    @apply gap-cosmic-md;
+    @apply bg-cosmic-accent/20 rounded-lg p-2 mr-3 flex items-center justify-center;
   }
 
   /* Text shadow for better readability on image backgrounds */

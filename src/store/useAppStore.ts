@@ -32,7 +32,6 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   },
   user: null,
   loading: false,
-  profileLoading: false,
   emailConfirmed: false,
 
   // Добавляем новый метод для установки пользователя
@@ -113,8 +112,8 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     set(state => ({
       userProfile: {
         ...state.userProfile,
-        isPro,
-      },
+        isPro
+      }
     }));
   },
 
@@ -125,7 +124,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
     try {
       // Import supabase client
       const { supabase } = await import('@/integrations/supabase/client');
-
+      
       // First verify password by trying to sign in
       const { error: passwordError } = await supabase.auth.signInWithPassword({
         email: user.email!,
@@ -138,28 +137,37 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
 
       // Delete all user data from tables
       const userId = user.id;
-
+      
       // Use optimized batch delete
-      const { useOptimizedDatabase } = await import(
-        '@/hooks/useOptimizedDatabase'
-      );
+      const { useOptimizedDatabase } = await import('@/hooks/useOptimizedDatabase');
       const { batchDeleteUserData } = useOptimizedDatabase();
-
+      
       const deleteResult = await batchDeleteUserData(userId);
       if (!deleteResult.success) {
         throw deleteResult.error;
       }
 
       // Delete auth user account
-      const { error: deleteError } =
-        await supabase.auth.admin.deleteUser(userId);
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
       if (deleteError) {
         console.error('Error deleting auth user:', deleteError);
       }
 
       // Clean up auth state
-      const { cleanupAuthState } = await import('@/lib/supabase');
-      await cleanupAuthState();
+      const cleanupAuthState = () => {
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+        Object.keys(sessionStorage || {}).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      };
+
+      cleanupAuthState();
 
       // Sign out globally
       try {
@@ -196,6 +204,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
       setTimeout(() => {
         window.location.href = '/auth';
       }, 100);
+
     } catch (error) {
       console.error('Error deleting account:', error);
       throw error;

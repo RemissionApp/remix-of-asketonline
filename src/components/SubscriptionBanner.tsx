@@ -6,7 +6,6 @@ import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { toast } from '@/hooks/use-toast';
 
 interface SubscriptionBannerProps {
   className?: string;
@@ -21,7 +20,7 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
 }) => {
   const { t } = useTranslations();
   const navigate = useNavigate();
-
+  const { upgradeToPro } = useAppStore();
   const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
     useRevenueCat();
 
@@ -37,17 +36,26 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
     }
 
     try {
-      // Show RevenueCat paywall instead of navigating to comparison page
-      const { presentPaywall } = useRevenueCat();
-      await presentPaywall();
+      // Check if we have offerings available
+      if (
+        offerings &&
+        offerings.length > 0 &&
+        offerings[0].availablePackages.length > 0
+      ) {
+        // Purchase the first available package
+        await purchasePackage(offerings[0].availablePackages[0]);
+        // After successful purchase, navigate to comparison page
+        navigate('/comparison');
+      } else {
+        // Fallback to demo behavior if no offerings available
+        upgradeToPro();
+        navigate('/comparison');
+      }
     } catch (error) {
-      console.error('Failed to show paywall:', error);
-      // Show error toast
-      toast({
-        title: 'Ошибка',
-        description: 'Не удалось показать страницу покупок',
-        variant: 'destructive',
-      });
+      console.error('Failed to purchase package:', error);
+      // Fallback to demo behavior on error
+      upgradeToPro();
+      navigate('/comparison');
     }
   };
 

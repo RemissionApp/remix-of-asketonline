@@ -72,7 +72,6 @@ const getTranslations = (language: string) => {
 export interface AuthSlice {
   user: AuthUser | null;
   loading: boolean;
-  profileLoading: boolean;
   emailConfirmed: boolean;
   setUser: (user: AuthUser | null) => void;
   signIn: (email: string, password: string) => Promise<boolean>;
@@ -82,7 +81,6 @@ export interface AuthSlice {
   updateUserProfile: (
     profileData: Partial<import('@/types').UserProfile>
   ) => Promise<void>;
-  updateUserProfileStore: (profile: UserProfile) => void;
   checkEmailConfirmation: () => Promise<boolean>;
   sendOtpCode: (email: string) => Promise<boolean>;
   verifyOtpCode: (email: string, code: string) => Promise<boolean>;
@@ -96,19 +94,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 ) => ({
   user: null,
   loading: false,
-  profileLoading: false,
   emailConfirmed: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
 
-  // Проверка завершенности профиля для использования в store (без React hooks)
+  // Унифицированная функция проверки завершенности профиля
   isProfileComplete: () => {
-    const { user, userProfile } = get();
-
-    // Если нет пользователя, профиль точно не завершен
-    if (!user?.id) return false;
-
-    // Проверяем данные из Zustand store
+    const { userProfile } = get();
     return !!(
       userProfile &&
       userProfile.name &&
@@ -129,7 +121,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      await cleanupAuthState();
+      cleanupAuthState();
 
       try {
         await supabase.auth.signOut({ scope: 'global' });
@@ -181,85 +173,41 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      await cleanupAuthState();
+      cleanupAuthState();
 
-      const currentLanguage = get().language || 'en';
-
-      // Use new edge function that creates user and sends OTP in one call
-      const { data, error } = await supabase.functions.invoke(
-        'create-user-with-otp',
-        {
-          body: {
-            email,
-            password,
-            language: currentLanguage,
-          },
-        }
-      );
-
-      if (error) {
-        console.error('Error creating user with OTP:', error);
-
-        // Handle FunctionsHttpError specifically (409 status for existing user)
-        if (error.context?.status === 409) {
-          console.log('User already exists (409 status)');
-          throw new Error('EXISTING_USER');
-        }
-
-        // Handle other function errors
-        if (error.message?.includes('FunctionsHttpError')) {
-          throw new Error(
-            'Не удалось подключиться к серверу. Попробуйте позже.'
-          );
-        }
-
-        throw new Error('Не удалось создать аккаунт');
-      }
-
-      if (!data.success) {
-        console.error('User creation failed:', data.error);
-
-        // Handle specific error cases from the edge function
-        if (data.error === 'USER_ALREADY_EXISTS') {
-          throw new Error('EXISTING_USER');
-        }
-
-        if (data.error === 'AUTH_ERROR') {
-          throw new Error(data.message || 'Ошибка аутентификации');
-        }
-
-        throw new Error(data.message || 'Не удалось создать аккаунт');
-      }
-
-      // Don't set user yet - they need to verify OTP first
-      set({ emailConfirmed: false });
-
-      toast({
-        title: 'Код отправлен',
-        description: 'Проверьте свою почту и введите код подтверждения',
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
       });
+
+      if (error) throw error;
+
+      set({ user: data.user });
+
+      if (data.session) {
+        toast({
+          title: 'Регистрация выполнена',
+          description:
+            'Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль.',
+        });
+
+        set({ activeScreen: 'profile', emailConfirmed: true });
+      } else {
+        set({ emailConfirmed: false });
+        toast({
+          title: 'Регистрация выполнена',
+          description:
+            'Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения.',
+        });
+      }
     } catch (error) {
       logger.error('Sign up failed', error);
-
-      // Handle specific error cases with user-friendly messages
-      if (error instanceof Error && error.message === 'EXISTING_USER') {
-        toast({
-          title: 'Пользователь уже существует',
-          description:
-            'Аккаунт с этим email уже зарегистрирован. Попробуйте войти в систему.',
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Ошибка регистрации',
-          description:
-            error instanceof Error
-              ? error.message
-              : 'Не удалось создать аккаунт',
-          variant: 'destructive',
-        });
-      }
-      throw error;
+      toast({
+        title: 'Ошибка регистрации',
+        description:
+          error instanceof Error ? error.message : 'Не удалось создать аккаунт',
+        variant: 'destructive',
+      });
     } finally {
       set({ loading: false });
     }
@@ -269,7 +217,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      await cleanupAuthState();
+      cleanupAuthState();
       await supabase.auth.signOut({ scope: 'global' });
 
       set({
@@ -509,10 +457,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   updateUserProfile: async (profileData: Partial<UserProfile>) => {
     // This function is deprecated. Use useOptimizedProfileCache instead.
     // Keeping for backward compatibility only.
-    logger.warn(
-      'updateUserProfile is deprecated. Use useOptimizedProfileCache instead.'
-    );
-
+    logger.warn('updateUserProfile is deprecated. Use useOptimizedProfileCache instead.');
+    
     // Fallback implementation for compatibility
     const { user } = get();
     if (!user) return;
@@ -522,12 +468,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (profileData.name !== undefined) updateData.name = profileData.name;
       if (profileData.birthDate !== undefined) {
-        updateData.birth_date =
-          profileData.birthDate?.toISOString().split('T')[0] || null;
+        updateData.birth_date = profileData.birthDate?.toISOString().split('T')[0] || null;
       }
       if (profileData.goal !== undefined) updateData.goal = profileData.goal;
-      if (profileData.avatar_url !== undefined)
-        updateData.avatar_url = profileData.avatar_url;
+      if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url;
 
       const { error } = await supabase
         .from('profiles')
@@ -578,21 +522,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     }));
   },
 
-  // Функция для синхронизации профиля из React Query с Zustand store
-  updateUserProfileStore: (profile: UserProfile) => {
-    logger.debug('Syncing profile from React Query to Zustand store', profile);
-    set(state => ({
-      userProfile: { ...state.userProfile, ...profile },
-    }));
-  },
-
   loadUserProfile: async () => {
     const { user } = get();
 
     if (!user) return;
 
     logger.debug('Loading user profile', { userId: user.id });
-    set({ profileLoading: true });
 
     try {
       const { data, error } = await supabase
@@ -746,8 +681,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       }
     } catch (error) {
       logger.error('Error loading user profile', error);
-    } finally {
-      set({ profileLoading: false });
     }
   },
 });

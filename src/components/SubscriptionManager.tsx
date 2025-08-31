@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { revenueCatService } from '../utils/revenueCat';
 import { Button } from './ui/button';
 import {
@@ -11,7 +10,6 @@ import {
 } from './ui/card';
 import { Badge } from './ui/badge';
 import { PACKAGE_TYPE } from '@revenuecat/purchases-capacitor';
-import { useTranslations } from '@/hooks/useTranslations';
 
 interface Package {
   identifier: string;
@@ -36,8 +34,6 @@ export const SubscriptionManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerInfo, setCustomerInfo] = useState<any>(null);
-  const { t } = useTranslations();
-  const isWebPlatform = Capacitor.getPlatform() === 'web';
 
   useEffect(() => {
     initializeRevenueCat();
@@ -46,14 +42,6 @@ export const SubscriptionManager: React.FC = () => {
   const initializeRevenueCat = async () => {
     try {
       setLoading(true);
-      
-      if (isWebPlatform) {
-        console.log('SubscriptionManager: Web platform detected');
-        setCustomerInfo({ entitlements: { active: {} } });
-        setOfferings([]);
-        return;
-      }
-
       await revenueCatService.initialize();
 
       // Получаем информацию о пользователе
@@ -75,11 +63,6 @@ export const SubscriptionManager: React.FC = () => {
   };
 
   const handlePurchase = async (packageToPurchase: Package) => {
-    if (isWebPlatform) {
-      setError('Покупки доступны только в мобильном приложении');
-      return;
-    }
-
     try {
       setLoading(true);
       // Use the package directly since it should be PurchasesPackage from API
@@ -95,11 +78,6 @@ export const SubscriptionManager: React.FC = () => {
   };
 
   const handleRestore = async () => {
-    if (isWebPlatform) {
-      setError('Восстановление покупок доступно только в мобильном приложении');
-      return;
-    }
-
     try {
       setLoading(true);
       const customerInfo = await revenueCatService.restorePurchases();
@@ -129,32 +107,9 @@ export const SubscriptionManager: React.FC = () => {
       <Card>
         <CardContent className="p-6">
           <div className="text-red-500">Error: {error}</div>
-          {!isWebPlatform && (
-            <Button onClick={initializeRevenueCat} className="mt-4">
-              Retry
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Show web platform message
-  if (isWebPlatform) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t.subscription?.title || 'Pro Subscription'}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
-              {t.subscription?.webMessage || 'Subscription features are available only in the mobile app.'}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {t.subscription?.webInstructions || 'Download our mobile app to upgrade to Pro and unlock all features.'}
-            </p>
-          </div>
+          <Button onClick={initializeRevenueCat} className="mt-4">
+            Retry
+          </Button>
         </CardContent>
       </Card>
     );

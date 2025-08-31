@@ -4,8 +4,7 @@ import { CosmicButton } from './CosmicButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface MeditationCardProps {
   title: string;
@@ -27,45 +26,27 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   onPlay,
 }) => {
   const { t } = useTranslations();
-  const { userProfile } = useAppStore();
-  const { presentPaywall } = useRevenueCat();
+  const { userProfile, upgradeToPro } = useAppStore();
+  const navigate = useNavigate();
   const isPro = userProfile.isPro;
 
-  const handlePlay = async () => {
+  const handlePlay = () => {
     if (locked) return;
     if (requiresPro && !isPro) {
-      try {
-        await presentPaywall();
-      } catch (error) {
-        console.error('Failed to show paywall:', error);
-        // Show error toast
-        toast({
-          title: 'Ошибка',
-          description: 'Не удалось показать страницу покупок',
-          variant: 'destructive',
-        });
-      }
+      navigate('/comparison');
       return;
     }
     if (onPlay) {
       onPlay();
     } else {
       // Default play action
+      
     }
   };
 
-  const handleUpgrade = async () => {
-    try {
-      await presentPaywall();
-    } catch (error) {
-      console.error('Failed to show paywall:', error);
-      // Show error toast
-      toast({
-        title: 'Ошибка',
-        description: 'Не удалось показать страницу покупок',
-        variant: 'destructive',
-      });
-    }
+  const handleUpgrade = () => {
+    // For demo purposes, immediately upgrade the user
+    upgradeToPro();
   };
 
   return (

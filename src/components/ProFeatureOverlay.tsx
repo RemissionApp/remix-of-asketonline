@@ -2,8 +2,6 @@ import React from 'react';
 import { LockIcon, SparklesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { toast } from '@/hooks/use-toast';
 
 interface ProFeatureOverlayProps {
   title?: string;
@@ -13,7 +11,6 @@ interface ProFeatureOverlayProps {
   navigateTo?: string;
   showUnlockPrompt?: boolean;
   unlockText?: string;
-  showPaywall?: boolean;
 }
 
 export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
@@ -24,28 +21,12 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
   navigateTo = '/comparison',
   showUnlockPrompt = false,
   unlockText = 'Unlock PRO functions',
-  showPaywall = false,
 }) => {
   const navigate = useNavigate();
+  const { upgradeToPro } = useAppStore();
 
-  const { presentPaywall } = useRevenueCat();
-
-  const handleClick = async () => {
-    if (showPaywall) {
-      try {
-        await presentPaywall();
-      } catch (error) {
-        console.error('Failed to show paywall:', error);
-        // Show error toast
-        toast({
-          title: 'Ошибка',
-          description: 'Не удалось показать страницу покупок',
-          variant: 'destructive',
-        });
-      }
-    } else {
-      navigate(navigateTo);
-    }
+  const handleClick = () => {
+    navigate(navigateTo);
   };
 
   return (

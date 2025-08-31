@@ -13,100 +13,37 @@ import { createLogger } from '@/utils/logger';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
-import { supabase } from '@/lib/supabase';
 
 const MainPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { handleAsyncError } = useErrorHandler();
-  const logger = createLogger('MainPage');
-
-  // Get app store state
   const {
     pacts = [],
     syncPactsWithCurrentDate,
-    loadPacts,
     language,
     user,
     loadUserProfile,
     userProfile,
     setActiveScreen,
   } = useAppStore();
-
-  // Local state
   const [currentPactIndex, setCurrentPactIndex] = useState(0);
   const [showEnergyEffect, setShowEnergyEffect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Hook calls
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
+  const { handleAsyncError } = useErrorHandler();
   const { stats } = useUserProgress();
 
-  // Force reload function with session validation
-  const handleRefreshData = async () => {
-    console.log('MainPage: Force refreshing pacts data');
-    setIsLoading(true);
-    
-    try {
-      // Validate session first
-      const { data: session, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session?.session?.user) {
-        console.log('MainPage: Invalid session during refresh, redirecting to login');
-        navigate('/login');
-        return;
-      }
+  const logger = createLogger('MainPage');
 
-      // Clear any cached data and reload
-      console.log('MainPage: Session valid, reloading data');
-      await loadUserProfile();
-      await loadPacts();
-      await syncPactsWithCurrentDate();
-      
-      console.log('MainPage: Force refresh completed');
-      toast({
-        title: 'Данные обновлены',
-        description: 'Все данные успешно перезагружены',
-      });
-    } catch (error) {
-      console.error('MainPage: Force refresh failed:', error);
-      toast({
-        title: 'Ошибка обновления',
-        description: 'Не удалось обновить данные',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Simplified initialization - only load data when user is present
+  // Check if user is logged in and load user profile if needed
   useEffect(() => {
     const initializeUserData = async () => {
-      if (!user) {
-        logger.debug('No user found, redirecting to login');
-        navigate('/login');
-        return;
-      }
-
+      logger.debug('Initializing user data');
       setIsLoading(true);
-      logger.debug('Initializing user data for user:', user.id);
 
       try {
-        // Validate current session before loading data
-        const { data: session, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session?.session?.user) {
-          console.log('MainPage: Invalid session, redirecting to login');
-          navigate('/login');
-          return;
-        }
-
-        const currentUserId = session.session.user.id;
-        console.log('MainPage: Session validated for user:', currentUserId);
-
-        // Load user profile if not loaded
-        if (!userProfile) {
+        // If user is logged in but we don't have profile data yet, load it
+        if (user && !userProfile) {
           logger.debug('Loading user profile');
           await handleAsyncError(() => loadUserProfile(), {
             component: 'MainPage',
@@ -114,37 +51,25 @@ const MainPage: React.FC = () => {
           });
         }
 
-        // Load pacts with session validation
-        logger.debug('Loading pacts with validated session');
-        await handleAsyncError(() => loadPacts(), {
-          component: 'MainPage',
-          action: 'loadPacts',
-        });
-
-        // Sync pacts with current date
+        // Then sync pacts with current date
         logger.debug('Syncing pacts with current date');
-        await handleAsyncError(() => syncPactsWithCurrentDate(), {
-          component: 'MainPage', 
-          action: 'syncPactsWithCurrentDate',
-        });
+        syncPactsWithCurrentDate();
       } catch (error) {
         logger.error('Failed to initialize user data', error);
-        // On critical errors, redirect to login
-        navigate('/login');
       } finally {
         setIsLoading(false);
         logger.debug('User data initialization complete');
       }
     };
 
-    // Only initialize if we have a user
-    if (user) {
-      initializeUserData();
-    } else {
-      setIsLoading(false);
-      navigate('/login');
-    }
-  }, [user]); // Only depend on user - profile loading happens inside
+    initializeUserData();
+  }, [
+    user,
+    userProfile,
+    loadUserProfile,
+    syncPactsWithCurrentDate,
+    handleAsyncError,
+  ]);
 
   // Get all pacts (including failed ones for the slider)
   const allPacts = pacts || [];
@@ -152,19 +77,6 @@ const MainPage: React.FC = () => {
 
   // Get current pact from all pacts for slider
   const currentPact = allPacts[currentPactIndex] || null;
-
-  // Debug logging for pacts state
-  useEffect(() => {
-    console.log('MainPage - Pacts state:', {
-      totalPacts: allPacts.length,
-      activePacts: activePacts.length,
-      pactsData: allPacts.map(p => ({ id: p.id, title: p.title, status: p.status, days_total: p.days_total, days_completed: p.days_completed })),
-      currentPactIndex,
-      currentPact: currentPact ? { id: currentPact.id, title: currentPact.title } : null,
-      isLoading,
-      user: !!user,
-    });
-  }, [allPacts, activePacts, currentPactIndex, currentPact, isLoading, user]);
 
   // Change handlers for the carousel - now works with all pacts
   const handlePrevPact = () => {
@@ -208,40 +120,21 @@ const MainPage: React.FC = () => {
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
 
-      {/* Debug refresh button - remove in production */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={handleRefreshData}
-          className="bg-primary/20 hover:bg-primary/30 text-primary px-3 py-1 rounded-md text-sm"
-        >
-          Обновить данные
-        </button>
-      </div>
-
       {/* Main content */}
       <div>
-        {isLoading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <div className="animate-spin w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full mx-auto"></div>
-              <p className="text-muted-foreground">Загрузка аскез...</p>
-            </div>
-          </div>
-        ) : (
-          <MainContent
-            activePacts={activePacts}
-            allPacts={allPacts}
-            currentPactIndex={currentPactIndex}
-            currentPact={currentPact}
-            dailyQuote={dailyQuote}
-            isLoading={isLoading}
-            showEnergyEffect={showEnergyEffect}
-            handlePrevPact={handlePrevPact}
-            handleNextPact={handleNextPact}
-            getAscesisPrefix={getAscesisPrefix}
-            formatRejection={formatRejection}
-          />
-        )}
+        <MainContent
+        activePacts={activePacts}
+        allPacts={allPacts}
+        currentPactIndex={currentPactIndex}
+        currentPact={currentPact}
+        dailyQuote={dailyQuote}
+        isLoading={isLoading}
+        showEnergyEffect={showEnergyEffect}
+        handlePrevPact={handlePrevPact}
+        handleNextPact={handleNextPact}
+        getAscesisPrefix={getAscesisPrefix}
+        formatRejection={formatRejection}
+        />
       </div>
 
       {/* Mission Reminder */}

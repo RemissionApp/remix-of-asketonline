@@ -4,14 +4,11 @@ import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useProfileCompletion } from '@/hooks/useProfileCompletion';
 import { SupportedLanguage } from '@/i18n/translations';
 
 const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
-  const { user, checkOnboardingStatus } = useAppStore();
-  const { isProfileComplete, isLoading } = useProfileCompletion();
   const [isAnimated, setIsAnimated] = useState(false);
   const [cycleIndex, setCycleIndex] = useState(0);
   const languages: SupportedLanguage[] = ['ru', 'en', 'es'];
@@ -31,34 +28,6 @@ const WelcomePage: React.FC = () => {
     en: 'Begin the journey',
     es: 'Comenzar el viaje',
   };
-
-  // Handle navigation for authenticated users
-  useEffect(() => {
-    if (!user) return;
-    
-    // Don't redirect if profile is still loading
-    if (isLoading) {
-      console.log('WelcomePage: Profile still loading, waiting...');
-      return;
-    }
-    
-    const isOnboarded = checkOnboardingStatus();
-    
-    console.log('WelcomePage: Navigation check', {
-      hasUser: !!user,
-      isProfileComplete,
-      isOnboarded,
-      isLoading
-    });
-    
-    if (isOnboarded && isProfileComplete) {
-      navigate('/main');
-    } else if (!isProfileComplete) {
-      navigate('/profile-setup');
-    } else if (!isOnboarded) {
-      navigate('/onboarding');
-    }
-  }, [user, isProfileComplete, isLoading, navigate, checkOnboardingStatus]);
 
   // Анимация появления компонентов
   useEffect(() => {
