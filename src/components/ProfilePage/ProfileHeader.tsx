@@ -22,6 +22,21 @@ export const ProfileHeader: React.FC = () => {
     setIsEditingName(false);
   };
 
+  const handleAccountSettings = () => {
+    console.log('ProfileHeader: Account settings button clicked');
+    console.log('ProfileHeader: userProfile exists:', !!userProfile);
+    console.log('ProfileHeader: navigate function exists:', !!navigate);
+    
+    try {
+      navigate('/account-settings');
+      console.log('ProfileHeader: Navigation called successfully');
+    } catch (error) {
+      console.error('ProfileHeader: Navigation error:', error);
+      // Fallback navigation
+      window.location.href = '/account-settings';
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditedName(userProfile?.name || '');
     setIsEditingName(false);
@@ -103,9 +118,10 @@ export const ProfileHeader: React.FC = () => {
 
       {/* Account Settings Button */}
       <Button
-        onClick={() => navigate('/account-settings')}
+        onClick={handleAccountSettings}
         variant="outline"
         className="w-full bg-cosmic-accent/10 hover:bg-cosmic-accent/20 border-cosmic-accent/30 text-cosmic-text"
+        disabled={!userProfile}
       >
         <Settings className="w-4 h-4 mr-2" />
         {t.userProfile?.accountSettings || 'Настройки аккаунта'}
