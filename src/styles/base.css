@@ -27,16 +27,16 @@
     --ring: 240 4.9% 83.9%;
     --radius: 0.75rem;
 
-    /* Cosmic theme colors in HSL format */
+    /* Cosmic theme colors in HSL format - optimized for accessibility */
     --cosmic: 252 40% 7%;
     --cosmic-foreground: 0 0% 98%;
     --cosmic-dark: 252 40% 7%;
     --cosmic-accent: 260 80% 65%;
-    --cosmic-accent2: 258 70% 45%;
-    --cosmic-secondary: 240 5% 64.9%;
+    --cosmic-accent2: 258 70% 50%;
+    --cosmic-secondary: 240 10% 70%;
     --cosmic-gold: 43 74% 66%;
-    --cosmic-indigo: 230 60% 50%;
-    --cosmic-deep-blue: 240 70% 30%;
+    --cosmic-indigo: 230 60% 55%;
+    --cosmic-deep-blue: 240 70% 35%;
 
     /* Gradient definitions */
     --gradient-cosmic: linear-gradient(
