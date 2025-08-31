@@ -4,8 +4,7 @@ import { SparklesIcon } from 'lucide-react';
 import { ProBadge } from '@/components/ProBadge';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
 import { CosmicButton } from '@/components/CosmicButton';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { ProfileCard } from './ProfileCard';
 
 export const SubscriptionManager: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription } = useAppStore();
@@ -20,7 +19,7 @@ export const SubscriptionManager: React.FC = () => {
   };
 
   return (
-    <div className="bg-cosmic-accent/10 border border-cosmic-accent/30 rounded-lg p-5 mb-8">
+    <ProfileCard>
       <div className="flex items-center gap-3 mb-4">
         <SparklesIcon size={20} className="text-cosmic-accent" />
         <span className="text-white font-medium font-sans">Подписка</span>
@@ -52,6 +51,6 @@ export const SubscriptionManager: React.FC = () => {
           <SubscriptionBanner />
         </div>
       )}
-    </div>
+    </ProfileCard>
   );
 };

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Crown, Zap, TrendingUp } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
+import { ProfileCard } from './ProfileCard';
 
 interface CompactUserLevelDisplayProps {
   level: number;
@@ -55,15 +56,20 @@ export const CompactUserLevelDisplay: React.FC<CompactUserLevelDisplayProps> = (
     return 'text-cosmic-text/70'; // Common
   };
 
-  const progressPercentage = experienceToNextLevel > 0 
-    ? ((experiencePoints - (experiencePoints - experienceToNextLevel)) / experienceToNextLevel) * 100
-    : 100;
+  // Fixed XP progress calculation
+  const progressPercentage = useMemo(() => {
+    if (experienceToNextLevel <= 0) return 100;
+    
+    // Calculate XP gained for current level
+    const currentLevelXP = experiencePoints % experienceToNextLevel;
+    return Math.min((currentLevelXP / experienceToNextLevel) * 100, 100);
+  }, [experiencePoints, experienceToNextLevel]);
 
   return (
-    <div className={cn('cosmic-block rounded-lg p-space-md mb-space-lg', className)}>
+    <ProfileCard variant="compact" className={className}>
       <div className="flex items-center justify-between mb-space-sm">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-cosmic-accent/20 animate-pulse-soft">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-cosmic-accent/20 animate-pulse">
             <Crown className={cn('w-5 h-5', getLevelColor(level))} />
           </div>
           <div>
@@ -96,13 +102,13 @@ export const CompactUserLevelDisplay: React.FC<CompactUserLevelDisplayProps> = (
       <div className="space-y-1">
         <Progress 
           value={progressPercentage} 
-          className="h-1.5 bg-cosmic-accent/20"
+          className="h-1.5 bg-cosmic-accent/20 animate-fade-in"
         />
         <div className="flex justify-between text-xs text-cosmic-text/50">
           <span>{getText('xp')}</span>
           <span>{experienceToNextLevel} до след. ур.</span>
         </div>
       </div>
-    </div>
+    </ProfileCard>
   );
 };

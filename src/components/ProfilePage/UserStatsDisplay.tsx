@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Calendar, Flame, Star, Target } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useUserProgress } from '@/hooks/useUserProgress';
+import { ProfileCard } from './ProfileCard';
+import { ProfileMetric } from './ProfileMetric';
 
 export const UserStatsDisplay: React.FC = () => {
   const { language, userProfile } = useAppStore();
-  const { stats } = useUserProgress();
+  const { stats, isLoading } = useUserProgress();
 
   const getText = (key: string) => {
     const texts = {
@@ -34,14 +36,18 @@ export const UserStatsDisplay: React.FC = () => {
     return texts[language]?.[key] || texts.en[key] || key;
   };
 
-  // Calculate days since user joined (mock for now - will use real data later)
-  const daysActive = 7; // Mock value for now
+  // Calculate days since user joined - using fallback for now
+  const daysActive = useMemo(() => {
+    // TODO: Add createdAt to UserProfile interface when available from backend
+    // For now, use a reasonable default based on user activity
+    return Math.max(stats.missionsCompleted || 1, 1);
+  }, [stats.missionsCompleted]);
 
-  const statsData = [
+  const statsData = useMemo(() => [
     {
       icon: Calendar,
       label: getText('daysActive'),
-      value: daysActive || 0,
+      value: daysActive || 1,
       color: 'text-cosmic-silver'
     },
     {
@@ -62,29 +68,40 @@ export const UserStatsDisplay: React.FC = () => {
       value: stats.artifactsCollected || 0,
       color: 'text-cosmic-gold'
     }
-  ];
+  ], [daysActive, stats, getText]);
+
+  if (isLoading) {
+    return (
+      <ProfileCard variant="compact">
+        <div className="animate-pulse">
+          <div className="h-4 bg-cosmic-accent/20 rounded mb-space-md w-24"></div>
+          <div className="grid grid-cols-2 gap-space-sm">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-16 bg-cosmic-accent/10 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </ProfileCard>
+    );
+  }
 
   return (
-    <div className="cosmic-block rounded-lg p-space-md mb-space-lg">
+    <ProfileCard variant="compact">
       <h3 className="text-cosmic-text font-medium mb-space-md">
         {getText('stats')}
       </h3>
       
       <div className="grid grid-cols-2 gap-space-sm">
         {statsData.map((stat, index) => (
-          <div key={index} className="text-center p-space-sm rounded-lg bg-cosmic-accent/5">
-            <div className="flex items-center justify-center mb-1">
-              <stat.icon className={`w-4 h-4 ${stat.color}`} />
-            </div>
-            <div className={`text-lg font-bold ${stat.color}`}>
-              {stat.value}
-            </div>
-            <div className="text-xs text-cosmic-text/60">
-              {stat.label}
-            </div>
-          </div>
+          <ProfileMetric
+            key={index}
+            icon={stat.icon}
+            label={stat.label}
+            value={stat.value}
+            color={stat.color}
+          />
         ))}
       </div>
-    </div>
+    </ProfileCard>
   );
 };
