@@ -76,9 +76,9 @@ export const UnifiedPactDisplay: React.FC<UnifiedPactDisplayProps> = ({
 
   return (
     <div 
-      className="w-full flex flex-col items-center relative"
+      className="w-full flex flex-col items-center justify-center relative"
       style={{ 
-        minHeight: PACT_DISPLAY_CONSTANTS.CONTAINER.HEIGHT.MOBILE,
+        minHeight: 'auto',
         maxWidth: PACT_DISPLAY_CONSTANTS.CONTAINER.MAX_WIDTH 
       }}
     >

@@ -45,13 +45,13 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   const { stats } = useUserProgress();
   return (
-    <main className="flex-1 container mx-auto px-4 py-6 pt-20 flex flex-col items-center">
+    <main className="flex-1 container mx-auto px-4 py-6 pt-20 pb-20 flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
       {/* 1. User Greeting Section - First */}
       <UserGreetingSection />
 
-      {/* 2. PactDisplay */}
+      {/* 2. PactDisplay - Centered */}
       <div
-        className={`w-full relative z-50 ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        className={`w-full relative z-50 flex-1 flex items-center justify-center ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
       >
         {allPacts.length > 0 && currentPact ? (
           <PactDisplay
