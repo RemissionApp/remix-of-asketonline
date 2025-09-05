@@ -124,23 +124,24 @@ const UserProfileForm: React.FC = () => {
       const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
 
       // Update directly in Supabase
-      const { error } = await supabase
+      const { data: updateResult, error } = await supabase
         .from('profiles')
         .update({
           name: values.name,
           birth_date: formattedBirthDate,
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select();
 
       if (error) {
         throw error;
       }
 
-      // Also update the local store
-      await updateUserProfile({
-        name: values.name,
-        birthDate: values.birthDate,
-      });
+      console.log('Supabase update result:', updateResult);
+
+      // Reload profile data from Supabase to ensure local state is fresh
+      console.log('Reloading profile from Supabase after save...');
+      await loadUserProfile();
 
       // Update local form data
       setFormData({
@@ -157,19 +158,23 @@ const UserProfileForm: React.FC = () => {
         description: 'Ваши данные успешно сохранены',
       });
 
-      // Navigate based on profile completion and onboarding status
-      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
-      const profileComplete = isProfileComplete();
-      const onboardingComplete = checkOnboardingStatus();
-      
-      if (profileComplete && !onboardingComplete) {
-        navigate('/onboarding');
-      } else if (profileComplete && onboardingComplete) {
-        navigate('/main');
-      } else {
-        // Profile still not complete, stay here
-        console.warn('Profile save successful but still not complete');
-      }
+      // Wait a bit for state to update, then check profile completion
+      setTimeout(() => {
+        const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
+        const profileComplete = isProfileComplete();
+        const onboardingComplete = checkOnboardingStatus();
+        
+        console.log('After save - Profile complete:', profileComplete, 'Onboarding complete:', onboardingComplete);
+        
+        if (profileComplete && !onboardingComplete) {
+          navigate('/onboarding');
+        } else if (profileComplete && onboardingComplete) {
+          navigate('/main');
+        } else {
+          // Profile still not complete, stay here
+          console.warn('Profile save successful but still not complete');
+        }
+      }, 500);
     } catch (error: any) {
       logger.error('Error saving profile', error);
       toast({
