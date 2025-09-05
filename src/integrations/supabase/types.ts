@@ -747,6 +747,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_onboarding_state: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          current_step: string | null
+          onboarding_step_completed: boolean | null
+          preferences_step_completed: boolean | null
+          profile_step_completed: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          onboarding_step_completed?: boolean | null
+          preferences_step_completed?: boolean | null
+          profile_step_completed?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          onboarding_step_completed?: boolean | null
+          preferences_step_completed?: boolean | null
+          profile_step_completed?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       user_progress_summary: {
