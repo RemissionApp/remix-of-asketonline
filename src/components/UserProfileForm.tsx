@@ -143,8 +143,12 @@ const UserProfileForm: React.FC = () => {
 
       console.log('Supabase update successful:', updateResult);
 
-      // Reload profile data to sync with DB
+      // Force reload profile data to sync with DB
+      console.log('=== RELOADING PROFILE AFTER SAVE ===');
       await loadUserProfile();
+      
+      // Wait a bit for state to update
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Update local form data
       setFormData({
@@ -161,17 +165,25 @@ const UserProfileForm: React.FC = () => {
         description: 'Ваши данные успешно сохранены',
       });
 
-      // Check profile completion immediately after reload
-      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
-      const profileComplete = isProfileComplete();
-      const onboardingComplete = checkOnboardingStatus();
+      // Check profile completion immediately after reload with fresh state
+      const currentState = useAppStore.getState();
+      console.log('=== CHECKING COMPLETION STATUS ===');
+      console.log('Current userProfile state:', currentState.userProfile);
       
-      console.log('After save - Profile complete:', profileComplete, 'Onboarding complete:', onboardingComplete);
+      const profileComplete = currentState.isProfileComplete();
+      const onboardingComplete = currentState.checkOnboardingStatus();
+      
+      console.log('Profile complete:', profileComplete);
+      console.log('Onboarding complete:', onboardingComplete);
       
       if (profileComplete && !onboardingComplete) {
+        console.log('=== REDIRECTING TO ONBOARDING ===');
         navigate('/onboarding');
       } else if (profileComplete && onboardingComplete) {
+        console.log('=== REDIRECTING TO MAIN ===');
         navigate('/main');
+      } else {
+        console.log('=== STAYING ON PROFILE PAGE - NOT COMPLETE ===');
       }
     } catch (error: any) {
       logger.error('Error saving profile', error);

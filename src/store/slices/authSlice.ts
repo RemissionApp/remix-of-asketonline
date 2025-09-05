@@ -539,6 +539,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         .eq('id', user.id)
         .maybeSingle();
 
+      console.log('loadUserProfile - Raw data from DB:', data);
+
       if (error && error.code !== 'PGRST116') {
         logger.error('Error loading profile data', error);
         throw error;
@@ -666,29 +668,37 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       console.log('loadUserProfile - Birth date from DB:', data?.birth_date);
 
       // Update local state with full profile data
+      const updatedProfile = {
+        name: data?.name || '', // Use exact value from DB
+        email: user.email || '',
+        age: data?.birth_date
+          ? calculateAge(new Date(data.birth_date))
+          : null,
+        birthDate: data?.birth_date ? new Date(data.birth_date) : null,
+        totalDays: data?.total_days || 0,
+        energyPoints: data?.energy_points || 0,
+        goal: data?.goal || '',
+        isPro: isPro || false,
+        rank: data?.rank || 'seeker',
+        avatar_url: data?.avatar_url,
+        zodiacSign: data?.birth_date
+          ? getZodiacSign(new Date(data.birth_date)) || ''
+          : '',
+        achievements: mappedAchievements,
+        activeMission,
+      };
+
+      console.log('loadUserProfile - Setting state with profile:', updatedProfile);
+      
       set({
-        userProfile: {
-          name: data?.name || '', // Use exact value from DB
-          email: user.email || '',
-          age: data?.birth_date
-            ? calculateAge(new Date(data.birth_date))
-            : null,
-          birthDate: data?.birth_date ? new Date(data.birth_date) : null,
-          totalDays: data?.total_days || 0,
-          energyPoints: data?.energy_points || 0,
-          goal: data?.goal || '',
-          isPro: isPro || false,
-          rank: data?.rank || 'seeker',
-          avatar_url: data?.avatar_url,
-          zodiacSign: data?.birth_date
-            ? getZodiacSign(new Date(data.birth_date)) || ''
-            : '',
-          achievements: mappedAchievements,
-          activeMission,
-        },
+        userProfile: updatedProfile,
       });
 
-      logger.debug('User profile loaded successfully');
+      logger.debug('User profile loaded successfully', {
+        name: updatedProfile.name,
+        birthDate: updatedProfile.birthDate,
+        avatar_url: updatedProfile.avatar_url
+      });
 
       // Preload horoscope data if birth date exists
       if (data.birth_date) {
