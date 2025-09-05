@@ -42,19 +42,36 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
   // Get avatar URL from userProfile if available
   const getAvatarUrl = (): string => {
+    logger.debug('UserAvatar getAvatarUrl called', {
+      userProfile: userProfile,
+      avatar_url: userProfile?.avatar_url,
+      rank: userProfile?.rank,
+      user_id: user?.id
+    });
+
     // Check if userProfile has an avatar_url
     if (userProfile?.avatar_url) {
       logger.debug('Using avatar from userProfile', {
         avatar_url: userProfile.avatar_url,
       });
-      return userProfile.avatar_url;
+      // Add cache-busting timestamp for uploaded avatars
+      const cacheBuster = userProfile.avatar_url.includes('supabase') 
+        ? `${userProfile.avatar_url}?t=${Date.now()}` 
+        : userProfile.avatar_url;
+      
+      logger.debug('Final avatar URL with cache-busting', {
+        original_url: userProfile.avatar_url,
+        final_url: cacheBuster
+      });
+      
+      return cacheBuster;
     }
 
     // If no custom avatar, use rank-based default avatar
     logger.debug('Using default avatar based on rank', {
       rank: userProfile?.rank,
     });
-    return getAvatarImagePath(userProfile.rank as SpiritualRank);
+    return getAvatarImagePath(userProfile?.rank as SpiritualRank);
   };
 
   // Get path to avatar image based on rank
@@ -91,7 +108,21 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           className
         )}
       >
-        <AvatarImage src={getAvatarUrl()} alt={`${userProfile.name} avatar`} />
+        <AvatarImage 
+          src={getAvatarUrl()} 
+          alt={`${userProfile?.name || 'User'} avatar`}
+          onError={(e) => {
+            logger.error('Avatar image failed to load', {
+              src: e.currentTarget.src,
+              userProfile: userProfile?.avatar_url
+            });
+          }}
+          onLoad={() => {
+            logger.debug('Avatar image loaded successfully', {
+              src: getAvatarUrl()
+            });
+          }}
+        />
         <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
           {userProfile.name.substring(0, 2).toUpperCase()}
         </AvatarFallback>

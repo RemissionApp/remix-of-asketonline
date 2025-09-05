@@ -68,6 +68,14 @@ const AvatarUpload: React.FC = () => {
       // Reload profile from database to ensure sync
       await loadUserProfile();
 
+      // Debug: Check if profile was updated
+      const { userProfile: updatedProfile } = useAppStore.getState();
+      console.log('Avatar upload completed - profile state:', {
+        userProfile: updatedProfile,
+        avatar_url: updatedProfile?.avatar_url,
+        publicUrl: publicUrl
+      });
+
       // Clean up
       setShowConfirm(false);
       setSelectedFile(null);
