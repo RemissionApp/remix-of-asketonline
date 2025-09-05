@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { formatDate } from '@/utils/dateFormatUtils';
 import { createLogger } from '@/utils/logger';
 import AvatarUpload from './AvatarUpload';
@@ -105,7 +105,6 @@ const UserProfileForm: React.FC = () => {
   const onSubmit = async (values: z.infer<any>) => {
     console.log('=== FORM SUBMISSION STARTED ===');
     console.log('Form values received:', values);
-    console.log('Current user:', user);
     
     if (!user) {
       toast({
@@ -119,19 +118,12 @@ const UserProfileForm: React.FC = () => {
     setIsSaving(true);
 
     try {
-      logger.info('Saving profile data', {
-        name: values.name,
-        hasBirthDate: !!values.birthDate,
-      });
-
       // Format birthDate to YYYY-MM-DD for Supabase (ISO format)
       const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
-      console.log('Formatted birth date:', formattedBirthDate);
       
-      console.log('About to update Supabase with:', {
+      console.log('Updating Supabase with:', {
         name: values.name,
         birth_date: formattedBirthDate,
-        user_id: user.id
       });
 
       // Update directly in Supabase
@@ -151,21 +143,7 @@ const UserProfileForm: React.FC = () => {
 
       console.log('Supabase update successful:', updateResult);
 
-      // Verify the data was actually saved by fetching it again
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('profiles')
-        .select('name, birth_date')
-        .eq('id', user.id)
-        .single();
-        
-      if (verifyError) {
-        console.error('Error verifying saved data:', verifyError);
-      } else {
-        console.log('Verified data in database after save:', verifyData);
-      }
-
-      // Reload profile data from Supabase to ensure local state is fresh
-      console.log('Reloading profile from Supabase after save...');
+      // Reload profile data to sync with DB
       await loadUserProfile();
 
       // Update local form data
@@ -183,23 +161,18 @@ const UserProfileForm: React.FC = () => {
         description: 'Ваши данные успешно сохранены',
       });
 
-      // Wait a bit for state to update, then check profile completion
-      setTimeout(() => {
-        const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
-        const profileComplete = isProfileComplete();
-        const onboardingComplete = checkOnboardingStatus();
-        
-        console.log('After save - Profile complete:', profileComplete, 'Onboarding complete:', onboardingComplete);
-        
-        if (profileComplete && !onboardingComplete) {
-          navigate('/onboarding');
-        } else if (profileComplete && onboardingComplete) {
-          navigate('/main');
-        } else {
-          // Profile still not complete, stay here
-          console.warn('Profile save successful but still not complete');
-        }
-      }, 500);
+      // Check profile completion immediately after reload
+      const { isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
+      const profileComplete = isProfileComplete();
+      const onboardingComplete = checkOnboardingStatus();
+      
+      console.log('After save - Profile complete:', profileComplete, 'Onboarding complete:', onboardingComplete);
+      
+      if (profileComplete && !onboardingComplete) {
+        navigate('/onboarding');
+      } else if (profileComplete && onboardingComplete) {
+        navigate('/main');
+      }
     } catch (error: any) {
       logger.error('Error saving profile', error);
       toast({

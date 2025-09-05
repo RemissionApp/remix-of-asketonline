@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { UploadButton } from './avatar/UploadButton';
 import { ConfirmUpload } from './avatar/ConfirmUpload';
 import {
@@ -11,7 +11,7 @@ import {
 } from '@/utils/avatarStorage';
 
 const AvatarUpload: React.FC = () => {
-  const { user, userProfile, updateUserProfile } = useAppStore();
+  const { user, userProfile, updateUserProfile, loadUserProfile } = useAppStore();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -65,11 +65,8 @@ const AvatarUpload: React.FC = () => {
       // Update profile with new avatar URL
       await updateProfileAvatar(user.id, publicUrl);
 
-      // Update local state
-      updateUserProfile({
-        ...userProfile,
-        avatar_url: publicUrl,
-      });
+      // Reload profile from database to ensure sync
+      await loadUserProfile();
 
       // Clean up
       setShowConfirm(false);

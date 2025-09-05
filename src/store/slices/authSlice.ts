@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { AppState } from '../types';
-import { supabase, cleanupAuthState } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import { cleanupAuthState } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 import { defaultAchievements } from '../data/constants';
 import { AuthUser } from '@/types/api';
@@ -105,7 +106,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     const isComplete = !!(
       userProfile &&
       userProfile.name &&
-      userProfile.name !== 'Искатель' &&
       userProfile.name.trim() !== '' &&
       userProfile.birthDate
     );
@@ -230,11 +230,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         activeScreen: 'welcome',
         emailConfirmed: false,
         userProfile: {
-          name: 'Искатель',
+          name: '',
           email: '',
           age: null,
           energyPoints: 0,
-          goal: 'Познать свою истинную силу',
+          goal: '',
           isPro: false,
           rank: 'seeker',
           zodiacSign: '',
@@ -544,14 +544,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         throw error;
       }
 
-      // Если профиля нет, создаем его
+      // Если профиля нет, создаем минимальный профиль без имени по умолчанию
       if (!data) {
-        logger.info('Profile not found, creating new profile');
+        logger.info('Profile not found, creating new empty profile');
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
             id: user.id,
-            name: 'Искатель',
+            name: '', // Empty name instead of "Искатель"
             rank: 'seeker',
             total_days: 0,
             energy_points: 0,
@@ -567,7 +567,27 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         logger.info('Profile created successfully', {
           profileId: newProfile?.id,
         });
-        return newProfile;
+        
+        // Set empty profile data
+        set({
+          userProfile: {
+            name: '',
+            email: user.email || '',
+            age: null,
+            birthDate: null,
+            totalDays: 0,
+            energyPoints: 0,
+            goal: '',
+            isPro: false,
+            rank: 'seeker',
+            avatar_url: null,
+            zodiacSign: '',
+            achievements: [...defaultAchievements],
+            activeMission: undefined,
+          },
+        });
+        
+        return;
       }
 
       logger.debug('Profile data loaded', {
@@ -648,7 +668,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       // Update local state with full profile data
       set({
         userProfile: {
-          name: data?.name && data.name.trim() !== '' ? data.name : '', // Keep actual name from DB
+          name: data?.name || '', // Use exact value from DB
           email: user.email || '',
           age: data?.birth_date
             ? calculateAge(new Date(data.birth_date))
@@ -656,7 +676,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           birthDate: data?.birth_date ? new Date(data.birth_date) : null,
           totalDays: data?.total_days || 0,
           energyPoints: data?.energy_points || 0,
-          goal: data?.goal || 'Познать свою истинную силу',
+          goal: data?.goal || '',
           isPro: isPro || false,
           rank: data?.rank || 'seeker',
           avatar_url: data?.avatar_url,
