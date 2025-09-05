@@ -9,7 +9,14 @@ import { LogoutButton } from './LogoutButton';
 export const ProfileSection: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
-  const { userProfile } = useAppStore();
+  const { userProfile, loading, loadUserProfile } = useAppStore();
+
+  // Force load user profile on component mount
+  React.useEffect(() => {
+    console.log('ProfileSection - Current userProfile:', userProfile);
+    console.log('ProfileSection - Loading status:', loading);
+    loadUserProfile();
+  }, [loadUserProfile]);
 
   return (
     <div className="w-full">
@@ -25,7 +32,7 @@ export const ProfileSection: React.FC = () => {
           </div>
           <div>
             <h2 className="text-xl text-white font-serif">
-              {userProfile.name || t.auth?.defaultUserName || 'Искатель'}
+              {loading ? 'Загрузка...' : (userProfile.name && userProfile.name !== 'Искатель' ? userProfile.name : t.auth?.defaultUserName || 'Искатель')}
             </h2>
             {userProfile.birthDate && (
               <p className="text-cosmic-text/70">

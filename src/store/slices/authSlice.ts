@@ -101,13 +101,16 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   // Унифицированная функция проверки завершенности профиля
   isProfileComplete: () => {
     const { userProfile } = get();
-    return !!(
+    console.log('isProfileComplete check - userProfile:', userProfile);
+    const isComplete = !!(
       userProfile &&
       userProfile.name &&
       userProfile.name !== 'Искатель' &&
       userProfile.name.trim() !== '' &&
       userProfile.birthDate
     );
+    console.log('isProfileComplete result:', isComplete);
+    return isComplete;
   },
 
   // Унифицированная функция проверки завершенности onboarding
@@ -636,10 +639,16 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             }
           : undefined;
 
+      // Debug logging
+      console.log('loadUserProfile - Profile data from DB:', data);
+      console.log('loadUserProfile - User ID:', user.id);
+      console.log('loadUserProfile - Name from DB:', data?.name);
+      console.log('loadUserProfile - Birth date from DB:', data?.birth_date);
+
       // Update local state with full profile data
       set({
         userProfile: {
-          name: data?.name || 'Искатель',
+          name: data?.name && data.name.trim() !== '' ? data.name : 'Искатель',
           email: user.email || '',
           age: data?.birth_date
             ? calculateAge(new Date(data.birth_date))
