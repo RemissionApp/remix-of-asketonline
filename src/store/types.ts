@@ -41,6 +41,15 @@ export interface AppState {
   loading: boolean;
   emailConfirmed: boolean;
   updateProStatus: (isPro: boolean) => void;
+  
+  // Onboarding state
+  currentStep: 'profile' | 'preferences' | 'tour' | 'complete';
+  profileStepCompleted: boolean;
+  onboardingStepCompleted: boolean;
+  preferencesStepCompleted: boolean;
+  completedAt: Date | null;
+  lastSyncedAt: Date | null;
+  error: string | null;
 
   addPact: (
     pact: Omit<
@@ -125,4 +134,12 @@ export interface AppState {
 
   // Account deletion
   deleteAccount: (password: string) => Promise<void>;
+  
+  // Onboarding methods
+  loadOnboardingState: () => Promise<void>;
+  updateOnboardingStep: (step: 'profile' | 'preferences' | 'tour' | 'complete', completed?: boolean) => Promise<void>;
+  completeStep: (step: 'profile' | 'preferences' | 'tour') => Promise<void>;
+  resetOnboarding: () => Promise<void>;
+  isStepCompleted: (step: 'profile' | 'preferences' | 'tour' | 'complete') => boolean;
+  canProceedToStep: (step: 'profile' | 'preferences' | 'tour' | 'complete') => boolean;
 }

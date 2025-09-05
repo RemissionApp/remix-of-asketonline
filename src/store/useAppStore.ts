@@ -1,16 +1,18 @@
 import { create } from 'zustand';
 import { quotes } from './data/constants';
 import { AppState } from './types';
+import { OnboardingSlice } from './slices/onboardingSlice';
 import { createOptimizedUISlice } from './slices/optimizedUISlice';
 import { createPactsSlice } from './slices/pactsSlice';
 import { createUniverseSlice } from './slices/universeSlice';
 import { createGamificationSlice } from './slices/gamificationSlice';
 import { createProFeaturesSlice } from './slices/proFeaturesSlice';
 import { createAuthSlice } from './slices/authSlice';
+import { createOnboardingSlice } from './slices/onboardingSlice';
 import { defaultAchievements } from './data/constants';
 
 // Создание хранилища со всеми срезами
-export const useAppStore = create<AppState>()((set, get, api) => ({
+export const useAppStore = create<AppState & OnboardingSlice>()((set, get, api) => ({
   // Начальное состояние
   pacts: [],
   activeQuestions: [],
@@ -53,6 +55,7 @@ export const useAppStore = create<AppState>()((set, get, api) => ({
   ...createGamificationSlice(set, get, api),
   ...createProFeaturesSlice(set, get, api),
   ...createAuthSlice(set, get, api),
+  ...createOnboardingSlice(set, get, api),
 
   // Audio settings
   soundEnabled: true,

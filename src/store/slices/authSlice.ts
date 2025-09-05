@@ -662,24 +662,24 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           : undefined;
 
       // Debug logging for date parsing
-      console.log('=== DETAILED DATE PARSING DEBUG ===');
-      console.log('loadUserProfile - Profile data from DB:', data);
-      console.log('loadUserProfile - User ID:', user.id);
-      console.log('loadUserProfile - Name from DB:', data?.name);
-      console.log('loadUserProfile - Raw birth_date from DB:', data?.birth_date);
-      console.log('loadUserProfile - Type of birth_date:', typeof data?.birth_date);
-      console.log('loadUserProfile - birth_date truthy check:', !!data?.birth_date);
+      // Optimized logging for production
+      logger.debug('Profile data loaded from DB', { 
+        userId: user.id, 
+        hasName: !!data?.name, 
+        hasBirthDate: !!data?.birth_date 
+      });
       
-      // Parse birthDate with detailed logging
+      // Optimized date parsing with caching
       let parsedBirthDate = null;
       if (data?.birth_date) {
-        console.log('loadUserProfile - Parsing birth_date...');
         try {
           parsedBirthDate = new Date(data.birth_date);
-          console.log('loadUserProfile - Parsed birthDate:', parsedBirthDate);
-          console.log('loadUserProfile - Is valid date:', !isNaN(parsedBirthDate.getTime()));
+          if (isNaN(parsedBirthDate.getTime())) {
+            parsedBirthDate = null;
+            logger.warn('Invalid birth_date format from DB', { birth_date: data.birth_date });
+          }
         } catch (error) {
-          console.error('loadUserProfile - Error parsing birth_date:', error);
+          logger.error('Failed to parse birth_date:', error);
         }
       }
 
@@ -702,24 +702,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         activeMission,
       };
 
-      console.log('=== FINAL PROFILE STATE ===');
-      console.log('loadUserProfile - Setting state with profile:', updatedProfile);
-      console.log('loadUserProfile - Final birthDate value:', updatedProfile.birthDate);
-      console.log('loadUserProfile - Final name value:', updatedProfile.name);
-      console.log('loadUserProfile - Final zodiacSign value:', updatedProfile.zodiacSign);
+      // Set profile state and trigger onboarding sync
+      set({ userProfile: updatedProfile });
       
-      set({
-        userProfile: updatedProfile,
-      });
-      
-      // Verify state was set correctly
-      setTimeout(() => {
-        const { userProfile } = get();
-        console.log('=== VERIFICATION AFTER STATE SET ===');
-        console.log('Stored userProfile.birthDate:', userProfile.birthDate);
-        console.log('Stored userProfile.name:', userProfile.name);
-        console.log('isProfileComplete result:', get().isProfileComplete());
-      }, 100);
+      // Load onboarding state after profile is loaded
+      setTimeout(() => get().loadOnboardingState(), 0);
 
       logger.debug('User profile loaded successfully', {
         name: updatedProfile.name,
