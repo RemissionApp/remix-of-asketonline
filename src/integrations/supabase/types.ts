@@ -125,6 +125,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_limits: {
+        Row: {
+          cosmic_missions_count: number
+          created_at: string
+          date: string
+          id: string
+          meditations_count: number
+          universe_questions_count: number
+          updated_at: string
+          user_id: string
+          voice_calls_count: number
+        }
+        Insert: {
+          cosmic_missions_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          meditations_count?: number
+          universe_questions_count?: number
+          updated_at?: string
+          user_id: string
+          voice_calls_count?: number
+        }
+        Update: {
+          cosmic_missions_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          meditations_count?: number
+          universe_questions_count?: number
+          updated_at?: string
+          user_id?: string
+          voice_calls_count?: number
+        }
+        Relationships: []
+      }
       daily_reflections: {
         Row: {
           answer: string
