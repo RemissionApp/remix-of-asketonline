@@ -9,10 +9,12 @@ import { SwipeGestureHandler } from './SwipeGestureHandler';
 import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppStore } from '@/store/useAppStore';
+import { useDailyLimits } from '@/hooks/useDailyLimits';
 
 export const VoiceCallInterface: React.FC = () => {
   const { language } = useAppStore();
   const { toast } = useToast();
+  const { updateUsage } = useDailyLimits();
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
@@ -54,6 +56,9 @@ export const VoiceCallInterface: React.FC = () => {
 
     try {
       await startConversation();
+
+      // Update usage count for voice calls
+      await updateUsage('voice_call');
 
       // Haptic feedback for successful connection
       if ('vibrate' in navigator) {

@@ -81,3 +81,9 @@ url = ""
 [functions]
 [functions.generate-daily-advice]
 verify_jwt = true
+
+[functions.check-daily-limits]
+verify_jwt = true
+
+[functions.update-daily-limits]
+verify_jwt = true

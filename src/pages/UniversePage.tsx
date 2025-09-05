@@ -12,11 +12,16 @@ import { UniverseAnswer } from '@/components/universe/UniverseAnswer';
 import { PreviousQuestions } from '@/components/universe/PreviousQuestions';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { PageHeader } from '@/components/PageHeader';
+import { useDailyLimits } from '@/hooks/useDailyLimits';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
+import { LimitIndicator } from '@/components/ui/LimitIndicator';
+import { toast } from 'sonner';
 
 const UniversePage: React.FC = () => {
   const { askUniverse, activeQuestions, userProfile, language, pacts } =
     useAppStore();
   const { generateAndPlaySpeech, stopSpeech } = useTextToSpeech();
+  const { limits, updateUsage } = useDailyLimits();
   const [isAsking, setIsAsking] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState<null | {
     question: string;
@@ -37,7 +42,18 @@ const UniversePage: React.FC = () => {
   // Determine if user has PRO access
   const isPro = userProfile?.isPro || false;
 
-  const handleAskUniverse = (question: string) => {
+  const handleAskUniverse = async (question: string) => {
+    // Check limits before asking
+    if (!limits?.universe_questions.canUse) {
+      const errorText = language === 'ru' 
+        ? 'Достигнут дневной лимит вопросов. Обновитесь до PRO для большего доступа.'
+        : language === 'es'
+          ? 'Has alcanzado el límite diario de preguntas. Actualiza a PRO para más acceso.'
+          : 'Daily question limit reached. Upgrade to PRO for more access.';
+      toast.error(errorText);
+      return;
+    }
+
     setIsAsking(true);
 
     // Effect of "Universe thinking"
@@ -48,6 +64,9 @@ const UniversePage: React.FC = () => {
           question: response.question,
           answer: response.answer,
         });
+
+        // Update usage count
+        await updateUsage('universe_question');
 
         // Автоматически произносим фразу при получении ответа
         const announcementText =
@@ -105,11 +124,39 @@ const UniversePage: React.FC = () => {
           <ThinkingAnimation />
         ) : (
           <div className="w-full animate-fade-in">
-            <QuestionForm
-              onSubmit={handleAskUniverse}
-              isLoading={isAsking}
-              language={language}
-            />
+            {/* Show limit indicator */}
+            {limits && (
+              <div className="mb-6">
+                <LimitIndicator
+                  used={limits.universe_questions.used}
+                  limit={limits.universe_questions.limit}
+                  label={
+                    language === 'ru' ? 'Вопросы Вселенной сегодня' :
+                    language === 'es' ? 'Preguntas del Universo hoy' :
+                    'Universe Questions Today'
+                  }
+                  isPro={limits.isPro}
+                />
+              </div>
+            )}
+
+            {/* Show upgrade prompt if limit reached */}
+            {limits && !limits.universe_questions.canUse ? (
+              <UpgradePrompt 
+                feature={
+                  language === 'ru' ? 'вопросов Вселенной' :
+                  language === 'es' ? 'preguntas del Universo' :
+                  'Universe questions'
+                }
+                currentUsage={`${limits.universe_questions.used}/${limits.universe_questions.limit}`}
+              />
+            ) : (
+              <QuestionForm
+                onSubmit={handleAskUniverse}
+                isLoading={isAsking}
+                language={language}
+              />
+            )}
 
             {/* Only show Chat Preview for all users, but with PRO overlay for non-pro */}
             <div className="mt-10">

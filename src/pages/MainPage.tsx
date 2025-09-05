@@ -13,6 +13,7 @@ import { createLogger } from '@/utils/logger';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
+import { DailyUsageStats } from '@/components/DailyUsageStats';
 
 const MainPage: React.FC = () => {
   const {

@@ -12,12 +12,16 @@ import { useFreeMeditations } from '@/data/meditationData';
 import { PageHeader } from '@/components/PageHeader';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { useDailyLimits } from '@/hooks/useDailyLimits';
+import { LimitIndicator } from '@/components/ui/LimitIndicator';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 const MeditationPage: React.FC = () => {
   const { userProfile } = useAppStore();
   const { t } = useTranslations();
   const [selectedCategory, setSelectedCategory] = useState('morning');
   const navigate = useNavigate();
+  const { limits } = useDailyLimits();
 
   // Check if user has PRO subscription
   const isPro = userProfile.isPro;
@@ -40,6 +44,27 @@ const MeditationPage: React.FC = () => {
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-6">
         <div className="w-full max-w-lg flex flex-col items-center">
+          {/* Show limit indicator for non-PRO users */}
+          {limits && !limits.isPro && (
+            <div className="mb-6 w-full">
+              <LimitIndicator
+                used={limits.meditations.used}
+                limit={limits.meditations.limit}
+                label="Медитации сегодня"
+                isPro={limits.isPro}
+              />
+            </div>
+          )}
+
+          {/* Show upgrade prompt if limit reached for non-PRO */}
+          {limits && !limits.isPro && !limits.meditations.canUse ? (
+            <UpgradePrompt 
+              feature="медитаций"
+              currentUsage={`${limits.meditations.used}/${limits.meditations.limit}`}
+              className="mb-6"
+            />
+          ) : null}
+
           <Tabs
             defaultValue="morning"
             className="w-full max-w-lg"

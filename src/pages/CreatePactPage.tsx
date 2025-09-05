@@ -10,12 +10,15 @@ import { useNavigate } from 'react-router-dom';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { PageHeader } from '@/components/PageHeader';
+import { useDailyLimits } from '@/hooks/useDailyLimits';
+import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
+  const { limits } = useDailyLimits();
 
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -403,6 +406,9 @@ const CreatePactPage: React.FC = () => {
   // Don't show the standard UI for the oath screen
   const showStandardLayout = step < 3;
 
+  // Check if user can create new pacts
+  const canCreatePact = !limits || limits.pacts.canUse;
+
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
       <StarField starCount={100} />
@@ -416,7 +422,18 @@ const CreatePactPage: React.FC = () => {
 
           {/* Main content */}
           <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-4 pt-16 sm:pt-20 py-4 mx-auto w-full items-center justify-center">
-            {renderStep()}
+            {!canCreatePact ? (
+              <UpgradePrompt 
+                feature={
+                  language === 'ru' ? 'аскез' :
+                  language === 'es' ? 'ascetismos' :
+                  'asceticisms'
+                }
+                currentUsage={limits ? `${limits.pacts.used}/${limits.pacts.limit}` : ''}
+              />
+            ) : (
+              renderStep()
+            )}
           </div>
 
           {/* Bottom */}
