@@ -97,12 +97,11 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({
             selected={tempBirthDate || undefined}
             onSelect={date => setTempBirthDate(date)}
             disabled={date => {
-              const today = new Date();
-              const maxYear = today.getFullYear();
+              const minDate = new Date('1930-01-01');
+              const maxDate = new Date('2025-12-31');
               return (
-                date > today ||
-                date.getFullYear() > maxYear ||
-                date < new Date('1900-01-01')
+                date > maxDate ||
+                date < minDate
               );
             }}
             initialFocus
