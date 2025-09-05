@@ -76,6 +76,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 
   // Handle form submission without navigation (let parent handle it)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('=== ProfileForm handleSubmit called ===');
+    console.log('Form values:', values);
     await onSubmit(values);
   };
 

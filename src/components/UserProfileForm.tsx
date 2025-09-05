@@ -103,6 +103,10 @@ const UserProfileForm: React.FC = () => {
 
   // Handle form submission
   const onSubmit = async (values: z.infer<any>) => {
+    console.log('=== FORM SUBMISSION STARTED ===');
+    console.log('Form values received:', values);
+    console.log('Current user:', user);
+    
     if (!user) {
       toast({
         title: 'Ошибка',
@@ -122,6 +126,13 @@ const UserProfileForm: React.FC = () => {
 
       // Format birthDate to YYYY-MM-DD for Supabase (ISO format)
       const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
+      console.log('Formatted birth date:', formattedBirthDate);
+      
+      console.log('About to update Supabase with:', {
+        name: values.name,
+        birth_date: formattedBirthDate,
+        user_id: user.id
+      });
 
       // Update directly in Supabase
       const { data: updateResult, error } = await supabase
@@ -134,10 +145,24 @@ const UserProfileForm: React.FC = () => {
         .select();
 
       if (error) {
+        console.error('Supabase update error:', error);
         throw error;
       }
 
-      console.log('Supabase update result:', updateResult);
+      console.log('Supabase update successful:', updateResult);
+
+      // Verify the data was actually saved by fetching it again
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('profiles')
+        .select('name, birth_date')
+        .eq('id', user.id)
+        .single();
+        
+      if (verifyError) {
+        console.error('Error verifying saved data:', verifyError);
+      } else {
+        console.log('Verified data in database after save:', verifyData);
+      }
 
       // Reload profile data from Supabase to ensure local state is fresh
       console.log('Reloading profile from Supabase after save...');
