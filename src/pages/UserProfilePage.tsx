@@ -55,13 +55,16 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      // Use centralized profile completion check from store
-      const { isProfileComplete } = useAppStore.getState();
+      // Load user profile first, then check completion
+      const { loadUserProfile, isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
+      await loadUserProfile();
+      
       const profileComplete = isProfileComplete();
+      console.log('UserProfilePage - Profile complete check:', profileComplete);
 
       if (profileComplete) {
-        const { checkOnboardingStatus } = useAppStore.getState();
         const isOnboardingComplete = checkOnboardingStatus();
+        console.log('UserProfilePage - Onboarding complete check:', isOnboardingComplete);
         if (!isOnboardingComplete) {
           navigate('/onboarding');
         } else {

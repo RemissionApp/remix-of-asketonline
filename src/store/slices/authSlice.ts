@@ -648,7 +648,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       // Update local state with full profile data
       set({
         userProfile: {
-          name: data?.name && data.name.trim() !== '' ? data.name : 'Искатель',
+          name: data?.name || '', // Don't set default name here - let the component handle it
           email: user.email || '',
           age: data?.birth_date
             ? calculateAge(new Date(data.birth_date))

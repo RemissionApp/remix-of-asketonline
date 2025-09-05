@@ -5,10 +5,11 @@ import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
 import { StarField } from '@/components/StarField';
 import { SupportedLanguage } from '@/hooks/useTranslations';
+import { getNavigationRoute } from '@/utils/authUtils';
 
 const LanguagePage = () => {
   const navigate = useNavigate();
-  const { language, setLanguage } = useAppStore();
+  const { language, setLanguage, user, loadUserProfile } = useAppStore();
   const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(
     language as SupportedLanguage
   );
@@ -16,18 +17,37 @@ const LanguagePage = () => {
 
   useEffect(() => {
     setIsReady(true);
-  }, []);
+    
+    // Check if user is already authenticated and has complete profile
+    const checkAuthAndRedirect = async () => {
+      if (user) {
+        await loadUserProfile();
+        const route = getNavigationRoute();
+        console.log('LanguagePage - User authenticated, redirecting to:', route);
+        navigate(route);
+      }
+    };
+    
+    checkAuthAndRedirect();
+  }, [user, loadUserProfile, navigate]);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     setLanguage(selectedLang);
 
-    // Check if user was already onboarded
-    const onboarded = localStorage.getItem('onboarded');
-
-    if (onboarded === 'true') {
-      navigate('/login');
+    // If user is already authenticated, determine correct route
+    if (user) {
+      await loadUserProfile();
+      const route = getNavigationRoute();
+      console.log('LanguagePage - handleContinue: User authenticated, redirecting to:', route);
+      navigate(route);
     } else {
-      navigate('/profile-setup');
+      // For non-authenticated users, check localStorage for onboarding status
+      const onboarded = localStorage.getItem('onboarded');
+      if (onboarded === 'true') {
+        navigate('/login');
+      } else {
+        navigate('/profile-setup');
+      }
     }
   };
 
