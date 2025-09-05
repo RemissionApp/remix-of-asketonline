@@ -661,38 +661,65 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             }
           : undefined;
 
-      // Debug logging
+      // Debug logging for date parsing
+      console.log('=== DETAILED DATE PARSING DEBUG ===');
       console.log('loadUserProfile - Profile data from DB:', data);
       console.log('loadUserProfile - User ID:', user.id);
       console.log('loadUserProfile - Name from DB:', data?.name);
-      console.log('loadUserProfile - Birth date from DB:', data?.birth_date);
+      console.log('loadUserProfile - Raw birth_date from DB:', data?.birth_date);
+      console.log('loadUserProfile - Type of birth_date:', typeof data?.birth_date);
+      console.log('loadUserProfile - birth_date truthy check:', !!data?.birth_date);
+      
+      // Parse birthDate with detailed logging
+      let parsedBirthDate = null;
+      if (data?.birth_date) {
+        console.log('loadUserProfile - Parsing birth_date...');
+        try {
+          parsedBirthDate = new Date(data.birth_date);
+          console.log('loadUserProfile - Parsed birthDate:', parsedBirthDate);
+          console.log('loadUserProfile - Is valid date:', !isNaN(parsedBirthDate.getTime()));
+        } catch (error) {
+          console.error('loadUserProfile - Error parsing birth_date:', error);
+        }
+      }
 
       // Update local state with full profile data
       const updatedProfile = {
         name: data?.name || '', // Use exact value from DB
         email: user.email || '',
-        age: data?.birth_date
-          ? calculateAge(new Date(data.birth_date))
-          : null,
-        birthDate: data?.birth_date ? new Date(data.birth_date) : null,
+        age: parsedBirthDate ? calculateAge(parsedBirthDate) : null,
+        birthDate: parsedBirthDate,
         totalDays: data?.total_days || 0,
         energyPoints: data?.energy_points || 0,
         goal: data?.goal || '',
         isPro: isPro || false,
         rank: data?.rank || 'seeker',
         avatar_url: data?.avatar_url,
-        zodiacSign: data?.birth_date
-          ? getZodiacSign(new Date(data.birth_date)) || ''
+        zodiacSign: parsedBirthDate
+          ? getZodiacSign(parsedBirthDate) || ''
           : '',
         achievements: mappedAchievements,
         activeMission,
       };
 
+      console.log('=== FINAL PROFILE STATE ===');
       console.log('loadUserProfile - Setting state with profile:', updatedProfile);
+      console.log('loadUserProfile - Final birthDate value:', updatedProfile.birthDate);
+      console.log('loadUserProfile - Final name value:', updatedProfile.name);
+      console.log('loadUserProfile - Final zodiacSign value:', updatedProfile.zodiacSign);
       
       set({
         userProfile: updatedProfile,
       });
+      
+      // Verify state was set correctly
+      setTimeout(() => {
+        const { userProfile } = get();
+        console.log('=== VERIFICATION AFTER STATE SET ===');
+        console.log('Stored userProfile.birthDate:', userProfile.birthDate);
+        console.log('Stored userProfile.name:', userProfile.name);
+        console.log('isProfileComplete result:', get().isProfileComplete());
+      }, 100);
 
       logger.debug('User profile loaded successfully', {
         name: updatedProfile.name,
