@@ -95,7 +95,7 @@ serve(async (req) => {
       pacts: 5,
     } : {
       universe_questions: 1,
-      voice_calls: 0,
+      voice_calls: 1,
       meditations: 1,
       cosmic_missions: 1,
       pacts: 1,
