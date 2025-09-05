@@ -8,11 +8,24 @@ interface ProfileDataDisplayProps {
 }
 
 const ProfileDataDisplay: React.FC<ProfileDataDisplayProps> = ({ age }) => {
-  const { language } = useAppStore();
+  const { language, userProfile } = useAppStore();
   const { t, getYearWord } = useTranslations();
 
   return (
     <>
+      {userProfile.name && userProfile.name.trim() !== '' && (
+        <div className="mb-6 text-cosmic-accent font-medium font-sans">
+          {userProfile.name}
+        </div>
+      )}
+      
+      {userProfile.birthDate && (
+        <div className="mb-6 text-cosmic-secondary font-medium font-sans">
+          {t.userProfile?.birthDate || 'Дата рождения'}:{' '}
+          {formatDateLong(userProfile.birthDate, language)}
+        </div>
+      )}
+      
       {age !== null && (
         <div className="mb-6 text-cosmic-secondary font-medium font-sans">
           {t.userProfile?.age || 'Возраст'}: {age} {getYearWord(age)}

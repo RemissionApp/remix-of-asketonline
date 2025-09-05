@@ -65,9 +65,10 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 
   // Update form values when defaultValues changes
   useEffect(() => {
-    if (defaultValues) {
+    if (defaultValues && (defaultValues.name !== form.getValues('name') || defaultValues.birthDate !== form.getValues('birthDate'))) {
+      console.log('ProfileForm - Resetting form with defaultValues:', defaultValues);
       form.reset({
-        name: defaultValues.name,
+        name: defaultValues.name || '',
         birthDate: defaultValues.birthDate || new Date(),
       });
     }

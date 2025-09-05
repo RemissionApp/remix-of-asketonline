@@ -120,11 +120,8 @@ const UserProfileForm: React.FC = () => {
         hasBirthDate: !!values.birthDate,
       });
 
-      // Format birthDate to YYYY-MM-DD for Supabase
-      const formattedBirthDate = formatDate(values.birthDate, 'en', false)
-        .split('/')
-        .reverse()
-        .join('-');
+      // Format birthDate to YYYY-MM-DD for Supabase (ISO format)
+      const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
 
       // Update directly in Supabase
       const { error } = await supabase
@@ -208,8 +205,8 @@ const UserProfileForm: React.FC = () => {
           onSubmit={onSubmit}
           isSaving={isSaving}
           defaultValues={{
-            name: userProfile.name || '',
-            birthDate: userProfile.birthDate || new Date(),
+            name: formData.name || userProfile.name || '',
+            birthDate: formData.birthDate || userProfile.birthDate || new Date(),
           }}
         />
       )}
