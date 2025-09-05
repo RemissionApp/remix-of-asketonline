@@ -208,7 +208,7 @@ const UserProfileForm: React.FC = () => {
           onSubmit={onSubmit}
           isSaving={isSaving}
           defaultValues={{
-            name: userProfile.name && userProfile.name !== 'Искатель' ? userProfile.name : '',
+            name: userProfile.name || '',
             birthDate: userProfile.birthDate || new Date(),
           }}
         />
