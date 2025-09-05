@@ -113,7 +113,7 @@ const MainPage: React.FC = () => {
       <StarField starCount={100} />
 
       {/* Fixed TopBar at the top */}
-      <div className="fixed top-0 left-0 right-0 z-50">
+      <div className="fixed top-0 left-0 right-0 z-[100]">
         <TopBar />
       </div>
 

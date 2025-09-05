@@ -91,7 +91,7 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
       />
 
       {/* Break Ascesis Dialog */}
-      <div className="relative z-[300]">
+      <div className="relative z-40">
         <BreakAscesisDialog
           pact={currentPact}
           isOpen={showBreakDialog}
