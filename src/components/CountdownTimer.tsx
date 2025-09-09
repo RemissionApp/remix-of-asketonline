@@ -120,6 +120,33 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     return () => clearInterval(timer);
   }, [calculateTimeLeft]);
 
+  if (!activePact) {
+    return (
+      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
+        <div className="flex items-center justify-center text-xs text-muted-foreground">
+          No active pact
+        </div>
+      </div>
+    );
+  }
+
+  // Show status message for inactive pacts
+  if (activePact.status !== 'active') {
+    const statusMessages = {
+      completed: 'Completed',
+      failed: 'Canceled',
+      planned: 'Planned'
+    };
+    
+    return (
+      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
+        <div className="flex items-center justify-center text-xs text-muted-foreground">
+          {statusMessages[activePact.status as keyof typeof statusMessages] || 'Inactive'}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
       <div className="flex items-center justify-center text-xs">

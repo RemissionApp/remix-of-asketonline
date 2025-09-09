@@ -72,9 +72,33 @@ const MainPage: React.FC = () => {
     handleAsyncError,
   ]);
 
-  // Get all pacts (including failed ones for the slider)
-  const allPacts = pacts || [];
+  // Get all pacts (including failed ones for the slider) - sorted to prioritize active pacts
+  const allPacts = (pacts || []).sort((a, b) => {
+    // Sort by status priority: active > completed > failed
+    const statusPriority = { active: 3, completed: 2, failed: 1 };
+    const aPriority = statusPriority[a.status as keyof typeof statusPriority] || 0;
+    const bPriority = statusPriority[b.status as keyof typeof statusPriority] || 0;
+    
+    if (aPriority !== bPriority) {
+      return bPriority - aPriority; // Higher priority first
+    }
+    
+    // Within same status, sort by creation date (newest first)
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
   const activePacts = pacts?.filter(p => p.status === 'active') || [];
+
+  // Auto-select the first active pact or most recent pact when pacts change
+  useEffect(() => {
+    if (allPacts.length > 0) {
+      const firstActivePactIndex = allPacts.findIndex(p => p.status === 'active');
+      const targetIndex = firstActivePactIndex >= 0 ? firstActivePactIndex : 0;
+      
+      if (currentPactIndex !== targetIndex) {
+        setCurrentPactIndex(targetIndex);
+      }
+    }
+  }, [allPacts.length, allPacts]);
 
   // Get current pact from all pacts for slider
   const currentPact = allPacts[currentPactIndex] || null;
