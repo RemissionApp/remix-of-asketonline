@@ -64,18 +64,21 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     }
 
     const now = new Date();
-    const createdAtDate = new Date(activePact.created_at);
     
-    // Use more robust date calculation instead of setDate()
-    const endDate = new Date(createdAtDate.getTime() + (activePact.duration * 24 * 60 * 60 * 1000));
+    // Use the start_date if available, otherwise fall back to created_at
+    const startDate = new Date(activePact.start_date || activePact.created_at);
+    
+    // Calculate end date: start + duration days
+    const endDate = new Date(startDate.getTime() + (activePact.duration * 24 * 60 * 60 * 1000));
     
     // Debug logging
     console.log('CountdownTimer Debug:', {
       activePact: activePact.title,
-      createdAt: createdAtDate.toISOString(),
+      startDate: startDate.toISOString(),
       duration: activePact.duration,
       endDate: endDate.toISOString(),
-      now: now.toISOString()
+      now: now.toISOString(),
+      difference: endDate.getTime() - now.getTime()
     });
 
     const difference = endDate.getTime() - now.getTime();
