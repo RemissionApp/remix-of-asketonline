@@ -44,10 +44,20 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     if (!pacts?.length) return null;
     
     if (pactId) {
-      return pacts.find(p => p.id === pactId) || null;
+      // Use the specific pact ID provided
+      const foundPact = pacts.find(p => p.id === pactId);
+      console.log('CountdownTimer: Using specific pact ID:', pactId, foundPact ? `found ${foundPact.title}` : 'not found');
+      return foundPact || null;
     }
     
-    return pacts.find(p => p.status === 'active') || null;
+    // Fallback: find the most recent active pact
+    const activePacts = pacts.filter(p => p.status === 'active');
+    const mostRecentActive = activePacts.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )[0];
+    
+    console.log('CountdownTimer: No pactId provided, using most recent active:', mostRecentActive ? `${mostRecentActive.title} (${mostRecentActive.id})` : 'none found');
+    return mostRecentActive || null;
   }, [pacts, pactId]);
 
   // Stable callback for time calculation
