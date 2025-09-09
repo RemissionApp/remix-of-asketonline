@@ -165,25 +165,30 @@ const UserProfileForm: React.FC = () => {
         description: 'Ваши данные успешно сохранены',
       });
 
-      // Check profile completion immediately after reload with fresh state
-      const currentState = useAppStore.getState();
-      console.log('=== CHECKING COMPLETION STATUS ===');
-      console.log('Current userProfile state:', currentState.userProfile);
-      
-      const profileComplete = currentState.isProfileComplete();
-      const onboardingComplete = currentState.checkOnboardingStatus();
-      
-      console.log('Profile complete:', profileComplete);
-      console.log('Onboarding complete:', onboardingComplete);
-      
-      if (profileComplete && !onboardingComplete) {
-        console.log('=== REDIRECTING TO ONBOARDING ===');
-        navigate('/onboarding');
-      } else if (profileComplete && onboardingComplete) {
-        console.log('=== REDIRECTING TO MAIN ===');
-        navigate('/main');
+      // Only redirect if not on account settings page
+      if (location.pathname !== '/account-settings') {
+        // Check profile completion immediately after reload with fresh state
+        const currentState = useAppStore.getState();
+        console.log('=== CHECKING COMPLETION STATUS ===');
+        console.log('Current userProfile state:', currentState.userProfile);
+        
+        const profileComplete = currentState.isProfileComplete();
+        const onboardingComplete = currentState.checkOnboardingStatus();
+        
+        console.log('Profile complete:', profileComplete);
+        console.log('Onboarding complete:', onboardingComplete);
+        
+        if (profileComplete && !onboardingComplete) {
+          console.log('=== REDIRECTING TO ONBOARDING ===');
+          navigate('/onboarding');
+        } else if (profileComplete && onboardingComplete) {
+          console.log('=== REDIRECTING TO MAIN ===');
+          navigate('/main');
+        } else {
+          console.log('=== STAYING ON PROFILE PAGE - NOT COMPLETE ===');
+        }
       } else {
-        console.log('=== STAYING ON PROFILE PAGE - NOT COMPLETE ===');
+        console.log('=== ON ACCOUNT SETTINGS - NO REDIRECT ===');
       }
     } catch (error: any) {
       logger.error('Error saving profile', error);
