@@ -993,9 +993,27 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      cleanup_old_audit_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       create_verification_code: {
         Args: { p_code: string; p_email: string }
         Returns: string
+      }
+      get_table_performance_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          index_size: string
+          row_count: number
+          table_name: string
+          table_size: string
+          total_size: string
+        }[]
+      }
+      validate_user_operation: {
+        Args: { operation_type: string; target_user_id: string }
+        Returns: boolean
       }
       validate_verification_code: {
         Args: { p_code: string; p_email: string }
