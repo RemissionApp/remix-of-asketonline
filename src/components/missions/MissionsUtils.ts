@@ -1,4 +1,5 @@
 import { Mission } from '@/types';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export const filterMissions = (
   missions: Mission[],
@@ -13,6 +14,7 @@ export const filterMissions = (
 };
 
 export const getPageTitle = (language: 'en' | 'ru' | 'es') => {
+  const { t } = useTranslations();
   switch (language) {
     case 'ru':
       return 'Космические миссии';

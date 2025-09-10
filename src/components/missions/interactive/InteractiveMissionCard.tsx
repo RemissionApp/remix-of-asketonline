@@ -386,6 +386,7 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
             handleChoice(choiceId);
             setShowChoiceModal(false);
           }}
+          missionId={mission.id}
         />
       )}
 
@@ -398,6 +399,7 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
             await handleReflection(answer);
             setShowReflectionForm(false);
           }}
+          missionId={mission.id}
         />
       )}
 

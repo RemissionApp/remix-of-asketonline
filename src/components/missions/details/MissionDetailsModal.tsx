@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, Target, Trophy, Calendar, Star } from 'lucide-react';
 import { useMissionState } from '@/hooks/useMissionState';
+import { useMissionTranslations } from '@/hooks/useMissionTranslations';
 
 interface MissionDetailsModalProps {
   mission: Mission | null;
@@ -20,10 +21,16 @@ export const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
   onClose,
 }) => {
   const { language } = useAppStore();
+  const { getTranslatedMissionTitle, getTranslatedMissionDescription, getTranslatedMissionRequirements } = useMissionTranslations();
 
   if (!mission) return null;
 
   const missionState = useMissionState(mission);
+  
+  // Get translated mission data
+  const translatedTitle = getTranslatedMissionTitle(mission.id, mission.title);
+  const translatedDescription = getTranslatedMissionDescription(mission.id, mission.description);
+  const translatedRequirements = getTranslatedMissionRequirements(mission.id, mission.requirements);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -52,7 +59,7 @@ export const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
         <DialogHeader>
           <DialogTitle className="text-cosmic-gold text-xl flex items-center gap-2">
             {getCategoryIcon(mission.category)}
-            {mission.title}
+            {translatedTitle}
           </DialogTitle>
         </DialogHeader>
 
@@ -174,7 +181,7 @@ export const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
             )}
 
             {/* Mission Requirements */}
-            {mission.requirements && mission.requirements.length > 0 && (
+            {translatedRequirements && translatedRequirements.length > 0 && (
               <div className="space-y-3 p-4 bg-cosmic-silver/10 rounded-lg border border-cosmic-silver/30">
                 <h3 className="font-semibold text-cosmic-gold flex items-center gap-2">
                   <Star className="w-4 h-4" />
@@ -182,10 +189,10 @@ export const MissionDetailsModal: React.FC<MissionDetailsModalProps> = ({
                 </h3>
                 
                 <div className="space-y-1">
-                  {mission.requirements.map((req, index) => (
+                  {translatedRequirements.map((req, index) => (
                     <div key={index} className="text-sm text-cosmic-silver flex items-center gap-2">
                       <span className="text-cosmic-accent">•</span>
-                      <span>{typeof req === 'string' ? req : `${req.type}: ${req.count}`}</span>
+                      <span>{req}</span>
                     </div>
                   ))}
                 </div>

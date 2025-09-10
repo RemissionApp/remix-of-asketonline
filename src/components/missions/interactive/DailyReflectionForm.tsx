@@ -5,12 +5,14 @@ import { useAppStore } from '@/store/useAppStore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { useMissionTranslations } from '@/hooks/useMissionTranslations';
 
 interface DailyReflectionFormProps {
   isOpen: boolean;
   onClose: () => void;
   question: DailyQuestion;
   onSubmit: (answer: any) => void;
+  missionId?: string;
 }
 
 export const DailyReflectionForm: React.FC<DailyReflectionFormProps> = ({
@@ -18,11 +20,16 @@ export const DailyReflectionForm: React.FC<DailyReflectionFormProps> = ({
   onClose,
   question,
   onSubmit,
+  missionId,
 }) => {
   const { language } = useAppStore();
+  const { getTranslatedDailyQuestion } = useMissionTranslations();
   const [textAnswer, setTextAnswer] = useState('');
   const [scaleAnswer, setScaleAnswer] = useState([5]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+
+  // Get translated question if available
+  const translatedQuestion = missionId ? getTranslatedDailyQuestion(missionId, question.day, question.question) : question.question;
 
   const handleSubmit = async () => {
     let answer;
@@ -169,7 +176,7 @@ export const DailyReflectionForm: React.FC<DailyReflectionFormProps> = ({
 
         <div className="space-y-6">
           <div className="text-center p-4 bg-cosmic-purple/10 rounded-lg border border-cosmic-purple/30">
-            <p className="text-white">{question.question}</p>
+            <p className="text-white">{translatedQuestion}</p>
           </div>
 
           {renderInput()}

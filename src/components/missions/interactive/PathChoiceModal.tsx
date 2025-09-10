@@ -3,12 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ChoiceEvent } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { Button } from '@/components/ui/button';
+import { useMissionTranslations } from '@/hooks/useMissionTranslations';
 
 interface PathChoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   choiceEvent: ChoiceEvent;
   onChoice: (choiceId: string) => void;
+  missionId?: string;
 }
 
 export const PathChoiceModal: React.FC<PathChoiceModalProps> = ({
@@ -16,26 +18,31 @@ export const PathChoiceModal: React.FC<PathChoiceModalProps> = ({
   onClose,
   choiceEvent,
   onChoice,
+  missionId,
 }) => {
   const { language } = useAppStore();
+  const { getTranslatedChoiceEvent } = useMissionTranslations();
 
   const handleChoice = (choiceId: string) => {
     onChoice(choiceId);
     onClose();
   };
 
+  // Get translated choice event if available
+  const translatedEvent = missionId ? getTranslatedChoiceEvent(missionId, choiceEvent.id) : null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-cosmic-dark border-cosmic-accent/30 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-cosmic-gold text-center">
-            {choiceEvent.title}
+            {translatedEvent?.title || choiceEvent.title}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <p className="text-cosmic-silver text-center">
-            {choiceEvent.description}
+            {translatedEvent?.description || choiceEvent.description}
           </p>
 
           <div className="space-y-3">
@@ -51,7 +58,7 @@ export const PathChoiceModal: React.FC<PathChoiceModalProps> = ({
                   </div>
                   <div className="flex-1">
                     <p className="text-white group-hover:text-cosmic-gold transition-colors">
-                      {choice.text}
+                      {translatedEvent?.choices?.[choice.id] || choice.text}
                     </p>
                     {choice.energyModifier && (
                       <p className="text-xs text-cosmic-silver mt-1">
