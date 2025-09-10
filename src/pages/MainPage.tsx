@@ -14,6 +14,8 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { DailyUsageStats } from '@/components/DailyUsageStats';
+import { PactCompletionDialog } from '@/components/PactCompletionDialog';
+import { usePactCompletion } from '@/hooks/usePactCompletion';
 
 const MainPage: React.FC = () => {
   const {
@@ -33,6 +35,7 @@ const MainPage: React.FC = () => {
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   const { handleAsyncError } = useErrorHandler();
   const { stats } = useUserProgress();
+  const { dialogOpen, currentCompletedPact, handleDialogClose } = usePactCompletion();
 
   const logger = createLogger('MainPage');
 
@@ -167,6 +170,24 @@ const MainPage: React.FC = () => {
 
       {/* Bottom navigation */}
       <BottomNavigation />
+      
+      {/* Pact completion dialog */}
+      {currentCompletedPact && (
+        <PactCompletionDialog
+          open={dialogOpen}
+          onOpenChange={handleDialogClose}
+          pact={currentCompletedPact}
+          energyEarned={currentCompletedPact.energyEarned}
+          totalDays={currentCompletedPact.totalDays}
+          onShareSuccess={() => {
+            console.log('Shared pact completion');
+          }}
+          onCreateNewPact={() => {
+            handleDialogClose(false);
+            navigate('/create-pact');
+          }}
+        />
+      )}
     </div>
   );
 };

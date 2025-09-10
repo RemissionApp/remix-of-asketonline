@@ -441,4 +441,17 @@ export const esTranslations: Translations = {
     message: '¡Ups! Página no encontrada',
     returnHome: 'Volver al inicio',
   },
+  pactCompletion: {
+    title: '¡Felicitaciones por completar tu ascesis!',
+    completedDays: 'Completaste la ascesis durante {days} días seguidos',
+    goalTitle: 'Tu meta:',
+    universeMessage: '✨ El Universo ha escuchado cada paso que diste en este camino. Si realizaste la ascesis honestamente y con plena dedicación, la energía del Cosmos ya está trabajando para cumplir tu deseo. Confía en el proceso - lo que realmente necesitas llegará en el momento adecuado. ✨',
+    energyEarned: 'Energía Ganada',
+    totalDays: 'Días Totales',
+    shareButton: 'Compartir',
+    newPactButton: 'Nueva Ascesis',
+    closeButton: 'Continuar',
+    shareTitle: '¡Completé ascesis en Asket!',
+    shareText: 'Completé la ascesis "{title}" durante {days} días y gané {energy} energía! Únete al desarrollo espiritual en Asket.',
+  },
 };

@@ -314,6 +314,20 @@ export interface NotFoundTranslations {
   returnHome: string;
 }
 
+export interface PactCompletionTranslations {
+  title: string;
+  completedDays: string;
+  goalTitle: string;
+  universeMessage: string;
+  energyEarned: string;
+  totalDays: string;
+  shareButton: string;
+  newPactButton: string;
+  closeButton: string;
+  shareTitle: string;
+  shareText: string;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
@@ -339,4 +353,5 @@ export interface Translations {
   emailOtp?: EmailOtpTranslations;
   deleteAccount?: DeleteAccountTranslations;
   notFound?: NotFoundTranslations;
+  pactCompletion?: PactCompletionTranslations;
 }
