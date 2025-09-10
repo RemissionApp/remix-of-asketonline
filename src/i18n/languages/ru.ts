@@ -631,6 +631,11 @@ export const ruTranslations: Translations = {
             'cosmic-flow': 'Поток космической энергии'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Ваша энергия начинает очищаться! 🌟',
+        14: 'Вы чувствуете прилив сил! ⚡',
+        21: 'Энергетическая трансформация завершена! 🔥'
       }
     },
     'dream-explorer': {
@@ -657,6 +662,10 @@ export const ruTranslations: Translations = {
             'mnemonic-induction': 'Мнемоническая индукция (MILD)'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Ваши сны становятся ярче! 🌙',
+        14: 'Вы овладели искусством снов! ✨'
       }
     },
     'gratitude-alchemist': {
@@ -683,6 +692,10 @@ export const ruTranslations: Translations = {
             'active-gratitude': 'Активные дела и помощь другим'
           }
         }
+      },
+      milestoneRewards: {
+        5: 'Ваше сердце наполняется теплом! 💖',
+        10: 'Благодарность трансформирует вашу жизнь! 🌈'
       }
     },
     'time-alchemist': {
@@ -708,17 +721,11 @@ export const ruTranslations: Translations = {
             'time-expansion': 'Техники расширения времени'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Время начинает замедляться под вашим контролем! ⏳',
+        14: 'Вы стали хозяином своего времени! 🕰️'
       }
     },
-    'mission-1': {
-      title: 'Первые шаги аскета',
-      description: 'Соблюдайте свою первую аскезу три дня подряд и получите энергетические очки',
-      requirements: ['Соблюдать аскезу 3 дня подряд']
-    },
-    'mission-2': {
-      title: 'Разговор с Вселенной',
-      description: 'Задайте три вопроса Вселенной и получите дополнительную мудрость',
-      requirements: ['Задать 3 вопроса Вселенной']
-    }
   },
 };

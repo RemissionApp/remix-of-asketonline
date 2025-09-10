@@ -504,6 +504,11 @@ export const esTranslations: Translations = {
             'cosmic-flow': 'Flujo de energía cósmica'
           }
         }
+      },
+      milestoneRewards: {
+        7: '¡Tu energía comienza a purificarse! 🌟',
+        14: '¡Sientes una oleada de fuerza! ⚡',
+        21: '¡Transformación energética completada! 🔥'
       }
     },
     'dream-explorer': {
@@ -530,6 +535,10 @@ export const esTranslations: Translations = {
             'mnemonic-induction': 'Inducción mnemónica (MILD)'
           }
         }
+      },
+      milestoneRewards: {
+        7: '¡Tus sueños se vuelven más brillantes! 🌙',
+        14: '¡Has dominado el arte de los sueños! ✨'
       }
     },
     'gratitude-alchemist': {
@@ -556,6 +565,10 @@ export const esTranslations: Translations = {
             'active-gratitude': 'Actos activos y ayudar a otros'
           }
         }
+      },
+      milestoneRewards: {
+        5: '¡Tu corazón se llena de calidez! 💖',
+        10: '¡La gratitud transforma tu vida! 🌈'
       }
     },
     'time-alchemist': {
@@ -581,17 +594,16 @@ export const esTranslations: Translations = {
             'time-expansion': 'Técnicas de expansión temporal'
           }
         }
+      },
+      milestoneRewards: {
+        7: '¡El tiempo comienza a ralentizarse bajo tu control! ⏳',
+        14: '¡Te has convertido en el maestro de tu tiempo! 🕰️'
       }
-    },
-    'mission-1': {
+    }
+  },
       title: 'Primeros Pasos del Asceta',
       description: 'Sigue tu primera ascesis durante tres días seguidos y recibe puntos de energía',
       requirements: ['Seguir ascesis durante 3 días seguidos']
-    },
-    'mission-2': {
-      title: 'Conversación con el Universo',
-      description: 'Haz tres preguntas al Universo y recibe sabiduría adicional',
-      requirements: ['Hacer 3 preguntas al Universo']
     }
   },
   pactCompletion: {

@@ -538,6 +538,11 @@ export const enTranslations: Translations = {
             'cosmic-flow': 'Flow of cosmic energy'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Your energy is beginning to purify! 🌟',
+        14: 'You feel a surge of strength! ⚡',
+        21: 'Energy transformation completed! 🔥'
       }
     },
     'dream-explorer': {
@@ -564,6 +569,10 @@ export const enTranslations: Translations = {
             'mnemonic-induction': 'Mnemonic induction (MILD)'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Your dreams are becoming brighter! 🌙',
+        14: 'You\'ve mastered the art of dreams! ✨'
       }
     },
     'gratitude-alchemist': {
@@ -590,6 +599,10 @@ export const enTranslations: Translations = {
             'active-gratitude': 'Active deeds and helping others'
           }
         }
+      },
+      milestoneRewards: {
+        5: 'Your heart is filling with warmth! 💖',
+        10: 'Gratitude transforms your life! 🌈'
       }
     },
     'time-alchemist': {
@@ -615,17 +628,11 @@ export const enTranslations: Translations = {
             'time-expansion': 'Time expansion techniques'
           }
         }
+      },
+      milestoneRewards: {
+        7: 'Time begins to slow under your control! ⏳',
+        14: 'You\'ve become the master of your time! 🕰️'
       }
-    },
-    'mission-1': {
-      title: 'First Steps of the Ascetic',
-      description: 'Follow your first ascesis for three days in a row and receive energy points',
-      requirements: ['Follow ascesis for 3 days in a row']
-    },
-    'mission-2': {
-      title: 'Conversation with the Universe',
-      description: 'Ask three questions to the Universe and receive additional wisdom',
-      requirements: ['Ask 3 questions to the Universe']
     }
   },
   pactCompletion: {
