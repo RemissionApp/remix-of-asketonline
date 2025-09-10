@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { calculateDestinyMatrix, getMatrixNumberMeaning } from '@/utils/numerologyUtils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Info, Sparkles } from 'lucide-react';
 
 interface DestinyMatrixProps {
@@ -63,6 +64,7 @@ export const DestinyMatrix: React.FC<DestinyMatrixProps> = ({
     type: string;
     position: string;
   } | null>(null);
+  const isMobile = useIsMobile();
 
   const matrixData = calculateDestinyMatrix(birthDate, name);
 
@@ -235,8 +237,9 @@ export const DestinyMatrix: React.FC<DestinyMatrixProps> = ({
       </div>
 
       {/* Detail Dialog */}
-      <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
-        <DialogContent className="bg-cosmic-dark/95 border-cosmic-accent/20 backdrop-blur-md">
+      {!isMobile && (
+        <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
+          <DialogContent className="bg-cosmic-dark/95 border-cosmic-accent/20 backdrop-blur-md">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-cosmic-accent">
               <Info className="w-5 h-5" />
@@ -260,8 +263,9 @@ export const DestinyMatrix: React.FC<DestinyMatrixProps> = ({
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

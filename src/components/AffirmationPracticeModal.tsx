@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { usePracticeSteps } from '@/hooks/usePracticeSteps';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { PracticeStepContent } from './affirmations/PracticeStepContent';
 import { PracticeCompletionState } from './affirmations/PracticeCompletionState';
 import { PracticeModalFooter } from './affirmations/PracticeModalFooter';
@@ -34,6 +35,7 @@ export const AffirmationPracticeModal: React.FC<
   const [completed, setCompleted] = useState(false);
   const { t } = useTranslations();
   const { steps } = usePracticeSteps(language);
+  const isMobile = useIsMobile();
 
   const currentStep = steps[step];
   const progress = ((step + 1) / steps.length) * 100;
@@ -57,6 +59,10 @@ export const AffirmationPracticeModal: React.FC<
     setStep(0);
     setCompleted(false);
   };
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

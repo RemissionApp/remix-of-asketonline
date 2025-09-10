@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { CosmicButton } from '@/components/CosmicButton';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +28,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({
 }) => {
   const { t } = useTranslations();
   const { userProfile, updateUserProfile, user, language } = useAppStore();
+  const isMobile = useIsMobile();
   const [tempBirthDate, setTempBirthDate] = useState<Date | null>(
     userProfile?.birthDate || null
   );
@@ -78,6 +80,10 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({
       onOpenChange(false);
     }
   };
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
