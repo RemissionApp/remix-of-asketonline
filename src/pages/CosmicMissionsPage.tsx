@@ -7,7 +7,7 @@ import { Mission } from '@/types';
 import { MissionsTabBar } from '@/components/missions/MissionsTabBar';
 import { MissionsList } from '@/components/missions/MissionsList';
 import { MissionCategories } from '@/components/missions/categories/MissionCategories';
-import { RecommendedMission } from '@/components/missions/recommendations/RecommendedMission';
+import { RecommendedMission } from '@/components/missions/recommended/RecommendedMission';
 import {
   getPageTitle,
   filterMissions,
