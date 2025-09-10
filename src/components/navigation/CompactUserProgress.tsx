@@ -9,8 +9,9 @@ interface CompactUserProgressProps {
 }
 
 export const CompactUserProgress: React.FC<CompactUserProgressProps> = ({ className }) => {
-  const { stats, isLoading } = useUserProgress();
-  const { language } = useAppStore();
+  try {
+    const { stats, isLoading } = useUserProgress();
+    const { language } = useAppStore();
 
   const getText = (key: 'level' | 'energy' | 'missions') => {
     const texts = {
@@ -89,4 +90,27 @@ export const CompactUserProgress: React.FC<CompactUserProgressProps> = ({ classN
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Error in CompactUserProgress:', error);
+    // Fallback UI for when there's an error
+    return (
+      <div className={cn(
+        "flex items-center gap-3 text-sm",
+        className
+      )}>
+        <div className="flex items-center gap-1.5">
+          <Star className="w-4 h-4 text-cosmic-gold" />
+          <span className="text-cosmic-gold font-semibold">Ур. 1</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Zap className="w-4 h-4 text-cosmic-accent" />
+          <span className="text-cosmic-accent font-medium">0</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Trophy className="w-4 h-4 text-cosmic-secondary" />
+          <span className="text-cosmic-secondary font-medium">0</span>
+        </div>
+      </div>
+    );
+  }
 };
