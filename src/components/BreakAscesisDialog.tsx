@@ -25,7 +25,6 @@ import {
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Pact } from '@/types';
 import {
   getPactBreakPenalty,
@@ -53,7 +52,6 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
   const { haptic, badge, notifications } = usePWAFeatures();
   const { language, userProfile } = useAppStore();
   const { handleError } = useErrorHandler();
-  const isMobile = useIsMobile();
 
   const getTitle = () => {
     switch (language) {
@@ -221,10 +219,6 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
   const consequences = getConsequences();
   const commonReasons = getCommonReasons();
-
-  if (isMobile) {
-    return null;
-  }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

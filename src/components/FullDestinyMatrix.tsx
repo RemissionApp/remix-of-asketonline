@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { calculateFullDestinyMatrix, getMatrixNumberMeaning } from '@/utils/numerologyUtils';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface FullDestinyMatrixProps {
   birthDate: string;
@@ -66,7 +65,6 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
     type: string;
     position: string;
   } | null>(null);
-  const isMobile = useIsMobile();
 
   const matrixData = calculateFullDestinyMatrix(birthDate, name);
 
@@ -478,9 +476,8 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
       </div>
 
       {/* Detail modal */}
-      {!isMobile && (
-        <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
-          <DialogContent className="max-w-md bg-cosmic-dark/95 border-cosmic-accent/30">
+      <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
+        <DialogContent className="max-w-md bg-cosmic-dark/95 border-cosmic-accent/30">
           <DialogHeader>
             <DialogTitle className="text-cosmic-accent">
               {selectedNumber && getPositionName(selectedNumber.position)}
@@ -512,9 +509,8 @@ const FullDestinyMatrix: React.FC<FullDestinyMatrixProps> = ({ birthDate, name =
               </div>
             </div>
           )}
-          </DialogContent>
-        </Dialog>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 
