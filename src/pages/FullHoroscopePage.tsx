@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useFullHoroscope } from '@/hooks/useFullHoroscope';
+import { useDailyHoroscope } from '@/hooks/useDailyHoroscope';
+import { useMonthlyHoroscope } from '@/hooks/useMonthlyHoroscope';
 import { getFullHoroscopeUIText } from '@/utils/fullHoroscopeTranslations';
 import { PageHeader as FullPageHeader } from '@/components/full-horoscope/PageHeader';
 import { SetBirthDateCard } from '@/components/full-horoscope/SetBirthDateCard';
@@ -8,6 +10,8 @@ import { ErrorCard } from '@/components/full-horoscope/ErrorCard';
 import { GenerateHoroscopeCard } from '@/components/full-horoscope/GenerateHoroscopeCard';
 import { LoadingState } from '@/components/full-horoscope/LoadingState';
 import { HoroscopeContent } from '@/components/full-horoscope/HoroscopeContent';
+import { DailyHoroscopeCard } from '@/components/full-horoscope/DailyHoroscopeCard';
+import { MonthlyHoroscopeCard } from '@/components/full-horoscope/MonthlyHoroscopeCard';
 import { MovingStarField } from '@/components/full-horoscope/MovingStarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { PageHeader } from '@/components/PageHeader';
@@ -22,6 +26,18 @@ export default function FullHoroscopePage() {
     generateFullHoroscope,
     currentYear,
   } = useFullHoroscope();
+
+  const {
+    horoscope: dailyHoroscope,
+    loading: dailyLoading,
+    generateDailyHoroscope,
+  } = useDailyHoroscope();
+
+  const {
+    horoscope: monthlyHoroscope,
+    loading: monthlyLoading,
+    generateMonthlyHoroscope,
+  } = useMonthlyHoroscope();
 
   // Get UI translations for different languages
   const uiText = getFullHoroscopeUIText(language, currentYear);
@@ -50,7 +66,7 @@ export default function FullHoroscopePage() {
         }
       />
 
-      <div className="max-w-4xl mx-auto relative z-10 pt-20 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto relative z-10 pt-20 p-4 md:p-8 space-y-6">
         {!zodiacSign && <SetBirthDateCard uiText={uiText} />}
 
         {error && (
@@ -63,24 +79,47 @@ export default function FullHoroscopePage() {
           />
         )}
 
-        {zodiacSign && !horoscope && !loading && !error && (
-          <GenerateHoroscopeCard
-            zodiacSign={zodiacSign}
-            language={language}
-            uiText={uiText}
-            onGenerate={generateFullHoroscope}
-          />
-        )}
+        {zodiacSign && (
+          <>
+            {/* Daily Horoscope */}
+            <DailyHoroscopeCard
+              zodiacSign={zodiacSign}
+              horoscope={dailyHoroscope}
+              loading={dailyLoading}
+              onGenerate={() => generateDailyHoroscope(zodiacSign)}
+              uiText={uiText}
+            />
 
-        {loading && <LoadingState uiText={uiText} />}
+            {/* Monthly Horoscope */}
+            <MonthlyHoroscopeCard
+              zodiacSign={zodiacSign}
+              horoscope={monthlyHoroscope}
+              loading={monthlyLoading}
+              onGenerate={() => generateMonthlyHoroscope(zodiacSign)}
+              uiText={uiText}
+            />
 
-        {horoscope && (
-          <HoroscopeContent
-            horoscope={horoscope}
-            language={language}
-            onRegenerate={generateFullHoroscope}
-            uiText={uiText}
-          />
+            {/* Yearly Horoscope */}
+            {!horoscope && !loading && !error && (
+              <GenerateHoroscopeCard
+                zodiacSign={zodiacSign}
+                language={language}
+                uiText={uiText}
+                onGenerate={generateFullHoroscope}
+              />
+            )}
+
+            {loading && <LoadingState uiText={uiText} />}
+
+            {horoscope && (
+              <HoroscopeContent
+                horoscope={horoscope}
+                language={language}
+                onRegenerate={generateFullHoroscope}
+                uiText={uiText}
+              />
+            )}
+          </>
         )}
       </div>
 

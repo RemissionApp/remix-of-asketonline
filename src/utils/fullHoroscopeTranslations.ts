@@ -21,6 +21,20 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'Это может занять некоторое время, пока мы анализируем ваши космические закономерности',
       regenerateButton: 'Пересоздать гороскоп',
+      // Daily horoscope
+      dailyTitle: 'Гороскоп на сегодня',
+      dailyDescription: 'Краткий прогноз на текущий день',
+      generateDailyButton: 'Получить гороскоп на сегодня',
+      loadingDaily: 'Консультация со звездами для вашего дня...',
+      // Monthly horoscope
+      monthlyTitle: 'Гороскоп на месяц',
+      monthlyDescription: 'Детальный прогноз на текущий месяц',
+      generateMonthlyButton: 'Получить гороскоп на месяц',
+      loadingMonthly: 'Анализ планетарных влияний на месяц...',
+      generalForecast: 'Общий прогноз',
+      careerFinance: 'Карьера и финансы',
+      loveRelationships: 'Любовь и отношения',
+      healthWellbeing: 'Здоровье и благополучие',
     };
   } else if (language === 'es') {
     return {
@@ -40,6 +54,20 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'Esto puede tardar un momento mientras analizamos tus patrones celestiales',
       regenerateButton: 'Regenerar horóscopo',
+      // Daily horoscope
+      dailyTitle: 'Horóscopo de hoy',
+      dailyDescription: 'Predicción breve para el día actual',
+      generateDailyButton: 'Obtener horóscopo de hoy',
+      loadingDaily: 'Consultando las estrellas para tu día...',
+      // Monthly horoscope
+      monthlyTitle: 'Horóscopo del mes',
+      monthlyDescription: 'Predicción detallada para el mes actual',
+      generateMonthlyButton: 'Obtener horóscopo del mes',
+      loadingMonthly: 'Analizando influencias planetarias del mes...',
+      generalForecast: 'Pronóstico General',
+      careerFinance: 'Carrera y Finanzas',
+      loveRelationships: 'Amor y Relaciones',
+      healthWellbeing: 'Salud y Bienestar',
     };
   } else {
     return {
@@ -59,6 +87,20 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'This may take a moment as we analyze your celestial patterns',
       regenerateButton: 'Regenerate Horoscope',
+      // Daily horoscope
+      dailyTitle: 'Today\'s Horoscope',
+      dailyDescription: 'Brief forecast for the current day',
+      generateDailyButton: 'Get Today\'s Horoscope',
+      loadingDaily: 'Consulting the stars for your day...',
+      // Monthly horoscope
+      monthlyTitle: 'Monthly Horoscope',
+      monthlyDescription: 'Detailed forecast for the current month',
+      generateMonthlyButton: 'Get Monthly Horoscope',
+      loadingMonthly: 'Analyzing planetary influences for the month...',
+      generalForecast: 'General Forecast',
+      careerFinance: 'Career and Finance',
+      loveRelationships: 'Love and Relationships',
+      healthWellbeing: 'Health and Wellbeing',
     };
   }
 };
