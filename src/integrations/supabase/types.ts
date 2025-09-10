@@ -83,6 +83,45 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cached_daily_horoscopes: {
         Row: {
           birth_year: number
@@ -901,6 +940,20 @@ export type Database = {
       }
     }
     Views: {
+      user_data_summary: {
+        Row: {
+          active_missions: number | null
+          energy_points: number | null
+          id: string | null
+          is_pro: boolean | null
+          name: string | null
+          rank: string | null
+          total_achievements: number | null
+          total_artifacts: number | null
+          total_days: number | null
+        }
+        Relationships: []
+      }
       user_progress_summary: {
         Row: {
           achievements_count: number | null
@@ -946,6 +999,10 @@ export type Database = {
       }
       validate_verification_code: {
         Args: { p_code: string; p_email: string }
+        Returns: boolean
+      }
+      verify_user_data_ownership: {
+        Args: { target_user_id: string }
         Returns: boolean
       }
     }
