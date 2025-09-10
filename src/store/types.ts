@@ -102,6 +102,7 @@ export interface AppState {
   completeMission: () => Promise<void>;
 
   // PRO features functions
+  isUpdatingSubscription: boolean;
   upgradeToPro: () => Promise<void>;
   cancelProSubscription: () => Promise<void>;
 

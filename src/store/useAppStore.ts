@@ -34,6 +34,7 @@ export const useAppStore = create<AppState & OnboardingSlice>()((set, get, api) 
   },
   user: null,
   loading: false,
+  isUpdatingSubscription: false,
   emailConfirmed: false,
 
   // Добавляем новый метод для установки пользователя
