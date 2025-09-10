@@ -69,8 +69,7 @@ export const YearlyHoroscopeCard: React.FC<YearlyHoroscopeCardProps> = ({
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
             disabled={loading}
           >
-            <Sparkles className="mr-2 h-4 w-4" />
-            {uiText.generateButton}
+            <Sparkles className="h-4 w-4" />
           </Button>
         )}
 
