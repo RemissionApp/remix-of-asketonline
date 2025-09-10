@@ -21,6 +21,8 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'Это может занять некоторое время, пока мы анализируем ваши космические закономерности',
       regenerateButton: 'Пересоздать гороскоп',
+      // User zodiac info
+      personalizedReading: 'Персональный космический анализ',
       // Daily horoscope
       dailyTitle: 'Гороскоп на сегодня',
       dailyDescription: 'Краткий прогноз на текущий день',
@@ -35,6 +37,9 @@ export const getFullHoroscopeUIText = (
       careerFinance: 'Карьера и финансы',
       loveRelationships: 'Любовь и отношения',
       healthWellbeing: 'Здоровье и благополучие',
+      // Yearly horoscope
+      yearlyTitle: 'Полный гороскоп на',
+      yearlyDescription: 'Подробный анализ всех сфер жизни на весь год',
     };
   } else if (language === 'es') {
     return {
@@ -54,6 +59,8 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'Esto puede tardar un momento mientras analizamos tus patrones celestiales',
       regenerateButton: 'Regenerar horóscopo',
+      // User zodiac info
+      personalizedReading: 'Lectura cósmica personalizada',
       // Daily horoscope
       dailyTitle: 'Horóscopo de hoy',
       dailyDescription: 'Predicción breve para el día actual',
@@ -68,6 +75,9 @@ export const getFullHoroscopeUIText = (
       careerFinance: 'Carrera y Finanzas',
       loveRelationships: 'Amor y Relaciones',
       healthWellbeing: 'Salud y Bienestar',
+      // Yearly horoscope
+      yearlyTitle: 'Horóscopo completo para',
+      yearlyDescription: 'Análisis detallado de todas las áreas de la vida para todo el año',
     };
   } else {
     return {
@@ -87,6 +97,8 @@ export const getFullHoroscopeUIText = (
       loadingDescription:
         'This may take a moment as we analyze your celestial patterns',
       regenerateButton: 'Regenerate Horoscope',
+      // User zodiac info
+      personalizedReading: 'Personalized cosmic reading',
       // Daily horoscope
       dailyTitle: 'Today\'s Horoscope',
       dailyDescription: 'Brief forecast for the current day',
@@ -101,6 +113,9 @@ export const getFullHoroscopeUIText = (
       careerFinance: 'Career and Finance',
       loveRelationships: 'Love and Relationships',
       healthWellbeing: 'Health and Wellbeing',
+      // Yearly horoscope
+      yearlyTitle: 'Full Horoscope for',
+      yearlyDescription: 'Detailed analysis of all life areas for the entire year',
     };
   }
 };

@@ -7,11 +7,10 @@ import { getFullHoroscopeUIText } from '@/utils/fullHoroscopeTranslations';
 import { PageHeader as FullPageHeader } from '@/components/full-horoscope/PageHeader';
 import { SetBirthDateCard } from '@/components/full-horoscope/SetBirthDateCard';
 import { ErrorCard } from '@/components/full-horoscope/ErrorCard';
-import { GenerateHoroscopeCard } from '@/components/full-horoscope/GenerateHoroscopeCard';
-import { LoadingState } from '@/components/full-horoscope/LoadingState';
-import { HoroscopeContent } from '@/components/full-horoscope/HoroscopeContent';
+import { UserZodiacInfo } from '@/components/full-horoscope/UserZodiacInfo';
 import { DailyHoroscopeCard } from '@/components/full-horoscope/DailyHoroscopeCard';
 import { MonthlyHoroscopeCard } from '@/components/full-horoscope/MonthlyHoroscopeCard';
+import { YearlyHoroscopeCard } from '@/components/full-horoscope/YearlyHoroscopeCard';
 import { MovingStarField } from '@/components/full-horoscope/MovingStarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { PageHeader } from '@/components/PageHeader';
@@ -81,6 +80,15 @@ export default function FullHoroscopePage() {
 
         {zodiacSign && (
           <>
+            {/* User Zodiac Info */}
+            <UserZodiacInfo
+              zodiacSign={zodiacSign}
+              birthDate={typeof userProfile?.birthDate === 'string' ? userProfile.birthDate : userProfile?.birthDate?.toISOString().split('T')[0] || ''}
+              userName={userProfile?.name || null}
+              language={language}
+              uiText={uiText}
+            />
+
             {/* Daily Horoscope */}
             <DailyHoroscopeCard
               zodiacSign={zodiacSign}
@@ -100,25 +108,16 @@ export default function FullHoroscopePage() {
             />
 
             {/* Yearly Horoscope */}
-            {!horoscope && !loading && !error && (
-              <GenerateHoroscopeCard
-                zodiacSign={zodiacSign}
-                language={language}
-                uiText={uiText}
-                onGenerate={generateFullHoroscope}
-              />
-            )}
-
-            {loading && <LoadingState uiText={uiText} />}
-
-            {horoscope && (
-              <HoroscopeContent
-                horoscope={horoscope}
-                language={language}
-                onRegenerate={generateFullHoroscope}
-                uiText={uiText}
-              />
-            )}
+            <YearlyHoroscopeCard
+              zodiacSign={zodiacSign}
+              horoscope={horoscope}
+              loading={loading}
+              error={error}
+              onGenerate={generateFullHoroscope}
+              language={language}
+              currentYear={currentYear}
+              uiText={uiText}
+            />
           </>
         )}
       </div>
