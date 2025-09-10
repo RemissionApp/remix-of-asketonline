@@ -11,7 +11,7 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-8">
+      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
         <div className="p-4">
           <div className="flex items-center mb-3">
             <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
