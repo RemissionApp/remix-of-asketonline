@@ -83,6 +83,99 @@ export type Database = {
         }
         Relationships: []
       }
+      cached_daily_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          date: string
+          id: string
+          language: string
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          date: string
+          id?: string
+          language?: string
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          language?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      cached_monthly_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          id: string
+          language: string
+          month: number
+          year: number
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          id?: string
+          language?: string
+          month: number
+          year: number
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          id?: string
+          language?: string
+          month?: number
+          year?: number
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      cached_yearly_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          id: string
+          language: string
+          target_year: number
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          id?: string
+          language?: string
+          target_year: number
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          id?: string
+          language?: string
+          target_year?: number
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
       cosmic_artifacts: {
         Row: {
           artifact_id: string

@@ -62,8 +62,38 @@ serve(async req => {
 
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
+    
+    // Get user's birth year for caching
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('birth_date')
+      .eq('id', user.id)
+      .single();
+      
+    const birthYear = userProfile?.birth_date ? new Date(userProfile.birth_date).getFullYear() : null;
 
-    // Check if we already have a horoscope for this user, sign and date
+    // For non-detailed horoscopes, check global cache first
+    let horoscopeText = null;
+    let isFromCache = false;
+    if (!detailed && birthYear) {
+      console.log('Checking daily horoscope cache...');
+      const { data: cachedHoroscope } = await supabase
+        .from('cached_daily_horoscopes')
+        .select('content')
+        .eq('zodiac_sign', sign)
+        .eq('date', today)
+        .eq('birth_year', birthYear)
+        .eq('language', language)
+        .maybeSingle();
+
+      if (cachedHoroscope) {
+        console.log('Found cached daily horoscope');
+        horoscopeText = cachedHoroscope.content.description || cachedHoroscope.content;
+        isFromCache = true;
+      }
+    }
+
+    // Check if we already have a horoscope for this user, sign and date (user personal history)
     if (detailed) {
       const { data: existingHoroscope } = await supabase
         .from('detailed_horoscopes')
@@ -86,41 +116,46 @@ serve(async req => {
       }
     }
 
-    // Get the appropriate system prompt based on language
-    const systemPrompt = getSystemPrompt(language, detailed);
-    const userPrompt = getUserPrompt(sign, language, detailed);
+    // Generate new horoscope only if not found in cache
+    if (!horoscopeText) {
+      console.log('No cached horoscope found, generating new one...');
+      
+      // Get the appropriate system prompt based on language
+      const systemPrompt = getSystemPrompt(language, detailed);
+      const userPrompt = getUserPrompt(sign, language, detailed);
 
-    // Call OpenAI to generate the horoscope
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt,
-          },
-          {
-            role: 'user',
-            content: userPrompt,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: detailed ? 800 : 200,
-      }),
-    });
+      // Call OpenAI to generate the horoscope
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt,
+            },
+            {
+              role: 'user',
+              content: userPrompt,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: detailed ? 800 : 200,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.error) {
-      throw new Error(data.error.message || 'Error from OpenAI API');
+      if (data.error) {
+        throw new Error(data.error.message || 'Error from OpenAI API');
+      }
+
+      horoscopeText = data.choices[0].message.content;
     }
-
-    const horoscopeText = data.choices[0].message.content;
 
     // Create response object
     let horoscopeResponse;
@@ -182,6 +217,23 @@ serve(async req => {
         data: horoscopeData,
       };
     } else {
+      // For simple daily horoscopes, save to cache if birth year is available and horoscope was newly generated
+      if (birthYear && horoscopeText && !detailed && !isFromCache) {
+        try {
+          console.log('Saving daily horoscope to cache...');
+          await supabase.from('cached_daily_horoscopes').insert({
+            zodiac_sign: sign,
+            date: today,
+            birth_year: birthYear,
+            language: language,
+            content: { description: horoscopeText },
+          });
+          console.log('Successfully saved daily horoscope to cache');
+        } catch (cacheError) {
+          console.error('Error saving to daily cache:', cacheError);
+        }
+      }
+      
       horoscopeResponse = {
         success: true,
         data: {
