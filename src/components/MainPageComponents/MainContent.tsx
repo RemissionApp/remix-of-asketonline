@@ -68,7 +68,9 @@ export const MainContent: React.FC<MainContentProps> = ({
       </div>
 
       {/* 3. Daily Advice */}
-      <DailyAdviceDisplay />
+      <div className="mt-8">
+        <DailyAdviceDisplay />
+      </div>
 
       {/* 3.1. User Level Display */}
       <UserLevelDisplay
