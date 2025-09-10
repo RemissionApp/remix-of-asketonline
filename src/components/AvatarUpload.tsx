@@ -9,9 +9,11 @@ import {
   uploadAvatarFile,
   updateProfileAvatar,
 } from '@/utils/avatarStorage';
+import { createLogger } from '@/utils/logger';
 
 const AvatarUpload: React.FC = () => {
-  const { user, userProfile, updateUserProfile, loadUserProfile } = useAppStore();
+  const logger = createLogger('AvatarUpload');
+  const { user, userProfile, loadUserProfile } = useAppStore();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -44,10 +46,14 @@ const AvatarUpload: React.FC = () => {
   };
 
   const uploadAvatar = async () => {
-    if (!user || !selectedFile) return;
+    if (!user || !selectedFile) {
+      logger.error('Missing user or file', { user: !!user, selectedFile: !!selectedFile });
+      return;
+    }
 
     try {
       setUploading(true);
+      logger.debug('Starting avatar upload', { userId: user.id, fileName: selectedFile.name });
 
       // Get current auth session to ensure we're authenticated
       const { data: sessionData } = await supabase.auth.getSession();
@@ -61,24 +67,44 @@ const AvatarUpload: React.FC = () => {
 
       // Upload the file
       const publicUrl = await uploadAvatarFile(user.id, selectedFile);
+      logger.debug('File uploaded successfully', { publicUrl });
 
       // Update profile with new avatar URL
       await updateProfileAvatar(user.id, publicUrl);
+      logger.debug('Profile updated in database');
 
-      // Force reload profile from database to ensure sync
-      await loadUserProfile();
-      
-      // Force re-render of UserAvatar components by clearing cache
+      // Save timestamp for cache-busting
       const timestamp = Date.now();
       localStorage.setItem('avatar-upload-timestamp', timestamp.toString());
       
-      // Trigger custom event for immediate avatar update
-      window.dispatchEvent(new CustomEvent('avatarUpdated', { 
-        detail: { 
-          avatarUrl: publicUrl,
-          timestamp 
-        } 
+      // Optimistic UI update - directly update local state
+      const store = useAppStore.getState();
+      useAppStore.setState(state => ({
+        userProfile: { 
+          ...state.userProfile, 
+          avatar_url: publicUrl 
+        }
       }));
+      logger.debug('Local state updated optimistically');
+
+      // Force reload profile from database with cache bypass
+      setTimeout(async () => {
+        try {
+          logger.debug('Force reloading profile from database');
+          await loadUserProfile();
+          
+          // Trigger custom event for immediate avatar update
+          window.dispatchEvent(new CustomEvent('avatarUpdated', { 
+            detail: { 
+              avatarUrl: publicUrl,
+              timestamp 
+            } 
+          }));
+          logger.debug('Avatar update event dispatched');
+        } catch (err) {
+          logger.error('Error during profile reload', err);
+        }
+      }, 100);
 
       // Clean up
       setShowConfirm(false);
@@ -92,8 +118,10 @@ const AvatarUpload: React.FC = () => {
         title: 'Аватар обновлен',
         description: 'Ваш аватар успешно загружен',
       });
+      
+      logger.info('Avatar upload completed successfully');
     } catch (error: any) {
-      console.error('Error uploading avatar:', error);
+      logger.error('Error uploading avatar', error);
       toast({
         title: 'Ошибка загрузки',
         description: error.message || 'Не удалось загрузить аватар',

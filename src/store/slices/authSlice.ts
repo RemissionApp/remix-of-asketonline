@@ -528,11 +528,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   loadUserProfile: async () => {
     const { user } = get();
 
-    if (!user) return;
+    if (!user) {
+      logger.warn('No user found when loading profile');
+      return;
+    }
 
     logger.debug('Loading user profile', { userId: user.id });
 
     try {
+      // Force fresh data from database with cache bypass
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -702,13 +706,19 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         activeMission,
       };
 
+      logger.debug('Profile loaded from database', { 
+        name: updatedProfile.name, 
+        avatar_url: updatedProfile.avatar_url,
+        birth_date: data?.birth_date 
+      });
+
       // Set profile state and trigger onboarding sync
       set({ userProfile: updatedProfile });
       
       // Load onboarding state after profile is loaded
       setTimeout(() => get().loadOnboardingState(), 0);
 
-      logger.debug('User profile loaded successfully', {
+      logger.debug('User profile state updated successfully', {
         name: updatedProfile.name,
         birthDate: updatedProfile.birthDate,
         avatar_url: updatedProfile.avatar_url

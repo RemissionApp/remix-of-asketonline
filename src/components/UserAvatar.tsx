@@ -52,29 +52,55 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
   // Listen for avatar updates to force re-render
   useEffect(() => {
-    const handleAvatarUpdate = () => {
+    const handleAvatarUpdate = (event: any) => {
+      logger.debug('Avatar update event received', event.detail);
       setImageLoadError(false);
       setImageLoaded(false);
       setAvatarKey(prev => prev + 1);
+      
+      // Force immediate state refresh
+      setTimeout(() => {
+        setImageLoadError(false);
+        setImageLoaded(false);
+      }, 50);
     };
 
     window.addEventListener('avatarUpdated', handleAvatarUpdate);
     return () => window.removeEventListener('avatarUpdated', handleAvatarUpdate);
   }, []);
 
+  // Force re-render when userProfile.avatar_url changes
+  useEffect(() => {
+    logger.debug('UserProfile avatar_url changed', { avatar_url: userProfile?.avatar_url });
+    setImageLoadError(false);
+    setImageLoaded(false);
+    setAvatarKey(prev => prev + 1);
+  }, [userProfile?.avatar_url]);
+
   const getAvatarUrl = (): string => {
+    logger.debug('Getting avatar URL', { 
+      hasAvatar: !!userProfile?.avatar_url, 
+      imageLoadError, 
+      rank: userProfile?.rank 
+    });
+    
     // Check if userProfile has an avatar_url
     if (userProfile?.avatar_url && !imageLoadError) {
       // Use timestamp from localStorage for cache-busting when available
       const uploadTimestamp = localStorage.getItem('avatar-upload-timestamp');
       const cacheBuster = uploadTimestamp ? uploadTimestamp : Date.now();
-      return userProfile.avatar_url.includes('supabase') 
-        ? `${userProfile.avatar_url}?t=${cacheBuster}` 
+      const finalUrl = userProfile.avatar_url.includes('supabase') 
+        ? `${userProfile.avatar_url}?t=${cacheBuster}&v=${avatarKey}` 
         : userProfile.avatar_url;
+      
+      logger.debug('Using custom avatar', { finalUrl, cacheBuster, avatarKey });
+      return finalUrl;
     }
 
     // If no custom avatar or error, use rank-based default avatar
-    return getAvatarImagePath(userProfile?.rank as SpiritualRank);
+    const defaultUrl = getAvatarImagePath(userProfile?.rank as SpiritualRank);
+    logger.debug('Using default avatar', { defaultUrl, rank: userProfile?.rank });
+    return defaultUrl;
   };
 
   // Get path to avatar image based on rank
