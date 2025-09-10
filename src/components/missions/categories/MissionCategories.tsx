@@ -4,6 +4,7 @@ import { Mission } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { useMissionManager } from '@/hooks/useMissionManager';
 import { InteractiveMissionCard } from '../interactive/InteractiveMissionCard';
+import { useMissionActions } from '@/hooks/useMissionActions';
 import { Sparkles, Target, Users, BookOpen } from 'lucide-react';
 
 interface MissionCategoriesProps {
@@ -15,6 +16,7 @@ export const MissionCategories: React.FC<MissionCategoriesProps> = ({
 }) => {
   const { language } = useAppStore();
   const { getMissionsByCategory, getMissionMotivation } = useMissionManager();
+  const { startMission, isLoading } = useMissionActions();
   const [selectedCategory, setSelectedCategory] = React.useState<Mission['category'] | 'all'>('all');
 
   const categories = [
@@ -120,7 +122,8 @@ export const MissionCategories: React.FC<MissionCategoriesProps> = ({
             <InteractiveMissionCard
               key={mission.id}
               mission={mission}
-              className="w-full"
+              onStart={() => startMission(mission)}
+              className={`w-full ${isLoading ? 'opacity-75 pointer-events-none' : ''}`}
             />
           ))
         ) : (

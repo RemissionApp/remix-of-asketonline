@@ -99,6 +99,7 @@ export interface AppState {
   checkRankProgress: () => SpiritualRank;
   unlockAchievement: (achievementId: string) => Promise<void>;
   assignMission: () => Promise<void>;
+  startMission: (missionId: string) => Promise<boolean>;
   completeMission: () => Promise<void>;
 
   // PRO features functions

@@ -14,6 +14,7 @@ export interface GamificationSlice {
   checkRankProgress: () => SpiritualRank;
   unlockAchievement: (achievementId: string) => Promise<void>;
   assignMission: () => Promise<void>;
+  startMission: (missionId: string) => Promise<boolean>;
   completeMission: () => Promise<void>;
 }
 
@@ -197,6 +198,88 @@ export const createGamificationSlice: StateCreator<
       }));
     } catch (error) {
       console.error('Error assigning mission:', error);
+    }
+  },
+
+  // Start specific mission
+  startMission: async (missionId: string) => {
+    const { user, userProfile } = get();
+
+    if (!user) {
+      toast({
+        title: 'Ошибка',
+        description: 'Необходимо войти в аккаунт для начала миссии',
+        variant: 'destructive'
+      });
+      return false;
+    }
+
+    try {
+      // Check if user already has an active mission
+      if (userProfile.activeMission) {
+        toast({
+          title: 'Активная миссия',
+          description: 'У вас уже есть активная миссия. Завершите её перед принятием новой.',
+          variant: 'destructive'
+        });
+        return false;
+      }
+
+      // Find mission in enhanced missions
+      const { enhancedMissions } = await import('@/data/enhancedMissions');
+      const selectedMission = enhancedMissions.find(m => m.id === missionId);
+      
+      if (!selectedMission) {
+        toast({
+          title: 'Ошибка',
+          description: 'Миссия не найдена',
+          variant: 'destructive'
+        });
+        return false;
+      }
+
+      // Create mission progress entry
+      const { error: progressError } = await supabase
+        .from('mission_progress')
+        .insert({
+          user_id: user.id,
+          mission_id: selectedMission.id,
+          progress: [],
+          completed: false,
+        });
+
+      if (progressError) throw progressError;
+
+      // Update user profile active mission
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ active_mission: selectedMission.id })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Update local state
+      set(state => ({
+        userProfile: {
+          ...state.userProfile,
+          activeMission: selectedMission,
+        },
+      }));
+
+      toast({
+        title: 'Миссия начата!',
+        description: `Вы начали миссию "${selectedMission.title}"`,
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error starting mission:', error);
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось начать миссию. Попробуйте еще раз.',
+        variant: 'destructive'
+      });
+      return false;
     }
   },
 
