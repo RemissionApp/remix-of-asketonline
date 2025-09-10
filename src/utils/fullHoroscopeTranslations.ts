@@ -15,7 +15,7 @@ export const getFullHoroscopeUIText = (
       tryAgainButton: 'Попробовать снова',
       generateDescription:
         'Сгенерируйте ваш полный космический профиль с анализом вашей личности, отношений, карьерного пути и многого другого, основанный на вашем знаке зодиака.',
-      generateButton: 'Сгенерировать полный гороскоп',
+      generateButton: `Сгенерировать полный гороскоп на ${currentYear}г`,
       loadingTitle:
         'Консультация со звездами и планетами для вашего полного космического профиля...',
       loadingDescription:
@@ -34,7 +34,7 @@ export const getFullHoroscopeUIText = (
       tryAgainButton: 'Intentar de nuevo',
       generateDescription:
         'Genera tu perfil cósmico completo con información sobre tu personalidad, relaciones, trayectoria profesional y más basado en tu signo zodiacal.',
-      generateButton: 'Generar horóscopo completo',
+      generateButton: `Generar horóscopo completo para ${currentYear}`,
       loadingTitle:
         'Consultando a las estrellas y planetas para tu perfil cósmico completo...',
       loadingDescription:
@@ -53,7 +53,7 @@ export const getFullHoroscopeUIText = (
       tryAgainButton: 'Try Again',
       generateDescription:
         'Generate your complete cosmic profile with insights into your personality, relationships, career path, and more based on your zodiac sign.',
-      generateButton: 'Generate Full Horoscope',
+      generateButton: `Generate Full Horoscope for ${currentYear}`,
       loadingTitle:
         'Consulting the stars and planets for your complete cosmic profile...',
       loadingDescription:
