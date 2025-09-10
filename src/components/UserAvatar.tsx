@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { SpiritualRank } from '@/types';
@@ -23,6 +23,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const logger = createLogger('UserAvatar');
   const { userProfile, user } = useAppStore();
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [avatarKey, setAvatarKey] = useState(0);
 
   // Define size classes
   const sizeClasses = {
@@ -41,36 +44,36 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   // Get avatar URL from userProfile if available
-  const getAvatarUrl = (): string => {
-    logger.debug('UserAvatar getAvatarUrl called', {
-      userProfile: userProfile,
-      avatar_url: userProfile?.avatar_url,
-      rank: userProfile?.rank,
-      user_id: user?.id
-    });
+  // Reset error state when userProfile.avatar_url changes
+  useEffect(() => {
+    setImageLoadError(false);
+    setImageLoaded(false);
+  }, [userProfile.avatar_url]);
 
+  // Listen for avatar updates to force re-render
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      setImageLoadError(false);
+      setImageLoaded(false);
+      setAvatarKey(prev => prev + 1);
+    };
+
+    window.addEventListener('avatarUpdated', handleAvatarUpdate);
+    return () => window.removeEventListener('avatarUpdated', handleAvatarUpdate);
+  }, []);
+
+  const getAvatarUrl = (): string => {
     // Check if userProfile has an avatar_url
-    if (userProfile?.avatar_url) {
-      logger.debug('Using avatar from userProfile', {
-        avatar_url: userProfile.avatar_url,
-      });
-      // Add cache-busting timestamp for uploaded avatars
-      const cacheBuster = userProfile.avatar_url.includes('supabase') 
-        ? `${userProfile.avatar_url}?t=${Date.now()}` 
+    if (userProfile?.avatar_url && !imageLoadError) {
+      // Use timestamp from localStorage for cache-busting when available
+      const uploadTimestamp = localStorage.getItem('avatar-upload-timestamp');
+      const cacheBuster = uploadTimestamp ? uploadTimestamp : Date.now();
+      return userProfile.avatar_url.includes('supabase') 
+        ? `${userProfile.avatar_url}?t=${cacheBuster}` 
         : userProfile.avatar_url;
-      
-      logger.debug('Final avatar URL with cache-busting', {
-        original_url: userProfile.avatar_url,
-        final_url: cacheBuster
-      });
-      
-      return cacheBuster;
     }
 
-    // If no custom avatar, use rank-based default avatar
-    logger.debug('Using default avatar based on rank', {
-      rank: userProfile?.rank,
-    });
+    // If no custom avatar or error, use rank-based default avatar
     return getAvatarImagePath(userProfile?.rank as SpiritualRank);
   };
 
@@ -107,24 +110,17 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           'animate-pulse-slow',
           className
         )}
+        key={avatarKey}
       >
         <AvatarImage 
           src={getAvatarUrl()} 
           alt={`${userProfile?.name || 'User'} avatar`}
-          onError={(e) => {
-            logger.error('Avatar image failed to load', {
-              src: e.currentTarget.src,
-              userProfile: userProfile?.avatar_url
-            });
-          }}
-          onLoad={() => {
-            logger.debug('Avatar image loaded successfully', {
-              src: getAvatarUrl()
-            });
-          }}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageLoadError(true)}
+          className="object-cover"
         />
-        <AvatarFallback className="bg-cosmic-dark text-cosmic-accent">
-          {userProfile.name.substring(0, 2).toUpperCase()}
+        <AvatarFallback className="bg-cosmic-accent/20 text-cosmic-primary font-bold">
+          {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : 'U'}
         </AvatarFallback>
       </Avatar>
 

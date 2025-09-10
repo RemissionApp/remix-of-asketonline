@@ -66,23 +66,19 @@ const AvatarUpload: React.FC = () => {
       await updateProfileAvatar(user.id, publicUrl);
 
       // Force reload profile from database to ensure sync
-      console.log('=== AVATAR UPLOAD: Reloading profile ===');
       await loadUserProfile();
       
-      // Wait for state to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Debug: Check if profile was updated
-      const { userProfile: updatedProfile } = useAppStore.getState();
-      console.log('Avatar upload completed - profile state:', {
-        userProfile: updatedProfile,
-        avatar_url: updatedProfile?.avatar_url,
-        publicUrl: publicUrl
-      });
+      // Force re-render of UserAvatar components by clearing cache
+      const timestamp = Date.now();
+      localStorage.setItem('avatar-upload-timestamp', timestamp.toString());
       
-      // Force component re-render by updating a dummy state
-      const currentTime = Date.now();
-      console.log('Avatar upload timestamp:', currentTime);
+      // Trigger custom event for immediate avatar update
+      window.dispatchEvent(new CustomEvent('avatarUpdated', { 
+        detail: { 
+          avatarUrl: publicUrl,
+          timestamp 
+        } 
+      }));
 
       // Clean up
       setShowConfirm(false);

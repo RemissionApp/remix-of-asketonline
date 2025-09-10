@@ -63,24 +63,18 @@ const UserProfileForm: React.FC = () => {
           return;
         }
 
-        logger.debug('Profile data from Supabase', { profileData });
-
         if (profileData) {
           // Convert birth_date string from Supabase to a Date object
           const birthDate = profileData.birth_date
             ? new Date(profileData.birth_date)
             : null;
 
-          // Update the store and local form data
-          await updateUserProfile({
-            name: profileData.name || userProfile.name,
-            birthDate: birthDate || userProfile.birthDate,
-            avatar_url: profileData.avatar_url || userProfile.avatar_url,
-          });
+          // Update the store directly via loadUserProfile
+          await loadUserProfile();
 
           setFormData({
-            name: profileData.name || userProfile.name || '',
-            birthDate: birthDate || userProfile.birthDate || new Date(),
+            name: profileData.name || '',
+            birthDate: birthDate || new Date(),
           });
 
           // Calculate and set age
@@ -144,17 +138,21 @@ const UserProfileForm: React.FC = () => {
       console.log('Supabase update successful:', updateResult);
 
       // Force reload profile data to sync with DB
-      console.log('=== RELOADING PROFILE AFTER SAVE ===');
       await loadUserProfile();
       
-      // Wait a bit for state to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Update local form data
+      // Update local form data immediately
       setFormData({
         name: values.name,
         birthDate: values.birthDate,
       });
+
+      // Trigger profile update event for immediate UI refresh
+      window.dispatchEvent(new CustomEvent('profileUpdated', { 
+        detail: { 
+          name: values.name,
+          birthDate: values.birthDate 
+        } 
+      }));
 
       // Calculate and set age
       const calculatedAge = differenceInYears(new Date(), values.birthDate);
