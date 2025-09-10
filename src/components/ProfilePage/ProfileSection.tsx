@@ -4,7 +4,7 @@ import { Settings, User } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { SubscriptionManager } from './SubscriptionManager';
-import { LogoutButton } from './LogoutButton';
+
 
 export const ProfileSection: React.FC = () => {
   const navigate = useNavigate();
@@ -55,10 +55,6 @@ export const ProfileSection: React.FC = () => {
       {/* Subscription Manager */}
       <SubscriptionManager />
 
-      {/* Logout Button */}
-      <div className="mt-6">
-        <LogoutButton />
-      </div>
     </div>
   );
 };
