@@ -51,7 +51,7 @@ export function PactCompletionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm sm:max-w-md mx-auto bg-gradient-to-br from-cosmic-dark to-gray-900 border border-cosmic-accent/30 text-white max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md mx-auto bg-gradient-to-br from-cosmic-dark to-gray-900 border border-cosmic-accent/30 text-white">
         <DialogHeader className="text-center space-y-4">
           <div className="relative mx-auto">
             {/* Animated trophy icon with glow effect */}
@@ -136,13 +136,13 @@ export function PactCompletionDialog({
           </div>
 
           {/* Action buttons */}
-          <div className="space-y-2">
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleShare}
-                className="w-full sm:flex-1 border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
               >
                 <Share className="w-4 h-4 mr-2" />
                 {t.pactCompletion?.shareButton || 'Share'}
@@ -151,7 +151,7 @@ export function PactCompletionDialog({
                 variant="outline"
                 size="sm"
                 onClick={onCreateNewPact}
-                className="w-full sm:flex-1 border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+                className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t.pactCompletion?.newPactButton || 'New Ascesis'}

@@ -5,12 +5,10 @@ import { useAppStore } from '@/store/useAppStore';
 import { ProBadge } from './ProBadge';
 
 export const DeveloperSwitch: React.FC = () => {
-  const { userProfile, upgradeToPro, cancelProSubscription, isUpdatingSubscription } = useAppStore();
+  const { userProfile, upgradeToPro, cancelProSubscription } = useAppStore();
   const isPro = userProfile?.isPro || false;
 
   const handleToggleSubscription = async (checked: boolean) => {
-    if (isUpdatingSubscription) return;
-    
     if (checked) {
       await upgradeToPro();
     } else {
@@ -34,7 +32,6 @@ export const DeveloperSwitch: React.FC = () => {
           id="dev-mode"
           checked={isPro}
           onCheckedChange={handleToggleSubscription}
-          disabled={isUpdatingSubscription}
         />
       </div>
     </div>
