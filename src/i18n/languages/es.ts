@@ -601,11 +601,6 @@ export const esTranslations: Translations = {
       }
     }
   },
-      title: 'Primeros Pasos del Asceta',
-      description: 'Sigue tu primera ascesis durante tres días seguidos y recibe puntos de energía',
-      requirements: ['Seguir ascesis durante 3 días seguidos']
-    }
-  },
   pactCompletion: {
     title: '¡Felicitaciones por completar tu ascesis!',
     completedDays: 'Completaste la ascesis durante {days} días seguidos',
