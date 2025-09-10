@@ -24,7 +24,7 @@ export const DailyReflectionForm: React.FC<DailyReflectionFormProps> = ({
   const [scaleAnswer, setScaleAnswer] = useState([5]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let answer;
     
     switch (question.type) {
@@ -36,13 +36,19 @@ export const DailyReflectionForm: React.FC<DailyReflectionFormProps> = ({
         answer = scaleAnswer[0];
         break;
       case 'photo':
-        answer = { text: textAnswer, photo: photoFile };
+        // Передаем объект с текстом и файлом
+        answer = { 
+          text: textAnswer, 
+          photo: photoFile 
+        };
         break;
       default:
         answer = textAnswer;
     }
 
-    onSubmit(answer);
+    console.log('📝 Отправляем ответ:', { type: question.type, answer, hasPhoto: !!photoFile });
+
+    await onSubmit(answer);
     
     // Reset form
     setTextAnswer('');

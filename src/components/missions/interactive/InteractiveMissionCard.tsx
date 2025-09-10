@@ -16,6 +16,7 @@ import { MissionDetailsModal } from '../details/MissionDetailsModal';
 import { ProgressTimeline } from '../timeline/ProgressTimeline';
 import { useEnhancedMissionState } from '@/hooks/useEnhancedMissionState';
 import { useRewardSystem } from '@/hooks/useRewardSystem';
+import { DayCompletionButton } from '../ui/DayCompletionButton';
 
 interface InteractiveMissionCardProps {
   mission: Mission;
@@ -262,25 +263,24 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
                   </Button>
                 )}
 
-                {/* Complete Day Button */}
-                {canCompleteDay && (
-                  <Button
-                    onClick={async () => {
-                      await completeDay();
-                      // Выдаем награду за завершение дня
-                      await onMissionComplete('daily');
-                      
-                      // Проверяем, если миссия полностью завершена
-                      if (currentDay >= totalDays) {
-                        await onMissionComplete('weekly');
-                      }
-                    }}
-                    disabled={isSaving}
-                    className="bg-cosmic-accent hover:bg-cosmic-accent/80 text-white disabled:opacity-50"
-                  >
-                    ✅ {language === 'ru' ? 'Завершить день' : language === 'es' ? 'Completar día' : 'Complete Day'}
-                  </Button>
-                )}
+                {/* Complete Day Button с новыми проверками */}
+                <DayCompletionButton
+                  canComplete={canCompleteDay}
+                  isCompleted={currentDayProgress?.completed || false}
+                  onComplete={async () => {
+                    await completeDay();
+                    // Выдаем награду за завершение дня
+                    await onMissionComplete('daily');
+                    
+                    // Проверяем, если миссия полностью завершена
+                    if (currentDay >= totalDays) {
+                      await onMissionComplete('weekly');
+                    }
+                  }}
+                  isLoading={isSaving}
+                  dayNumber={currentDay}
+                  hasCompletedToday={false} // TODO: интегрировать реальную проверку
+                />
               </div>
             </div>
           )}
@@ -388,8 +388,8 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
           isOpen={showReflectionForm}
           onClose={() => setShowReflectionForm(false)}
           question={currentDayQuestion}
-          onSubmit={(answer) => {
-            handleReflection(answer);
+          onSubmit={async (answer) => {
+            await handleReflection(answer);
             setShowReflectionForm(false);
           }}
         />

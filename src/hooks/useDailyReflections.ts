@@ -9,6 +9,7 @@ export interface DailyReflection {
   question: string;
   answer: string;
   reflection_type: string;
+  attachment_url?: string;
   created_at: string;
 }
 
@@ -34,15 +35,41 @@ export const useDailyReflections = (missionId: string) => {
       dayNumber,
       question,
       answer,
-      reflectionType = 'text'
+      reflectionType = 'text',
+      attachmentFile
     }: {
       dayNumber: number;
       question: string;
       answer: string;
       reflectionType?: string;
+      attachmentFile?: File;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user?.id) throw new Error('User not authenticated');
+      
+      let attachmentUrl = null;
+      
+      // Загружаем фото если есть
+      if (attachmentFile) {
+        const fileExt = attachmentFile.name.split('.').pop();
+        const fileName = `${user.id}/${missionId}/day-${dayNumber}-${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('mission-photos')
+          .upload(fileName, attachmentFile);
+          
+        if (uploadError) {
+          console.error('❌ Ошибка загрузки фото:', uploadError);
+          throw new Error('Не удалось загрузить фото');
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('mission-photos')
+          .getPublicUrl(fileName);
+          
+        attachmentUrl = publicUrl;
+        console.log('✅ Фото загружено:', attachmentUrl);
+      }
       
       const { data, error } = await supabase
         .from('daily_reflections')
@@ -51,8 +78,9 @@ export const useDailyReflections = (missionId: string) => {
           mission_id: missionId,
           day_number: dayNumber,
           question,
-          answer,
+          answer: typeof answer === 'object' ? JSON.stringify(answer) : String(answer),
           reflection_type: reflectionType,
+          attachment_url: attachmentUrl,
         })
         .select()
         .single();

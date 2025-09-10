@@ -257,6 +257,7 @@ export type Database = {
       daily_reflections: {
         Row: {
           answer: string
+          attachment_url: string | null
           created_at: string
           day_number: number
           id: string
@@ -267,6 +268,7 @@ export type Database = {
         }
         Insert: {
           answer: string
+          attachment_url?: string | null
           created_at?: string
           day_number: number
           id?: string
@@ -277,6 +279,7 @@ export type Database = {
         }
         Update: {
           answer?: string
+          attachment_url?: string | null
           created_at?: string
           day_number?: number
           id?: string
@@ -432,6 +435,7 @@ export type Database = {
         Row: {
           completed: boolean
           completed_at: string | null
+          completed_date: string | null
           created_at: string
           data: Json
           day_number: number
@@ -443,6 +447,7 @@ export type Database = {
         Insert: {
           completed?: boolean
           completed_at?: string | null
+          completed_date?: string | null
           created_at?: string
           data?: Json
           day_number: number
@@ -454,6 +459,7 @@ export type Database = {
         Update: {
           completed?: boolean
           completed_at?: string | null
+          completed_date?: string | null
           created_at?: string
           data?: Json
           day_number?: number

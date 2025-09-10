@@ -44,6 +44,32 @@ export const useMissionProgress = (missionId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user?.id) throw new Error('User not authenticated');
       
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      
+      // Проверяем временные ограничения перед сохранением
+      if (completed) {
+        console.log('⏰ Проверяем временные ограничения для дня:', dayNumber);
+        
+        // Проверяем, не завершали ли уже шаг сегодня
+        const { data: existingProgress, error: checkError } = await supabase
+          .from('mission_progress_detailed')
+          .select('day_number, completed_date')
+          .eq('user_id', user.id)
+          .eq('mission_id', missionId)
+          .eq('completed', true)
+          .eq('completed_date', today);
+          
+        if (checkError) {
+          console.error('❌ Ошибка проверки прогресса:', checkError);
+          throw checkError;
+        }
+        
+        if (existingProgress && existingProgress.length > 0) {
+          const completedToday = existingProgress[0];
+          throw new Error(`Вы уже завершили день ${completedToday.day_number} сегодня. Завершать можно только один шаг в день!`);
+        }
+      }
+      
       const { data: result, error } = await supabase
         .from('mission_progress_detailed')
         .upsert({
@@ -52,6 +78,7 @@ export const useMissionProgress = (missionId: string) => {
           day_number: dayNumber,
           completed,
           completed_at: completed ? new Date().toISOString() : null,
+          completed_date: completed ? today : null,
           data: data as any,
         })
         .select()

@@ -4,6 +4,7 @@ import { usePersistentMissionState } from './usePersistentMissionState';
 import { useCosmicArtifacts } from './useCosmicArtifacts';
 import { useAppStore } from '@/store/useAppStore';
 import { useNotifications } from '@/components/notifications/NotificationSystem';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useEnhancedMissionState = (mission: Mission) => {
   const { language, userProfile, updateUserProfile } = useAppStore();
@@ -208,14 +209,79 @@ export const useEnhancedMissionState = (mission: Mission) => {
     if (!currentQuestion) return;
 
     try {
+      // Подготавливаем данные для сохранения в базу данных
+      let answerText = '';
+      let attachmentFile = null;
+      
+      if (typeof answer === 'object' && answer !== null) {
+        answerText = answer.text || '';
+        attachmentFile = answer.photo || null;
+      } else {
+        answerText = String(answer);
+      }
+
+      console.log('💾 Сохраняем рефлексию в базу данных:', { 
+        dayNumber: missionState.currentDay, 
+        question: currentQuestion.question,
+        answerText,
+        hasPhoto: !!attachmentFile 
+      });
+
+      // Сохраняем в базу данных напрямую через Supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      let attachmentUrl = null;
+      
+      // Загружаем фото если есть
+      if (attachmentFile) {
+        const fileExt = attachmentFile.name.split('.').pop();
+        const fileName = `${user.id}/${mission.id}/day-${missionState.currentDay}-${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('mission-photos')
+          .upload(fileName, attachmentFile);
+          
+        if (uploadError) {
+          console.error('❌ Ошибка загрузки фото:', uploadError);
+          throw new Error('Не удалось загрузить фото');
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('mission-photos')
+          .getPublicUrl(fileName);
+          
+        attachmentUrl = publicUrl;
+        console.log('✅ Фото загружено:', attachmentUrl);
+      }
+      
+      // Сохраняем рефлексию в базу данных
+      const { data, error } = await supabase
+        .from('daily_reflections')
+        .upsert({
+          user_id: user.id,
+          mission_id: mission.id,
+          day_number: missionState.currentDay,
+          question: currentQuestion.question,
+          answer: answerText,
+          reflection_type: currentQuestion.type,
+          attachment_url: attachmentUrl,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      console.log('✅ Рефлексия сохранена в базу данных:', data);
+
       // Update persistent state
       await updateState({
         reflectionsData: {
           ...missionState.reflectionsData,
           [missionState.currentDay]: {
             question: currentQuestion.question,
-            answer: typeof answer === 'object' ? JSON.stringify(answer) : String(answer),
+            answer: answerText,
             reflectionType: currentQuestion.type,
+            attachmentFile: attachmentFile ? attachmentFile.name : null,
           }
         }
       });
@@ -238,11 +304,11 @@ export const useEnhancedMissionState = (mission: Mission) => {
         title: language === 'ru' ? '❌ Ошибка сохранения' 
               : language === 'es' ? '❌ Error de guardado' 
               : '❌ Save Error',
-        message: 'Error saving reflection',
+        message: error instanceof Error ? error.message : 'Error saving reflection',
         duration: 3000,
       });
     }
-  }, [getCurrentDayQuestion, missionState.reflectionsData, missionState.currentDay, updateState, language]);
+  }, [getCurrentDayQuestion, missionState.reflectionsData, missionState.currentDay, updateState, language, mission.id]);
 
   // Complete current day with persistence
   const completeDay = useCallback(async () => {
@@ -306,6 +372,27 @@ export const useEnhancedMissionState = (mission: Mission) => {
     const currentProgress = getCurrentDayProgress();
     if (currentProgress?.completed) return false;
 
+    // Строгое временное ограничение: один день = один шаг миссии
+    const today = new Date().toDateString();
+    const lastCompletedDate = currentProgress?.completedAt ? new Date(currentProgress.completedAt).toDateString() : null;
+    
+    // Проверяем, не завершали ли мы уже шаг сегодня
+    if (lastCompletedDate === today) {
+      console.log('🚫 Уже завершен шаг сегодня:', { lastCompletedDate, today });
+      return false;
+    }
+
+    // Проверяем, что не пытаемся завершить несколько дней подряд
+    const completedDaysToday = Object.values(missionState.progressData).filter(progress => {
+      const completedAt = progress?.completedAt;
+      return completedAt && new Date(completedAt).toDateString() === today;
+    }).length;
+
+    if (completedDaysToday > 0) {
+      console.log('🚫 Уже завершен один шаг сегодня, больше нельзя');
+      return false;
+    }
+
     const currentQuestion = getCurrentDayQuestion();
     const currentChoice = getCurrentDayChoice();
     
@@ -322,7 +409,7 @@ export const useEnhancedMissionState = (mission: Mission) => {
     }
 
     return true;
-  }, [getCurrentDayProgress, getCurrentDayQuestion, getCurrentDayChoice, getCurrentDayReflection, getCurrentDayChoiceData]);
+  }, [getCurrentDayProgress, getCurrentDayQuestion, getCurrentDayChoice, getCurrentDayReflection, getCurrentDayChoiceData, missionState.progressData]);
 
   // Calculate progress metrics
   const progressPercentage = Math.floor((Object.keys(missionState.progressData).filter(day => 
