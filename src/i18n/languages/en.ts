@@ -475,6 +475,159 @@ export const enTranslations: Translations = {
     message: 'Oops! Page not found',
     returnHome: 'Return to Home',
   },
+  
+  missions: {
+    'synchronicity-hunter': {
+      title: 'Synchronicity Hunter',
+      description: 'Explore mystical coincidences in your life and learn to read the signs of the Universe',
+      requirements: [
+        'Keep a synchronicity journal',
+        'Analyze patterns',
+        'Create a coincidence map'
+      ],
+      dailyQuestions: {
+        1: 'What unusual coincidences did you notice today?',
+        3: 'Rate the strength of today\'s synchronicities from 1 to 10',
+        5: 'Photograph or describe the most vivid coincidence',
+        7: 'What patterns have you discovered during the week of observations?'
+      },
+      choiceEvents: {
+        'sync-path-choice': {
+          title: 'Path of exploration',
+          description: 'Choose how you want to develop your ability to notice synchronicities',
+          choices: {
+            'intuitive-path': 'Rely on intuition and feelings',
+            'analytical-path': 'Analyze and record everything in detail'
+          }
+        }
+      },
+      milestoneRewards: {
+        3: 'Your perception is sharpening! 🔮',
+        7: 'You received a mystical artifact! ✨'
+      }
+    },
+    'energy-detox-21': {
+      title: 'Energy Detox',
+      description: 'Comprehensive transformation of the energy field through liberation from toxic habits and cleansing practices',
+      requirements: [
+        'Get rid of energy vampires',
+        'Practice cleansing techniques',
+        'Create a new energy regime'
+      ],
+      dailyQuestions: {
+        1: 'What drains your energy the most?',
+        7: 'Rate your energy level compared to the beginning',
+        14: 'Which new practices have brought the most benefit?',
+        21: 'Photograph a symbol of your renewed energy'
+      },
+      choiceEvents: {
+        'detox-method': {
+          title: 'Cleansing method',
+          description: 'Choose the main approach to energy detox',
+          choices: {
+            'gentle-cleansing': 'Gentle gradual cleansing',
+            'intensive-purge': 'Intensive radical cleansing'
+          }
+        },
+        'energy-source': {
+          title: 'Source of power',
+          description: 'Determine what will be your main source of energy',
+          choices: {
+            'nature-connection': 'Connection with nature and elements',
+            'inner-fire': 'Inner fire and self-discipline',
+            'cosmic-flow': 'Flow of cosmic energy'
+          }
+        }
+      }
+    },
+    'dream-explorer': {
+      title: 'Dream Explorer',
+      description: 'Dive into the world of lucid dreams and reveal the secrets of your subconscious',
+      requirements: [
+        'Keep a detailed dream journal',
+        'Practice mindfulness techniques',
+        'Create a dream world map'
+      ],
+      dailyQuestions: {
+        1: 'Describe the most vivid dream you remember',
+        5: 'How clearly do you remember dreams (1-10)?',
+        10: 'Have you had lucid dreams?',
+        14: 'Draw or describe a symbol from your dreams'
+      },
+      choiceEvents: {
+        'dream-technique': {
+          title: 'Awareness technique',
+          description: 'Choose a method for developing lucid dreaming',
+          choices: {
+            'reality-checks': 'Reality checks during the day',
+            'wake-back-to-bed': 'WBTB technique (wake up and go back to sleep)',
+            'mnemonic-induction': 'Mnemonic induction (MILD)'
+          }
+        }
+      }
+    },
+    'gratitude-alchemist': {
+      title: 'Gratitude Alchemist',
+      description: 'Transform any life situations into sources of gratitude and strength',
+      requirements: [
+        'Find blessings in difficulties',
+        'Create a gratitude ritual',
+        'Share gratitude with the world'
+      ],
+      dailyQuestions: {
+        1: 'What are you especially grateful for today?',
+        5: 'Find a hidden blessing in a recent difficulty',
+        8: 'To whom did you express gratitude today?',
+        10: 'Photograph something that symbolizes your gratitude'
+      },
+      choiceEvents: {
+        'gratitude-style': {
+          title: 'Gratitude style',
+          description: 'How do you prefer to express gratitude?',
+          choices: {
+            'inner-gratitude': 'Inner meditations and reflections',
+            'creative-gratitude': 'Creative expression (letters, art)',
+            'active-gratitude': 'Active deeds and helping others'
+          }
+        }
+      }
+    },
+    'time-alchemist': {
+      title: 'Time Alchemist',
+      description: 'Change your perception of time and learn to control its flow',
+      requirements: [
+        'Explore different states of time',
+        'Practice time expansion techniques',
+        'Create a personal time ritual'
+      ],
+      dailyQuestions: {
+        1: 'How do you feel the flow of time in different situations?',
+        7: 'Rate how slow time was today (1-10)',
+        14: 'Describe your ideal life rhythm'
+      },
+      choiceEvents: {
+        'time-approach': {
+          title: 'Approach to time',
+          description: 'Choose the main philosophy of working with time',
+          choices: {
+            'flow-state': 'Immersion in a flow state',
+            'mindful-presence': 'Mindful presence in the moment',
+            'time-expansion': 'Time expansion techniques'
+          }
+        }
+      }
+    },
+    'mission-1': {
+      title: 'First Steps of the Ascetic',
+      description: 'Follow your first ascesis for three days in a row and receive energy points',
+      requirements: ['Follow ascesis for 3 days in a row']
+    },
+    'mission-2': {
+      title: 'Conversation with the Universe',
+      description: 'Ask three questions to the Universe and receive additional wisdom',
+      requirements: ['Ask 3 questions to the Universe']
+    }
+  },
   pactCompletion: {
     title: 'Congratulations on completing your ascesis!',
     completedDays: 'You completed the ascesis for {days} days in a row',

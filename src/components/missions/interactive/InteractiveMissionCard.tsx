@@ -17,6 +17,7 @@ import { ProgressTimeline } from '../timeline/ProgressTimeline';
 import { useEnhancedMissionState } from '@/hooks/useEnhancedMissionState';
 import { useRewardSystem } from '@/hooks/useRewardSystem';
 import { DayCompletionButton } from '../ui/DayCompletionButton';
+import { useMissionTranslations } from '@/hooks/useMissionTranslations';
 
 interface InteractiveMissionCardProps {
   mission: Mission;
@@ -33,10 +34,15 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
 }) => {
   const { language, userProfile } = useAppStore();
   const { onMissionComplete, onArtifactFound } = useRewardSystem();
+  const { getTranslatedMissionTitle, getTranslatedMissionDescription } = useMissionTranslations();
   const [showChoiceModal, setShowChoiceModal] = React.useState(false);
   const [showReflectionForm, setShowReflectionForm] = React.useState(false);
   const [showDetailsModal, setShowDetailsModal] = React.useState(false);
   const [showProgressTimeline, setShowProgressTimeline] = React.useState(false);
+
+  // Get translated mission data
+  const translatedTitle = getTranslatedMissionTitle(mission.id, mission.title);
+  const translatedDescription = getTranslatedMissionDescription(mission.id, mission.description);
 
   // Use the enhanced persistent mission state hook
   const missionState = useEnhancedMissionState(mission);
@@ -186,10 +192,10 @@ export const InteractiveMissionCard: React.FC<InteractiveMissionCardProps> = ({
             <div className="flex-1">
               <CardTitle className="text-xl text-cosmic-gold mb-2 flex items-center gap-2">
                 {getCategoryIcon(mission.category)}
-                {mission.title}
+                {translatedTitle}
               </CardTitle>
               <p className="text-cosmic-silver text-sm leading-relaxed">
-                {mission.description}
+                {translatedDescription}
               </p>
             </div>
             <div className="flex flex-col gap-2 ml-4">

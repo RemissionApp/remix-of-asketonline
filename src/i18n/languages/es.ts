@@ -441,6 +441,159 @@ export const esTranslations: Translations = {
     message: '¡Ups! Página no encontrada',
     returnHome: 'Volver al inicio',
   },
+  
+  missions: {
+    'synchronicity-hunter': {
+      title: 'Cazador de Sincronicidades',
+      description: 'Explora las coincidencias místicas en tu vida y aprende a leer las señales del Universo',
+      requirements: [
+        'Mantén un diario de sincronicidades',
+        'Analiza patrones',
+        'Crea un mapa de coincidencias'
+      ],
+      dailyQuestions: {
+        1: '¿Qué coincidencias inusuales notaste hoy?',
+        3: 'Califica la fuerza de las sincronicidades de hoy del 1 al 10',
+        5: 'Fotografía o describe la coincidencia más vívida',
+        7: '¿Qué patrones has descubierto durante la semana de observaciones?'
+      },
+      choiceEvents: {
+        'sync-path-choice': {
+          title: 'Camino de exploración',
+          description: 'Elige cómo desarrollarás tu habilidad para notar sincronicidades',
+          choices: {
+            'intuitive-path': 'Confiar en la intuición y los sentimientos',
+            'analytical-path': 'Analizar y registrar todo detalladamente'
+          }
+        }
+      },
+      milestoneRewards: {
+        3: '¡Tu percepción se está agudizando! 🔮',
+        7: '¡Recibiste un artefacto místico! ✨'
+      }
+    },
+    'energy-detox-21': {
+      title: 'Desintoxicación Energética',
+      description: 'Transformación integral del campo energético a través de la liberación de hábitos tóxicos y prácticas de purificación',
+      requirements: [
+        'Deshazte de los vampiros energéticos',
+        'Practica técnicas de purificación',
+        'Crea un nuevo régimen energético'
+      ],
+      dailyQuestions: {
+        1: '¿Qué agota más tu energía?',
+        7: 'Califica tu nivel de energía comparado con el inicio',
+        14: '¿Qué nuevas prácticas han traído mayor beneficio?',
+        21: 'Fotografía un símbolo de tu energía renovada'
+      },
+      choiceEvents: {
+        'detox-method': {
+          title: 'Método de purificación',
+          description: 'Elige el enfoque principal para la desintoxicación energética',
+          choices: {
+            'gentle-cleansing': 'Purificación suave y gradual',
+            'intensive-purge': 'Purificación intensiva y radical'
+          }
+        },
+        'energy-source': {
+          title: 'Fuente de poder',
+          description: 'Determina cuál será tu principal fuente de energía',
+          choices: {
+            'nature-connection': 'Conexión con la naturaleza y los elementos',
+            'inner-fire': 'Fuego interior y autodisciplina',
+            'cosmic-flow': 'Flujo de energía cósmica'
+          }
+        }
+      }
+    },
+    'dream-explorer': {
+      title: 'Explorador de Sueños',
+      description: 'Sumérgete en el mundo de los sueños lúcidos y revela los secretos de tu subconsciente',
+      requirements: [
+        'Mantén un diario detallado de sueños',
+        'Practica técnicas de atención plena',
+        'Crea un mapa del mundo onírico'
+      ],
+      dailyQuestions: {
+        1: 'Describe el sueño más vívido que recuerdes',
+        5: '¿Qué tan claramente recuerdas los sueños (1-10)?',
+        10: '¿Has tenido sueños lúcidos?',
+        14: 'Dibuja o describe un símbolo de tus sueños'
+      },
+      choiceEvents: {
+        'dream-technique': {
+          title: 'Técnica de conciencia',
+          description: 'Elige un método para desarrollar sueños lúcidos',
+          choices: {
+            'reality-checks': 'Verificaciones de realidad durante el día',
+            'wake-back-to-bed': 'Técnica WBTB (despertar y volver a dormir)',
+            'mnemonic-induction': 'Inducción mnemónica (MILD)'
+          }
+        }
+      }
+    },
+    'gratitude-alchemist': {
+      title: 'Alquimista de la Gratitud',
+      description: 'Transforma cualquier situación de la vida en fuentes de gratitud y fuerza',
+      requirements: [
+        'Encuentra bendiciones en las dificultades',
+        'Crea un ritual de gratitud',
+        'Comparte gratitud con el mundo'
+      ],
+      dailyQuestions: {
+        1: '¿Por qué estás especialmente agradecido hoy?',
+        5: 'Encuentra una bendición oculta en una dificultad reciente',
+        8: '¿A quién expresaste gratitud hoy?',
+        10: 'Fotografía algo que simbolice tu gratitud'
+      },
+      choiceEvents: {
+        'gratitude-style': {
+          title: 'Estilo de gratitud',
+          description: '¿Cómo prefieres expresar gratitud?',
+          choices: {
+            'inner-gratitude': 'Meditaciones y reflexiones internas',
+            'creative-gratitude': 'Expresión creativa (cartas, arte)',
+            'active-gratitude': 'Actos activos y ayudar a otros'
+          }
+        }
+      }
+    },
+    'time-alchemist': {
+      title: 'Alquimista del Tiempo',
+      description: 'Cambia tu percepción del tiempo y aprende a controlar su flujo',
+      requirements: [
+        'Explora diferentes estados del tiempo',
+        'Practica técnicas de expansión temporal',
+        'Crea un ritual temporal personal'
+      ],
+      dailyQuestions: {
+        1: '¿Cómo sientes el flujo del tiempo en diferentes situaciones?',
+        7: 'Califica qué tan lento fue el tiempo hoy (1-10)',
+        14: 'Describe tu ritmo de vida ideal'
+      },
+      choiceEvents: {
+        'time-approach': {
+          title: 'Enfoque del tiempo',
+          description: 'Elige la filosofía principal de trabajar con el tiempo',
+          choices: {
+            'flow-state': 'Inmersión en un estado de flujo',
+            'mindful-presence': 'Presencia consciente en el momento',
+            'time-expansion': 'Técnicas de expansión temporal'
+          }
+        }
+      }
+    },
+    'mission-1': {
+      title: 'Primeros Pasos del Asceta',
+      description: 'Sigue tu primera ascesis durante tres días seguidos y recibe puntos de energía',
+      requirements: ['Seguir ascesis durante 3 días seguidos']
+    },
+    'mission-2': {
+      title: 'Conversación con el Universo',
+      description: 'Haz tres preguntas al Universo y recibe sabiduría adicional',
+      requirements: ['Hacer 3 preguntas al Universo']
+    }
+  },
   pactCompletion: {
     title: '¡Felicitaciones por completar tu ascesis!',
     completedDays: 'Completaste la ascesis durante {days} días seguidos',

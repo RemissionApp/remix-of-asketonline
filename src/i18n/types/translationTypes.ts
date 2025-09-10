@@ -328,6 +328,19 @@ export interface PactCompletionTranslations {
   shareText: string;
 }
 
+export interface MissionTranslations {
+  title: string;
+  description: string;
+  requirements: string[];
+  dailyQuestions?: Record<number, string>;
+  choiceEvents?: Record<string, {
+    title: string;
+    description: string;
+    choices: Record<string, string>;
+  }>;
+  milestoneRewards?: Record<number, string>;
+}
+
 export interface Translations {
   welcome?: Record<string, string>;
   login?: Record<string, string>;
@@ -354,4 +367,5 @@ export interface Translations {
   deleteAccount?: DeleteAccountTranslations;
   notFound?: NotFoundTranslations;
   pactCompletion?: PactCompletionTranslations;
+  missions?: Record<string, MissionTranslations>;
 }

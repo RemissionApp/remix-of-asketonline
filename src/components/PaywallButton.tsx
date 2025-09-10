@@ -19,7 +19,7 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
   offeringIdentifier,
   children,
 }) => {
-  const { presentPaywall, isLoading, hasActiveSubscription } = useRevenueCat();
+  const { isLoading, hasActiveSubscription } = useRevenueCat();
   const { toast } = useToast();
 
   // Если у пользователя уже есть подписка, не показываем кнопку
@@ -29,8 +29,11 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
 
   const handleShowPaywall = async () => {
     try {
-      console.log('offeringIdentifier', offeringIdentifier);
-      await presentPaywall(offeringIdentifier);
+      console.log('Paywall functionality not available');
+      toast({
+        title: "Premium функции",
+        description: "Функция временно недоступна",
+      });
     } catch (error) {
       console.error('Error showing paywall:', error);
     }
