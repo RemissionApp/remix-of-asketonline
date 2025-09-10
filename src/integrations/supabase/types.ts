@@ -670,15 +670,7 @@ export type Database = {
           total_days?: number
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_active_mission_fkey"
-            columns: ["active_mission"]
-            isOneToOne: false
-            referencedRelation: "missions"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       push_subscriptions: {
         Row: {

@@ -28,9 +28,13 @@ export const RecommendedMission: React.FC = () => {
   }
 
   const handleStartMission = async (mission: Mission) => {
+    console.log('🎯 UI: Starting mission:', mission.id);
     const success = await startMission(mission);
+    console.log('🎯 UI: Mission start result:', success);
     if (success) {
-      console.log(`Mission ${mission.id} started successfully!`);
+      console.log(`✅ Mission ${mission.id} started successfully!`);
+    } else {
+      console.log(`❌ Failed to start mission ${mission.id}`);
     }
   };
 

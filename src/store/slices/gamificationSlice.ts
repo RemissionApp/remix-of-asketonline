@@ -205,7 +205,12 @@ export const createGamificationSlice: StateCreator<
   startMission: async (missionId: string) => {
     const { user, userProfile } = get();
 
+    console.log('🚀 Starting mission:', missionId);
+    console.log('📊 User:', user?.id);
+    console.log('👤 Active mission:', userProfile.activeMission);
+
     if (!user) {
+      console.error('❌ No user found');
       toast({
         title: 'Ошибка',
         description: 'Необходимо войти в аккаунт для начала миссии',
@@ -217,6 +222,7 @@ export const createGamificationSlice: StateCreator<
     try {
       // Check if user already has an active mission
       if (userProfile.activeMission) {
+        console.warn('⚠️ User already has active mission:', userProfile.activeMission);
         toast({
           title: 'Активная миссия',
           description: 'У вас уже есть активная миссия. Завершите её перед принятием новой.',
@@ -229,7 +235,10 @@ export const createGamificationSlice: StateCreator<
       const { enhancedMissions } = await import('@/data/enhancedMissions');
       const selectedMission = enhancedMissions.find(m => m.id === missionId);
       
+      console.log('🔍 Found mission:', selectedMission?.title);
+      
       if (!selectedMission) {
+        console.error('❌ Mission not found:', missionId);
         toast({
           title: 'Ошибка',
           description: 'Миссия не найдена',
@@ -238,6 +247,7 @@ export const createGamificationSlice: StateCreator<
         return false;
       }
 
+      console.log('📝 Creating mission progress...');
       // Create mission progress entry
       const { error: progressError } = await supabase
         .from('mission_progress')
@@ -248,7 +258,13 @@ export const createGamificationSlice: StateCreator<
           completed: false,
         });
 
-      if (progressError) throw progressError;
+      if (progressError) {
+        console.error('❌ Progress creation error:', progressError);
+        throw progressError;
+      }
+
+      console.log('✅ Mission progress created');
+      console.log('🔄 Updating profile active mission...');
 
       // Update user profile active mission
       const { error: profileError } = await supabase
@@ -256,7 +272,12 @@ export const createGamificationSlice: StateCreator<
         .update({ active_mission: selectedMission.id })
         .eq('id', user.id);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('❌ Profile update error:', profileError);
+        throw profileError;
+      }
+
+      console.log('✅ Profile updated with active mission');
 
       // Update local state
       set(state => ({
@@ -266,6 +287,8 @@ export const createGamificationSlice: StateCreator<
         },
       }));
 
+      console.log('✅ Local state updated');
+
       toast({
         title: 'Миссия начата!',
         description: `Вы начали миссию "${selectedMission.title}"`,
@@ -273,7 +296,7 @@ export const createGamificationSlice: StateCreator<
 
       return true;
     } catch (error) {
-      console.error('Error starting mission:', error);
+      console.error('💥 Error starting mission:', error);
       toast({
         title: 'Ошибка',
         description: 'Не удалось начать миссию. Попробуйте еще раз.',
