@@ -426,15 +426,7 @@ export type Database = {
           progress?: Json
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "mission_progress_mission_id_fkey"
-            columns: ["mission_id"]
-            isOneToOne: false
-            referencedRelation: "missions"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       mission_progress_detailed: {
         Row: {

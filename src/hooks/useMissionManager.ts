@@ -74,28 +74,60 @@ export const useMissionManager = () => {
     const availableMissions = getPersonalizedMissions();
     const userRank = userProfile?.rank || 'seeker';
     
-    // Фильтровать по сложности
+    console.log('Available missions:', availableMissions.length);
+    console.log('User rank:', userRank);
+    
+    // Фильтровать по сложности - исправлены значения сложности
     const suitableMissions = availableMissions.filter(mission => {
+      console.log(`Mission ${mission.id} difficulty: ${mission.difficulty}`);
       switch (userRank) {
         case 'seeker':
-          return mission.difficulty === 'novice';
+          return ['explorer', 'master'].includes(mission.difficulty); // Начинающие могут брать explorer и master
         case 'pilgrim':
-          return ['novice', 'explorer'].includes(mission.difficulty);
+          return ['explorer', 'master'].includes(mission.difficulty);
         case 'warrior':
           return ['explorer', 'master'].includes(mission.difficulty);
         case 'master':
         case 'enlightened':
-          return ['master', 'cosmic-warrior'].includes(mission.difficulty);
+          return ['master', 'explorer'].includes(mission.difficulty);
         default:
-          return mission.difficulty === 'novice';
+          return ['explorer', 'master'].includes(mission.difficulty);
       }
     });
 
-    if (suitableMissions.length === 0) return null;
+    console.log('Suitable missions:', suitableMissions.length);
+
+    if (suitableMissions.length === 0) {
+      // Fallback: возвращаем первую доступную миссию
+      return availableMissions.length > 0 ? availableMissions[0] : null;
+    }
 
     // Выбрать случайную подходящую миссию
     const randomIndex = Math.floor(Math.random() * suitableMissions.length);
     return suitableMissions[randomIndex];
+  };
+
+  // Получить все подходящие миссии (не только одну)
+  const getAllSuitableMissions = (): Mission[] => {
+    const availableMissions = getPersonalizedMissions();
+    const userRank = userProfile?.rank || 'seeker';
+    
+    // Возвращаем все доступные миссии для пользователя
+    return availableMissions.filter(mission => {
+      switch (userRank) {
+        case 'seeker':
+          return ['explorer', 'master'].includes(mission.difficulty);
+        case 'pilgrim':
+          return ['explorer', 'master'].includes(mission.difficulty);
+        case 'warrior':
+          return ['explorer', 'master'].includes(mission.difficulty);
+        case 'master':
+        case 'enlightened':
+          return ['master', 'explorer'].includes(mission.difficulty);
+        default:
+          return ['explorer', 'master'].includes(mission.difficulty);
+      }
+    });
   };
 
   // Проверить, может ли пользователь принять миссию
@@ -160,6 +192,7 @@ export const useMissionManager = () => {
     getAvailableMissions,
     getPersonalizedMissions,
     getRecommendedMission,
+    getAllSuitableMissions,
     canAcceptMission,
     getMissionsByCategory,
     getMissionsByDifficulty,
