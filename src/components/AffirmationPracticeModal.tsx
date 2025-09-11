@@ -13,6 +13,7 @@ import { usePracticeSteps } from '@/hooks/usePracticeSteps';
 import { PracticeStepContent } from './affirmations/PracticeStepContent';
 import { PracticeCompletionState } from './affirmations/PracticeCompletionState';
 import { PracticeModalFooter } from './affirmations/PracticeModalFooter';
+import { MeditationAudioPlayer } from './audio/MeditationAudioPlayer';
 
 interface AffirmationPracticeModalProps {
   affirmation: {
@@ -60,6 +61,7 @@ export const AffirmationPracticeModal: React.FC<
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <MeditationAudioPlayer isPlaying={isOpen && !completed} volume={0.3} />
       <DialogContent className="sm:max-w-lg bg-gradient-to-br from-cosmic-dark to-gray-900 border-cosmic-accent/40 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl text-cosmic-accent font-medium">
