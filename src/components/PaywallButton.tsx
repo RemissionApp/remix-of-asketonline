@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Crown, Sparkles } from 'lucide-react';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useToast } from '@/hooks/use-toast';
+import { useAppStore } from '@/store/useAppStore';
 
 interface PaywallButtonProps {
   variant?: 'default' | 'outline' | 'premium';
@@ -19,7 +20,8 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
   offeringIdentifier,
   children,
 }) => {
-  const { isLoading, hasActiveSubscription } = useRevenueCat();
+  const { user } = useAppStore();
+  const { hasActiveSubscription, isLoading } = useRevenueCat(user?.id);
   const { toast } = useToast();
 
   // Если у пользователя уже есть подписка, не показываем кнопку
@@ -31,8 +33,8 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
     try {
       console.log('Paywall functionality not available');
       toast({
-        title: "Premium функции",
-        description: "Функция временно недоступна",
+        title: 'Premium функции',
+        description: 'Функция временно недоступна',
       });
     } catch (error) {
       console.error('Error showing paywall:', error);
@@ -90,7 +92,3 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
     </Button>
   );
 };
-
-
-
-

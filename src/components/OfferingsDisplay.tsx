@@ -9,17 +9,19 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useAppStore } from '@/store/useAppStore';
 import { ShoppingCart, Package, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const OfferingsDisplay: React.FC = () => {
+  const { user } = useAppStore();
   const {
+    hasActiveSubscription,
     isInitialized,
     offerings,
-    hasActiveSubscription,
     isLoading,
     purchasePackage,
     billingAvailable,
-  } = useRevenueCat();
+  } = useRevenueCat(user?.id);
 
   const handlePurchase = async (packageToPurchase: any) => {
     try {

@@ -1,21 +1,22 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useAppStore } from '@/store/useAppStore';
 import { ShoppingCart, Crown, AlertTriangle } from 'lucide-react';
 
 export const SimplePurchaseButton: React.FC = () => {
+  const { user } = useAppStore();
   const {
+    hasActiveSubscription,
     isInitialized,
     offerings,
-    hasActiveSubscription,
     isLoading,
     purchasePackage,
     billingAvailable,
-  } = useRevenueCat();
+  } = useRevenueCat(user?.id);
 
   const handlePurchase = async () => {
     if (!offerings.length || !offerings[0].availablePackages.length) {
-      
       return;
     }
 

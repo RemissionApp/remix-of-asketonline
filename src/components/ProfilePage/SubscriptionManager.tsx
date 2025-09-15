@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
 export const SubscriptionManager: React.FC = () => {
-  const { userProfile, upgradeToPro, cancelProSubscription } = useAppStore();
-  const { presentPaywall } = useRevenueCat();
+  const { userProfile, upgradeToPro, cancelProSubscription, user } =
+    useAppStore();
+  const { presentPaywall } = useRevenueCat(user?.id);
 
   const handleManageSubscription = async () => {
     if (userProfile?.isPro) {

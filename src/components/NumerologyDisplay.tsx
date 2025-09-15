@@ -7,9 +7,9 @@ import { NumerologyContent } from '@/components/numerology/NumerologyContent';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 export const NumerologyDisplay: React.FC = () => {
-  const { userProfile, language } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const { t } = useTranslations();
-  const { hasActiveSubscription } = useRevenueCat();
+  const { hasActiveSubscription } = useRevenueCat(user?.id);
 
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {

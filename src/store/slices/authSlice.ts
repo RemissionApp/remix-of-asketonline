@@ -7,6 +7,7 @@ import { defaultAchievements } from '../data/constants';
 import { AuthUser } from '@/types/api';
 import { createLogger } from '@/utils/logger';
 import { UserProfile } from '@/types';
+import { useRevenueCatStore } from './revenueCatSlice';
 
 const logger = createLogger('AuthSlice');
 
@@ -126,6 +127,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     try {
       cleanupAuthState();
 
+      // Clear RevenueCat store before signing in new user
+      const { reset: resetRevenueCat } = useRevenueCatStore.getState();
+      resetRevenueCat();
+
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (error) {
@@ -178,6 +183,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     try {
       cleanupAuthState();
 
+      // Clear RevenueCat store before signing up new user
+      const { reset: resetRevenueCat } = useRevenueCatStore.getState();
+      resetRevenueCat();
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -222,6 +231,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     try {
       cleanupAuthState();
       await supabase.auth.signOut({ scope: 'global' });
+
+      // Clear RevenueCat store
+      const { reset: resetRevenueCat } = useRevenueCatStore.getState();
+      resetRevenueCat();
 
       set({
         user: null,
@@ -408,6 +421,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           if (sessionError) {
             console.error('Error setting session:', sessionError);
           } else if (sessionData.user) {
+            // Clear RevenueCat store before setting new user
+            const { reset: resetRevenueCat } = useRevenueCatStore.getState();
+            resetRevenueCat();
+
             set({
               user: sessionData.user,
               emailConfirmed: true,
@@ -441,7 +458,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       });
 
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in verifyOtpCode:', error);
       const lang = get().language || 'en';
       const t = getTranslations(lang);
@@ -460,8 +477,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   updateUserProfile: async (profileData: Partial<UserProfile>) => {
     // This function is deprecated. Use useOptimizedProfileCache instead.
     // Keeping for backward compatibility only.
-    logger.warn('updateUserProfile is deprecated. Use useOptimizedProfileCache instead.');
-    
+    logger.warn(
+      'updateUserProfile is deprecated. Use useOptimizedProfileCache instead.'
+    );
+
     // Fallback implementation for compatibility
     const { user } = get();
     if (!user) return;
@@ -471,10 +490,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (profileData.name !== undefined) updateData.name = profileData.name;
       if (profileData.birthDate !== undefined) {
-        updateData.birth_date = profileData.birthDate?.toISOString().split('T')[0] || null;
+        updateData.birth_date =
+          profileData.birthDate?.toISOString().split('T')[0] || null;
       }
       if (profileData.goal !== undefined) updateData.goal = profileData.goal;
-      if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url;
+      if (profileData.avatar_url !== undefined)
+        updateData.avatar_url = profileData.avatar_url;
 
       const { error } = await supabase
         .from('profiles')
@@ -573,7 +594,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         logger.info('Profile created successfully', {
           profileId: newProfile?.id,
         });
-        
+
         // Set empty profile data
         set({
           userProfile: {
@@ -592,7 +613,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             activeMission: undefined,
           },
         });
-        
+
         return;
       }
 
@@ -667,12 +688,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       // Debug logging for date parsing
       // Optimized logging for production
-      logger.debug('Profile data loaded from DB', { 
-        userId: user.id, 
-        hasName: !!data?.name, 
-        hasBirthDate: !!data?.birth_date 
+      logger.debug('Profile data loaded from DB', {
+        userId: user.id,
+        hasName: !!data?.name,
+        hasBirthDate: !!data?.birth_date,
       });
-      
+
       // Optimized date parsing with caching
       let parsedBirthDate = null;
       if (data?.birth_date) {
@@ -680,7 +701,9 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
           parsedBirthDate = new Date(data.birth_date);
           if (isNaN(parsedBirthDate.getTime())) {
             parsedBirthDate = null;
-            logger.warn('Invalid birth_date format from DB', { birth_date: data.birth_date });
+            logger.warn('Invalid birth_date format from DB', {
+              birth_date: data.birth_date,
+            });
           }
         } catch (error) {
           logger.error('Failed to parse birth_date:', error);
@@ -699,29 +722,27 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         isPro: isPro || false,
         rank: data?.rank || 'seeker',
         avatar_url: data?.avatar_url,
-        zodiacSign: parsedBirthDate
-          ? getZodiacSign(parsedBirthDate) || ''
-          : '',
+        zodiacSign: parsedBirthDate ? getZodiacSign(parsedBirthDate) || '' : '',
         achievements: mappedAchievements,
         activeMission,
       };
 
-      logger.debug('Profile loaded from database', { 
-        name: updatedProfile.name, 
+      logger.debug('Profile loaded from database', {
+        name: updatedProfile.name,
         avatar_url: updatedProfile.avatar_url,
-        birth_date: data?.birth_date 
+        birth_date: data?.birth_date,
       });
 
       // Set profile state and trigger onboarding sync
       set({ userProfile: updatedProfile });
-      
+
       // Load onboarding state after profile is loaded
       setTimeout(() => get().loadOnboardingState(), 0);
 
       logger.debug('User profile state updated successfully', {
         name: updatedProfile.name,
         birthDate: updatedProfile.birthDate,
-        avatar_url: updatedProfile.avatar_url
+        avatar_url: updatedProfile.avatar_url,
       });
 
       // Preload horoscope data if birth date exists

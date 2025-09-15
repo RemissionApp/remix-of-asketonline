@@ -1,134 +1,54 @@
-import { useState, useEffect, useRef } from 'react';
-import {
-  Purchases,
-  LOG_LEVEL,
-  CustomerInfo,
-  PurchasesOffering,
-  PurchasesPackage,
-} from '@revenuecat/purchases-capacitor';
-import {
-  RevenueCatUI,
-  PAYWALL_RESULT,
-} from '@revenuecat/purchases-capacitor-ui';
-import { revenueCatService } from '@/utils/revenueCat';
+import { useEffect } from 'react';
+import { PurchasesPackage } from '@revenuecat/purchases-capacitor';
 import { useToast } from '@/hooks/use-toast';
-import { useAppStore } from '@/store/useAppStore';
+import { useRevenueCatStore } from '@/store/slices/revenueCatSlice';
 
-export const useRevenueCat = () => {
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [offerings, setOfferings] = useState<PurchasesOffering[]>([]);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [billingAvailable, setBillingAvailable] = useState<boolean | null>(
-    null
-  );
+export const useRevenueCat = (userId?: string) => {
   const { toast } = useToast();
-  const { updateProStatus } = useAppStore();
 
-  // Используем ref для отслеживания текущего Pro статуса
-  const currentProStatusRef = useRef<boolean>(false);
+  // Get state and actions from store
+  const {
+    isInitialized,
+    isLoading,
+    billingAvailable,
+    offerings,
+    customerInfo,
+    hasActiveSubscription,
+    initialize,
+    purchasePackage,
+    restorePurchases,
+    presentPaywall,
+  } = useRevenueCatStore();
 
+  // Initialize RevenueCat when userId changes
   useEffect(() => {
-    initializeRevenueCat();
-
-    // Добавляем слушатель изменений CustomerInfo согласно документации
-    const setupCustomerInfoListener = async () => {
-      try {
-        await revenueCatService.addCustomerInfoUpdateListener(
-          (updatedCustomerInfo: CustomerInfo) => {
-            setCustomerInfo(updatedCustomerInfo);
-            console.log('CustomerInfo updated:', updatedCustomerInfo);
-            // Синхронизируем статус Pro с app store
-            syncProStatus(updatedCustomerInfo);
-          }
-        );
-      } catch (error) {
-        console.error('Failed to setup customer info listener:', error);
-      }
-    };
-
-    setupCustomerInfoListener();
-  }, []);
-
-  // Функция для синхронизации Pro статуса с app store
-  const syncProStatus = (customerInfo: CustomerInfo | null) => {
-    const hasActive =
-      customerInfo?.entitlements?.active &&
-      Object.keys(customerInfo.entitlements.active).length > 0;
-
-    // Обновляем профиль только если статус изменился
-    if (hasActive !== currentProStatusRef.current) {
-      currentProStatusRef.current = hasActive;
-      updateProStatus(hasActive);
-      console.log('Pro status updated:', hasActive);
-    }
-  };
-
-  const initializeRevenueCat = async () => {
-    try {
-      setIsLoading(true);
-      await revenueCatService.initialize();
-      setIsInitialized(true);
-
-      // Проверка доступности Google Play Billing
-      const isBillingAvailable =
-        await revenueCatService.checkBillingAvailability();
-      setBillingAvailable(isBillingAvailable);
-
-      console.log('isBillingAvailable', isBillingAvailable);
-      if (isBillingAvailable) {
-        // Получаем предложения
-        const offeringsData = await revenueCatService.getOfferings();
-        console.log('offeringsData', JSON.stringify(offeringsData, null, 2));
-        setOfferings(
-          offeringsData.all?.default ? [offeringsData.all.default] : []
-        );
-
-        // Получаем информацию о пользователе
-        const customerInfoData = await revenueCatService.getCustomerInfo();
-        setCustomerInfo(customerInfoData.customerInfo);
-
-        // Синхронизируем Pro статус при инициализации
-        syncProStatus(customerInfoData.customerInfo);
-      } else {
+    if (userId) {
+      initialize(userId).catch(error => {
+        console.error('Failed to initialize RevenueCat:', error);
         toast({
-          title: 'Google Play Billing недоступен',
-          description:
-            'Используйте реальное устройство для тестирования покупок',
+          title: 'Ошибка инициализации',
+          description: 'Не удалось инициализировать систему покупок',
           variant: 'destructive',
         });
-      }
-    } catch (error) {
-      console.error('Ошибка инициализации RevenueCat:', error);
-      toast({
-        title: 'Ошибка инициализации',
-        description: 'Не удалось инициализировать систему покупок',
-        variant: 'destructive',
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [userId, initialize, toast]);
 
-  const purchasePackage = async (packageToPurchase: PurchasesPackage) => {
+  // Wrapper functions with toast notifications
+  const purchasePackageWithToast = async (
+    packageToPurchase: PurchasesPackage
+  ) => {
     try {
-      setIsLoading(true);
-      const result = await revenueCatService.purchasePackage(packageToPurchase);
-      setCustomerInfo(result);
-
-      // Синхронизируем Pro статус после покупки
-      syncProStatus(result);
-
+      const result = await purchasePackage(packageToPurchase);
       toast({
         title: 'Покупка успешна!',
         description: 'Спасибо за покупку!',
       });
-
       return result;
     } catch (error: unknown) {
       console.error('Ошибка покупки:', error);
 
-      // Проверяем, была ли покупка отменена пользователем
+      // Check if purchase was cancelled by user
       if (
         error &&
         typeof error === 'object' &&
@@ -151,26 +71,17 @@ export const useRevenueCat = () => {
       }
 
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const restorePurchases = async () => {
+  const restorePurchasesWithToast = async () => {
     try {
-      setIsLoading(true);
-      const customerInfo = await revenueCatService.restorePurchases();
-      setCustomerInfo(customerInfo);
-
-      // Синхронизируем Pro статус после восстановления
-      syncProStatus(customerInfo);
-
+      const result = await restorePurchases();
       toast({
         title: 'Покупки восстановлены',
         description: 'Ваши покупки успешно восстановлены',
       });
-
-      return customerInfo;
+      return result;
     } catch (error) {
       console.error('Ошибка восстановления покупок:', error);
       toast({
@@ -179,41 +90,21 @@ export const useRevenueCat = () => {
         variant: 'destructive',
       });
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const presentPaywall = async (offeringIdentifier?: string) => {
+  const presentPaywallWithToast = async (offeringIdentifier?: string) => {
     try {
-      setIsLoading(true);
+      const result = await presentPaywall(offeringIdentifier);
 
-      // Получаем текущие предложения
-      const offeringsData = await Purchases.getOfferings();
+      // Handle result with toast notifications
+      const { PAYWALL_RESULT } = await import(
+        '@revenuecat/purchases-capacitor-ui'
+      );
 
-      // Определяем какое предложение использовать
-      const targetOffering = offeringIdentifier
-        ? offeringsData.all?.[offeringIdentifier]
-        : offeringsData.current;
-
-      if (!targetOffering) {
-        throw new Error('Нет доступных предложений для paywall');
-      }
-
-      // Используем RevenueCatUI для показа paywall
-      const result = await RevenueCatUI.presentPaywall({
-        offering: targetOffering,
-      });
-
-      // Обрабатываем результат
       switch (result.result) {
         case PAYWALL_RESULT.PURCHASED:
         case PAYWALL_RESULT.RESTORED:
-          // Получаем обновленную информацию о клиенте
-          const customerInfoData = await revenueCatService.getCustomerInfo();
-          setCustomerInfo(customerInfoData.customerInfo);
-          syncProStatus(customerInfoData.customerInfo);
-
           toast({
             title: 'Успешно!',
             description: 'PRO функции разблокированы!',
@@ -239,24 +130,15 @@ export const useRevenueCat = () => {
       return result;
     } catch (error: unknown) {
       console.error('Ошибка при показе paywall:', error);
-
       toast({
         title: 'Ошибка paywall',
         description:
           error instanceof Error ? error.message : 'Не удалось открыть paywall',
         variant: 'destructive',
       });
-
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
-
-  // Проверяем, есть ли активная подписка (любая)
-  const hasActiveSubscription =
-    customerInfo?.entitlements?.active &&
-    Object.keys(customerInfo.entitlements.active).length > 0;
 
   return {
     isInitialized,
@@ -265,8 +147,8 @@ export const useRevenueCat = () => {
     isLoading,
     billingAvailable,
     hasActiveSubscription,
-    purchasePackage,
-    restorePurchases,
-    presentPaywall,
+    purchasePackage: purchasePackageWithToast,
+    restorePurchases: restorePurchasesWithToast,
+    presentPaywall: presentPaywallWithToast,
   };
 };

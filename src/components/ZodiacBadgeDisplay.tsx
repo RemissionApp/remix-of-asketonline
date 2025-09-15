@@ -11,11 +11,11 @@ import { createLogger } from '@/utils/logger';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
   const logger = createLogger('ZodiacBadgeDisplay');
-  const { userProfile, language } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
-  const { hasActiveSubscription } = useRevenueCat();
+  const { hasActiveSubscription } = useRevenueCat(user?.id);
 
   logger.debug('Component rendering', {
     hasUserProfile: !!userProfile,

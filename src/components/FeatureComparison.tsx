@@ -23,10 +23,10 @@ import {
 
 const FeatureComparison: React.FC = () => {
   const { t } = useTranslations();
-  const { upgradeToPro, userProfile } = useAppStore();
+  const { upgradeToPro, userProfile, user } = useAppStore();
   const navigate = useNavigate();
-  const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
-    useRevenueCat();
+  const { hasActiveSubscription, offerings, purchasePackage, isLoading } =
+    useRevenueCat(user?.id);
   const isPro = hasActiveSubscription;
 
   // Extended feature list based on the provided image

@@ -16,9 +16,9 @@ import { useRevenueCat } from '@/hooks/useRevenueCat';
 export const BottomNavigation = memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userProfile, language, setActiveScreen } = useAppStore();
+  const { userProfile, language, setActiveScreen, user } = useAppStore();
   const { t } = useTranslations();
-  const { hasActiveSubscription } = useRevenueCat();
+  const { hasActiveSubscription } = useRevenueCat(user?.id);
 
   // Check if a route is currently active
   const isActive = (path: string) => {

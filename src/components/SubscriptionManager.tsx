@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { revenueCatService } from '../utils/revenueCat';
+import React from 'react';
+import { useRevenueCatStore } from '@/store/slices/revenueCatSlice';
 import { Button } from './ui/button';
 import {
   Card,
@@ -9,90 +9,74 @@ import {
   CardTitle,
 } from './ui/card';
 import { Badge } from './ui/badge';
-import { PACKAGE_TYPE } from '@revenuecat/purchases-capacitor';
-
-interface Package {
-  identifier: string;
-  packageType: PACKAGE_TYPE;
-  product: {
-    identifier: string;
-    title: string;
-    description: string;
-    price: number;
-    priceString: string;
-  };
-}
-
-interface Offering {
-  identifier: string;
-  serverDescription: string;
-  availablePackages: Package[];
-}
+import { useToast } from '@/hooks/use-toast';
 
 export const SubscriptionManager: React.FC = () => {
-  const [offerings, setOfferings] = useState<Offering[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [customerInfo, setCustomerInfo] = useState<any>(null);
+  const { toast } = useToast();
+  const {
+    isInitialized,
+    isLoading,
+    offerings,
+    customerInfo,
+    hasActiveSubscription,
+    purchasePackage,
+    restorePurchases,
+    initialize,
+  } = useRevenueCatStore();
 
-  useEffect(() => {
-    initializeRevenueCat();
-  }, []);
-
-  const initializeRevenueCat = async () => {
+  const handlePurchase = async (packageToPurchase: any) => {
     try {
-      setLoading(true);
-      await revenueCatService.initialize();
-
-      // Получаем информацию о пользователе
-      const customer = await revenueCatService.getCustomerInfo();
-      setCustomerInfo(customer);
-
-      // Получаем предложения подписок
-      const offeringsData = await revenueCatService.getOfferings();
-      if (offeringsData.current) {
-        setOfferings([offeringsData.current]);
-      }
+      await purchasePackage(packageToPurchase);
+      toast({
+        title: 'Покупка успешна!',
+        description: 'Спасибо за покупку!',
+      });
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to initialize RevenueCat'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePurchase = async (packageToPurchase: Package) => {
-    try {
-      setLoading(true);
-      // Use the package directly since it should be PurchasesPackage from API
-      const customerInfo =
-        await revenueCatService.purchasePackage(packageToPurchase as any);
-      setCustomerInfo(customerInfo);
-      alert('Purchase successful!');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Purchase failed');
-    } finally {
-      setLoading(false);
+      console.error('Purchase failed:', err);
+      toast({
+        title: 'Ошибка покупки',
+        description:
+          err instanceof Error ? err.message : 'Не удалось совершить покупку',
+        variant: 'destructive',
+      });
     }
   };
 
   const handleRestore = async () => {
     try {
-      setLoading(true);
-      const customerInfo = await revenueCatService.restorePurchases();
-      setCustomerInfo(customerInfo);
-      alert('Purchases restored successfully!');
+      await restorePurchases();
+      toast({
+        title: 'Покупки восстановлены',
+        description: 'Ваши покупки успешно восстановлены',
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Restore failed');
-    } finally {
-      setLoading(false);
+      console.error('Restore failed:', err);
+      toast({
+        title: 'Ошибка восстановления',
+        description:
+          err instanceof Error
+            ? err.message
+            : 'Не удалось восстановить покупки',
+        variant: 'destructive',
+      });
     }
   };
 
-  const isSubscribed = customerInfo?.entitlements?.active?.premium;
+  const handleInitialize = async () => {
+    try {
+      await initialize();
+    } catch (err) {
+      console.error('Initialize failed:', err);
+      toast({
+        title: 'Ошибка инициализации',
+        description:
+          err instanceof Error ? err.message : 'Не удалось инициализировать',
+        variant: 'destructive',
+      });
+    }
+  };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -102,14 +86,14 @@ export const SubscriptionManager: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (!isInitialized) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-red-500">Error: {error}</div>
-          <Button onClick={initializeRevenueCat} className="mt-4">
-            Retry
-          </Button>
+          <div className="text-center">
+            <p className="mb-4">RevenueCat не инициализирован</p>
+            <Button onClick={handleInitialize}>Инициализировать</Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -123,7 +107,7 @@ export const SubscriptionManager: React.FC = () => {
           <CardTitle>Subscription Status</CardTitle>
         </CardHeader>
         <CardContent>
-          {isSubscribed ? (
+          {hasActiveSubscription ? (
             <div className="flex items-center space-x-2">
               <Badge variant="default" className="bg-green-500">
                 Premium Active
@@ -164,10 +148,12 @@ export const SubscriptionManager: React.FC = () => {
                     </div>
                     <Button
                       onClick={() => handlePurchase(pkg)}
-                      disabled={loading || isSubscribed}
+                      disabled={isLoading || hasActiveSubscription}
                       className="w-full"
                     >
-                      {isSubscribed ? 'Already Subscribed' : 'Subscribe'}
+                      {hasActiveSubscription
+                        ? 'Already Subscribed'
+                        : 'Subscribe'}
                     </Button>
                   </div>
                 </Card>
@@ -180,7 +166,11 @@ export const SubscriptionManager: React.FC = () => {
       {/* Кнопка восстановления покупок */}
       <Card>
         <CardContent className="p-6">
-          <Button onClick={handleRestore} disabled={loading} variant="outline">
+          <Button
+            onClick={handleRestore}
+            disabled={isLoading}
+            variant="outline"
+          >
             Restore Purchases
           </Button>
         </CardContent>
@@ -188,5 +178,3 @@ export const SubscriptionManager: React.FC = () => {
     </div>
   );
 };
-
-

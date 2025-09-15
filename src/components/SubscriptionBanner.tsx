@@ -20,9 +20,9 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
 }) => {
   const { t } = useTranslations();
   const navigate = useNavigate();
-  const { upgradeToPro } = useAppStore();
-  const { offerings, presentPaywall, isLoading, hasActiveSubscription } =
-    useRevenueCat();
+  const { upgradeToPro, user } = useAppStore();
+  const { hasActiveSubscription, offerings, presentPaywall, isLoading } =
+    useRevenueCat(user?.id);
 
   // Don't show banner if user has active subscription
   if (hasActiveSubscription) {

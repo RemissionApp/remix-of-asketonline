@@ -11,10 +11,10 @@ import { useRevenueCat } from '@/hooks/useRevenueCat';
  * Component that displays the Universe chat entry point with an avatar and action buttons
  */
 const UniverseMessageBlockComponent: React.FC = () => {
-  const { userProfile, language } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
-  const { hasActiveSubscription } = useRevenueCat();
+  const { hasActiveSubscription } = useRevenueCat(user?.id);
 
   const handleQuestionClick = () => {
     navigate('/universe');

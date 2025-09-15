@@ -75,7 +75,8 @@ export const PactDisplay: React.FC<PactDisplayProps> = ({
     setShowBreakDialog(true);
   };
 
-  const { offerings, purchasePackage } = useRevenueCat();
+  const { user } = useAppStore();
+  const { offerings, purchasePackage } = useRevenueCat(user?.id);
 
   if (!allPacts.length) return null;
 

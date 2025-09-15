@@ -25,22 +25,41 @@ export class RevenueCatService {
   }
 
   async initialize(userId?: string): Promise<void> {
-    if (this.isConfigured) return;
+    console.log('🚀 REVENUECAT INITIALIZE called with userId:', userId);
+
+    if (this.isConfigured) {
+      console.log('⚠️ RevenueCat already configured, skipping');
+      return;
+    }
 
     try {
       // Включаем debug логи для разработки
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+      console.log('📝 RevenueCat debug logging enabled');
 
       if (Capacitor.getPlatform() === 'ios') {
-        // await Purchases.configure({ apiKey: <public_apple_api_key> });
+        console.log('🍎 iOS platform detected');
+        // await Purchases.configure({
+        //   apiKey: <public_apple_api_key>,
+        //   appUserID: userId
+        // });
       } else if (Capacitor.getPlatform() === 'android') {
-        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        console.log('🤖 Android platform detected');
+        console.log(
+          '🔑 Configuring RevenueCat with API key and userId:',
+          userId
+        );
+        await Purchases.configure({
+          apiKey: REVENUECAT_API_KEY,
+          appUserID: userId,
+        });
+        console.log('✅ RevenueCat configured successfully');
       }
 
       this.isConfigured = true;
-      console.log('RevenueCat initialized successfully');
+      console.log('🎉 RevenueCat initialized successfully with user:', userId);
     } catch (error) {
-      console.error('Failed to initialize RevenueCat:', error);
+      console.error('❌ Failed to initialize RevenueCat:', error);
       throw error;
     }
   }
@@ -119,11 +138,32 @@ export class RevenueCatService {
 
   async getCustomerInfo() {
     try {
+      console.log('📞 Getting customer info from RevenueCat...');
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log('customerInfo', customerInfo);
-      return customerInfo;
+      console.log(
+        '📋 CUSTOMER INFO RECEIVED:',
+        JSON.stringify(customerInfo, null, 2)
+      );
+      console.log(
+        '🔍 CUSTOMER INFO DETAILS:',
+        JSON.stringify(
+          {
+            activeSubscriptions: customerInfo.customerInfo?.activeSubscriptions,
+            entitlements: customerInfo.customerInfo?.entitlements,
+            allPurchasedProductIdentifiers:
+              customerInfo.customerInfo?.allPurchasedProductIdentifiers,
+            originalAppUserId: customerInfo.customerInfo?.originalAppUserId,
+            firstSeen: customerInfo.customerInfo?.firstSeen,
+            originalPurchaseDate:
+              customerInfo.customerInfo?.originalPurchaseDate,
+          },
+          null,
+          2
+        )
+      );
+      return customerInfo.customerInfo;
     } catch (error) {
-      console.error('Failed to get customer info:', error);
+      console.error('❌ Failed to get customer info:', error);
       throw error;
     }
   }

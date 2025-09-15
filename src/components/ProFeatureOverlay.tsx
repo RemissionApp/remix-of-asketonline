@@ -25,8 +25,10 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
   unlockText = 'Unlock PRO functions',
 }) => {
   const navigate = useNavigate();
-  const { upgradeToPro } = useAppStore();
-  const { presentPaywall, isLoading, billingAvailable } = useRevenueCat();
+  const { upgradeToPro, user } = useAppStore();
+  const { presentPaywall, isLoading, billingAvailable } = useRevenueCat(
+    user?.id
+  );
   const { toast } = useToast();
 
   const handleClick = async () => {
