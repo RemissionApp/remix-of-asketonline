@@ -72,5 +72,6 @@ com.asket.cosmicascension.app-debug-70 /Users/zhalgas/Documents/asket/cosmic-asc
 com.asket.cosmicascension.app-main-71 /Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/src/main/res
 com.asket.cosmicascension.app-debug-72 /Users/zhalgas/Documents/asket/cosmic-ascension-path/android/capacitor-cordova-android-plugins/build/intermediates/packaged_res/debug/packageDebugResources
 com.asket.cosmicascension.app-debug-73 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@capacitor/android/capacitor/build/intermediates/packaged_res/debug/packageDebugResources
-com.asket.cosmicascension.app-debug-74 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@revenuecat/purchases-capacitor-ui/android/build/intermediates/packaged_res/debug/packageDebugResources
-com.asket.cosmicascension.app-debug-75 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@revenuecat/purchases-capacitor/android/build/intermediates/packaged_res/debug/packageDebugResources
+com.asket.cosmicascension.app-debug-74 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@capacitor/app/android/build/intermediates/packaged_res/debug/packageDebugResources
+com.asket.cosmicascension.app-debug-75 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@revenuecat/purchases-capacitor-ui/android/build/intermediates/packaged_res/debug/packageDebugResources
+com.asket.cosmicascension.app-debug-76 /Users/zhalgas/Documents/asket/cosmic-ascension-path/node_modules/@revenuecat/purchases-capacitor/android/build/intermediates/packaged_res/debug/packageDebugResources

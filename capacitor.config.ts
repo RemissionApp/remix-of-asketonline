@@ -7,10 +7,14 @@ const config: CapacitorConfig = {
   plugins: {
     StatusBar: {
       style: 'dark',
-      backgroundColor: '#16002A',
+      backgroundColor: '#0A0A0F',
     },
     SafeArea: {
       enabled: true,
+    },
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: '#0A0A0F',
     },
   },
 };

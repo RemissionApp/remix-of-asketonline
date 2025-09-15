@@ -1,5 +1,9 @@
 R_DEF: Internal format may change without notice
 local
+color colorAccent
+color colorPrimary
+color colorPrimaryDark
+color cosmicDark
 color ic_launcher_background
 drawable ic_launcher_background
 drawable ic_launcher_foreground

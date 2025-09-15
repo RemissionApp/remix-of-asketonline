@@ -28,7 +28,7 @@ export const TopBar: React.FC = memo(() => {
     >
       {/* Energy points and controls group - responsive spacing */}
       <div
-        className={`absolute ${isMobile ? 'top-2 right-2' : 'top-4 right-4'} z-10 flex items-center ${isMobile ? 'space-x-1' : 'space-x-2'}`}
+        className={`absolute top-3 right-3 z-10 flex items-center space-x-1.5`}
       >
         {/* Sound toggle */}
         <SoundToggle />
@@ -49,7 +49,7 @@ export const TopBar: React.FC = memo(() => {
 
         {/* Energy points display - more compact on mobile */}
         <div
-          className={`flex items-center ${isMobile ? 'px-2 py-1' : 'px-3 py-1.5'} bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20 min-w-0`}
+          className={`flex items-center px-2.5 py-1.5 bg-cosmic-dark/70 backdrop-blur-sm rounded-full border border-cosmic-gold/20 min-w-0`}
         >
           <CircleDot
             size={isMobile ? 14 : 16}
@@ -63,20 +63,14 @@ export const TopBar: React.FC = memo(() => {
 
       {/* Pro badge - repositioned on mobile to avoid overlaps */}
       {userProfile?.isPro && (
-        <div
-          className={`absolute z-10 ${
-            isMobile
-              ? 'top-2 left-1/2 -translate-x-1/2'
-              : 'top-4 left-1/2 -translate-x-1/2'
-          }`}
-        >
+        <div className={`absolute z-10 top-3 left-1/2 -translate-x-1/2`}>
           <ProBadge size="sm" />
         </div>
       )}
 
       {/* User avatar and rank badge - responsive positioning */}
       <div
-        className={`absolute ${isMobile ? 'top-2 left-2' : 'top-4 left-4'} z-10 flex items-center ${isMobile ? 'space-x-1' : 'space-x-2'} min-w-0`}
+        className={`absolute top-3 left-3 z-10 flex items-center space-x-1.5 min-w-0`}
       >
         <UserAvatar size="sm" showZodiacBadge={false} />
         <RankBadge size="sm" />
