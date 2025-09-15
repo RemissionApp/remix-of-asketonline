@@ -2,7 +2,17 @@
 	"appId": "com.asket.cosmicascension",
 	"appName": "Cosmic Ascension Path",
 	"webDir": "dist",
+	"plugins": {
+		"StatusBar": {
+			"style": "dark",
+			"backgroundColor": "#16002A"
+		},
+		"SafeArea": {
+			"enabled": true
+		}
+	},
 	"packageClassList": [
-		"PurchasesPlugin"
+		"PurchasesPlugin",
+		"RevenueCatUIPlugin"
 	]
 }

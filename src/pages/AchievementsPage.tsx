@@ -30,9 +30,11 @@ const AchievementsPage: React.FC = () => {
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-cosmic-secondary">
-              {language === 'ru' ? 'Загружаем достижения...' : 
-               language === 'es' ? 'Cargando logros...' : 
-               'Loading achievements...'}
+              {language === 'ru'
+                ? 'Загружаем достижения...'
+                : language === 'es'
+                  ? 'Cargando logros...'
+                  : 'Loading achievements...'}
             </p>
           </div>
         </div>

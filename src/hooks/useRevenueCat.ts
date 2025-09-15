@@ -6,10 +6,13 @@ import {
   PurchasesOffering,
   PurchasesPackage,
 } from '@revenuecat/purchases-capacitor';
+import {
+  RevenueCatUI,
+  PAYWALL_RESULT,
+} from '@revenuecat/purchases-capacitor-ui';
 import { revenueCatService } from '@/utils/revenueCat';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
-import { log } from 'console';
 
 export const useRevenueCat = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -181,6 +184,75 @@ export const useRevenueCat = () => {
     }
   };
 
+  const presentPaywall = async (offeringIdentifier?: string) => {
+    try {
+      setIsLoading(true);
+
+      // Получаем текущие предложения
+      const offeringsData = await Purchases.getOfferings();
+
+      // Определяем какое предложение использовать
+      const targetOffering = offeringIdentifier
+        ? offeringsData.all?.[offeringIdentifier]
+        : offeringsData.current;
+
+      if (!targetOffering) {
+        throw new Error('Нет доступных предложений для paywall');
+      }
+
+      // Используем RevenueCatUI для показа paywall
+      const result = await RevenueCatUI.presentPaywall({
+        offering: targetOffering,
+      });
+
+      // Обрабатываем результат
+      switch (result.result) {
+        case PAYWALL_RESULT.PURCHASED:
+        case PAYWALL_RESULT.RESTORED:
+          // Получаем обновленную информацию о клиенте
+          const customerInfoData = await revenueCatService.getCustomerInfo();
+          setCustomerInfo(customerInfoData.customerInfo);
+          syncProStatus(customerInfoData.customerInfo);
+
+          toast({
+            title: 'Успешно!',
+            description: 'PRO функции разблокированы!',
+          });
+          break;
+        case PAYWALL_RESULT.CANCELLED:
+          toast({
+            title: 'Покупка отменена',
+            description: 'Вы отменили покупку',
+          });
+          break;
+        case PAYWALL_RESULT.NOT_PRESENTED:
+        case PAYWALL_RESULT.ERROR:
+        default:
+          toast({
+            title: 'Ошибка paywall',
+            description: 'Не удалось открыть paywall',
+            variant: 'destructive',
+          });
+          break;
+      }
+
+      return result;
+    } catch (error: unknown) {
+      console.error('Ошибка при показе paywall:', error);
+
+      toast({
+        title: 'Ошибка paywall',
+        description:
+          error instanceof Error ? error.message : 'Не удалось открыть paywall',
+        variant: 'destructive',
+      });
+
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Проверяем, есть ли активная подписка (любая)
   const hasActiveSubscription =
     customerInfo?.entitlements?.active &&
@@ -195,5 +267,6 @@ export const useRevenueCat = () => {
     hasActiveSubscription,
     purchasePackage,
     restorePurchases,
+    presentPaywall,
   };
 };

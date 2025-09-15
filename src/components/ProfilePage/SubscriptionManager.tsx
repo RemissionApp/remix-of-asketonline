@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { SparklesIcon } from 'lucide-react';
 import { ProBadge } from '@/components/ProBadge';
 import { SubscriptionBanner } from '@/components/SubscriptionBanner';
@@ -9,13 +10,21 @@ import { Switch } from '@/components/ui/switch';
 
 export const SubscriptionManager: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription } = useAppStore();
+  const { presentPaywall } = useRevenueCat();
 
-  const handleManageSubscription = () => {
+  const handleManageSubscription = async () => {
     if (userProfile?.isPro) {
       // For demo purposes, just toggle the subscription
       cancelProSubscription();
     } else {
-      upgradeToPro();
+      try {
+        // Use RevenueCat Paywall UI
+        await presentPaywall();
+      } catch (error) {
+        console.error('Failed to present paywall:', error);
+        // Fallback to demo behavior on error
+        upgradeToPro();
+      }
     }
   };
 

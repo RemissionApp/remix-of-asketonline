@@ -35,7 +35,8 @@ const MainPage: React.FC = () => {
   const { formatRejection, getAscesisPrefix } = useMainPageUtils();
   const { handleAsyncError } = useErrorHandler();
   const { stats } = useUserProgress();
-  const { dialogOpen, currentCompletedPact, handleDialogClose } = usePactCompletion();
+  const { dialogOpen, currentCompletedPact, handleDialogClose } =
+    usePactCompletion();
 
   const logger = createLogger('MainPage');
 
@@ -79,13 +80,15 @@ const MainPage: React.FC = () => {
   const allPacts = (pacts || []).sort((a, b) => {
     // Sort by status priority: active > completed > failed
     const statusPriority = { active: 3, completed: 2, failed: 1 };
-    const aPriority = statusPriority[a.status as keyof typeof statusPriority] || 0;
-    const bPriority = statusPriority[b.status as keyof typeof statusPriority] || 0;
-    
+    const aPriority =
+      statusPriority[a.status as keyof typeof statusPriority] || 0;
+    const bPriority =
+      statusPriority[b.status as keyof typeof statusPriority] || 0;
+
     if (aPriority !== bPriority) {
       return bPriority - aPriority; // Higher priority first
     }
-    
+
     // Within same status, sort by creation date (newest first)
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
@@ -94,9 +97,11 @@ const MainPage: React.FC = () => {
   // Auto-select the first active pact or most recent pact when pacts change
   useEffect(() => {
     if (allPacts.length > 0) {
-      const firstActivePactIndex = allPacts.findIndex(p => p.status === 'active');
+      const firstActivePactIndex = allPacts.findIndex(
+        p => p.status === 'active'
+      );
       const targetIndex = firstActivePactIndex >= 0 ? firstActivePactIndex : 0;
-      
+
       if (currentPactIndex !== targetIndex) {
         setCurrentPactIndex(targetIndex);
       }
@@ -144,24 +149,23 @@ const MainPage: React.FC = () => {
         <TopBar />
       </div>
 
-
       {/* Energy effect animation */}
       <EnergyEffect show={showEnergyEffect} />
 
       {/* Main content */}
       <div>
         <MainContent
-        activePacts={activePacts}
-        allPacts={allPacts}
-        currentPactIndex={currentPactIndex}
-        currentPact={currentPact}
-        dailyQuote={dailyQuote}
-        isLoading={isLoading}
-        showEnergyEffect={showEnergyEffect}
-        handlePrevPact={handlePrevPact}
-        handleNextPact={handleNextPact}
-        getAscesisPrefix={getAscesisPrefix}
-        formatRejection={formatRejection}
+          activePacts={activePacts}
+          allPacts={allPacts}
+          currentPactIndex={currentPactIndex}
+          currentPact={currentPact}
+          dailyQuote={dailyQuote}
+          isLoading={isLoading}
+          showEnergyEffect={showEnergyEffect}
+          handlePrevPact={handlePrevPact}
+          handleNextPact={handleNextPact}
+          getAscesisPrefix={getAscesisPrefix}
+          formatRejection={formatRejection}
         />
       </div>
 
@@ -170,7 +174,7 @@ const MainPage: React.FC = () => {
 
       {/* Bottom navigation */}
       <BottomNavigation />
-      
+
       {/* Pact completion dialog */}
       {currentCompletedPact && (
         <PactCompletionDialog

@@ -2,6 +2,8 @@ import React from 'react';
 import { LockIcon, SparklesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProFeatureOverlayProps {
   title?: string;
@@ -24,9 +26,28 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
 }) => {
   const navigate = useNavigate();
   const { upgradeToPro } = useAppStore();
+  const { presentPaywall, isLoading, billingAvailable } = useRevenueCat();
+  const { toast } = useToast();
 
-  const handleClick = () => {
-    navigate(navigateTo);
+  const handleClick = async () => {
+    try {
+      // Проверяем доступность биллинга
+      if (billingAvailable === false) {
+        toast({
+          title: 'Покупки недоступны',
+          description: 'Используйте реальное устройство для покупок',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Открываем RevenueCat paywall
+      await presentPaywall();
+    } catch (error) {
+      console.error('Ошибка при открытии paywall:', error);
+      // В случае ошибки переходим на страницу сравнения
+      navigate(navigateTo);
+    }
   };
 
   return (
@@ -58,7 +79,9 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
       {showUnlockPrompt && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-cosmic-gold/50 to-cosmic-accent/50 py-2 px-3 rounded-b-lg flex items-center justify-center z-20">
           <SparklesIcon size={16} className="text-white mr-2" />
-          <span className="text-white font-medium text-sm">{unlockText}</span>
+          <span className="text-white font-medium text-sm">
+            {isLoading ? 'Загрузка...' : unlockText}
+          </span>
         </div>
       )}
     </div>

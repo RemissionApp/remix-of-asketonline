@@ -274,8 +274,12 @@ const CreatePactPage: React.FC = () => {
                     setDurationText(days.toString());
                   }}
                 >
-                  <span className="block text-lg sm:text-xl font-bold">{days}</span>
-                  <span className="block text-xs sm:text-sm">{getDaysText(days)}</span>
+                  <span className="block text-lg sm:text-xl font-bold">
+                    {days}
+                  </span>
+                  <span className="block text-xs sm:text-sm">
+                    {getDaysText(days)}
+                  </span>
                 </button>
               ))}
             </div>
@@ -306,7 +310,9 @@ const CreatePactPage: React.FC = () => {
             <div className="w-32 h-32 mx-auto">
               <div className="energy-circle w-32 h-32 animate-circle-expand">
                 <div className="text-center">
-                  <p className="text-2xl sm:text-3xl font-bold text-white">{duration}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">
+                    {duration}
+                  </p>
                   <p className="text-xs sm:text-sm text-cosmic-accent font-medium">
                     {getDaysText(duration)}
                   </p>
@@ -340,7 +346,9 @@ const CreatePactPage: React.FC = () => {
             <div className="text-xs sm:text-sm text-cosmic-secondary mb-6 sm:mb-8 text-center leading-relaxed">
               {language === 'ru' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-sm sm:text-base">Цель:</span>
+                  <span className="font-semibold text-sm sm:text-base">
+                    Цель:
+                  </span>
                   {'\n'}
                   Должна быть сформулирована чётко и как можно подробнее.
                   Желание может быть абсолютно любым, но Вселенная любит шутить.
@@ -356,7 +364,9 @@ const CreatePactPage: React.FC = () => {
                 </p>
               ) : language === 'es' ? (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-sm sm:text-base">Objetivo:</span>
+                  <span className="font-semibold text-sm sm:text-base">
+                    Objetivo:
+                  </span>
                   {'\n'}
                   Debe formularse claramente y con el mayor detalle posible. El
                   deseo puede ser absolutamente cualquiera, pero al Universo le
@@ -372,7 +382,9 @@ const CreatePactPage: React.FC = () => {
                 </p>
               ) : (
                 <p className="whitespace-pre-line text-justify font-sans">
-                  <span className="font-semibold text-sm sm:text-base">Goal:</span>
+                  <span className="font-semibold text-sm sm:text-base">
+                    Goal:
+                  </span>
                   {'\n'}
                   It must be formulated clearly and in as much detail as
                   possible. The desire can be absolutely anything, but the
@@ -423,13 +435,17 @@ const CreatePactPage: React.FC = () => {
           {/* Main content */}
           <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-4 pt-16 sm:pt-20 py-4 mx-auto w-full items-center justify-center">
             {!canCreatePact ? (
-              <UpgradePrompt 
+              <UpgradePrompt
                 feature={
-                  language === 'ru' ? 'аскез' :
-                  language === 'es' ? 'ascetismos' :
-                  'asceticisms'
+                  language === 'ru'
+                    ? 'аскез'
+                    : language === 'es'
+                      ? 'ascetismos'
+                      : 'asceticisms'
                 }
-                currentUsage={limits ? `${limits.pacts.used}/${limits.pacts.limit}` : ''}
+                currentUsage={
+                  limits ? `${limits.pacts.used}/${limits.pacts.limit}` : ''
+                }
               />
             ) : (
               renderStep()

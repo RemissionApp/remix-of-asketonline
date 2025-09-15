@@ -47,7 +47,15 @@ export const BottomNavigation = memo(() => {
   const isPro = hasActiveSubscription;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20 pb-safe-bottom">
+    <div
+      className="fixed bottom-0 left-0 right-0 z-[100] w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20"
+      style={{
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 2.7rem)',
+        paddingTop: 'calc(env(safe-area-inset-top) + 1rem)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
+    >
       <div className="flex justify-center">
         <div className="w-full px-2">
           <div className="flex justify-around items-center py-1 max-w-3xl mx-auto">

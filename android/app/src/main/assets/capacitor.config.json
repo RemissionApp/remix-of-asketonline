@@ -2,7 +2,13 @@
 	"appId": "com.asket.cosmicascension",
 	"appName": "Cosmic Ascension Path",
 	"webDir": "dist",
-	"server": {
-		"url": "http://192.168.1.104:8080"
+	"plugins": {
+		"StatusBar": {
+			"style": "dark",
+			"backgroundColor": "#16002A"
+		},
+		"SafeArea": {
+			"enabled": true
+		}
 	}
 }

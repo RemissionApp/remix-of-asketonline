@@ -37,9 +37,11 @@ const CallPage: React.FC = () => {
                 used={limits.voice_calls.used}
                 limit={limits.voice_calls.limit}
                 label={
-                  language === 'ru' ? 'Голосовые звонки сегодня' :
-                  language === 'es' ? 'Llamadas de voz hoy' :
-                  'Voice Calls Today'
+                  language === 'ru'
+                    ? 'Голосовые звонки сегодня'
+                    : language === 'es'
+                      ? 'Llamadas de voz hoy'
+                      : 'Voice Calls Today'
                 }
                 isPro={limits.isPro}
               />
@@ -48,11 +50,13 @@ const CallPage: React.FC = () => {
 
           {/* Show upgrade prompt if limit reached */}
           {limits && !limits.voice_calls.canUse ? (
-            <UpgradePrompt 
+            <UpgradePrompt
               feature={
-                language === 'ru' ? 'голосовых звонков' :
-                language === 'es' ? 'llamadas de voz' :
-                'voice calls'
+                language === 'ru'
+                  ? 'голосовых звонков'
+                  : language === 'es'
+                    ? 'llamadas de voz'
+                    : 'voice calls'
               }
               currentUsage={`${limits.voice_calls.used}/${limits.voice_calls.limit}`}
             />

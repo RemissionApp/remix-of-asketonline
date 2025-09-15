@@ -50,6 +50,7 @@ import { NotificationProvider } from './components/notifications/NotificationSys
 
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
 import { performanceMonitor } from './utils/performance';
+import { SafeAreaView } from './components/SafeAreaView';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -59,24 +60,24 @@ const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
 
   try {
-    const { 
-      checkOnboardingStatus, 
-      user, 
-      loadUserProfile, 
+    const {
+      checkOnboardingStatus,
+      user,
+      loadUserProfile,
       setUser,
-      initializeSettings 
+      initializeSettings,
     } = useAppStore();
 
     useEffect(() => {
       // Инициализируем настройки из localStorage
       initializeSettings();
-      
+
       // Проверяем состояние onboarding при загрузке приложения
       checkOnboardingStatus();
 
       // Инициализируем push-уведомления
       NotificationIntegrations.initializeAll();
-      
+
       // Инициализируем мониторинг производительности
       performanceMonitor.initWebVitals();
 
@@ -176,7 +177,7 @@ const AuthCallback = () => {
   }, [location, navigate, updateUserProfile, user, loadUserProfile]);
 
   const { t } = useTranslations();
-  
+
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
@@ -192,52 +193,80 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <NotificationProvider>
-          <BrowserRouter>
-            <AppInitializer />
-            <Routes>
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/language" element={<LanguagePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/profile-setup" element={<UserProfilePage />} />
-              <Route path="/onboarding" element={<OnboardingPage />} />
-              <Route path="/main" element={<MainPage />} />
-              <Route path="/create-pact" element={<CreatePactPage />} />
-              <Route path="/pacts" element={<PactsPage />} />
-              <Route path="/universe" element={<UniversePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/account-settings" element={<AccountSettingsPage />} />
-              <Route path="/comparison" element={<ComparisonPage />} />
-              <Route path="/meditation" element={<MeditationPage />} />
-              <Route
-                path="/meditation/session"
-                element={<NewMeditationPage />}
-              />
-              <Route
-                path="/detailed-horoscope"
-                element={<DetailedHoroscopePage />}
-              />
-              <Route path="/full-horoscope" element={<FullHoroscopePage />} />
-              <Route path="/affirmations" element={<AffirmationsPage />} />
-              {/* Pro features routes */}
-              <Route path="/meditation-pro" element={<MeditationProPage />} />
-              <Route path="/universe-chat" element={<UniverseChatPage />} />
-              <Route path="/universe-call" element={<CallPage />} />
-              <Route path="/numerology" element={<NumerologyPage />} />
-              <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/artifacts" element={<ArtifactCollectionPage />} />
-              {/* Legal Pages */}
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-              <Route path="/delete-account" element={<DeleteAccountPage />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <PWAInstallPrompt />
-            <PWAUpdateNotification />
-            <Toaster />
-            <Sonner />
-          </BrowserRouter>
+          <SafeAreaView>
+            <BrowserRouter>
+              <AppInitializer />
+              <div className="">
+                <Routes>
+                  <Route path="/" element={<WelcomePage />} />
+                  <Route path="/language" element={<LanguagePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/profile-setup" element={<UserProfilePage />} />
+                  <Route path="/onboarding" element={<OnboardingPage />} />
+                  <Route path="/main" element={<MainPage />} />
+                  <Route path="/create-pact" element={<CreatePactPage />} />
+                  <Route path="/pacts" element={<PactsPage />} />
+                  <Route path="/universe" element={<UniversePage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route
+                    path="/account-settings"
+                    element={<AccountSettingsPage />}
+                  />
+                  <Route path="/comparison" element={<ComparisonPage />} />
+                  <Route path="/meditation" element={<MeditationPage />} />
+                  <Route
+                    path="/meditation/session"
+                    element={<NewMeditationPage />}
+                  />
+                  <Route
+                    path="/detailed-horoscope"
+                    element={<DetailedHoroscopePage />}
+                  />
+                  <Route
+                    path="/full-horoscope"
+                    element={<FullHoroscopePage />}
+                  />
+                  <Route path="/affirmations" element={<AffirmationsPage />} />
+                  {/* Pro features routes */}
+                  <Route
+                    path="/meditation-pro"
+                    element={<MeditationProPage />}
+                  />
+                  <Route path="/universe-chat" element={<UniverseChatPage />} />
+                  <Route path="/universe-call" element={<CallPage />} />
+                  <Route path="/numerology" element={<NumerologyPage />} />
+                  <Route
+                    path="/cosmic-missions"
+                    element={<CosmicMissionsPage />}
+                  />
+                  <Route path="/achievements" element={<AchievementsPage />} />
+                  <Route
+                    path="/artifacts"
+                    element={<ArtifactCollectionPage />}
+                  />
+                  {/* Legal Pages */}
+                  <Route
+                    path="/privacy-policy"
+                    element={<PrivacyPolicyPage />}
+                  />
+                  <Route
+                    path="/terms-of-service"
+                    element={<TermsOfServicePage />}
+                  />
+                  <Route
+                    path="/delete-account"
+                    element={<DeleteAccountPage />}
+                  />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+              <PWAInstallPrompt />
+              <PWAUpdateNotification />
+              <Toaster />
+              <Sonner />
+            </BrowserRouter>
+          </SafeAreaView>
         </NotificationProvider>
       </ErrorBoundary>
     </QueryClientProvider>

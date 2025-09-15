@@ -21,7 +21,7 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { upgradeToPro } = useAppStore();
-  const { offerings, purchasePackage, isLoading, hasActiveSubscription } =
+  const { offerings, presentPaywall, isLoading, hasActiveSubscription } =
     useRevenueCat();
 
   // Don't show banner if user has active subscription
@@ -36,23 +36,10 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
     }
 
     try {
-      // Check if we have offerings available
-      if (
-        offerings &&
-        offerings.length > 0 &&
-        offerings[0].availablePackages.length > 0
-      ) {
-        // Purchase the first available package
-        await purchasePackage(offerings[0].availablePackages[0]);
-        // After successful purchase, navigate to comparison page
-        navigate('/comparison');
-      } else {
-        // Fallback to demo behavior if no offerings available
-        upgradeToPro();
-        navigate('/comparison');
-      }
+      // Use RevenueCat Paywall UI
+      await presentPaywall();
     } catch (error) {
-      console.error('Failed to purchase package:', error);
+      console.error('Failed to present paywall:', error);
       // Fallback to demo behavior on error
       upgradeToPro();
       navigate('/comparison');
