@@ -50,7 +50,7 @@ export const createOnboardingSlice: StateCreator<
       const [profileResult, onboardingResult] = await Promise.all([
         supabase
           .from('profiles')
-          .select('*')
+          .select('*, profile_step_completed')
           .eq('id', user.id)
           .single(),
         supabase
@@ -77,10 +77,15 @@ export const createOnboardingSlice: StateCreator<
         onboardingData = newOnboarding;
       }
 
-      // Update state with fetched data
+      // Update state with fetched data - prioritize profiles table for profile_step_completed
+      const profileData = profileResult.data;
+      const profileCompleted = profileData?.profile_step_completed || 
+                               onboardingData?.profile_step_completed || 
+                               false;
+      
       set({
         currentStep: (onboardingData?.current_step || 'profile') as 'profile' | 'preferences' | 'tour' | 'complete',
-        profileStepCompleted: onboardingData?.profile_step_completed || false,
+        profileStepCompleted: profileCompleted,
         onboardingStepCompleted: onboardingData?.onboarding_step_completed || false,
         preferencesStepCompleted: onboardingData?.preferences_step_completed || false,
         completedAt: onboardingData?.completed_at ? new Date(onboardingData.completed_at) : null,

@@ -28,15 +28,29 @@ export const determineAuthRoute = (): AuthRouteResult => {
     };
   }
   
-  // Step 2: Check profile completion
+  // Step 2: Check profile completion using both profile data and database flag
   const isProfileComplete = storeState.isProfileComplete();
-  logger.debug('AuthRouter: Profile completion check', { isProfileComplete });
+  const profileStepCompleted = storeState.profileStepCompleted;
   
-  if (!isProfileComplete) {
-    logger.debug('AuthRouter: Profile incomplete, redirecting to profile setup');
+  logger.debug('AuthRouter: Profile completion check', { 
+    isProfileComplete, 
+    profileStepCompleted,
+    hasName: !!storeState.userProfile?.name,
+    hasBirthDate: !!storeState.userProfile?.birthDate
+  });
+  
+  // Profile is complete if both conditions are met:
+  // 1. Has profile data (name and birth date)
+  // 2. Database flag is set to true
+  const profileComplete = isProfileComplete && profileStepCompleted;
+  
+  if (!profileComplete) {
+    logger.debug('AuthRouter: Profile incomplete, redirecting to profile setup', {
+      reason: !isProfileComplete ? 'Missing profile data' : 'Profile step not marked complete'
+    });
     return {
       route: '/profile-setup',
-      reason: 'Profile not complete'
+      reason: !isProfileComplete ? 'Profile data incomplete' : 'Profile step not completed'
     };
   }
   

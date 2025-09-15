@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAuthDebug } from '@/hooks/useAuthDebug';
+import { navigateToAuthRoute } from '@/utils/authRouter';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();

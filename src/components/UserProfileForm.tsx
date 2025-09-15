@@ -137,8 +137,12 @@ const UserProfileForm: React.FC = () => {
 
       console.log('Supabase update successful:', updateResult);
 
-      // Force reload profile data to sync with DB
+      // Force reload profile and onboarding data to sync with DB
       await loadUserProfile();
+      
+      // Load onboarding state to get updated profile_step_completed
+      const { loadOnboardingState } = useAppStore.getState();
+      await loadOnboardingState();
       
       // Update local form data immediately
       setFormData({
