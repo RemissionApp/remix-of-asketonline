@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.asket.cosmicascension',
-  appName: 'Cosmic Ascension Path',
+  appName: 'Asket: AI & Spiritual Pacts',
   webDir: 'dist',
   plugins: {
     StatusBar: {

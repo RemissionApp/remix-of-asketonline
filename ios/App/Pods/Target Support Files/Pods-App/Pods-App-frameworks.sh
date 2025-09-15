@@ -177,21 +177,23 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorHaptics/CapacitorHaptics.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorKeyboard/CapacitorKeyboard.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorSplashScreen/CapacitorSplashScreen.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorStatusBar/CapacitorStatusBar.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PurchasesHybridCommon/PurchasesHybridCommon.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PurchasesHybridCommonUI/PurchasesHybridCommonUI.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenueCat/RevenueCat.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenueCatUI/RevenueCatUI.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenuecatPurchasesCapacitor/RevenuecatPurchasesCapacitor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenuecatPurchasesCapacitorUi/RevenuecatPurchasesCapacitorUi.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorHaptics/CapacitorHaptics.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorKeyboard/CapacitorKeyboard.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorSplashScreen/CapacitorSplashScreen.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorStatusBar/CapacitorStatusBar.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PurchasesHybridCommon/PurchasesHybridCommon.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PurchasesHybridCommonUI/PurchasesHybridCommonUI.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenueCat/RevenueCat.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenueCatUI/RevenueCatUI.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenuecatPurchasesCapacitor/RevenuecatPurchasesCapacitor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RevenuecatPurchasesCapacitorUi/RevenuecatPurchasesCapacitorUi.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait

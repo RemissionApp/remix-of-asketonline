@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFFFFF</color>
-    <string name="app_name">Cosmic Ascension Path</string>
+    <color name="ic_launcher_background">#16002A</color>
+    <string name="app_name">Asket: AI &amp; Spiritual Pacts</string>
     <string name="custom_url_scheme">com.asket.cosmicascension</string>
     <string name="package_name">com.asket.cosmicascension</string>
-    <string name="title_activity_main">Cosmic Ascension Path</string>
+    <string name="title_activity_main">Asket: AI &amp; Spiritual Pacts</string>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         
         <item name="colorPrimary">@color/colorPrimary</item>

@@ -129,7 +129,7 @@
     <color name="foreground_material_light">@android:color/black</color>
     <color name="highlighted_text_material_dark">#6680cbc4</color>
     <color name="highlighted_text_material_light">#66009688</color>
-    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_launcher_background">#16002A</color>
     <color name="material_blue_grey_800">#ff37474f</color>
     <color name="material_blue_grey_900">#ff263238</color>
     <color name="material_blue_grey_950">#ff21272b</color>
@@ -413,7 +413,7 @@
     <string name="all_plans">All plans</string>
     <string name="androidx_startup" translatable="false">androidx.startup</string>
     <string name="annual">Annual</string>
-    <string name="app_name">Cosmic Ascension Path</string>
+    <string name="app_name">Asket: AI &amp; Spiritual Pacts</string>
     <string name="bimonthly">2 month</string>
     <string name="call_notification_answer_action">Answer</string>
     <string name="call_notification_answer_video_action">Video</string>
@@ -543,7 +543,7 @@
     <string name="template_percent"><ns2:g id="percentage">%1$d</ns2:g> percent.</string>
     <string name="terms">Terms</string>
     <string name="terms_and_conditions">Terms and conditions</string>
-    <string name="title_activity_main">Cosmic Ascension Path</string>
+    <string name="title_activity_main">Asket: AI &amp; Spiritual Pacts</string>
     <string name="tooltip_description">tooltip</string>
     <string name="tooltip_label">show tooltip</string>
     <string name="weekly">Weekly</string>
