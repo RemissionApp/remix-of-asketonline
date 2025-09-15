@@ -685,6 +685,7 @@ export type Database = {
           goal: string | null
           id: string
           name: string
+          profile_step_completed: boolean | null
           rank: string
           total_days: number
           updated_at: string
@@ -698,6 +699,7 @@ export type Database = {
           goal?: string | null
           id: string
           name: string
+          profile_step_completed?: boolean | null
           rank?: string
           total_days?: number
           updated_at?: string
@@ -711,6 +713,7 @@ export type Database = {
           goal?: string | null
           id?: string
           name?: string
+          profile_step_completed?: boolean | null
           rank?: string
           total_days?: number
           updated_at?: string
