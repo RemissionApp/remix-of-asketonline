@@ -183,7 +183,7 @@ const LoginPage: React.FC = () => {
 
     setVerifyingOtp(true);
     try {
-      const verified = await verifyOtpCode(email, otpCode);
+      const verified = await verifyOtpCode(email, otpCode, password);
       if (verified) {
         // Check if user is logged in now
         const currentUser = useAppStore.getState().user;

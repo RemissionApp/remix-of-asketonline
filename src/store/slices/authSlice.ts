@@ -85,7 +85,7 @@ export interface AuthSlice {
   ) => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
   sendOtpCode: (email: string) => Promise<boolean>;
-  verifyOtpCode: (email: string, code: string) => Promise<boolean>;
+  verifyOtpCode: (email: string, code: string, password?: string) => Promise<boolean>;
   isProfileComplete: () => boolean;
   checkOnboardingStatus: () => boolean;
 }
@@ -398,13 +398,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     }
   },
 
-  verifyOtpCode: async (email: string, code: string): Promise<boolean> => {
+  verifyOtpCode: async (email: string, code: string, password?: string): Promise<boolean> => {
     try {
       logger.info('Verifying OTP for email:', email);
       set({ loading: true });
 
       const { data, error } = await supabase.functions.invoke('verify-otp', {
-        body: { email, code },
+        body: { email, code, password },
       });
 
       if (error) {

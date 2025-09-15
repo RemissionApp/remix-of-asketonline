@@ -14,6 +14,7 @@ const corsHeaders = {
 interface VerifyOtpRequest {
   email: string;
   code: string;
+  password: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,13 +24,13 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, code }: VerifyOtpRequest = await req.json();
+    const { email, code, password }: VerifyOtpRequest = await req.json();
 
-    if (!email || !code) {
-      throw new Error('Email and code are required');
+    if (!email || !code || !password) {
+      throw new Error('Email, code, and password are required');
     }
 
-    console.log('Checking verification code for email:', email, 'code:', code);
+    console.log('Verifying OTP for email:', email, 'code:', code);
 
     // Check if code exists and is valid using maybeSingle to handle 0 rows gracefully
     const { data: codeData, error: codeError } = await supabaseAdmin
@@ -105,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Found valid verification code, proceeding with verification');
+    console.log('Found valid verification code, proceeding with user creation');
 
     // Check if code has expired
     const now = new Date();
@@ -124,7 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Mark code as used
+    // Mark code as used first
     const { error: updateError } = await supabaseAdmin
       .from('email_verification_codes')
       .update({ used: true })
@@ -135,49 +136,34 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Failed to process verification');
     }
 
-    // Get user by email and confirm their email
-    const { data: { users }, error: getUserError } = await supabaseAdmin.auth.admin.listUsers();
-    
-    if (getUserError) {
-      console.error('Failed to get users:', getUserError);
-      throw new Error('Failed to verify user');
-    }
+    // Create new user with confirmed email
+    console.log('Creating new user with email:', email);
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
+      email: email,
+      password: password,
+      email_confirm: true,
+      app_metadata: {
+        email_verified: true
+      }
+    });
 
-    const user = users.find(u => u.email === email);
-    
-    if (!user) {
+    if (userError) {
+      console.error('Failed to create user:', userError);
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'User not found' 
+          error: userError.message || 'Failed to create user' 
         }),
         {
-          status: 404,
+          status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
     }
 
-    // Update user's email_confirmed_at field
-    const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
-      user.id,
-      { 
-        email_confirm: true,
-        app_metadata: {
-          ...user.app_metadata,
-          email_verified: true
-        }
-      }
-    );
+    console.log('User created successfully:', userData.user?.id);
 
-    if (confirmError) {
-      console.error('Failed to confirm user email:', confirmError);
-      throw new Error('Failed to confirm email');
-    }
-
-    console.log(`Email verified successfully for user: ${email}`);
-
-    // Create access token for automatic sign-in
+    // Generate access token for automatic sign-in
     const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
       email: email,
@@ -188,11 +174,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (sessionError) {
       console.error('Failed to generate session:', sessionError);
-      // Still return success for email verification even if session generation fails
+      // Still return success for user creation even if session generation fails
       return new Response(JSON.stringify({ 
         success: true, 
-        message: 'Email verified successfully',
-        userId: user.id 
+        message: 'User created successfully',
+        userId: userData.user?.id 
       }), {
         status: 200,
         headers: {
@@ -202,10 +188,12 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    console.log('Registration completed successfully for:', email);
+
     return new Response(JSON.stringify({ 
       success: true, 
-      message: 'Email verified successfully',
-      userId: user.id,
+      message: 'User created and verified successfully',
+      userId: userData.user?.id,
       accessToken: sessionData.properties?.access_token,
       refreshToken: sessionData.properties?.refresh_token
     }), {

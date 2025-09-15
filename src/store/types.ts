@@ -86,7 +86,7 @@ export interface AppState {
   checkEmailConfirmation: () => Promise<boolean>;
   setUser: (user: User | null) => void;
   sendOtpCode: (email: string) => Promise<boolean>;
-  verifyOtpCode: (email: string, code: string) => Promise<boolean>;
+  verifyOtpCode: (email: string, code: string, password?: string) => Promise<boolean>;
   isProfileComplete: () => boolean;
 
   // Data loading methods
