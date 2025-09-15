@@ -191,49 +191,30 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
-      logger.info('Starting signup process for email:', email);
+      logger.info('Starting OTP signup process for email:', email);
       cleanupAuthState();
 
       // Clear RevenueCat store before signing up new user
       const { reset: resetRevenueCat } = useRevenueCatStore.getState();
       resetRevenueCat();
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
-      });
-
-      if (error) {
-        logger.error('Signup error:', error);
-        throw error;
-      }
-
-      logger.info('Signup successful:', data);
-      set({ user: data.user });
-
-      if (data.session) {
-        logger.info('User has immediate session, email confirmed');
-        toast({
-          title: 'Регистрация выполнена',
-          description:
-            'Ваш аккаунт был создан успешно. Теперь вы можете заполнить свой профиль.',
-        });
-
-        set({ activeScreen: 'profile', emailConfirmed: true });
+      // Store password temporarily for OTP verification
+      const tempPassword = password;
+      
+      // Send OTP code instead of direct signup
+      const otpSent = await get().sendOtpCode(email);
+      
+      if (otpSent) {
+        // Store password in component state for later use in verifyOtpCode
+        // This will be handled by the LoginPage component
+        logger.info('OTP sent successfully for signup');
         
-        // Load user profile for users with immediate session
-        await get().loadUserProfile();
-      } else {
-        logger.info('User needs email confirmation');
-        set({ emailConfirmed: false });
         toast({
-          title: 'Регистрация выполнена',
-          description:
-            'Ваш аккаунт был создан. Пожалуйста, проверьте вашу почту для подтверждения.',
+          title: 'Код отправлен',
+          description: 'Проверьте свою почту и введите код подтверждения',
         });
+      } else {
+        throw new Error('Не удалось отправить код подтверждения');
       }
     } catch (error) {
       logger.error('Sign up failed', error);
@@ -398,7 +379,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     }
   },
 
-  verifyOtpCode: async (email: string, code: string, password?: string): Promise<boolean> => {
+  verifyOtpCode: async (email: string, code: string, password: string): Promise<boolean> => {
     try {
       logger.info('Verifying OTP for email:', email);
       set({ loading: true });

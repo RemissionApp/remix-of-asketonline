@@ -161,12 +161,9 @@ const LoginPage: React.FC = () => {
     // Очищаем состояние аутентификации перед регистрацией
     cleanupAuthState();
 
+    // signUp now handles OTP sending internally
     await signUp(email, password);
-    // Send OTP code instead of email confirmation
-    const otpSent = await sendOtpCode(email);
-    if (otpSent) {
-      setOtpSent(true);
-    }
+    setOtpSent(true);
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
