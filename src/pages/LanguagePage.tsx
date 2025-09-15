@@ -41,13 +41,8 @@ const LanguagePage = () => {
       console.log('LanguagePage - handleContinue: User authenticated, redirecting to:', route);
       navigate(route);
     } else {
-      // For non-authenticated users, check localStorage for onboarding status
-      const onboarded = localStorage.getItem('onboarded');
-      if (onboarded === 'true') {
-        navigate('/login');
-      } else {
-        navigate('/profile-setup');
-      }
+      // For non-authenticated users, always go to login
+      navigate('/login');
     }
   };
 

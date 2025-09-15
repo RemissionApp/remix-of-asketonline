@@ -101,10 +101,7 @@ const OnboardingPage: React.FC = () => {
     setOnboardingComplete(true);
     setActiveScreen('main');
 
-    // Save onboarding completion to localStorage
-    localStorage.setItem('onboarded', 'true');
-
-    // Navigate to main page
+    // Navigate to main page (remove localStorage usage)
     navigate('/main');
   };
 

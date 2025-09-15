@@ -69,22 +69,20 @@ const LoginPage: React.FC = () => {
             return;
           }
 
-      // Проверяем, заполнил ли пользователь профиль используя централизованную функцию
-      const storeState = useAppStore.getState();
-      const profileComplete = storeState.isProfileComplete();
-      
-      if (profileComplete) {
-        // Пользователь имеет заполненный профиль, проверяем onboarding
-        const onboardingComplete = storeState.checkOnboardingStatus();
-        if (onboardingComplete) {
-          navigate('/main');
-        } else {
-          navigate('/onboarding');
-        }
-      } else {
-        // Пользователю необходимо заполнить профиль
-        navigate('/profile-setup');
-      }
+          // Use centralized auth routing
+          const storeState = useAppStore.getState();
+          const profileComplete = storeState.isProfileComplete();
+          
+          if (profileComplete) {
+            const onboardingComplete = storeState.checkOnboardingStatus();
+            if (onboardingComplete) {
+              navigate('/main');
+            } else {
+              navigate('/onboarding');
+            }
+          } else {
+            navigate('/profile-setup');
+          }
         } else {
           setAuthChecking(false);
         }
