@@ -968,26 +968,6 @@ export type Database = {
           rank: string | null
           total_days: number | null
         }
-        Insert: {
-          achievements_count?: never
-          artifacts_count?: never
-          completed_missions_count?: never
-          energy_points?: number | null
-          id?: string | null
-          missions_count?: never
-          rank?: string | null
-          total_days?: number | null
-        }
-        Update: {
-          achievements_count?: never
-          artifacts_count?: never
-          completed_missions_count?: never
-          energy_points?: number | null
-          id?: string | null
-          missions_count?: never
-          rank?: string | null
-          total_days?: number | null
-        }
         Relationships: []
       }
     }

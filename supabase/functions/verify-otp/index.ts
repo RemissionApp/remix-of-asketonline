@@ -29,21 +29,74 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Email and code are required');
     }
 
-    // Check if code exists and is valid
+    console.log('Checking verification code for email:', email, 'code:', code);
+
+    // Check if code exists and is valid using maybeSingle to handle 0 rows gracefully
     const { data: codeData, error: codeError } = await supabaseAdmin
       .from('email_verification_codes')
       .select('*')
       .eq('email', email)
       .eq('code', code)
       .eq('used', false)
-      .single();
+      .maybeSingle();
 
-    if (codeError || !codeData) {
-      console.error('Code verification error:', codeError);
+    if (codeError) {
+      console.error('Database error during code verification:', codeError);
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Invalid or expired code' 
+          error: 'Database error during verification' 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    if (!codeData) {
+      console.log('No valid verification code found for email:', email, 'code:', code);
+      
+      // Check if code exists but is expired/used for better error message
+      const { data: existingCode } = await supabaseAdmin
+        .from('email_verification_codes')
+        .select('used, expires_at')
+        .eq('email', email)
+        .eq('code', code)
+        .maybeSingle();
+
+      if (existingCode) {
+        if (existingCode.used) {
+          console.log('Code already used');
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Verification code has already been used' 
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json", ...corsHeaders },
+            }
+          );
+        } else {
+          console.log('Code expired');
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Verification code has expired' 
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json", ...corsHeaders },
+            }
+          );
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid verification code' 
         }),
         {
           status: 400,
@@ -51,6 +104,8 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    console.log('Found valid verification code, proceeding with verification');
 
     // Check if code has expired
     const now = new Date();

@@ -191,6 +191,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     set({ loading: true });
 
     try {
+      logger.info('Starting signup process for email:', email);
       cleanupAuthState();
 
       // Clear RevenueCat store before signing up new user
@@ -200,13 +201,21 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Signup error:', error);
+        throw error;
+      }
 
+      logger.info('Signup successful:', data);
       set({ user: data.user });
 
       if (data.session) {
+        logger.info('User has immediate session, email confirmed');
         toast({
           title: 'Регистрация выполнена',
           description:
@@ -214,7 +223,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         });
 
         set({ activeScreen: 'profile', emailConfirmed: true });
+        
+        // Load user profile for users with immediate session
+        await get().loadUserProfile();
       } else {
+        logger.info('User needs email confirmation');
         set({ emailConfirmed: false });
         toast({
           title: 'Регистрация выполнена',
@@ -387,6 +400,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
   verifyOtpCode: async (email: string, code: string): Promise<boolean> => {
     try {
+      logger.info('Verifying OTP for email:', email);
       set({ loading: true });
 
       const { data, error } = await supabase.functions.invoke('verify-otp', {
@@ -394,7 +408,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       });
 
       if (error) {
-        console.error('Error verifying OTP:', error);
+        logger.error('Error verifying OTP:', error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
 
@@ -407,7 +421,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       }
 
       if (!data.success) {
-        console.error('OTP verification failed:', data.error);
+        logger.error('OTP verification failed:', data.error);
         const lang = get().language || 'en';
         const t = getTranslations(lang);
 
@@ -419,9 +433,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         return false;
       }
 
+      logger.info('OTP verification successful:', data);
+
       // If we have access tokens, automatically sign in the user
       if (data.accessToken && data.refreshToken) {
         try {
+          logger.info('Setting session with received tokens');
           const { data: sessionData, error: sessionError } =
             await supabase.auth.setSession({
               access_token: data.accessToken,
@@ -429,8 +446,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             });
 
           if (sessionError) {
-            console.error('Error setting session:', sessionError);
+            logger.error('Error setting session:', sessionError);
           } else if (sessionData.user) {
+            logger.info('Session set successfully, user signed in');
+            
             // Clear RevenueCat store before setting new user
             const { reset: resetRevenueCat } = useRevenueCatStore.getState();
             resetRevenueCat();
@@ -454,11 +473,36 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
             return true;
           }
         } catch (sessionError) {
-          console.error('Error during auto sign-in:', sessionError);
+          logger.error('Error during auto sign-in:', sessionError);
         }
       }
 
-      // Fallback: just mark email as confirmed
+      // Fallback: just mark email as confirmed and refresh session
+      logger.info('No tokens received, refreshing session and marking as confirmed');
+      
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          logger.error('Error getting session after OTP verification:', sessionError);
+        } else if (session) {
+          logger.info('Session found after OTP verification, loading profile');
+          set({
+            user: session.user,
+            emailConfirmed: true,
+          });
+          
+          // Load user profile after successful verification
+          await get().loadUserProfile();
+        } else {
+          logger.warn('No session found after OTP verification');
+          set({ emailConfirmed: true });
+        }
+      } catch (err) {
+        logger.error('Error refreshing session after OTP verification:', err);
+        set({ emailConfirmed: true });
+      }
+
       const lang = get().language || 'en';
       const t = getTranslations(lang);
 
@@ -469,7 +513,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       return true;
     } catch (error: unknown) {
-      console.error('Error in verifyOtpCode:', error);
+      logger.error('Error in verifyOtpCode:', error);
       const lang = get().language || 'en';
       const t = getTranslations(lang);
 
