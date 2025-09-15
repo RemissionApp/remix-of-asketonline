@@ -50,7 +50,7 @@ export const BottomNavigation = memo(() => {
     <div
       className="fixed bottom-0 left-0 right-0 z-[100] w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20"
       style={{
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)',
         paddingTop: 'calc(env(safe-area-inset-top) + 1rem)',
         paddingLeft: 'env(safe-area-inset-left)',
         paddingRight: 'env(safe-area-inset-right)',
