@@ -51,6 +51,7 @@ import { NotificationProvider } from './components/notifications/NotificationSys
 import { NotificationIntegrations } from './utils/notifications/notificationIntegrations';
 import { performanceMonitor } from './utils/performance';
 import { SafeAreaView } from './components/SafeAreaView';
+import { AppRouter } from './components/AppRouter';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -132,62 +133,6 @@ const AppInitializer = () => {
   }
 };
 
-// Компонент для обработки перенаправлений OAuth
-const AuthCallback = () => {
-  const logger = createLogger('AuthCallback');
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { updateUserProfile, user, loadUserProfile } = useAppStore();
-
-  useEffect(() => {
-    const handleAuthCallback = async () => {
-      // Получаем данные аутентификации из URL
-      const hashParams = new URLSearchParams(location.hash.substring(1));
-      const queryParams = new URLSearchParams(location.search);
-
-      // Проверяем, является ли это обратным вызовом аутентификации
-      if (hashParams.get('access_token') || queryParams.get('code')) {
-        try {
-          // Обрабатываем перенаправление внутренне
-          const { data, error } = await supabase.auth.getSession();
-
-          if (error) throw error;
-
-          if (data?.session?.user) {
-            // Очищаем состояние аутентификации для предотвращения проблем
-            cleanupAuthState();
-
-            // Загружаем данные профиля пользователя
-            await loadUserProfile();
-
-            // Перенаправляем на настройку профиля или главную
-            navigate('/profile-setup');
-          }
-        } catch (error) {
-          logger.error('Ошибка обратного вызова аутентификации', error);
-          navigate('/login');
-        }
-      } else {
-        // Не является обратным вызовом аутентификации, перенаправляем на главную
-        navigate('/');
-      }
-    };
-
-    handleAuthCallback();
-  }, [location, navigate, updateUserProfile, user, loadUserProfile]);
-
-  const { t } = useTranslations();
-
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-cosmic-secondary">{t.auth.signingIn}</p>
-      </div>
-    </div>
-  );
-};
-
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -197,69 +142,7 @@ const App = () => {
             <BrowserRouter>
               <AppInitializer />
               <div className="">
-                <Routes>
-                  <Route path="/" element={<WelcomePage />} />
-                  <Route path="/language" element={<LanguagePage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/profile-setup" element={<UserProfilePage />} />
-                  <Route path="/onboarding" element={<OnboardingPage />} />
-                  <Route path="/main" element={<MainPage />} />
-                  <Route path="/create-pact" element={<CreatePactPage />} />
-                  <Route path="/pacts" element={<PactsPage />} />
-                  <Route path="/universe" element={<UniversePage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route
-                    path="/account-settings"
-                    element={<AccountSettingsPage />}
-                  />
-                  <Route path="/comparison" element={<ComparisonPage />} />
-                  <Route path="/meditation" element={<MeditationPage />} />
-                  <Route
-                    path="/meditation/session"
-                    element={<NewMeditationPage />}
-                  />
-                  <Route
-                    path="/detailed-horoscope"
-                    element={<DetailedHoroscopePage />}
-                  />
-                  <Route
-                    path="/full-horoscope"
-                    element={<FullHoroscopePage />}
-                  />
-                  <Route path="/affirmations" element={<AffirmationsPage />} />
-                  {/* Pro features routes */}
-                  <Route
-                    path="/meditation-pro"
-                    element={<MeditationProPage />}
-                  />
-                  <Route path="/universe-chat" element={<UniverseChatPage />} />
-                  <Route path="/universe-call" element={<CallPage />} />
-                  <Route path="/numerology" element={<NumerologyPage />} />
-                  <Route
-                    path="/cosmic-missions"
-                    element={<CosmicMissionsPage />}
-                  />
-                  <Route path="/achievements" element={<AchievementsPage />} />
-                  <Route
-                    path="/artifacts"
-                    element={<ArtifactCollectionPage />}
-                  />
-                  {/* Legal Pages */}
-                  <Route
-                    path="/privacy-policy"
-                    element={<PrivacyPolicyPage />}
-                  />
-                  <Route
-                    path="/terms-of-service"
-                    element={<TermsOfServicePage />}
-                  />
-                  <Route
-                    path="/delete-account"
-                    element={<DeleteAccountPage />}
-                  />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <AppRouter />
               </div>
               <PWAInstallPrompt />
               <PWAUpdateNotification />

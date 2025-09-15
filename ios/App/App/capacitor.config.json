@@ -12,6 +12,7 @@
 		}
 	},
 	"packageClassList": [
+		"AppPlugin",
 		"PurchasesPlugin",
 		"RevenueCatUIPlugin"
 	]

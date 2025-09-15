@@ -24,7 +24,7 @@ export const TopBar: React.FC = memo(() => {
   return (
     <div
       className="w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 h-16"
-      style={{ marginTop: 'calc(env(safe-area-inset-top) + 2.5rem)' }}
+      style={{ marginTop: 'calc(env(safe-area-inset-top) + 0rem)' }}
     >
       {/* Energy points and controls group - responsive spacing */}
       <div
