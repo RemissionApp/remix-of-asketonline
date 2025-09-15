@@ -102,23 +102,33 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
   // Унифицированная функция проверки завершенности профиля
   isProfileComplete: () => {
-    const { userProfile } = get();
+    const { userProfile, user } = get();
     console.log('isProfileComplete check - userProfile:', userProfile);
-    const isComplete = !!(
-      userProfile &&
+    
+    if (!user || !userProfile) {
+      console.log('isProfileComplete: No user or userProfile');
+      return false;
+    }
+    
+    // Check if profile has required fields AND database flag is set
+    const hasRequiredFields = !!(
       userProfile.name &&
       userProfile.name.trim() !== '' &&
       userProfile.birthDate
     );
-    console.log('isProfileComplete result:', isComplete);
-    return isComplete;
+    
+    console.log('isProfileComplete - hasRequiredFields:', hasRequiredFields);
+    
+    return hasRequiredFields;
   },
 
   // Унифицированная функция проверки завершенности onboarding
   checkOnboardingStatus: () => {
     const onboarded = localStorage.getItem('onboarded');
     const { onboardingComplete } = get();
-    return onboarded === 'true' || onboardingComplete;
+    const result = onboarded === 'true' || onboardingComplete;
+    console.log('checkOnboardingStatus:', { onboarded, onboardingComplete, result });
+    return result;
   },
 
   signIn: async (email, password) => {

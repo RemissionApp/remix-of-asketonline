@@ -32,46 +32,20 @@ const UserProfilePage: React.FC = () => {
     authCheckRef.current = true;
 
     try {
-      // Check current session
-      const { data: sessionData } = await supabase.auth.getSession();
-      const sessionUser = sessionData?.session?.user;
-
-      // If no session found, redirect to login
-      if (!sessionUser) {
-        navigate('/login');
-        return;
-      }
-
-      // Check if email is confirmed (cached result if available)
-      const isConfirmed = emailConfirmed || await checkEmailConfirmation();
-
-      if (!isConfirmed) {
-        toast({
-          title: t.auth.emailRequired,
-          description: t.auth.checkEmailAndEnterCode,
-          variant: 'warning',
-        });
-        navigate('/login');
-        return;
-      }
-
-      // Load user profile first, then check completion
-      const { loadUserProfile, isProfileComplete, checkOnboardingStatus } = useAppStore.getState();
-      await loadUserProfile();
+      // Use the centralized auth router logic
+      const { determineAuthRoute } = await import('@/utils/authRouter');
+      const { route, reason } = determineAuthRoute();
       
-      const profileComplete = isProfileComplete();
-      console.log('UserProfilePage - Profile complete check:', profileComplete);
-
-      if (profileComplete) {
-        const isOnboardingComplete = checkOnboardingStatus();
-        console.log('UserProfilePage - Onboarding complete check:', isOnboardingComplete);
-        if (!isOnboardingComplete) {
-          navigate('/onboarding');
-        } else {
-          navigate('/main');
-        }
+      console.log('UserProfilePage - Auth route determined:', { route, reason });
+      
+      // If we should be on a different route, navigate there
+      if (route !== '/profile-setup') {
+        console.log('UserProfilePage - Redirecting to:', route);
+        navigate(route);
+        return;
       }
-
+      
+      // If we're staying on this page, just stop the loading state
       setAuthChecking(false);
     } catch (error) {
       console.error('Authentication check error:', error);
@@ -79,7 +53,7 @@ const UserProfilePage: React.FC = () => {
     } finally {
       authCheckRef.current = false;
     }
-  }, [navigate, userProfile, onboardingComplete, emailConfirmed, checkEmailConfirmation, t.auth.emailRequired, t.auth.checkEmailAndEnterCode]);
+  }, [navigate]);
 
   // Check authentication when conditions are ready
   useEffect(() => {
