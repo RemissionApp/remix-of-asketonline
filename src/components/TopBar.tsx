@@ -23,13 +23,15 @@ export const TopBar: React.FC = memo(() => {
 
   return (
     <div
-      className="w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 h-16"
-      style={{ marginTop: 'calc(env(safe-area-inset-top) + 0rem)' }}
+      className="flex items-center px-4 justify-between flex-row-reverse w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 min-h-16"
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: '1rem',
+      }}
+      // style={{ marginTop: 'calc(env(safe-area-inset-top) + 0rem)' }}
     >
       {/* Energy points and controls group - responsive spacing */}
-      <div
-        className={`absolute top-3 right-3 z-10 flex items-center space-x-1.5`}
-      >
+      <div className={`flex items-center space-x-1.5`}>
         {/* Sound toggle */}
         <SoundToggle />
 
@@ -69,9 +71,7 @@ export const TopBar: React.FC = memo(() => {
       )}
 
       {/* User avatar and rank badge - responsive positioning */}
-      <div
-        className={`absolute top-3 left-3 z-10 flex items-center space-x-1.5 min-w-0`}
-      >
+      <div className={`flex items-center space-x-1.5 min-w-0`}>
         <UserAvatar size="sm" showZodiacBadge={false} />
         <RankBadge size="sm" />
       </div>

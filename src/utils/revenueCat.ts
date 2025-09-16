@@ -8,8 +8,9 @@ import {
 } from '@revenuecat/purchases-capacitor';
 import { Capacitor } from '@capacitor/core';
 
-// Замените на ваш API ключ из RevenueCat Dashboard
-const REVENUECAT_API_KEY = 'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
+// API ключи из RevenueCat Dashboard
+const REVENUECAT_ANDROID_API_KEY = 'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
+const REVENUECAT_IOS_API_KEY = 'app5fa3862f65';
 
 export class RevenueCatService {
   private static instance: RevenueCatService;
@@ -39,21 +40,32 @@ export class RevenueCatService {
 
       if (Capacitor.getPlatform() === 'ios') {
         console.log('🍎 iOS platform detected');
-        // await Purchases.configure({
-        //   apiKey: <public_apple_api_key>,
-        //   appUserID: userId
-        // });
-      } else if (Capacitor.getPlatform() === 'android') {
-        console.log('🤖 Android platform detected');
         console.log(
-          '🔑 Configuring RevenueCat with API key and userId:',
+          '🔑 Configuring RevenueCat with iOS API key and userId:',
           userId
         );
         await Purchases.configure({
-          apiKey: REVENUECAT_API_KEY,
+          apiKey: REVENUECAT_IOS_API_KEY,
           appUserID: userId,
         });
-        console.log('✅ RevenueCat configured successfully');
+        console.log('✅ RevenueCat configured successfully for iOS');
+      } else if (Capacitor.getPlatform() === 'android') {
+        console.log('🤖 Android platform detected');
+        console.log(
+          '🔑 Configuring RevenueCat with Android API key and userId:',
+          userId
+        );
+        await Purchases.configure({
+          apiKey: REVENUECAT_ANDROID_API_KEY,
+          appUserID: userId,
+        });
+        console.log('✅ RevenueCat configured successfully for Android');
+      } else {
+        console.log('🌐 Web platform detected - RevenueCat not available');
+        console.warn('RevenueCat is not supported on web platform');
+        // На веб-платформе RevenueCat не работает, но не бросаем ошибку
+        this.isConfigured = true;
+        return;
       }
 
       this.isConfigured = true;
