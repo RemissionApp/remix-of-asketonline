@@ -8,7 +8,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
+
 import { supabase, cleanupAuthState } from '@/lib/supabase';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -314,26 +314,29 @@ const LoginPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label htmlFor="otp-code" className="text-white">{t.auth.otpCodeLabel}</Label>
                   <div className="flex justify-center">
-                    <InputOTP
+                    <Input
+                      id="otp-code"
+                      type="text"
                       value={otpCode}
-                      onChange={setOtpCode}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                        console.log('OTP input changed:', value);
+                        setOtpCode(value);
+                      }}
+                      placeholder="000000"
+                      className="text-center text-2xl tracking-widest bg-cosmic-dark/20 border-cosmic-accent/30 text-white placeholder:text-cosmic-secondary/50 focus:border-cosmic-accent"
                       maxLength={6}
-                      containerClassName="group flex items-center has-[:disabled]:opacity-30"
-                      className="disabled:cursor-not-allowed"
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                        <InputOTPSlot index={1} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                        <InputOTPSlot index={2} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                      </InputOTPGroup>
-                      <InputOTPSeparator />
-                      <InputOTPGroup>
-                        <InputOTPSlot index={3} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                        <InputOTPSlot index={4} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                        <InputOTPSlot index={5} className="border-cosmic-accent/30 text-white bg-cosmic-dark/20" />
-                      </InputOTPGroup>
-                    </InputOTP>
+                      autoComplete="one-time-code"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoFocus
+                      onFocus={() => console.log('OTP input focused')}
+                      onBlur={() => console.log('OTP input blurred')}
+                    />
                   </div>
+                  <p className="text-center text-sm text-cosmic-secondary">
+                    Введите 6-значный код из письма
+                  </p>
                 </div>
                 
                 <CosmicButton 

@@ -1,3 +1,4 @@
+/* Components moved to index.css */
 @layer components {
   .cosmic-block {
     @apply w-full max-w-lg mx-auto rounded-lg transition-all duration-300;
