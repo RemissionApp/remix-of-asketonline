@@ -10,7 +10,7 @@ import { Capacitor } from '@capacitor/core';
 
 // API ключи из RevenueCat Dashboard
 const REVENUECAT_ANDROID_API_KEY = 'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
-const REVENUECAT_IOS_API_KEY = 'app5fa3862f65';
+const REVENUECAT_IOS_API_KEY = 'appl_SFBeDRUZdFrEaMxEmovtiUEhcdf';
 
 export class RevenueCatService {
   private static instance: RevenueCatService;
