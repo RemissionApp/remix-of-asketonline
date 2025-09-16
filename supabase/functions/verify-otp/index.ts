@@ -125,18 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Mark code as used first
-    const { error: updateError } = await supabaseAdmin
-      .from('email_verification_codes')
-      .update({ used: true })
-      .eq('id', codeData.id);
-
-    if (updateError) {
-      console.error('Failed to mark code as used:', updateError);
-      throw new Error('Failed to process verification');
-    }
-
-    // Create new user with confirmed email
+    // Create new user with confirmed email FIRST (before marking code as used)
     console.log('Creating new user with email:', email);
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
       email: email,
@@ -149,6 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (userError) {
       console.error('Failed to create user:', userError);
+      // Don't mark code as used if user creation failed - allow retry
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -159,6 +149,19 @@ const handler = async (req: Request): Promise<Response> => {
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
+    }
+
+    // Only mark code as used AFTER successful user creation
+    const { error: updateError } = await supabaseAdmin
+      .from('email_verification_codes')
+      .update({ used: true })
+      .eq('id', codeData.id);
+
+    if (updateError) {
+      console.error('Failed to mark code as used:', updateError);
+      // User was created successfully, but we couldn't mark code as used
+      // This is not critical - continue with the flow
+      console.warn('Code marking failed but user was created successfully');
     }
 
     console.log('User created successfully:', userData.user?.id);
