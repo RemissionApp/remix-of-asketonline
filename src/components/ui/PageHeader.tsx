@@ -31,7 +31,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       className={`fixed top-0 left-0 right-0 z-50 bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 ${className}`}
       style={{
         paddingTop: isAndroid()
-          ? 'calc(env(safe-area-inset-top) + 1rem)'
+          ? 'calc(env(safe-area-inset-top) + 1.5rem)'
           : 'env(safe-area-inset-top)',
       }}
     >

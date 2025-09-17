@@ -20,7 +20,7 @@ const ToastViewport = React.forwardRef<
     )}
     style={{
       top: isAndroid()
-        ? 'calc(env(safe-area-inset-top) + 1rem)'
+        ? 'calc(env(safe-area-inset-top) + 1.5rem)'
         : 'env(safe-area-inset-top)',
       paddingTop: '1rem',
     }}

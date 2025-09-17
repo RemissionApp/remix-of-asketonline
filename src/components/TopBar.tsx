@@ -27,7 +27,7 @@ export const TopBar: React.FC = memo(() => {
       className="flex items-center px-4 justify-between flex-row-reverse w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 min-h-16"
       style={{
         paddingTop: isAndroid()
-          ? `calc(env(safe-area-inset-top) + 1rem)`
+          ? `calc(env(safe-area-inset-top) + 1.8rem)`
           : 'env(safe-area-inset-top)',
         paddingBottom: '1rem',
       }}

@@ -15,10 +15,10 @@ export const SafeAreaView: React.FC<SafeAreaViewProps> = ({
       className={className}
       style={{
         paddingTop: isAndroid()
-          ? 'calc(env(safe-area-inset-top) + 1rem)'
+          ? 'calc(env(safe-area-inset-top) + 1.5rem)'
           : 'env(safe-area-inset-top)',
         paddingBottom: isAndroid()
-          ? 'calc(env(safe-area-inset-bottom) + 1rem)'
+          ? 'calc(env(safe-area-inset-bottom) + 1.5rem)'
           : 'env(safe-area-inset-bottom)',
         paddingLeft: 'env(safe-area-inset-left)',
         paddingRight: 'env(safe-area-inset-right)',
