@@ -1,9 +1,9 @@
-#Wed Sep 17 14:17:50 ALMT 2025
+#Wed Sep 17 15:41:25 ALMT 2025
 base.0=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/11/classes.dex
 base.10=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 base.11=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes3.dex
-base.2=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/13/classes.dex
+base.2=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/14/classes.dex
 base.3=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/2/classes.dex
 base.4=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/5/classes.dex
 base.5=/Users/zhalgas/Documents/asket/cosmic-ascension-path/android/app/build/intermediates/dex/debug/mergeLibDexDebug/6/classes.dex
@@ -15,7 +15,7 @@ path.0=classes.dex
 path.1=11/classes.dex
 path.10=classes2.dex
 path.11=classes3.dex
-path.2=13/classes.dex
+path.2=14/classes.dex
 path.3=2/classes.dex
 path.4=5/classes.dex
 path.5=6/classes.dex
