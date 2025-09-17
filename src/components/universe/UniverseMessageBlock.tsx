@@ -21,7 +21,7 @@ const UniverseMessageBlockComponent: React.FC = () => {
   };
 
   const handleCallClick = () => {
-    navigate('/call');
+    navigate('/universe-call');
   };
 
   // Get appropriate title based on language
