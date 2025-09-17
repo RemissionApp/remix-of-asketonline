@@ -85,7 +85,11 @@ export interface AuthSlice {
   ) => Promise<void>;
   checkEmailConfirmation: () => Promise<boolean>;
   sendOtpCode: (email: string) => Promise<boolean>;
-  verifyOtpCode: (email: string, code: string, password?: string) => Promise<boolean>;
+  verifyOtpCode: (
+    email: string,
+    code: string,
+    password?: string
+  ) => Promise<boolean>;
   isProfileComplete: () => boolean;
   checkOnboardingStatus: () => boolean;
 }
@@ -104,21 +108,21 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   isProfileComplete: () => {
     const { userProfile, user } = get();
     console.log('isProfileComplete check - userProfile:', userProfile);
-    
+
     if (!user || !userProfile) {
       console.log('isProfileComplete: No user or userProfile');
       return false;
     }
-    
+
     // Check if profile has required fields AND database flag is set
     const hasRequiredFields = !!(
       userProfile.name &&
       userProfile.name.trim() !== '' &&
       userProfile.birthDate
     );
-    
+
     console.log('isProfileComplete - hasRequiredFields:', hasRequiredFields);
-    
+
     return hasRequiredFields;
   },
 
@@ -127,7 +131,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     const onboarded = localStorage.getItem('onboarded');
     const { onboardingComplete } = get();
     const result = onboarded === 'true' || onboardingComplete;
-    console.log('checkOnboardingStatus:', { onboarded, onboardingComplete, result });
+    console.log('checkOnboardingStatus:', {
+      onboarded,
+      onboardingComplete,
+      result,
+    });
     return result;
   },
 
@@ -198,17 +206,15 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       const { reset: resetRevenueCat } = useRevenueCatStore.getState();
       resetRevenueCat();
 
-      // Store password temporarily for OTP verification
-      const tempPassword = password;
-      
+      // ✨ BACK TO ORIGINAL: Send OTP first, create user after verification
+      console.log('📧 Sending OTP code first (before user creation)...');
+
       // Send OTP code instead of direct signup
       const otpSent = await get().sendOtpCode(email);
-      
+
       if (otpSent) {
-        // Store password in component state for later use in verifyOtpCode
-        // This will be handled by the LoginPage component
         logger.info('OTP sent successfully for signup');
-        
+
         toast({
           title: 'Код отправлен',
           description: 'Проверьте свою почту и введите код подтверждения',
@@ -379,14 +385,29 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     }
   },
 
-  verifyOtpCode: async (email: string, code: string, password: string): Promise<boolean> => {
+  verifyOtpCode: async (
+    email: string,
+    code: string,
+    password: string
+  ): Promise<boolean> => {
     try {
+      console.log('🔍 === OTP VERIFICATION WITH USER CREATION START ===');
+      console.log('📧 Email:', email);
+      console.log('🔢 Code:', code);
+
       logger.info('Verifying OTP for email:', email);
       set({ loading: true });
 
-      const { data, error } = await supabase.functions.invoke('verify-otp', {
-        body: { email, code, password },
-      });
+      // ✨ Step 1: Verify OTP code first
+      const { data, error } = await supabase.functions.invoke(
+        'verify-otp-simple',
+        {
+          body: { email, code },
+        }
+      );
+
+      console.log('📝 OTP verification response:', data);
+      console.log('📝 OTP verification error:', error);
 
       if (error) {
         logger.error('Error verifying OTP:', error);
@@ -414,85 +435,95 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         return false;
       }
 
-      logger.info('OTP verification successful:', data);
+      console.log('✅ OTP verified successfully, now creating user...');
 
-      // If we have access tokens, automatically sign in the user
-      if (data.accessToken && data.refreshToken) {
-        try {
-          logger.info('Setting session with received tokens');
-          const { data: sessionData, error: sessionError } =
-            await supabase.auth.setSession({
-              access_token: data.accessToken,
-              refresh_token: data.refreshToken,
+      // ✨ Step 2: Create user AFTER OTP verification
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            emailRedirectTo: undefined,
+            data: {
+              email_verified_via_otp: true,
+              registration_method: 'otp_verification',
+            },
+          },
+        });
+
+      console.log(
+        '👤 User creation result:',
+        signUpData?.user?.id ? 'Success' : 'Failed'
+      );
+      console.log('👤 User creation error:', signUpError);
+
+      if (signUpError) {
+        logger.error('Error creating user after OTP:', signUpError);
+
+        if (signUpError.message?.includes('already registered')) {
+          // User exists, try to sign in instead
+          console.log('🔄 User exists, trying to sign in...');
+          const { data: signInData, error: signInError } =
+            await supabase.auth.signInWithPassword({
+              email: email,
+              password: password,
             });
 
-          if (sessionError) {
-            logger.error('Error setting session:', sessionError);
-          } else if (sessionData.user) {
-            logger.info('Session set successfully, user signed in');
-            
-            // Clear RevenueCat store before setting new user
-            const { reset: resetRevenueCat } = useRevenueCatStore.getState();
-            resetRevenueCat();
-
-            set({
-              user: sessionData.user,
-              emailConfirmed: true,
+          if (signInError) {
+            toast({
+              title: 'Ошибка',
+              description: 'Пользователь уже существует, но не удалось войти',
+              variant: 'destructive',
             });
+            return false;
+          }
 
-            // Load user profile
+          if (signInData.user) {
+            set({ user: signInData.user, emailConfirmed: true });
             await get().loadUserProfile();
 
-            const lang = get().language || 'en';
-            const t = getTranslations(lang);
-
             toast({
-              title: t.loginSuccess,
-              description: t.welcomeToAsket,
+              title: 'Вход выполнен',
+              description: 'Добро пожаловать обратно!',
             });
-
             return true;
           }
-        } catch (sessionError) {
-          logger.error('Error during auto sign-in:', sessionError);
         }
+
+        toast({
+          title: 'Ошибка создания пользователя',
+          description: signUpError.message || 'Не удалось создать аккаунт',
+          variant: 'destructive',
+        });
+        return false;
       }
 
-      // Fallback: just mark email as confirmed and refresh session
-      logger.info('No tokens received, refreshing session and marking as confirmed');
-      
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          logger.error('Error getting session after OTP verification:', sessionError);
-        } else if (session) {
-          logger.info('Session found after OTP verification, loading profile');
-          set({
-            user: session.user,
-            emailConfirmed: true,
-          });
-          
-          // Load user profile after successful verification
-          await get().loadUserProfile();
-        } else {
-          logger.warn('No session found after OTP verification');
-          set({ emailConfirmed: true });
-        }
-      } catch (err) {
-        logger.error('Error refreshing session after OTP verification:', err);
-        set({ emailConfirmed: true });
+      if (signUpData.user) {
+        // Clear RevenueCat store before setting new user
+        const { reset: resetRevenueCat } = useRevenueCatStore.getState();
+        resetRevenueCat();
+
+        set({
+          user: signUpData.user,
+          emailConfirmed: true,
+        });
+
+        // Load user profile
+        await get().loadUserProfile();
+
+        const lang = get().language || 'en';
+        const t = getTranslations(lang);
+
+        toast({
+          title: t.emailVerifiedSuccess,
+          description: t.welcomeToAsket,
+        });
+
+        console.log('🔍 === OTP VERIFICATION WITH USER CREATION END ===');
+        return true;
       }
 
-      const lang = get().language || 'en';
-      const t = getTranslations(lang);
-
-      toast({
-        title: t.codeValidated,
-        description: t.emailVerifiedSignIn,
-      });
-
-      return true;
+      return false;
     } catch (error: unknown) {
       logger.error('Error in verifyOtpCode:', error);
       const lang = get().language || 'en';
