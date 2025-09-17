@@ -15,5 +15,8 @@
 			"launchShowDuration": 2000,
 			"backgroundColor": "#0A0A0F"
 		}
+	},
+	"server": {
+		"url": "http://0.0.0.0:3000"
 	}
 }

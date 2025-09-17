@@ -90,7 +90,7 @@ const UniversePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-20">
+    <div className="min-h-screen flex flex-col pt-20 relative pb-20">
       <StarField starCount={150} />
 
       <PageHeader
