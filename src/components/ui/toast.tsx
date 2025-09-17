@@ -4,6 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { isAndroid } from '@/utils/platform';
 
 const ToastProvider = ToastPrimitives.Provider;
 
@@ -18,7 +19,9 @@ const ToastViewport = React.forwardRef<
       className
     )}
     style={{
-      top: 'env(safe-area-inset-top)',
+      top: isAndroid()
+        ? 'calc(env(safe-area-inset-top) + 1rem)'
+        : 'env(safe-area-inset-top)',
       paddingTop: '1rem',
     }}
     {...props}

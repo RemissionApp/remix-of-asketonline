@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { isAndroid } from '@/utils/platform';
 
 interface PageHeaderProps {
   title: string;
@@ -28,7 +29,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-50 bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 ${className}`}
-      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      style={{
+        paddingTop: isAndroid()
+          ? 'calc(env(safe-area-inset-top) + 1rem)'
+          : 'env(safe-area-inset-top)',
+      }}
     >
       <div className="flex items-center justify-between px-4 py-3 h-14">
         <button

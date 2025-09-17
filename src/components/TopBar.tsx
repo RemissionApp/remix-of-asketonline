@@ -9,6 +9,7 @@ import { useOptimizedTextToSpeech } from '@/hooks/useOptimizedTextToSpeech';
 import { SoundToggle } from '@/components/ui/SoundToggle';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { isAndroid } from '@/utils/platform';
 
 export const TopBar: React.FC = memo(() => {
   const { userProfile } = useAppStore();
@@ -25,7 +26,9 @@ export const TopBar: React.FC = memo(() => {
     <div
       className="flex items-center px-4 justify-between flex-row-reverse w-full bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20 min-h-16"
       style={{
-        paddingTop: 'env(safe-area-inset-top)',
+        paddingTop: isAndroid()
+          ? `calc(env(safe-area-inset-top) + 1rem)`
+          : 'env(safe-area-inset-top)',
         paddingBottom: '1rem',
       }}
       // style={{ marginTop: 'calc(env(safe-area-inset-top) + 0rem)' }}

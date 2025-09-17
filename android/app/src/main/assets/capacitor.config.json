@@ -15,5 +15,8 @@
 			"launchShowDuration": 2000,
 			"backgroundColor": "#0A0A0F"
 		}
+	},
+	"server": {
+		"url": "http://192.168.1.101:8080"
 	}
 }

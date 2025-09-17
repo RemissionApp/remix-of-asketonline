@@ -1,3 +1,4 @@
+import { isAndroid } from '@/utils/platform';
 import React from 'react';
 
 interface SafeAreaViewProps {
@@ -13,8 +14,12 @@ export const SafeAreaView: React.FC<SafeAreaViewProps> = ({
     <div
       className={className}
       style={{
-        paddingTop: 'calc(env(safe-area-inset-top) + 1rem)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)',
+        paddingTop: isAndroid()
+          ? 'calc(env(safe-area-inset-top) + 1rem)'
+          : 'env(safe-area-inset-top)',
+        paddingBottom: isAndroid()
+          ? 'calc(env(safe-area-inset-bottom) + 1rem)'
+          : 'env(safe-area-inset-bottom)',
         paddingLeft: 'env(safe-area-inset-left)',
         paddingRight: 'env(safe-area-inset-right)',
         minHeight: '100dvh', // Dynamic viewport height for mobile

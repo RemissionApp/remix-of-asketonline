@@ -3,7 +3,7 @@
     <color name="colorAccent">#4fd1c7</color>
     <color name="colorPrimary">#4A0070</color>
     <color name="colorPrimaryDark">#0A0A0F</color>
-    <color name="cosmicDark">#0A0A0F</color>
+    <color name="cosmicDark">#CC0A0A0F</color>
     <color name="ic_launcher_background">#16002A</color>
     <string name="app_name">Asket: AI &amp; Spiritual Pacts</string>
     <string name="custom_url_scheme">com.asket.cosmicascension</string>

@@ -12,6 +12,8 @@ import {
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { usePlatform } from '@/hooks/usePlatform';
+import { isAndroid } from '@/utils/platform';
 
 export const BottomNavigation = memo(() => {
   const location = useLocation();
@@ -19,6 +21,7 @@ export const BottomNavigation = memo(() => {
   const { userProfile, language, setActiveScreen, user } = useAppStore();
   const { t } = useTranslations();
   const { hasActiveSubscription } = useRevenueCat(user?.id);
+  const { isIOS, isWeb, supportsSafeArea } = usePlatform();
 
   // Check if a route is currently active
   const isActive = (path: string) => {
@@ -50,7 +53,9 @@ export const BottomNavigation = memo(() => {
     <div
       className="fixed bottom-0 left-0 right-0 z-[100] w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20"
       style={{
-        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingBottom: isAndroid()
+          ? `calc(env(safe-area-inset-bottom) + 1.2rem)`
+          : 'env(safe-area-inset-bottom)',
         paddingLeft: 'env(safe-area-inset-left)',
         paddingRight: 'env(safe-area-inset-right)',
       }}
