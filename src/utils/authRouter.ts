@@ -101,3 +101,29 @@ export const shouldRedirectFrom = (currentRoute: string): boolean => {
   
   return shouldRedirect;
 };
+
+/**
+ * Check if user can access specific route
+ */
+export const canAccessRoute = (targetRoute: string): { canAccess: boolean; redirectTo?: string; reason?: string } => {
+  const { route, reason } = determineAuthRoute();
+  
+  // User can access if determined route matches target
+  if (route === targetRoute) {
+    logger.debug('AuthRouter: Access granted', { route: targetRoute });
+    return { canAccess: true };
+  }
+  
+  // User should be redirected
+  logger.debug('AuthRouter: Access denied', {
+    targetRoute,
+    shouldBe: route,
+    reason,
+  });
+  
+  return {
+    canAccess: false,
+    redirectTo: route,
+    reason,
+  };
+};

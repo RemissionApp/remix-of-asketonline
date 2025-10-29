@@ -52,6 +52,7 @@ import { NotificationIntegrations } from './utils/notifications/notificationInte
 import { performanceMonitor } from './utils/performance';
 import { SafeAreaView } from './components/SafeAreaView';
 import { AppRouter } from './components/AppRouter';
+import { AuthGuard } from './components/auth/AuthGuard';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -141,11 +142,13 @@ const App = () => {
           <SafeAreaView>
             <BrowserRouter>
               <AppInitializer />
-              <div className="">
-                <AppRouter />
-              </div>
-              <PWAInstallPrompt />
-              <PWAUpdateNotification />
+              <AuthGuard>
+                <div className="">
+                  <AppRouter />
+                </div>
+                <PWAInstallPrompt />
+                <PWAUpdateNotification />
+              </AuthGuard>
               <Toaster />
               <Sonner />
             </BrowserRouter>

@@ -5,12 +5,16 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { SupportedLanguage } from '@/i18n/translations';
+import { determineAuthRoute } from '@/utils/authRouter';
+import { logger } from '@/utils/logger';
 
 const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
+  const { user, loading } = useAppStore();
   const [isAnimated, setIsAnimated] = useState(false);
   const [cycleIndex, setCycleIndex] = useState(0);
+  const [checking, setChecking] = useState(true);
   const languages: SupportedLanguage[] = ['ru', 'en', 'es'];
 
   // Текущий язык для циклической смены
@@ -28,6 +32,32 @@ const WelcomePage: React.FC = () => {
     en: 'Begin the journey',
     es: 'Comenzar el viaje',
   };
+
+  // Check if user is authenticated and redirect
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (loading) return;
+      
+      if (user) {
+        logger.debug('WelcomePage: User authenticated, checking route');
+        const { route, reason } = determineAuthRoute();
+        
+        // Don't redirect to welcome page
+        if (route !== '/') {
+          logger.debug('WelcomePage: Redirecting authenticated user', {
+            to: route,
+            reason,
+          });
+          navigate(route);
+          return;
+        }
+      }
+      
+      setChecking(false);
+    };
+
+    checkAuth();
+  }, [user, loading, navigate]);
 
   // Анимация появления компонентов
   useEffect(() => {
@@ -50,6 +80,21 @@ const WelcomePage: React.FC = () => {
   const handleContinue = () => {
     navigate('/language');
   };
+
+  // Show loading while checking
+  if (checking || loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <StarField starCount={150} />
+        <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-cosmic-secondary">Загрузка...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">

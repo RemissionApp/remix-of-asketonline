@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,63 +8,15 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useAuthDebug } from '@/hooks/useAuthDebug';
-import { navigateToAuthRoute } from '@/utils/authRouter';
 
 const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslations();
-  useAuthDebug(); // Отладка состояния авторизации
-  const {
-    userProfile,
-    user,
-    loading,
-    onboardingComplete,
-    emailConfirmed,
-    checkEmailConfirmation,
-  } = useAppStore();
-  const [authChecking, setAuthChecking] = useState(true);
-  const authCheckRef = useRef(false);
+  useAuthDebug(); // Debug auth state
+  const { loading } = useAppStore();
 
-  const checkAuth = useCallback(async () => {
-    // Prevent multiple simultaneous auth checks
-    if (authCheckRef.current) {
-      return;
-    }
-    authCheckRef.current = true;
-
-    try {
-      // Use the centralized auth router logic
-      const { determineAuthRoute } = await import('@/utils/authRouter');
-      const { route, reason } = determineAuthRoute();
-      
-      console.log('UserProfilePage - Auth route determined:', { route, reason });
-      
-      // If we should be on a different route, navigate there
-      if (route !== '/profile-setup') {
-        console.log('UserProfilePage - Redirecting to:', route);
-        navigate(route);
-        return;
-      }
-      
-      // If we're staying on this page, just stop the loading state
-      setAuthChecking(false);
-    } catch (error) {
-      console.error('Authentication check error:', error);
-      setAuthChecking(false);
-    } finally {
-      authCheckRef.current = false;
-    }
-  }, [navigate]);
-
-  // Check authentication when conditions are ready
-  useEffect(() => {
-    if (!loading && !authCheckRef.current) {
-      checkAuth();
-    }
-  }, [loading, checkAuth]);
-
-  // Показываем загрузку, пока проверяем статус аутентификации
-  if (loading || authChecking) {
+  // Show loading while store is loading
+  if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
         <StarField starCount={150} />

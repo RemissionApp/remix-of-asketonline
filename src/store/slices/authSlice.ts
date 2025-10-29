@@ -127,16 +127,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   },
 
   // Унифицированная функция проверки завершенности onboarding
+  // CRITICAL: Only use Supabase state, not localStorage
   checkOnboardingStatus: () => {
-    const onboarded = localStorage.getItem('onboarded');
-    const { onboardingComplete } = get();
-    const result = onboarded === 'true' || onboardingComplete;
-    console.log('checkOnboardingStatus:', {
-      onboarded,
-      onboardingComplete,
-      result,
+    const { onboardingStepCompleted } = get();
+    logger.debug('checkOnboardingStatus:', {
+      onboardingStepCompleted,
     });
-    return result;
+    return onboardingStepCompleted;
   },
 
   signIn: async (email, password) => {

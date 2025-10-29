@@ -1,6 +1,9 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useBackButton } from '@/hooks/useBackButton';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublicRoute } from '@/components/auth/PublicRoute';
+import { AuthDebugPanel } from '@/components/auth/AuthDebugPanel';
 
 import WelcomePage from '@/pages/WelcomePage';
 import LanguagePage from '@/pages/LanguagePage';
@@ -37,38 +40,50 @@ export const AppRouter: React.FC = () => {
   useBackButton();
 
   return (
-    <Routes>
-      <Route path="/" element={<WelcomePage />} />
-      <Route path="/language" element={<LanguagePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/profile-setup" element={<UserProfilePage />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
-      <Route path="/main" element={<MainPage />} />
-      <Route path="/create-pact" element={<CreatePactPage />} />
-      <Route path="/pacts" element={<PactsPage />} />
-      <Route path="/universe" element={<UniversePage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/account-settings" element={<AccountSettingsPage />} />
-      <Route path="/comparison" element={<ComparisonPage />} />
-      <Route path="/meditation" element={<MeditationPage />} />
-      <Route path="/meditation/session" element={<NewMeditationPage />} />
-      <Route path="/detailed-horoscope" element={<DetailedHoroscopePage />} />
-      <Route path="/full-horoscope" element={<FullHoroscopePage />} />
-      <Route path="/affirmations" element={<AffirmationsPage />} />
-      {/* Pro features routes */}
-      <Route path="/meditation-pro" element={<MeditationProPage />} />
-      <Route path="/universe-chat" element={<UniverseChatPage />} />
-      <Route path="/universe-call" element={<CallPage />} />
-      <Route path="/numerology" element={<NumerologyPage />} />
-      <Route path="/cosmic-missions" element={<CosmicMissionsPage />} />
-      <Route path="/achievements" element={<AchievementsPage />} />
-      <Route path="/artifacts" element={<ArtifactCollectionPage />} />
-      {/* Legal Pages */}
-      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-      <Route path="/delete-account" element={<DeleteAccountPage />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        {/* Public routes - accessible to unauthenticated users */}
+        <Route path="/" element={<PublicRoute><WelcomePage /></PublicRoute>} />
+        <Route path="/language" element={<PublicRoute><LanguagePage /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+        
+        {/* Protected routes - require authentication */}
+        <Route path="/profile-setup" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+        <Route path="/onboarding" element={<ProtectedRoute requireProfile><OnboardingPage /></ProtectedRoute>} />
+        <Route path="/main" element={<ProtectedRoute requireProfile requireOnboarding><MainPage /></ProtectedRoute>} />
+        <Route path="/create-pact" element={<ProtectedRoute requireProfile requireOnboarding><CreatePactPage /></ProtectedRoute>} />
+        <Route path="/pacts" element={<ProtectedRoute requireProfile requireOnboarding><PactsPage /></ProtectedRoute>} />
+        <Route path="/universe" element={<ProtectedRoute requireProfile requireOnboarding><UniversePage /></ProtectedRoute>} />
+        <Route path="/universe-chat" element={<ProtectedRoute requireProfile requireOnboarding><UniverseChatPage /></ProtectedRoute>} />
+        <Route path="/universe-call" element={<ProtectedRoute requireProfile requireOnboarding><CallPage /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute requireProfile requireOnboarding><ProfilePage /></ProtectedRoute>} />
+        <Route path="/comparison" element={<ProtectedRoute requireProfile requireOnboarding><ComparisonPage /></ProtectedRoute>} />
+        <Route path="/meditation" element={<ProtectedRoute requireProfile requireOnboarding><MeditationPage /></ProtectedRoute>} />
+        <Route path="/meditation/session" element={<ProtectedRoute requireProfile requireOnboarding><NewMeditationPage /></ProtectedRoute>} />
+        <Route path="/detailed-horoscope" element={<ProtectedRoute requireProfile requireOnboarding><DetailedHoroscopePage /></ProtectedRoute>} />
+        <Route path="/full-horoscope" element={<ProtectedRoute requireProfile requireOnboarding><FullHoroscopePage /></ProtectedRoute>} />
+        <Route path="/numerology" element={<ProtectedRoute requireProfile requireOnboarding><NumerologyPage /></ProtectedRoute>} />
+        <Route path="/meditation-pro" element={<ProtectedRoute requireProfile requireOnboarding><MeditationProPage /></ProtectedRoute>} />
+        <Route path="/affirmations" element={<ProtectedRoute requireProfile requireOnboarding><AffirmationsPage /></ProtectedRoute>} />
+        <Route path="/cosmic-missions" element={<ProtectedRoute requireProfile requireOnboarding><CosmicMissionsPage /></ProtectedRoute>} />
+        <Route path="/artifacts" element={<ProtectedRoute requireProfile requireOnboarding><ArtifactCollectionPage /></ProtectedRoute>} />
+        <Route path="/achievements" element={<ProtectedRoute requireProfile requireOnboarding><AchievementsPage /></ProtectedRoute>} />
+        <Route path="/delete-account" element={<ProtectedRoute requireProfile requireOnboarding><DeleteAccountPage /></ProtectedRoute>} />
+        <Route path="/account-settings" element={<ProtectedRoute requireProfile requireOnboarding><AccountSettingsPage /></ProtectedRoute>} />
+        
+        {/* Public legal pages */}
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        
+        {/* Auth callback */}
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      
+      {/* Auth debug panel (dev only) */}
+      <AuthDebugPanel />
+    </>
   );
 };

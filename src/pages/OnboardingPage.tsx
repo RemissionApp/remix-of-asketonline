@@ -12,77 +12,20 @@ const OnboardingPage: React.FC = () => {
     setOnboardingComplete,
     setActiveScreen,
     user,
-    loading,
-    onboardingComplete,
-    userProfile,
-    emailConfirmed,
-    checkEmailConfirmation,
     checkOnboardingStatus,
   } = useAppStore();
   const { t } = useTranslations();
   const [step, setStep] = useState(0);
 
-  // Check if user has completed onboarding before
+  // Check if user has already completed onboarding
   useEffect(() => {
     const isOnboardingComplete = checkOnboardingStatus();
 
     if (isOnboardingComplete) {
       console.log('Onboarding previously completed, redirecting to main');
       navigate('/main');
-      return;
     }
-
-    // Continue with normal auth checks if onboarding wasn't already completed
-    const checkAuth = async () => {
-      if (loading) return;
-
-      // If no user is logged in, redirect to login
-      if (!user && !loading) {
-        console.log('No user found, redirecting to login');
-        navigate('/login');
-        return;
-      }
-
-      // Check if email is confirmed
-      if (user && !loading) {
-        const isConfirmed = await checkEmailConfirmation();
-        console.log('Email confirmed status:', isConfirmed);
-
-        if (!isConfirmed) {
-          toast({
-            title: t.auth?.emailRequired || 'Подтвердите email',
-            description: t.auth?.checkEmailAndEnterCode || 'Пожалуйста, подтвердите ваш email перед продолжением',
-            variant: 'warning',
-          });
-          navigate('/login');
-          return;
-        }
-      }
-
-      // Use centralized profile completion check
-      if (user && !loading) {
-        const storeState = useAppStore.getState();
-        const profileComplete = storeState.isProfileComplete();
-        
-        if (!profileComplete) {
-          console.log('Profile not completed, redirecting to profile setup');
-          navigate('/profile-setup');
-          return;
-        }
-      }
-    };
-
-    checkAuth();
-  }, [
-    navigate,
-    loading,
-    user,
-    userProfile,
-    emailConfirmed,
-    checkEmailConfirmation,
-    checkOnboardingStatus,
-    onboardingComplete,
-  ]);
+  }, [checkOnboardingStatus, navigate]);
 
   const handleNext = () => {
     if (step < 2) {
