@@ -163,6 +163,25 @@ const LoginPage: React.FC = () => {
       return;
     }
 
+    if (!isPasswordStrongEnough(password)) {
+      toast({
+        title: 'Слабый пароль',
+        description:
+          'Пароль должен содержать минимум 8 символов, заглавную букву и цифру',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: 'Пароли не совпадают',
+        description: 'Введите одинаковый пароль в оба поля',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     // Очищаем состояние аутентификации перед регистрацией
     cleanupAuthState();
 
@@ -565,13 +584,52 @@ const LoginPage: React.FC = () => {
                           )}
                         </button>
                       </div>
+                      <PasswordStrengthIndicator password={password} className="pt-1" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-confirm-password" className="text-white">
+                        Повторите пароль
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
+                        <Input
+                          id="signup-confirm-password"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="pl-10 pr-10 bg-cosmic-dark/5 backdrop-blur-sm border-cosmic-accent/30 text-white placeholder:text-white/50"
+                          required
+                        />
+                        {confirmPassword.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(v => !v)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent z-10"
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-5 w-5" />
+                            ) : (
+                              <Eye className="h-5 w-5" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+                      {confirmPassword.length > 0 && password !== confirmPassword && (
+                        <p className="text-xs text-destructive">Пароли не совпадают</p>
+                      )}
                     </div>
 
                     <div className="pt-4">
                       <CosmicButton
                         type="submit"
                         className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80"
-                        disabled={loading}
+                        disabled={
+                          loading ||
+                          !isPasswordStrongEnough(password) ||
+                          password !== confirmPassword
+                        }
                       >
                         {loading ? 'Регистрация...' : t.auth.signUpButton}
                       </CosmicButton>
