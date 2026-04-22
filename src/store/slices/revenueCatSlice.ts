@@ -147,6 +147,26 @@ export const useRevenueCatStore = create<RevenueCatState>()(
           return;
         }
 
+        // Deduplicate concurrent initialize() calls (multiple components mounting at once)
+        if (initializingPromise) {
+          console.log('⏳ RevenueCat initialization already in progress, awaiting existing promise');
+          return initializingPromise;
+        }
+
+        // Skip on web — @revenuecat/purchases-capacitor is a native-only plugin
+        if (!Capacitor.isNativePlatform()) {
+          console.info('RevenueCat: skipping initialization on web (native-only plugin)');
+          set({
+            isInitialized: true,
+            billingAvailable: false,
+            isLoading: false,
+            hasActiveSubscription: false,
+            lastInitializedUserId: userId || null,
+          });
+          return;
+        }
+
+        initializingPromise = (async () => {
         try {
           set({ isLoading: true });
 
@@ -209,6 +229,13 @@ export const useRevenueCatStore = create<RevenueCatState>()(
           throw error;
         } finally {
           set({ isLoading: false });
+        }
+        })();
+
+        try {
+          await initializingPromise;
+        } finally {
+          initializingPromise = null;
         }
       },
 
