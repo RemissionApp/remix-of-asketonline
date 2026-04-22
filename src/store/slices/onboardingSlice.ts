@@ -35,6 +35,13 @@ export const createOnboardingSlice: StateCreator<
       return;
     }
 
+    // If onboarding is already completed in memory, never re-fetch (sticky finality).
+    const current = get();
+    if (current.onboardingStepCompleted && current.completedAt) {
+      logger.debug('Onboarding already completed in store; skipping reload');
+      return;
+    }
+
     // Check cache first
     const now = Date.now();
     const { lastSyncedAt } = get();
