@@ -1,96 +1,150 @@
 
 
-## План исправлений: онбординг, логин, профиль и аватар
+## Полная переработка пути пользователя: регистрация → профиль → онбординг → main
 
-### Проблема 1: Данные профиля не сохраняются (КРИТИЧНО)
-В консоли видно: `UPDATE` в Supabase успешен (возвращает `Roman Ivanov`, `1986-09-30`), но сразу после `loadUserProfile` читает старую запись (`Искатель`, `birth_date: null`). Это означает, что `loadUserProfile` либо использует устаревший кеш (`useOptimizedProfileCache`), либо запускается параллельно с другим INSERT (handle_new_user trigger пересоздаёт профиль).
+### Корень всех проблем
 
-**Что сделать:**
-- В `UserProfileForm.tsx` использовать `upsert` вместо `update` (на случай если триггер ещё не успел создать строку), и убрать дублирующий `loadUserProfile()` call перед UPDATE.
-- В `loadUserProfile` (`authSlice.ts`) сбросить кеш `useOptimizedProfileCache` перед чтением, либо просто читать напрямую без кеша после mutation.
-- Добавить небольшой delay (50ms) или вызывать `loadUserProfile` через `await` после `update`, чтобы гарантировать порядок.
-- Триггер `on_auth_user_created` сейчас **отсутствует** в БД (в `<db-triggers>` пусто) — значит `handle_new_user` не запускается. Нужно создать триггер заново миграцией, чтобы профиль создавался автоматически.
+После глубокого анализа найдено **5 фундаментальных проблем**, из-за которых пользователя «выбрасывает» после регистрации:
 
-### Проблема 2: Регистрация без подтверждения пароля и без проверки сложности
-На `LoginPage.tsx` (signup tab) только одно поле `password`. Нет:
-- второго поля «Повторите пароль»
-- индикатора сложности (длина, цифры, буквы, спецсимволы)
-- проверки совпадения
+1. **Двойной источник истины для onboarding-флагов**. `profile_step_completed` хранится одновременно в двух таблицах (`profiles` И `user_onboarding_state`), и они рассинхронизированы. В UI логика `isProfileComplete()` использует только данные `name+birthDate`, а `authRouter.determineAuthRoute()` требует ОБА условия (`isProfileComplete && profileStepCompleted`). Когда они расходятся — пользователь зацикливается между `/profile-setup` и `/onboarding`.
 
-**Что сделать:**
-- Добавить поле `confirmPassword` в форму регистрации.
-- Создать компактный компонент `PasswordStrengthIndicator` с правилами: мин. 8 символов, хотя бы 1 цифра, 1 заглавная, 1 спец.символ. Показывать прогресс-бар (слабый/средний/сильный).
-- Блокировать кнопку «Зарегистрироваться» если пароли не совпадают или пароль слабый.
-- Использовать `zod` схему для валидации с понятными сообщениями.
-- HIBP-проверка уже включена на бэкенде — упомянуть это, но не дублировать на клиенте.
+2. **Бесконечная гонка редиректов**. `AppInitializer`, `AuthGuard`, `PublicRoute`, `ProtectedRoute`, `LoginPage` и `WelcomePage` — **6 мест** одновременно проверяют сессию и навигируют. После `signUp/verifyOtp` `LoginPage` навигирует, потом `onAuthStateChange` в `AppInitializer` снова грузит профиль, потом `ProtectedRoute` опять вычисляет маршрут — каждый шаг основан на возможно устаревшем состоянии. В логах видно **6 повторных запросов `/profiles`** за 3 секунды и многократные `isProfileComplete check`.
 
-### Проблема 3: Календарь даты рождения позволяет выбрать будущий год
-В `ProfileForm.tsx` строка 149: `const maxDate = new Date('2025-12-31');` — захардкоженный год, который уже в прошлом (сегодня апрель 2026). Календарь позволяет листать вперёд.
+3. **`updateUserProfile` помечен deprecated**, а основной поток сохранения (`UserProfileForm`) лезет напрямую в `supabase.upsert` мимо стора. После `await loadUserProfile()` чтение приходит из старого React-Query кеша (`useOptimizedProfileCache`), потому что инвалидация запросов отсутствует. Поэтому в логах после успешного UPDATE вы видели «Искатель»/`birth_date: null`.
 
-**Что сделать:**
-- Заменить `new Date('2025-12-31')` на `new Date()` (сегодня) — динамически.
-- Добавить ограничение на минимальный возраст (например, 14 лет): `maxDate = subYears(new Date(), 14)`.
-- Установить `defaultMonth` календаря в осмысленный год (например, 1990), чтобы пользователь не листал из 2026 на 30 лет назад вручную.
-- Добавить выпадающие списки месяца/года в `Calendar` (`captionLayout="dropdown"`) с диапазоном `fromYear={1930} toYear={currentYear}`.
+4. **`PublicRoute` не показывает loading**, пока `user` ещё не подгружен из сессии — мгновенно отрисовывает `LoginPage`, который сам себя редиректит. Возникают «вспышки» страниц и сбитая навигация.
 
-### Проблема 4: Аватар — потенциальная проблема сохранения
-`updateProfileAvatar` делает `UPDATE`, но если строки в `profiles` ещё нет (триггер сломан), запись не создастся. Также `ensureAvatarBucket` пытается создать бакет с клиента — это упадёт по RLS, бакет уже создан как public.
+5. **`AuthGuard` грузит профиль повторно** даже если `AppInitializer` уже сделал это, плюс `loadUserProfile` внутри себя вызывает ещё `loadOnboardingState` через `setTimeout`. Получается каскад из 3-4 повторных загрузок одних и тех же данных.
 
-**Что сделать:**
-- Убрать `ensureAvatarBucket()` вызов (бакет уже существует, проверено в `<storage-buckets>`).
-- В `updateProfileAvatar` использовать `upsert` с `onConflict: 'id'`.
-- Проверить, что storage RLS политики позволяют пользователю писать в путь `{userId}/...` — добавить миграцию с политиками если их нет.
+---
 
-### Проблема 5: Восстановление триггера на auth.users
-В `<db-triggers>` пусто. Функция `handle_new_user()` существует, но триггер `on_auth_user_created` не создан. Без него профиль не создаётся при регистрации, и весь онбординг ломается.
+### Решение: единая централизованная машина состояний
 
-**Миграция:**
+Перепишу авторизацию полностью — frontend код делается с нуля, дизайн (космическая тема) и API контракты сохраняются.
+
+#### Шаг 1. Один источник истины — новый `useAuthFlow` hook
+
+Создаю `src/hooks/useAuthFlow.ts` — единственный hook, который:
+- слушает `onAuthStateChange` и `getSession` ОДИН раз для всего приложения
+- грузит профиль и onboarding-state атомарно (одним `Promise.all`)
+- выставляет статус: `'initializing' | 'unauthenticated' | 'needs_profile' | 'needs_onboarding' | 'ready'`
+- возвращает `targetRoute` — единственное место, где определяется куда редиректить
+
+Удалить дублирование из `LoginPage`, `WelcomePage`, `PublicRoute`, `ProtectedRoute`, `AuthGuard`, `AppInitializer`. Они все будут читать `useAuthFlow()` без собственной логики.
+
+#### Шаг 2. Унификация `profile_step_completed`
+
+В БД `profiles.profile_step_completed` оставляю как **единственное место истины**. Удаляю колонку из `user_onboarding_state` (миграция: `ALTER TABLE user_onboarding_state DROP COLUMN profile_step_completed`). Логика `isProfileComplete()` будет проверять `userProfile.name && userProfile.birthDate && userProfile.profileStepCompleted` — все три из одного источника (таблица `profiles`).
+
+Поле `profileStepCompleted` добавлю в `UserProfile` тип (сейчас его нет).
+
+#### Шаг 3. Удаление `useOptimizedProfileCache` из критического пути
+
+React-Query кеш на профиле создаёт race conditions. Удаляю его использование из flow регистрации/логина — оставляю только Zustand store как источник истины для пользовательских данных. Кеш React-Query оставляю только для горoscope/missions.
+
+#### Шаг 4. Правильный порядок в `onAuthStateChange`
+
+По best practice (Supabase docs): callback **синхронный**, тяжёлая работа через `setTimeout(..., 0)`. Это уже почти так в `AppInitializer`, но `AuthGuard` дублирует логику — его удалю и заменю на единый `<AuthBootstrap>` компонент, который рендерит `loading` пока `useAuthFlow().status === 'initializing'`.
+
+#### Шаг 5. Полностью переписанный `LoginPage`
+
+С нуля, без 600+ строк, без `authChecking` состояния, без ручного навигирования:
+- `useAuthFlow` сам редиректит через `<Navigate>` если уже залогинен
+- Только формы + локальное состояние ввода
+- Tabs «Вход / Регистрация» с шарингом email
+- Регистрация: email → password + confirmPassword + strength indicator (уже создан) → OTP → автологин
+- Чёткий показ ошибок (неверный пароль / пользователь уже есть / слабый пароль)
+- Кнопку «Гость» оставляю только в `import.meta.env.DEV`
+
+#### Шаг 6. Переписанный `UserProfileForm`
+
+- Единственная функция: вызвать `updateProfile({ name, birthDate })` из нового hook `useProfileMutations`
+- Внутри: `upsert` в `profiles` с `profile_step_completed: true`, потом синхронный `set()` в Zustand с новыми значениями
+- БЕЗ `loadUserProfile` после mutation (мы уже знаем что записали)
+- БЕЗ `loadOnboardingState` (поле теперь только в profiles)
+- БЕЗ ручной навигации — `useAuthFlow` сам перерасчитает targetRoute и отрендерит `<Navigate>`
+
+#### Шаг 7. Переписанный `OnboardingPage`
+
+- Записать `onboarding_step_completed: true` в `user_onboarding_state` (через `upsert`)
+- Обновить Zustand
+- `useAuthFlow` отредиректит на `/main`
+- Убрать дублирующий `useEffect` с `checkOnboardingStatus`
+
+#### Шаг 8. Дизайн-полировка (без изменения темы)
+
+- `LoginPage`: единая высота карточки между табами Login/Signup (сейчас прыгает)
+- Индикатор сложности пароля показывается только когда поле в фокусе или непустое
+- Иконка глаза синхронизирована для обоих полей пароля
+- На `/profile-setup` добавить subtle подсказку «Шаг 1 из 2» сверху
+- На `/onboarding` индикатор «Шаг 2 из 2»
+- Loading-состояния везде в едином cosmic-style (StarField + спиннер)
+- Toast'ы при ошибках регистрации более понятные на русском
+
+#### Шаг 9. Миграция БД
+
 ```sql
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+-- Удалить дубль колонки
+ALTER TABLE public.user_onboarding_state 
+  DROP COLUMN IF EXISTS profile_step_completed;
+
+-- Бэкфилл: для существующих пользователей с заполненным профилем 
+-- проставить profile_step_completed = true
+UPDATE public.profiles 
+SET profile_step_completed = true 
+WHERE name IS NOT NULL 
+  AND name != '' 
+  AND name != 'Искатель' 
+  AND birth_date IS NOT NULL 
+  AND profile_step_completed = false;
 ```
-И обновить `handle_new_user` чтобы НЕ вставлял имя «Искатель» по умолчанию (вставлять пустую строку), иначе `isProfileComplete` всегда будет true, и пользователь проскочит профиль-сетап.
 
-### Проблема 6: Storage RLS политики для аватаров
-Нужно добавить политики на `storage.objects` для бакета `avatars`:
-- SELECT: public (бакет публичный)
-- INSERT/UPDATE/DELETE: только владелец (`auth.uid()::text = (storage.foldername(name))[1]`)
+Это починит вашего текущего пользователя `Roman Ivanov`, у которого `profile_step_completed = false`, но данные есть.
 
-### Проблема 7: Дизайн и UX
-- На странице регистрации скрыть иконку «глаз» когда `confirmPassword` пустой; синхронизировать видимость для обоих полей.
-- В `OnboardingPage.tsx` добавить кнопку «Назад» между шагами (сейчас только «Дальше»/«Пропустить»).
-- Сделать индикатор шагов (точки 0/1/2) кликабельным для навигации назад.
-- Кнопку «Войти как гость» на проде убрать или скрыть за dev-флагом — она ведёт сразу в `/main` без авторизации, обходя RLS.
-- В `LoginPage` отображать понятную ошибку при неверном пароле (сейчас просто toast «Ошибка входа»).
+---
 
-### Технические детали реализации
+### Файлы под изменение
 
-**Файлы под правку:**
-1. `src/pages/LoginPage.tsx` — добавить поле confirmPassword, password strength indicator, валидация.
-2. `src/components/auth/PasswordStrengthIndicator.tsx` — **новый** компонент.
-3. `src/components/ProfileForm.tsx` — динамический maxDate, dropdown captionLayout, defaultMonth.
-4. `src/components/UserProfileForm.tsx` — переход на upsert, исправление порядка вызовов.
-5. `src/utils/avatarStorage.ts` — убрать ensureAvatarBucket, перейти на upsert.
-6. `src/components/AvatarUpload.tsx` — убрать вызов ensureAvatarBucket.
-7. `src/store/slices/authSlice.ts` — сброс кеша в loadUserProfile при необходимости.
-8. `src/pages/OnboardingPage.tsx` — кнопка «Назад».
+**Создать новые:**
+- `src/hooks/useAuthFlow.ts` — единый источник навигации
+- `src/components/auth/AuthBootstrap.tsx` — заменяет AuthGuard
 
-**Миграции БД (две):**
-1. Восстановить триггер `on_auth_user_created` + обновить `handle_new_user` (пустое имя вместо «Искатель»).
-2. Storage RLS политики для бакета `avatars` (SELECT public, INSERT/UPDATE/DELETE owner-only).
+**Переписать целиком:**
+- `src/pages/LoginPage.tsx`
+- `src/components/UserProfileForm.tsx`
+- `src/pages/OnboardingPage.tsx`
+- `src/components/auth/PublicRoute.tsx`
+- `src/components/auth/ProtectedRoute.tsx`
+- `src/utils/authRouter.ts`
+- `src/store/slices/onboardingSlice.ts` (упростить, убрать profile_step_completed)
+- `src/store/slices/authSlice.ts` (упростить loadUserProfile, добавить profileStepCompleted в стейт)
+- `src/App.tsx` (упростить AppInitializer)
 
-**Что НЕ трогаем:**
-- ElevenLabs Agent IDs и промпты Вселенной (исправлено ранее).
-- Логику OTP-верификации email.
-- Дизайн-токены и космическую тему.
+**Удалить:**
+- `src/components/auth/AuthGuard.tsx` (заменён AuthBootstrap)
+- `src/utils/authUtils.ts` (дубль authRouter)
+- `src/hooks/useOptimizedOnboarding.ts` (упростить через useAuthFlow)
+- `src/components/onboarding/OptimizedOnboardingGuard.tsx` (не нужен)
 
-### Порядок выполнения
-1. Миграции БД (триггер + storage policies) — сначала, чтобы новые регистрации работали корректно.
-2. Фикс сохранения профиля (upsert + порядок вызовов).
-3. Календарь — динамический maxDate + dropdown.
-4. Регистрация — confirmPassword + strength indicator.
-5. Аватар — upsert + убрать ensureAvatarBucket.
-6. UI-полировка онбординга.
-7. Тест полного пути: регистрация → OTP → профиль → онбординг → main → загрузка аватара.
+**Не трогать:**
+- ElevenLabs, Universe промпты, Edge Functions, Cosmic тема, дизайн-токены, RLS политики таблиц (profile/avatar/missions), компонент `PasswordStrengthIndicator`, `ProfileForm` (форма уже исправлена), `AvatarUpload`.
+
+### Что увидит пользователь после фикса
+
+```text
+[Регистрация] → [OTP] → [/profile-setup: имя+дата] → [/onboarding: 3 шага] → [/main]
+                                  ↓ (одно сохранение)              ↓ (одно сохранение)
+                            один redirect             один redirect
+```
+
+Никаких миганий, петель, повторных загрузок. Если обновить страницу в любой точке — пользователь окажется ровно там, где должен быть.
+
+### Тестовый сценарий после применения
+
+1. Регистрируюсь новым email → получаю OTP → ввожу → автоматически на `/profile-setup`
+2. Ввожу имя «Test» и дату → клик «Продолжить» → автоматически на `/onboarding`
+3. Прохожу 3 шага → автоматически на `/main`
+4. F5 на любом шаге — возвращает туда же
+5. Logout → снова login тем же email/паролем → попадаю на `/main` (всё запомнилось)
+6. Существующий пользователь `Roman Ivanov` после миграции попадёт сразу на `/onboarding` (профиль уже заполнен)
 
