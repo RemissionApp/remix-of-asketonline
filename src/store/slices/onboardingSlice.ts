@@ -35,6 +35,13 @@ export const createOnboardingSlice: StateCreator<
       return;
     }
 
+    // If onboarding is already completed in memory, never re-fetch (sticky finality).
+    const current = get();
+    if (current.onboardingStepCompleted && current.completedAt) {
+      logger.debug('Onboarding already completed in store; skipping reload');
+      return;
+    }
+
     // Check cache first
     const now = Date.now();
     const { lastSyncedAt } = get();
@@ -80,13 +87,19 @@ export const createOnboardingSlice: StateCreator<
       // Update state with fetched data - prioritize profiles table for profile_step_completed
       const profileData = profileResult.data;
       const profileCompleted = profileData?.profile_step_completed || false;
-      
+
+      // True-sticky merge: never let DB read flip a completed flag back to false.
+      const prev = get();
+      const dbOnboardingDone = onboardingData?.onboarding_step_completed || false;
+      const dbPreferencesDone = onboardingData?.preferences_step_completed || false;
+      const dbCompletedAt = onboardingData?.completed_at ? new Date(onboardingData.completed_at) : null;
+
       set({
         currentStep: (onboardingData?.current_step || 'profile') as 'profile' | 'preferences' | 'tour' | 'complete',
-        profileStepCompleted: profileCompleted,
-        onboardingStepCompleted: onboardingData?.onboarding_step_completed || false,
-        preferencesStepCompleted: onboardingData?.preferences_step_completed || false,
-        completedAt: onboardingData?.completed_at ? new Date(onboardingData.completed_at) : null,
+        profileStepCompleted: prev.profileStepCompleted || profileCompleted,
+        onboardingStepCompleted: prev.onboardingStepCompleted || dbOnboardingDone,
+        preferencesStepCompleted: prev.preferencesStepCompleted || dbPreferencesDone,
+        completedAt: prev.completedAt || dbCompletedAt,
         lastSyncedAt: new Date(),
         loading: false,
         error: null,

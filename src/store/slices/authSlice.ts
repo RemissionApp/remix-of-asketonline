@@ -795,9 +795,6 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         profileStepCompleted: !!data?.profile_step_completed,
       });
 
-      // Load onboarding-only flags (preferences/onboarding) from the other table
-      setTimeout(() => get().loadOnboardingState(), 0);
-
       logger.debug('User profile state updated successfully', {
         name: updatedProfile.name,
         birthDate: updatedProfile.birthDate,
