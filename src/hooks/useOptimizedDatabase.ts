@@ -1,63 +1,54 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { performanceMonitor } from '@/utils/performanceMonitor';
 
-// Optimized database operations hook
-export const useOptimizedDatabase = () => {
-  // Simple cache implementation
-  const cache = useMemo(() => new Map<string, { data: any; timestamp: number }>(), []);
+// Module-level cache (safe to use outside React)
+const moduleCache = new Map<string, { data: any; timestamp: number }>();
 
-  const setCache = useCallback((key: string, data: any) => {
-    cache.set(key, { data, timestamp: Date.now() });
-  }, [cache]);
+const setCache = (key: string, data: any) => {
+  moduleCache.set(key, { data, timestamp: Date.now() });
+};
 
-  const getFromCache = useCallback((key: string) => {
-    return cache.get(key);
-  }, [cache]);
+const getFromCache = (key: string) => moduleCache.get(key);
 
-  const clearCache = useCallback(() => {
-    cache.clear();
-  }, [cache]);
+export const clearOptimizedCache = () => moduleCache.clear();
+export const getOptimizedCacheStats = () => ({
+  size: moduleCache.size,
+  keys: Array.from(moduleCache.keys()),
+});
 
-  const getCacheStats = useCallback(() => {
-    return { size: cache.size, keys: Array.from(cache.keys()) };
-  }, [cache]);
+// ============================================================
+// Pure async functions — safe to call from anywhere (non-React)
+// ============================================================
 
-  // Batch delete with transaction-like behavior using database function
-  const batchDeleteUserData = useCallback(async (userId: string) => {
+export async function batchDeleteUserData(userId: string) {
     const measureKey = 'batch-delete-user-data';
     performanceMonitor.startMeasure(measureKey);
 
     try {
-      // Use the database function for optimized batch deletion
-      const { error } = await supabase.rpc('batch_delete_user_data', {
-        target_user_id: userId
-      });
+    const { error } = await supabase.rpc('batch_delete_user_data', {
+      target_user_id: userId,
+    });
+    if (error) throw error;
+    performanceMonitor.endMeasure(measureKey);
+    return { success: true as const };
+  } catch (error: any) {
+    performanceMonitor.endMeasure(measureKey);
+    toast({
+      title: 'Ошибка удаления',
+      description: error.message || 'Не удалось удалить данные пользователя',
+      variant: 'destructive',
+    });
+    return { success: false as const, error };
+  }
+}
 
-      if (error) throw error;
-
-      performanceMonitor.endMeasure(measureKey);
-      return { success: true };
-
-    } catch (error: any) {
-      performanceMonitor.endMeasure(measureKey);
-      toast({
-        title: 'Ошибка удаления',
-        description: error.message || 'Не удалось удалить данные пользователя',
-        variant: 'destructive',
-      });
-      return { success: false, error };
-    }
-  }, []);
-
-  // Optimized pact completion with fewer DB calls
-  const optimizedMarkDayComplete = useCallback(async (pactId: string, userId: string) => {
+export async function optimizedMarkDayComplete(pactId: string, userId: string) {
     const measureKey = 'mark-day-complete';
     performanceMonitor.startMeasure(measureKey);
 
     try {
-      // Get incomplete days for this pact
       const { data: incompleteDays, error: daysError } = await supabase
         .from('pact_days')
         .select('id, date')
@@ -73,7 +64,6 @@ export const useOptimizedDatabase = () => {
 
       const firstIncompleteDay = incompleteDays[0];
 
-      // Get current profile data
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('total_days, energy_points')
@@ -82,37 +72,30 @@ export const useOptimizedDatabase = () => {
 
       if (profileError) throw profileError;
 
-      // Batch updates
       const updates = [
         supabase
           .from('pact_days')
           .update({ completed: true })
           .eq('id', firstIncompleteDay.id),
-        
         supabase
           .from('profiles')
           .update({ 
             total_days: (profile.total_days || 0) + 1,
             energy_points: (profile.energy_points || 0) + 10
           })
-          .eq('id', userId)
+          .eq('id', userId),
       ];
 
-      // Execute all updates
       const results = await Promise.all(updates);
-      
-      // Check for errors in any of the updates
       for (const result of results) {
         if (result.error) throw result.error;
       }
 
-      // Check if pact is completed (if this was the last day)
       if (incompleteDays.length === 1) {
         const { error: pactError } = await supabase
           .from('pacts')
           .update({ status: 'completed' })
           .eq('id', pactId);
-        
         if (pactError) throw pactError;
       }
 
@@ -123,21 +106,18 @@ export const useOptimizedDatabase = () => {
         .eq('completed', true);
 
       performanceMonitor.endMeasure(measureKey);
-      return { success: true, completedDays: (totalCompletedDays.count || 0) };
+    return { success: true as const, completedDays: totalCompletedDays.count || 0 };
+  } catch (error: any) {
+    performanceMonitor.endMeasure(measureKey);
+    throw error;
+  }
+}
 
-    } catch (error: any) {
-      performanceMonitor.endMeasure(measureKey);
-      throw error;
-    }
-  }, []);
-
-  // Cached user progress with optimized queries
-  const getCachedUserProgress = useCallback(async (userId: string, forceRefresh = false) => {
+export async function getCachedUserProgress(userId: string, forceRefresh = false) {
     const cacheKey = `user-progress-${userId}`;
-    
     if (!forceRefresh) {
       const cached = getFromCache(cacheKey);
-      if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+    if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) {
         return cached.data;
       }
     }
@@ -146,7 +126,6 @@ export const useOptimizedDatabase = () => {
     performanceMonitor.startMeasure(measureKey);
 
     try {
-      // Use the optimized view
       const { data, error } = await supabase
         .from('user_progress_summary')
         .select('*')
@@ -160,7 +139,7 @@ export const useOptimizedDatabase = () => {
           id: data.id,
           energy_points: data.energy_points,
           total_days: data.total_days,
-          rank: data.rank
+        rank: data.rank,
         },
         achievementsCount: data.achievements_count,
         missionsCount: data.missions_count,
@@ -170,17 +149,17 @@ export const useOptimizedDatabase = () => {
 
       setCache(cacheKey, progressData);
       performanceMonitor.endMeasure(measureKey);
-      
       return progressData;
+  } catch (error: any) {
+    performanceMonitor.endMeasure(measureKey);
+    throw error;
+  }
+}
 
-    } catch (error: any) {
-      performanceMonitor.endMeasure(measureKey);
-      throw error;
-    }
-  }, [getFromCache, setCache]);
-
-  // Batch insert for multiple records
-  const batchInsertPactDays = useCallback(async (pactId: string, days: Array<{ date: string; completed: boolean }>) => {
+export async function batchInsertPactDays(
+  pactId: string,
+  days: Array<{ date: string; completed: boolean }>
+) {
     const measureKey = 'batch-insert-pact-days';
     performanceMonitor.startMeasure(measureKey);
 
@@ -188,30 +167,28 @@ export const useOptimizedDatabase = () => {
       const pactDays = days.map(day => ({
         pact_id: pactId,
         date: day.date,
-        completed: day.completed
+      completed: day.completed,
       }));
 
-      const { error } = await supabase
-        .from('pact_days')
-        .insert(pactDays);
-
+    const { error } = await supabase.from('pact_days').insert(pactDays);
       if (error) throw error;
 
       performanceMonitor.endMeasure(measureKey);
-      return { success: true };
+    return { success: true as const };
+  } catch (error: any) {
+    performanceMonitor.endMeasure(measureKey);
+    throw error;
+  }
+}
 
-    } catch (error: any) {
-      performanceMonitor.endMeasure(measureKey);
-      throw error;
-    }
-  }, []);
-
+// React hook wrapper — safe to use inside components
+export const useOptimizedDatabase = () => {
   return {
-    batchDeleteUserData,
-    optimizedMarkDayComplete,
-    getCachedUserProgress,
-    batchInsertPactDays,
-    clearCache,
-    getCacheStats
+    batchDeleteUserData: useCallback(batchDeleteUserData, []),
+    optimizedMarkDayComplete: useCallback(optimizedMarkDayComplete, []),
+    getCachedUserProgress: useCallback(getCachedUserProgress, []),
+    batchInsertPactDays: useCallback(batchInsertPactDays, []),
+    clearCache: useCallback(clearOptimizedCache, []),
+    getCacheStats: useCallback(getOptimizedCacheStats, []),
   };
 };
