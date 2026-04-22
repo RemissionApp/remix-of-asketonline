@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { UploadButton } from './avatar/UploadButton';
 import { ConfirmUpload } from './avatar/ConfirmUpload';
 import {
-  ensureAvatarBucket,
   uploadAvatarFile,
   updateProfileAvatar,
 } from '@/utils/avatarStorage';
@@ -61,9 +60,6 @@ const AvatarUpload: React.FC = () => {
       if (!sessionData.session) {
         throw new Error('Не авторизован. Пожалуйста, войдите снова.');
       }
-
-      // Ensure avatar bucket exists
-      await ensureAvatarBucket();
 
       // Upload the file
       const publicUrl = await uploadAvatarFile(user.id, selectedFile);
