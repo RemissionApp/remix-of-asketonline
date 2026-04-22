@@ -73,6 +73,25 @@ serve(async req => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Eleven Labs API error:', response.status, errorText);
+
+      // Graceful degradation: 401 from ElevenLabs (free tier blocked, invalid key,
+      // unusual activity) should NOT crash the client. Return a structured 503
+      // so callers can show a friendly toast and skip audio.
+      if (response.status === 401 || response.status === 403) {
+        return new Response(
+          JSON.stringify({
+            available: false,
+            error: 'tts_unavailable',
+            message:
+              'Голосовое озвучивание временно недоступно. Попробуйте позже.',
+          }),
+          {
+            status: 503,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
       throw new Error(`Eleven Labs API error: ${response.status} ${errorText}`);
     }
 
