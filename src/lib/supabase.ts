@@ -1,16 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+// Re-export the auto-generated Supabase client (Lovable Cloud).
+// The old hardcoded client pointed to a deleted project. We expose it as
+// `any` here so legacy call sites that predate the strict generated types
+// keep compiling without a full sweep.
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
 
-const supabaseUrl = 'https://aewfggzscyjxpuciqtti.supabase.co';
-const supabaseAnonKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFld2ZnZ3pzY3lqeHB1Y2lxdHRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxNzYyMDcsImV4cCI6MjA2Mjc1MjIwN30.yRu3axa77L5DMcQn8CzY8sSOjeUNxkGXfXO8rfwGV2M';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase: any = typedSupabase;
 
 /**
  * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации

@@ -7,9 +7,9 @@ export async function generateHoroscope(
   detailed: boolean,
   birthDate: string | null
 ): Promise<string> {
-  const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-  if (!OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not set');
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  if (!LOVABLE_API_KEY) {
+    throw new Error('LOVABLE_API_KEY is not set');
   }
 
   // Get appropriate prompts
@@ -19,11 +19,11 @@ export async function generateHoroscope(
   console.log(`User prompt: ${userPrompt}`);
   console.log(`System prompt: ${systemPrompt}`);
 
-  // Call OpenAI API to generate horoscope
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  // Call Lovable AI Gateway to generate horoscope
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -38,21 +38,19 @@ export async function generateHoroscope(
           content: userPrompt,
         },
       ],
-      temperature: openAiTemperature,
-      max_tokens: detailed ? tokenLimits.detailed : tokenLimits.brief,
     }),
   });
 
   const data = await response.json();
-  console.log('OpenAI API status:', response.status);
+  console.log('AI Gateway status:', response.status);
   console.log(
-    'OpenAI response:',
+    'AI Gateway response:',
     JSON.stringify(data).substring(0, 500) + '...'
   );
 
   if (data.error) {
-    console.error('OpenAI API error:', data.error);
-    throw new Error(data.error.message || 'Error from OpenAI API');
+    console.error('AI Gateway error:', data.error);
+    throw new Error(data.error.message || 'Error from AI Gateway');
   }
 
   return data.choices[0].message.content;

@@ -8,8 +8,8 @@ export const corsHeaders = {
 // Available languages for horoscope generation
 export const supportedLanguages = ['ru', 'en', 'es'];
 
-// OpenAI model to use for horoscope generation
-export const openAiModel = 'gpt-4o-mini';
+// Model to use via Lovable AI Gateway
+export const openAiModel = 'google/gemini-2.5-flash';
 
 // Temperature setting for OpenAI API
 export const openAiTemperature = 0.7;
