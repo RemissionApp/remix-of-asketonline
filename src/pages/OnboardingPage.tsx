@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
@@ -10,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 const OnboardingPage: React.FC = () => {
   const { user, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
 
@@ -44,15 +46,19 @@ const OnboardingPage: React.FC = () => {
 
       if (error) throw error;
 
-      // Sync local store so useAuthFlow re-routes to /main
+      // Sync local store so useAuthFlow re-routes to /main.
+      // Also bump lastSyncedAt to block any racing loadOnboardingState() reads
+      // from overwriting these flags within the cache TTL window.
       useAppStore.setState({
         onboardingStepCompleted: true,
         preferencesStepCompleted: true,
         currentStep: 'complete',
         completedAt: new Date(),
+        lastSyncedAt: new Date(),
       });
-      setActiveScreen('main');
-      // No navigate() — <ProtectedRoute> + useAuthFlow handle the redirect.
+
+      // Navigate directly — don't rely on ProtectedRoute reacting to store changes.
+      navigate('/main', { replace: true });
     } catch (err: any) {
       console.error('Failed to complete onboarding', err);
       toast({
