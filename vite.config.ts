@@ -19,19 +19,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      output: {
-        manualChunks: {
-          // Keep React, react-dom, router, and react-query together to avoid
-          // cross-chunk init order issues (react-query reads React.useEffect at module load).
-          'react-vendor': [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            '@tanstack/react-query',
-          ],
-          'supabase-vendor': ['@supabase/supabase-js'],
-        },
-      },
+      output: {},
     },
     chunkSizeWarningLimit: 1000,
   },
