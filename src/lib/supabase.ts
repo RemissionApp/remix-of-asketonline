@@ -1,16 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://aewfggzscyjxpuciqtti.supabase.co';
-const supabaseAnonKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFld2ZnZ3pzY3lqeHB1Y2lxdHRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxNzYyMDcsImV4cCI6MjA2Mjc1MjIwN30.yRu3axa77L5DMcQn8CzY8sSOjeUNxkGXfXO8rfwGV2M';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+// Re-export the auto-generated, typed Supabase client.
+// The old hardcoded client pointed to a deleted project; all imports now
+// transparently use the Lovable Cloud client.
+export { supabase } from '@/integrations/supabase/client';
 
 /**
  * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации

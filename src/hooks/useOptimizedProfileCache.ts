@@ -87,7 +87,7 @@ export const useOptimizedProfileCache = (user: AuthUser | null) => {
 
       const { error } = await supabase
         .from('profiles')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', user.id);
 
       if (error) throw error;
