@@ -14,10 +14,10 @@ serve(async req => {
   }
 
   try {
-    const ELEVEN_LABS_API_KEY = Deno.env.get('ELEVEN_LABS_API_KEY');
+    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
 
-    if (!ELEVEN_LABS_API_KEY) {
-      throw new Error('ELEVEN_LABS_API_KEY is not set');
+    if (!ELEVENLABS_API_KEY) {
+      throw new Error('ELEVENLABS_API_KEY is not set');
     }
 
     const { agentId } = await req.json();
@@ -28,11 +28,11 @@ serve(async req => {
 
     // Запрашиваем подписанную ссылку от ElevenLabs
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}`,
       {
         method: 'GET',
         headers: {
-          'xi-api-key': ELEVEN_LABS_API_KEY,
+          'xi-api-key': ELEVENLABS_API_KEY,
         },
       }
     );
