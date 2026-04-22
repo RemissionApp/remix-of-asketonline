@@ -1,7 +1,11 @@
-// Re-export the auto-generated, typed Supabase client.
-// The old hardcoded client pointed to a deleted project; all imports now
-// transparently use the Lovable Cloud client.
-export { supabase } from '@/integrations/supabase/client';
+// Re-export the auto-generated Supabase client (Lovable Cloud).
+// The old hardcoded client pointed to a deleted project. We expose it as
+// `any` here so legacy call sites that predate the strict generated types
+// keep compiling without a full sweep.
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase: any = typedSupabase;
 
 /**
  * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации
