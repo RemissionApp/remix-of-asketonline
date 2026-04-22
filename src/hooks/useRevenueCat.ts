@@ -24,6 +24,12 @@ export const useRevenueCat = (userId?: string) => {
   useEffect(() => {
     if (userId) {
       initialize(userId).catch(error => {
+        const message = error instanceof Error ? error.message : String(error);
+        // Native-only plugin — silent skip on web
+        if (message.includes('Web not supported')) {
+          console.info('RevenueCat not available on web platform');
+          return;
+        }
         console.error('Failed to initialize RevenueCat:', error);
         toast({
           title: 'Ошибка инициализации',
