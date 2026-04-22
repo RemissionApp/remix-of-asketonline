@@ -23,7 +23,7 @@ serve(async req => {
       throw new Error('Text is required');
     }
 
-    const elevenLabsApiKey = Deno.env.get('ELEVEN_LABS_API_KEY');
+    const elevenLabsApiKey = Deno.env.get('ELEVENLABS_API_KEY');
     if (!elevenLabsApiKey) {
       throw new Error('Eleven Labs API key not configured');
     }
