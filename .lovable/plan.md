@@ -1,94 +1,177 @@
 
 
-## Исправление: будущие года в календаре, потеря данных, аватар, кэш
+## Полный аудит приложения и план доработки до публикации
 
-### Найденные корни проблем
+### Критические блокеры (фиксить НЕМЕДЛЕННО)
 
-**Проблема №1 — В календаре слайдер показывает будущие года (вплоть до +50 от текущего)**
-В `src/components/ui/calendar.tsx` слайдер года жёстко задан как `currentYear ± 50`, игнорируя `toYear`/`fromYear` пропсы из `ProfileForm`. Поэтому при онбординге слайдер позволяет выбрать 2076 год, хотя `disabled` пропс DayPicker отрезает будущие даты — выглядит сломанно.
+**Блокер #1 — Белый экран на `/main` из-за разделения React-чанков**
+В консоли: `TypeError: Cannot read properties of null (reading 'useSyncExternalStore')` в `NotificationProvider`. Причина — `manualChunks` в `vite.config.ts` всё ещё разделяет vendor-чанки, и `zustand` подгружается раньше React, получая `null` вместо React-инстанса. Сборка работала локально, но в превью лежит старый кэш + у zustand нет явной зависимости в react-vendor группе.
 
-**Проблема №2 — Триггер `on_auth_user_created` НЕ установлен в БД**
-Запрос `information_schema.triggers` возвращает пустой список. Функция `handle_new_user()` существует, но триггер на `auth.users` к ней не прикреплён (видимо, был сброшен при одном из откатов). Поэтому при регистрации профиль НЕ создаётся, а `loadUserProfile` создаёт его сам — но `useOptimizedProfileCache.fetchProfile` параллельно делает свой `select` и мапит `data.name || 'Искатель'`, забивая стор фолбэком "Искатель". Отсюда расхождение между сохранёнными в БД данными (`Roman Ivanov`, `1986-09-30`, `profile_step_completed=true` — проверено прямым SQL) и тем, что видно в UI (`name: "Искатель"`, `birthDate: null`).
+**Фикс:** убрать `manualChunks` целиком, отдать разбиение на откуп Vite/Rollup. Размер бандла можно потом сократить через `React.lazy` (без ручных вендор-чанков).
 
-**Проблема №3 — `useOptimizedProfileCache` дублирует чтение профиля и затирает Zustand**
-React-Query кэш с TTL 5 минут хранит первую (пустую) загрузку, а после сохранения формы — не инвалидируется, потому что форма пишет напрямую через `supabase.upsert` мимо мутации хука. Любой компонент, подписанный на `useOptimizedProfileCache`, продолжает показывать "Искатель"/`null`.
+**Блокер #2 — `ProtectedRoute` редиректит на `/main` со ВСЕХ защищённых страниц**
+Логика `if (targetRoute !== location.pathname) <Navigate to={targetRoute}/>` означает: для готового пользователя `targetRoute === '/main'` всегда, поэтому `/pacts`, `/universe`, `/profile`, `/meditation`, `/numerology`, `/affirmations` и т.д. — недоступны.
 
-**Проблема №4 — Аватар не сохраняется**
-`avatar_url` в БД остаётся `null`. По логике AvatarUpload показывает диалог `ConfirmUpload`, ждёт нажатия «Подтвердить». Если пользователь видит, что после выбора файла иконка не меняется — он либо не нажимает confirm, либо `setTimeout(loadUserProfile, 100)` после успешного upload пере-считывает старое значение из React-Query кэша и затирает оптимистичный апдейт.
-
-**Проблема №5 — `select('id, name, ...')` в кэш-хуке использует `.single()` и крашится на отсутствующей строке**
-Когда профиля ещё нет в БД, `useOptimizedProfileCache.fetchProfile` бросает PGRST116, React-Query повторяет запрос, всё это происходит параллельно с созданием профиля в `loadUserProfile`. Дополнительные гонки.
+**Фикс:** редирект на `targetRoute` срабатывает только при `status === 'needs_profile'` или `'needs_onboarding'`. При `status === 'ready'` рендерим children без редиректа.
 
 ---
 
-### План исправлений
+### Системный аудит по областям
 
-**Шаг 1 — Восстановить триггер `on_auth_user_created` (миграция)**
+#### A. Аутентификация и роутинг
 
-```sql
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+| Что | Статус | Действие |
+|---|---|---|
+| Welcome → Language → Login | OK | оставить |
+| Signup + OTP email verify | OK | проверить лимит resend, блок при невалидном коде |
+| `useAuthFlow` / `AuthBootstrap` | OK | оставить |
+| `ProtectedRoute` | СЛОМАН | переписать (см. Блокер #2) |
+| `PublicRoute` | проверить — не должен блокировать `/login` после logout | аудит |
+| `/auth/callback` (OAuth) | проверить наличие Google провайдера | если включаем Google — добавить |
+| Forgot password / `/reset-password` | проверить наличие страницы | если нет — создать |
+| Logout flow | проверить очистку Zustand + redirect на `/` | аудит |
 
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+#### B. Онбординг и профиль
 
--- Бэкфилл существующих пользователей без profile-строки
-INSERT INTO public.profiles (id, name)
-SELECT u.id, ''
-FROM auth.users u
-LEFT JOIN public.profiles p ON p.id = u.id
-WHERE p.id IS NULL
-ON CONFLICT (id) DO NOTHING;
-```
+| Что | Статус | Действие |
+|---|---|---|
+| Триггер `on_auth_user_created` | НЕТ в БД (`db-triggers` пустой) | повторно применить миграцию + проверить |
+| `UserProfileForm` (имя, дата) | UTC-фикс применён | проверить, что birthDate сохраняется без сдвига |
+| Calendar (год слайдер) | пофикшен | визуальная проверка fromYear/toYear |
+| Avatar upload | пофикшен | проверить cache-busting и RLS на bucket |
+| `profile_step_completed` флаг | проверить, что не сбрасывается при F5 | аудит |
+| `user_onboarding_state` (3 шага) | проверить, что `onboarding_step_completed` ставится в true только после tour | аудит OnboardingPage |
+| Smart-redirect после регистрации | OK через `useAuthFlow` | проверить e2e |
 
-**Шаг 2 — Удалить `useOptimizedProfileCache` из критического пути**
+#### C. Главная и навигация
 
-- Найти все компоненты, импортирующие `useOptimizedProfileCache`, и заменить на чтение `userProfile` из Zustand (`useAppStore(s => s.userProfile)`).
-- Файл `useOptimizedProfileCache.ts` удалить целиком — единственный источник истины — Zustand-стор.
-- Из `loadUserProfile` убрать вторичный `setTimeout(loadOnboardingState)` чтобы не было каскада.
+- `MainPage` — daily horoscope + advice + active pact + quick actions. Проверить, что блоки не падают при отсутствии данных (новый юзер без активного пакта).
+- `BottomNavigation` — 5 табов (Аскеза/Вселенная/Главная/Медитация/Профиль). После фикса `ProtectedRoute` должно работать.
+- `TopBar` — ранг, очки энергии, аватар. Проверить корректность отображения для нового юзера (rank=`seeker`, energy=0).
 
-**Шаг 3 — Починить `Calendar` (запрет будущих годов)**
+#### D. Платная/бесплатная модель (PRO)
 
-Переписать `src/components/ui/calendar.tsx`:
-- Принимать `fromYear`/`toYear` через пропсы (передаются из `ProfileForm` как `fromYear={1930} toYear={currentYear-5}`).
-- Слайдер года ограничивать `min={fromYear ?? minYear}` и `max={toYear ?? maxYear}`.
-- Если `props.disabled` — не давать выбирать запрещённые даты в слайдере (clamp при `handleYearChange`).
+Сейчас в коде используется `RevenueCat` (`SubscriptionManager.tsx`, `useRevenueCatStore`), плюс таблица `subscriptions` с `is_pro`. Это **iOS/Android-only** интеграция и она не работает в web preview.
 
-**Шаг 4 — Упростить `UserProfileForm.onSubmit`**
+**Что есть:**
+- `subscriptions.is_pro` — флаг в БД
+- `ProFeatureOverlay`, `ProBadge`, `PaywallButton`, `UpgradePrompt` — UI заглушки
+- `LimitIndicator` + `daily_limits` table — лимиты для бесплатных юзеров
+- PRO-страницы: `MeditationProPage`, `UniverseChatPage` (в `UniverseChatProWrapper`), `FullHoroscopePage`, `NumerologyPage`, `AffirmationsPage`
 
-- После успешного `upsert` — синхронно `useAppStore.setState({ userProfile: {...new}, profileStepCompleted: true })`. Уже сделано, но дополнительно вызвать `await loadUserProfile()` ОДИН раз, чтобы `birthDate` гарантированно стал `Date` объектом (а не строкой) и нормализовался `zodiacSign`.
-- Убрать запись `birthDate` через `toISOString().split('T')[0]` — заменить на ручную DD/MM/YYYY → YYYY-MM-DD конвертацию через UTC, чтобы избежать сдвига часовых поясов (пример: 30 сентября 1986 в +03:00 при `toISOString` уйдёт в 29 сентября).
+**Проблемы:**
+- В web нет работающего платежа — кнопка «Subscribe» в `SubscriptionManager` бросает ошибку в браузере.
+- Нет реального backend webhook'а для синхронизации `is_pro`.
+- Лимиты для бесплатного тарифа разбросаны и нигде не enforced на server-side (можно обойти через прямые запросы).
 
-**Шаг 5 — Починить аватар**
+**Рекомендации:**
+1. **Для web-версии** включить **встроенные платежи Lovable (Stripe или Paddle)** через `recommend_payment_provider`. Создать продукты:
+   - PRO Monthly (~$9.99/мес)
+   - PRO Yearly (~$79.99/год — экономия 33%)
+2. **На server-side** добавить edge function `check-subscription` и проверять `is_pro` перед каждым PRO-запросом (генерация horoscope/numerology/AI-чат), а не только в UI.
+3. **RevenueCat оставить только для нативных приложений** (Capacitor iOS/Android) — детектить платформу и показывать нужный paywall.
+4. Synchroнизировать webhook RevenueCat → Stripe → таблица `subscriptions` через edge function `sync-subscription`.
 
-- В `AvatarUpload.tsx` после `updateProfileAvatar` — НЕ вызывать `loadUserProfile()` через `setTimeout`. Только оптимистичный `useAppStore.setState({ userProfile: { ...state.userProfile, avatar_url } })`. Это убирает гонку с React-Query (которой больше не будет после Шага 2).
-- Добавить query-string `?v={timestamp}` к публичному URL для cache-busting в `<img src>`.
-- В `updateProfileAvatar` убрать `name: ''` из upsert payload (риск перезаписать имя пустой строкой если триггер не успел создать строку): использовать update вместо upsert, потому что строка теперь гарантированно есть благодаря триггеру (Шаг 1).
+#### E. Страницы данных и сохранения
 
-**Шаг 6 — Финальная проверка**
+| Страница | Что проверить |
+|---|---|
+| `ProfilePage` | редактирование имени/даты/места рождения сохраняется в `profiles` + `astro_profiles` |
+| `AccountSettingsPage` | смена email/пароля, уведомления, язык, звук |
+| `DeleteAccountPage` | вызов `batch_delete_user_data` + `auth.admin.deleteUser` через edge function |
+| `LanguagePage` | сохранение в localStorage + Zustand, не требует auth |
+| `PrivacyPolicyPage` / `TermsOfServicePage` | публичные, статичный контент — проверить наличие |
 
-1. Прямой SQL: убедиться что у `2212ecc8-2227-495d-8f96-45980e1db638` записаны имя/дата.
-2. Регистрация нового email → OTP → /profile-setup → форма не показывает "Искатель", а пустое поле имени.
-3. Слайдер года: max — текущий год − 5, min — 1930, без 2076.
-4. Сохранение даты: 30/09/1986 → в БД `1986-09-30` (без сдвига).
-5. Аватар: после нажатия «Подтвердить» сразу появляется в кружке и сохраняется в БД (`avatar_url IS NOT NULL`).
-6. F5 на любом шаге → данные на месте, никаких "Искатель" фолбэков.
+#### F. Edge functions и AI
 
-### Файлы под изменение
-- **Миграция:** новый файл с восстановлением триггера + бэкфилл profiles.
-- `src/components/ui/calendar.tsx` — учёт `fromYear`/`toYear`.
-- `src/components/UserProfileForm.tsx` — UTC-форматирование даты + единичный `loadUserProfile`.
-- `src/components/AvatarUpload.tsx` — убрать setTimeout-перезагрузку, добавить cache-busting.
-- `src/utils/avatarStorage.ts` — `update` вместо `upsert`, без `name: ''`.
-- **Удалить:** `src/hooks/useOptimizedProfileCache.ts`.
-- Обновить все импортёры `useOptimizedProfileCache` → `useAppStore`.
+| Функция | Статус | Замечания |
+|---|---|---|
+| `text-to-speech` | пофикшен (graceful 503 при ElevenLabs 401) | OK |
+| `generate-horoscope`, `fetch-horoscope` | работает (логи показывают cache hit) | OK |
+| `universe-answer`, `universe-dialogue` | проверить лимиты для free-юзеров |
+| `generate-numerology` | проверить наличие |
+| `generate-daily-advice` | проверить кэширование на день |
+| `delete-user-account` | должна быть, чтобы удалять auth.user через service role | проверить наличие |
+| `send-otp-email` | работает через RESEND | проверить rate-limit |
+
+#### G. Push-уведомления (PWA)
+
+- `push_subscriptions` table — есть RLS, OK.
+- `PWAInstallPrompt` + `PWAUpdateNotification` — есть в App.tsx.
+- Service Worker регистрируется (виден в логах).
+- **Нет** edge function для отправки push (например, `send-push-notification`).
+
+**Рекомендация:** добавить edge function для server-side push через Web Push API (VAPID keys в secrets).
+
+#### H. Миссии, артефакты, ачивки, рефлексии
+
+Большой пласт таблиц: `missions`, `mission_progress`, `mission_progress_detailed`, `mission_choices`, `cosmic_artifacts`, `achievements`, `daily_reflections`. Нужен функциональный smoke-test:
+1. Принять миссию → завершить день → получить артефакт → разблокировать ачивку.
+2. Проверить, что reward правильно начисляет energy_points в `profiles`.
+
+#### I. Безопасность и линтер
+
+Запустить `supabase--linter` и закрыть все warnings (особенно про search_path и RLS). Проверить, что:
+- Все `SECURITY DEFINER` функции имеют `SET search_path = public`.
+- Нет таблиц без RLS.
+- Bucket `avatars` имеет ровно 4 политики (после миграции 20260422200107 — должно быть OK).
+
+#### J. Оптимизация бандла (после фикса Блокера #1)
+
+Вместо `manualChunks` использовать `React.lazy` для тяжёлых страниц:
+- `MeditationProPage`, `NumerologyPage`, `FullHoroscopePage`, `AffirmationsPage`, `CosmicMissionsPage`, `ArtifactCollectionPage`, `UniverseChatPage`, `CallPage`, `AchievementsPage`.
+- В `App.tsx` обернуть `<Routes>` в `<Suspense fallback={<LoadingScreen/>}>`.
+
+---
+
+### Поэтапный план выполнения
+
+**Этап 1 — Разблокировать приложение (P0, делать первым)**
+1. Удалить `manualChunks` из `vite.config.ts` (вернуться к авто-разбиению).
+2. Переписать `ProtectedRoute`: редирект только при `needs_profile`/`needs_onboarding`, иначе рендерить children.
+3. Применить миграцию для триггера `on_auth_user_created` (если опять не доехал) + бэкфилл `profiles`.
+4. **Проверка:** регистрация → профиль → онбординг → /main → клик по всем 5 нижним табам — всё открывается.
+
+**Этап 2 — Очистка профиля и онбординга (P1)**
+5. Аудит `ProfilePage`, `AccountSettingsPage`, `DeleteAccountPage` — каждое поле сохраняется и перезагружается корректно.
+6. Проверка `OnboardingPage` (3 шага) — что `onboarding_step_completed=true` ставится только в конце.
+7. Создать страницу `/reset-password` если её нет.
+8. Добавить Google OAuth (если бизнес требует).
+
+**Этап 3 — Платная модель (P1)**
+9. Запустить `payments--recommend_payment_provider` → подключить Stripe/Paddle.
+10. Создать продукты PRO Monthly + PRO Yearly.
+11. Edge function `check-subscription` + middleware на всех PRO edge functions.
+12. RevenueCat оставить только для Capacitor iOS/Android (detect platform).
+
+**Этап 4 — Edge functions и push (P2)**
+13. Аудит всех edge functions: добавить rate-limit, проверить CORS, валидацию через Zod.
+14. Создать `send-push-notification` для server-side push.
+15. Создать `delete-user-account` если её нет.
+
+**Этап 5 — Производительность и UX (P2)**
+16. `React.lazy` + `Suspense` для тяжёлых страниц.
+17. Запустить `supabase--linter`, закрыть warnings.
+18. Проверить мобильный viewport (390x740) на каждой странице.
+19. Глобальный `LoadingScreen` для `status === 'initializing'`.
+
+**Этап 6 — Финальная QA перед публикацией (P0 после остальных)**
+20. E2E руками: регистрация → онбординг → создание пакта → отметить день → задать вопрос Вселенной → послушать медитацию (graceful если TTS 503) → посмотреть гороскоп → редактировать профиль → loaded аватар → logout → login → попытка купить PRO → активация PRO-фичи.
+21. F5 на каждой странице — данные на месте.
+22. `tsc --noEmit` 0 ошибок, `vite build` успех.
+23. Проверка консоли: 0 React-ошибок, 0 необработанных 500.
 
 ### Что НЕ трогаем
-- `useAuthFlow`, `AuthBootstrap`, `ProtectedRoute` — работают корректно.
-- RLS-политики `profiles` и `avatars` — корректные.
-- Cosmic-дизайн, OTP, edge functions.
-- `handle_new_user()` — функция корректна, не трогаем.
+- Cosmic дизайн-токены и тему
+- Промпты Lovable AI и ElevenLabs Agent IDs
+- `useAuthFlow` (только что стабилизирован)
+- Структуру таблиц БД (только добавляем триггеры/функции)
+
+### Файлы под изменение (только Этап 1)
+- `vite.config.ts` — убрать manualChunks
+- `src/components/auth/ProtectedRoute.tsx` — переписать логику редиректа
+- Новая миграция: повторное применение триггера `on_auth_user_created`
 
 ### Ожидаемый результат
-После применения: новые пользователи получают пустой профиль (триггер), форма сохраняет данные одним upsert + единым reload, календарь не позволяет будущие года, аватар грузится без перезагрузок, "Искатель" больше не появляется как фолбэк нигде в UI. Готово к публикации.
+После Этапа 1 — приложение перестаёт падать, навигация по всем защищённым страницам работает. После всех этапов — стабильное, безопасное, монетизированное приложение, готовое к публикации в web и сторах.
 
