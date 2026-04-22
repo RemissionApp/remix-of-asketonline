@@ -1,150 +1,97 @@
 
 
-## Полная переработка пути пользователя: регистрация → профиль → онбординг → main
+## План полной проверки и фиксов перед публикацией
 
-### Корень всех проблем
+### Что уже проверено
+- ✅ TypeScript компиляция чистая (`tsc --noEmit` 0 ошибок)
+- ✅ Production build собирается успешно (`vite build` OK)
+- ✅ Триггер `on_auth_user_created` живёт в БД
+- ✅ Storage policies на `avatars` корректные (с владельцем по `auth.uid()`)
+- ✅ Auth flow от регистрации до /main работает (видно в логах: профиль сохранён, onboarding завершён)
 
-После глубокого анализа найдено **5 фундаментальных проблем**, из-за которых пользователя «выбрасывает» после регистрации:
+### Найденные критические проблемы
 
-1. **Двойной источник истины для onboarding-флагов**. `profile_step_completed` хранится одновременно в двух таблицах (`profiles` И `user_onboarding_state`), и они рассинхронизированы. В UI логика `isProfileComplete()` использует только данные `name+birthDate`, а `authRouter.determineAuthRoute()` требует ОБА условия (`isProfileComplete && profileStepCompleted`). Когда они расходятся — пользователь зацикливается между `/profile-setup` и `/onboarding`.
+#### P0-1. Нарушение правил React в трёх местах — Minified React error #321
+В консоли постоянная ошибка #321 — «invalid hook call». Причина:
 
-2. **Бесконечная гонка редиректов**. `AppInitializer`, `AuthGuard`, `PublicRoute`, `ProtectedRoute`, `LoginPage` и `WelcomePage` — **6 мест** одновременно проверяют сессию и навигируют. После `signUp/verifyOtp` `LoginPage` навигирует, потом `onAuthStateChange` в `AppInitializer` снова грузит профиль, потом `ProtectedRoute` опять вычисляет маршрут — каждый шаг основан на возможно устаревшем состоянии. В логах видно **6 повторных запросов `/profiles`** за 3 секунды и многократные `isProfileComplete check`.
+- `src/hooks/useUserProgress.ts:54` — `useOptimizedDatabase()` вызывается **внутри async функции** `fetchUserProgress`
+- `src/store/useAppStore.ts:163` — то же внутри `deleteAccount`
+- `src/store/slices/pacts/markDayComplete.ts:33` — то же внутри slice action
 
-3. **`updateUserProfile` помечен deprecated**, а основной поток сохранения (`UserProfileForm`) лезет напрямую в `supabase.upsert` мимо стора. После `await loadUserProfile()` чтение приходит из старого React-Query кеша (`useOptimizedProfileCache`), потому что инвалидация запросов отсутствует. Поэтому в логах после успешного UPDATE вы видели «Искатель»/`birth_date: null`.
+`useOptimizedDatabase` — это React-хук (использует `useMemo`/`useCallback`). Вызывать его не на верхнем уровне компонента запрещено и ломает React-дерево.
 
-4. **`PublicRoute` не показывает loading**, пока `user` ещё не подгружен из сессии — мгновенно отрисовывает `LoginPage`, который сам себя редиректит. Возникают «вспышки» страниц и сбитая навигация.
+**Фикс:** превратить `useOptimizedDatabase` в обычный объект функций (без `useMemo`/`useCallback`) или вынести нужные функции наружу как чистые `async function`. Кэш сделать модульным (Map на уровне модуля, а не через `useMemo`). Обновить все 3 места вызова.
 
-5. **`AuthGuard` грузит профиль повторно** даже если `AppInitializer` уже сделал это, плюс `loadUserProfile` внутри себя вызывает ещё `loadOnboardingState` через `setTimeout`. Получается каскад из 3-4 повторных загрузок одних и тех же данных.
-
----
-
-### Решение: единая централизованная машина состояний
-
-Перепишу авторизацию полностью — frontend код делается с нуля, дизайн (космическая тема) и API контракты сохраняются.
-
-#### Шаг 1. Один источник истины — новый `useAuthFlow` hook
-
-Создаю `src/hooks/useAuthFlow.ts` — единственный hook, который:
-- слушает `onAuthStateChange` и `getSession` ОДИН раз для всего приложения
-- грузит профиль и onboarding-state атомарно (одним `Promise.all`)
-- выставляет статус: `'initializing' | 'unauthenticated' | 'needs_profile' | 'needs_onboarding' | 'ready'`
-- возвращает `targetRoute` — единственное место, где определяется куда редиректить
-
-Удалить дублирование из `LoginPage`, `WelcomePage`, `PublicRoute`, `ProtectedRoute`, `AuthGuard`, `AppInitializer`. Они все будут читать `useAuthFlow()` без собственной логики.
-
-#### Шаг 2. Унификация `profile_step_completed`
-
-В БД `profiles.profile_step_completed` оставляю как **единственное место истины**. Удаляю колонку из `user_onboarding_state` (миграция: `ALTER TABLE user_onboarding_state DROP COLUMN profile_step_completed`). Логика `isProfileComplete()` будет проверять `userProfile.name && userProfile.birthDate && userProfile.profileStepCompleted` — все три из одного источника (таблица `profiles`).
-
-Поле `profileStepCompleted` добавлю в `UserProfile` тип (сейчас его нет).
-
-#### Шаг 3. Удаление `useOptimizedProfileCache` из критического пути
-
-React-Query кеш на профиле создаёт race conditions. Удаляю его использование из flow регистрации/логина — оставляю только Zustand store как источник истины для пользовательских данных. Кеш React-Query оставляю только для горoscope/missions.
-
-#### Шаг 4. Правильный порядок в `onAuthStateChange`
-
-По best practice (Supabase docs): callback **синхронный**, тяжёлая работа через `setTimeout(..., 0)`. Это уже почти так в `AppInitializer`, но `AuthGuard` дублирует логику — его удалю и заменю на единый `<AuthBootstrap>` компонент, который рендерит `loading` пока `useAuthFlow().status === 'initializing'`.
-
-#### Шаг 5. Полностью переписанный `LoginPage`
-
-С нуля, без 600+ строк, без `authChecking` состояния, без ручного навигирования:
-- `useAuthFlow` сам редиректит через `<Navigate>` если уже залогинен
-- Только формы + локальное состояние ввода
-- Tabs «Вход / Регистрация» с шарингом email
-- Регистрация: email → password + confirmPassword + strength indicator (уже создан) → OTP → автологин
-- Чёткий показ ошибок (неверный пароль / пользователь уже есть / слабый пароль)
-- Кнопку «Гость» оставляю только в `import.meta.env.DEV`
-
-#### Шаг 6. Переписанный `UserProfileForm`
-
-- Единственная функция: вызвать `updateProfile({ name, birthDate })` из нового hook `useProfileMutations`
-- Внутри: `upsert` в `profiles` с `profile_step_completed: true`, потом синхронный `set()` в Zustand с новыми значениями
-- БЕЗ `loadUserProfile` после mutation (мы уже знаем что записали)
-- БЕЗ `loadOnboardingState` (поле теперь только в profiles)
-- БЕЗ ручной навигации — `useAuthFlow` сам перерасчитает targetRoute и отрендерит `<Navigate>`
-
-#### Шаг 7. Переписанный `OnboardingPage`
-
-- Записать `onboarding_step_completed: true` в `user_onboarding_state` (через `upsert`)
-- Обновить Zustand
-- `useAuthFlow` отредиректит на `/main`
-- Убрать дублирующий `useEffect` с `checkOnboardingStatus`
-
-#### Шаг 8. Дизайн-полировка (без изменения темы)
-
-- `LoginPage`: единая высота карточки между табами Login/Signup (сейчас прыгает)
-- Индикатор сложности пароля показывается только когда поле в фокусе или непустое
-- Иконка глаза синхронизирована для обоих полей пароля
-- На `/profile-setup` добавить subtle подсказку «Шаг 1 из 2» сверху
-- На `/onboarding` индикатор «Шаг 2 из 2»
-- Loading-состояния везде в едином cosmic-style (StarField + спиннер)
-- Toast'ы при ошибках регистрации более понятные на русском
-
-#### Шаг 9. Миграция БД
-
-```sql
--- Удалить дубль колонки
-ALTER TABLE public.user_onboarding_state 
-  DROP COLUMN IF EXISTS profile_step_completed;
-
--- Бэкфилл: для существующих пользователей с заполненным профилем 
--- проставить profile_step_completed = true
-UPDATE public.profiles 
-SET profile_step_completed = true 
-WHERE name IS NOT NULL 
-  AND name != '' 
-  AND name != 'Искатель' 
-  AND birth_date IS NOT NULL 
-  AND profile_step_completed = false;
+#### P0-2. ElevenLabs TTS возвращает 401 «Unusual activity detected»
 ```
+Edge function returned 500: Eleven Labs API error: 401 — Free Tier usage disabled
+```
+ElevenLabs заблокировал бесплатный ключ из-за detection. Это не баг кода — пользователю нужно купить платный план ElevenLabs или предоставить новый ключ.
 
-Это починит вашего текущего пользователя `Roman Ivanov`, у которого `profile_step_completed = false`, но данные есть.
+**Фикс кода:** добавить graceful degradation в `text-to-speech` edge function — при 401 возвращать понятную ошибку (не 500), а на клиенте (медитации, аффирмации) ловить это и показывать toast «Голосовое озвучивание временно недоступно», не ломая остальной UX. Также добавить fallback на Web Speech API браузера для базовых случаев.
 
----
+#### P1-3. Дублированное поле в SELECT запросе
+`select('*, profile_step_completed')` — `profile_step_completed` уже включено в `*`, поэтому в JSON ответе поле приходит дважды (видно в network logs). PostgREST это терпит, но это мусор и риск конфликтов.
+
+**Фикс:** заменить на `select('*')` в `authSlice.ts:615` и `onboardingSlice.ts:53`.
+
+#### P1-4. Дублированные storage policies для avatars
+В `pg_policies` 8 политик вместо 4 (по две каждой команды): «Avatars are publicly accessible» + «Avatar images are publicly accessible», «Users can upload their avatar» + «Users can upload their own avatar» и т.д. Не ломает, но мусор и одна политика «Avatars are publicly accessible» на SELECT позволяет листинг бакета (warning от линтера: `0025_public_bucket_allows_listing`).
+
+**Фикс миграцией:** удалить старые дубли, оставить по одной политике на команду; для SELECT ограничить листинг — либо запретить листинг и оставить только direct-access по URL, либо явно разрешить только владельцу.
+
+#### P1-5. Мёртвые предупреждения о deprecated коде
+- `authSlice.ts:530` `updateUserProfile` помечена deprecated, но всё ещё экспортируется и вызывается из ряда мест.
+- `gamificationSlice.ts:27` `addEnergyPoints` deprecated.
+- `useOptimizedProfileCache.ts` — в плане его удалили из критического пути, но файл и его упоминания живы (используется в нескольких компонентах профиля).
+
+**Фикс:** провести аудит реальных вызовов, удалить deprecated реализации и заменить вызовы на актуальные функции (`upsert` через слайсы). Если оставлять `useOptimizedProfileCache`, то выровнять контракт с `useAuthFlow` (инвалидация кэша при mutation).
+
+#### P2-6. Bundle size 1.6MB (warning vite)
+Один файл `index-*.js` 1.6 MB / 490 KB gzip — медленная загрузка на мобильных.
+
+**Фикс:** `vite.config.ts` добавить `manualChunks` для разделения `react`, `react-router-dom`, `@tanstack/react-query`, `@supabase/supabase-js` в отдельные чанки. Lazy-load тяжёлых страниц (`MeditationProPage`, `NumerologyPage`, `FullHoroscopePage`) через `React.lazy`.
+
+### Поэтапный план выполнения
+
+**Этап 1 — критические фиксы (P0)**
+1. Переписать `useOptimizedDatabase.ts`: вынести бизнес-логику в чистые функции, кэш — в модульную Map. Хук `useOptimizedDatabase` оставить как обёртку с `useCallback` для обратной совместимости в компонентах, но из не-React контекстов вызывать функции напрямую.
+2. Обновить `useUserProgress.ts`, `useAppStore.ts:deleteAccount`, `markDayComplete.ts` — вызывать чистые функции вместо хука.
+3. Сделать `text-to-speech` edge-function устойчивой к 401 (вернуть структурированную ошибку, статус 503 + `{available: false}`), и на клиенте `useTextToSpeech`/медитации показывать toast вместо runtime error.
+
+**Этап 2 — чистка БД и запросов (P1)**
+4. Миграция: удалить дубли storage policies, ограничить листинг бакета `avatars`.
+5. Заменить `select('*, profile_step_completed')` → `select('*')` в auth/onboarding слайсах.
+6. Удалить deprecated `updateUserProfile`, `addEnergyPoints`; заменить все вызовы на актуальные пути.
+
+**Этап 3 — производительность (P2)**
+7. `vite.config.ts`: `manualChunks` для vendor-чанков.
+8. `React.lazy` + `Suspense` для тяжёлых страниц (Meditation, Numerology, FullHoroscope, AffirmationsPage, MissionsPage).
+
+**Этап 4 — финальная проверка**
+9. `tsc --noEmit` → 0 ошибок.
+10. `vite build` → успех, размер главного чанка <800 KB.
+11. Проверка консоли: ноль ошибок React #321 и ноль 500-ответов от edge functions (TTS показывает graceful toast).
+12. End-to-end сценарий вручную в preview: регистрация нового email → OTP → профиль → онбординг → /main → загрузка аватара → создание пакта → выход → повторный вход.
+
+### Что НЕ трогаем
+- ElevenLabs Agent IDs и промпты Вселенной
+- Cosmic дизайн-токены и тему
+- Логику OTP-верификации email
+- Рабочие edge functions (`generate-horoscope`, `generate-daily-advice`, `universe-answer`, `universe-dialogue`)
+- Структуру `useAuthFlow` / `AuthBootstrap` (только что переписанную и работающую)
 
 ### Файлы под изменение
+- `src/hooks/useOptimizedDatabase.ts` — рефакторинг хука в модуль с функциями
+- `src/hooks/useUserProgress.ts`, `src/store/useAppStore.ts`, `src/store/slices/pacts/markDayComplete.ts` — заменить вызовы хука
+- `supabase/functions/text-to-speech/index.ts` — graceful 503 при 401 от ElevenLabs
+- `src/utils/audioPlayback.ts` (или аналог) и `src/components/MeditationBlock` — обработка 503 без runtime error
+- `src/store/slices/authSlice.ts`, `src/store/slices/onboardingSlice.ts` — `select('*')`
+- `src/store/slices/authSlice.ts`, `src/store/slices/gamificationSlice.ts` — удалить deprecated функции
+- `supabase/migrations/<new>.sql` — чистка дублей storage policies + ограничение листинга
+- `vite.config.ts` — manualChunks
+- `src/App.tsx` — `React.lazy` для тяжёлых страниц
 
-**Создать новые:**
-- `src/hooks/useAuthFlow.ts` — единый источник навигации
-- `src/components/auth/AuthBootstrap.tsx` — заменяет AuthGuard
-
-**Переписать целиком:**
-- `src/pages/LoginPage.tsx`
-- `src/components/UserProfileForm.tsx`
-- `src/pages/OnboardingPage.tsx`
-- `src/components/auth/PublicRoute.tsx`
-- `src/components/auth/ProtectedRoute.tsx`
-- `src/utils/authRouter.ts`
-- `src/store/slices/onboardingSlice.ts` (упростить, убрать profile_step_completed)
-- `src/store/slices/authSlice.ts` (упростить loadUserProfile, добавить profileStepCompleted в стейт)
-- `src/App.tsx` (упростить AppInitializer)
-
-**Удалить:**
-- `src/components/auth/AuthGuard.tsx` (заменён AuthBootstrap)
-- `src/utils/authUtils.ts` (дубль authRouter)
-- `src/hooks/useOptimizedOnboarding.ts` (упростить через useAuthFlow)
-- `src/components/onboarding/OptimizedOnboardingGuard.tsx` (не нужен)
-
-**Не трогать:**
-- ElevenLabs, Universe промпты, Edge Functions, Cosmic тема, дизайн-токены, RLS политики таблиц (profile/avatar/missions), компонент `PasswordStrengthIndicator`, `ProfileForm` (форма уже исправлена), `AvatarUpload`.
-
-### Что увидит пользователь после фикса
-
-```text
-[Регистрация] → [OTP] → [/profile-setup: имя+дата] → [/onboarding: 3 шага] → [/main]
-                                  ↓ (одно сохранение)              ↓ (одно сохранение)
-                            один redirect             один redirect
-```
-
-Никаких миганий, петель, повторных загрузок. Если обновить страницу в любой точке — пользователь окажется ровно там, где должен быть.
-
-### Тестовый сценарий после применения
-
-1. Регистрируюсь новым email → получаю OTP → ввожу → автоматически на `/profile-setup`
-2. Ввожу имя «Test» и дату → клик «Продолжить» → автоматически на `/onboarding`
-3. Прохожу 3 шага → автоматически на `/main`
-4. F5 на любом шаге — возвращает туда же
-5. Logout → снова login тем же email/паролем → попадаю на `/main` (всё запомнилось)
-6. Существующий пользователь `Roman Ivanov` после миграции попадёт сразу на `/onboarding` (профиль уже заполнен)
+### Ожидаемый результат
+После применения: ноль ошибок React в консоли, TTS не валит UI при заблокированном ключе, БД чистая, bundle разделён на чанки, e2e flow от регистрации до /main работает без сбоев. Приложение готово к публикации.
 
