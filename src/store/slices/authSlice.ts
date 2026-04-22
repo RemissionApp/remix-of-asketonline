@@ -150,7 +150,10 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       set({ user: data.user });
 
-      await get().loadUserProfile();
+      await Promise.all([
+        get().loadUserProfile(),
+        get().loadOnboardingState(),
+      ]);
 
       setTimeout(async () => {
         try {
