@@ -214,7 +214,8 @@ export const useOptimizedTextToSpeech = () => {
       }
 
       if (audioSegments.length === 0) {
-        throw new Error('Failed to generate any audio segments');
+        logger.warn('No audio segments generated (TTS may be unavailable)');
+        return;
       }
 
       setAudioQueue(audioSegments);

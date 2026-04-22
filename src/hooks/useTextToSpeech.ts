@@ -247,7 +247,8 @@ export const useTextToSpeech = () => {
       }
 
       if (audioSegments.length === 0) {
-        throw new Error('Failed to generate any audio segments');
+        console.warn('No audio segments generated (TTS may be unavailable)');
+        return;
       }
 
       console.log('Generated audio segments:', audioSegments.length);
