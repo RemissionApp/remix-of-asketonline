@@ -1,105 +1,73 @@
 
 
-## Миграция на Lovable Cloud + восстановление приложения
+## Проверка ElevenLabs и промптов Вселенной
 
-### Ситуация
+### Что проверено
 
-Старый Supabase проект `aewfggzscyjxpuciqtti` **удалён навсегда** (на паузе >90 дней). Данные пользователей не восстановить. Backup можно скачать только если у вас есть доступ к dashboard, но подключить его обратно к приложению нельзя.
+**1. ElevenLabs Agent IDs** ✅ присутствуют в `src/hooks/useElevenLabsConversation.ts`:
+- RU: `agent_01jzg4fchcew0tq8fy4j75vkva`
+- EN: `agent_01jzhxjnzrfghs4d2dqbyz6d3a`
+- ES: `agent_01jzhxwswhfas9ss9ae74n16v0`
 
-**Что есть в коде:**
-- 38 SQL миграций (полная схема БД)
-- 17 edge functions
-- Хардкод URL/ключей старого Supabase в `src/lib/supabase.ts`
-- Зависимость от секретов: OPENAI_API_KEY, RESEND_API_KEY, ELEVENLABS_API_KEY и др.
+Эти ID не трогаем — они ваши и корректные.
 
----
+**2. Промпты Вселенной** ✅ ваши оригинальные промпты на месте в двух файлах:
+- `supabase/functions/universe-answer/index.ts` (9 пунктов, точно ваш текст)
+- `src/utils/universe/universeUtils.ts` (10 пунктов с примером/кейсом)
+- `supabase/functions/universe-dialogue/index.ts` (9 пунктов, ваш текст)
 
-### Этап 1: Включение Lovable Cloud
-
-1. Включить Lovable Cloud в проекте (создаст новый backend на базе Supabase под управлением Lovable)
-2. Автоматически будут созданы переменные `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`
-3. Auto-сгенерируется `src/integrations/supabase/client.ts` и `types.ts`
-
-### Этап 2: Чистка старой конфигурации
-
-1. **Удалить** `src/lib/supabase.ts` (хардкод старого проекта)
-2. Найти все импорты `from '@/lib/supabase'` и заменить на `from '@/integrations/supabase/client'`
-3. Перенести `cleanupAuthState()` и `ensureAvatarBucketExists()` в новый файл `src/lib/authUtils.ts`
-4. Удалить старый `.env` если есть, использовать только Lovable Cloud переменные
-
-### Этап 3: Применение схемы БД
-
-Применить все 38 миграций последовательно через Lovable Cloud migration tool. Включают:
-- Таблицы: profiles, user_roles, pacts, missions, achievements, horoscopes, numerology, daily_limits и др.
-- RLS политики
-- Функции (has_role, handle_new_user trigger и т.д.)
-- Storage buckets (avatars)
-
-При конфликтах — объединить в одну консолидированную миграцию.
-
-### Этап 4: Деплой Edge Functions
-
-17 функций деплоятся автоматически из `supabase/functions/`. Проверить каждую:
-- `generate-horoscope`, `generate-full-horoscope`, `generate-monthly-horoscope`, `fetch-horoscope`
-- `generate-numerology-description`, `generate-daily-advice`
-- `universe-answer`, `universe-dialogue`
-- `send-otp-email`, `verify-otp`, `verify-otp-simple`
-- `text-to-speech`, `voice-to-text`, `elevenlabs-signed-url`
-- `check-daily-limits`, `update-daily-limits`
-- `send-push-notification`
-
-### Этап 5: Настройка секретов
-
-Запросить у пользователя и добавить в Lovable Cloud:
-- `OPENAI_API_KEY` — для гороскопов и AI (или заменить на Lovable AI Gateway)
-- `RESEND_API_KEY` — уже есть ✅
-- `ELEVENLABS_API_KEY` — для text-to-speech
-- RevenueCat ключи если используются
-
-**Рекомендация:** заменить OpenAI на Lovable AI Gateway (бесплатно до конца октября, дешевле, ключ не нужен) — это правка ~5 edge functions.
-
-### Этап 6: Настройка Auth
-
-1. Включить Email/Password провайдер в Cloud
-2. Отключить email confirmation на время разработки (для быстрого тестирования)
-3. Настроить SMTP через Resend для production писем
-4. Настроить Site URL и Redirect URLs
-
-### Этап 7: Storage
-
-Создать bucket `avatars` (public, 2MB лимит) — код уже есть в `ensureAvatarBucketExists`.
-
-### Этап 8: Тестирование пользовательского пути
-
-Полный прогон после миграции:
-1. Регистрация нового пользователя → email/OTP → вход
-2. `/profile-setup` → заполнение профиля → сохранение в БД
-3. `/onboarding` → прохождение шагов
-4. `/main` → создание пакта, генерация гороскопа
-5. Проверка edge functions (AI ответы, TTS, лимиты)
-6. Logout → cleanupAuthState → повторный вход
-7. Удаление аккаунта (через edge function, не client-side)
-
-### Этап 9: iOS Capacitor
-
-Обновить `capacitor.config.ts` если есть ссылки на старый URL. Пересобрать приложение.
+Промпты НЕ изменялись при миграции на Lovable AI Gateway — поменялся только endpoint и ключ авторизации.
 
 ---
 
-### Что НЕ переносится
+### Найденные проблемы
 
-- ❌ Пользователи (auth.users) старого проекта — все будут регистрироваться заново
-- ❌ Их данные (профили, пакты, история) — потеряны
-- ❌ Файлы из старого storage — потеряны
+#### Проблема 1: Несоответствие имени секрета ElevenLabs 🔴
+В коде edge functions используется `ELEVEN_LABS_API_KEY` (с подчёркиванием), но согласно гайдлайнам ElevenLabs стандартное имя — `ELEVENLABS_API_KEY` (без подчёркивания). Сейчас в Lovable Cloud секрет вообще **не настроен** ни под одним из имён (в списке секретов есть только RESEND и LOVABLE_API_KEY).
 
-Если у вас остался скачанный backup из Supabase — его можно импортировать как SQL отдельной миграцией в новую БД (только данные, без auth).
+Затронутые функции:
+- `elevenlabs-signed-url/index.ts` — голосовые звонки с агентами Вселенной не работают
+- `text-to-speech/index.ts` — озвучка ответов Вселенной не работает
+
+#### Проблема 2: Несоответствие промптов между файлами 🟡
+- В `universeUtils.ts` (клиент) промпт содержит **10 пунктов** (с пунктом «Опиши на примере»)
+- В `universe-answer/index.ts` (сервер) промпт содержит **9 пунктов** (без примера)
+
+Клиент отправляет свой `customSystemPrompt` через поле `systemPrompt` в body, но edge function **игнорирует** это поле и всегда использует свой жёстко зашитый промпт. Поэтому 10-й пункт из клиента никогда не доходит до AI.
+
+#### Проблема 3: Endpoint для signed URL 🟡
+Используется `get_signed_url` (с подчёркиванием) — это устаревший вариант. Актуальный: `get-signed-url` (с дефисом). Может работать оба, но безопаснее использовать актуальный.
 
 ---
 
-### Вопросы перед стартом
+### План исправления
 
-1. **AI провайдер:** заменить OpenAI на Lovable AI Gateway (рекомендую) или оставить OpenAI с вашим ключом?
-2. **Email confirmation:** отключить на время разработки для быстрых тестов?
-3. **Backup данных:** есть ли у вас скачанный backup старого Supabase, который нужно импортировать?
-4. **ElevenLabs / RevenueCat:** есть ли актуальные ключи или эти функции пока пропустить?
+**Шаг 1. Запросить ElevenLabs API ключ**
+Вызвать `add_secret` для `ELEVENLABS_API_KEY` (унифицированное имя по гайдлайнам). Дождаться, пока вы добавите ключ.
+
+**Шаг 2. Обновить edge functions на новое имя секрета**
+- `supabase/functions/elevenlabs-signed-url/index.ts`: `ELEVEN_LABS_API_KEY` → `ELEVENLABS_API_KEY`
+- `supabase/functions/text-to-speech/index.ts`: то же самое
+- В `elevenlabs-signed-url` поменять URL на `get-signed-url` (с дефисом)
+
+**Шаг 3. Привести промпт Вселенной к единому каноническому виду**
+Использовать **10-пунктовую версию** из `universeUtils.ts` (с пунктом «Опиши на примере») как источник истины:
+- Заменить системный промпт в `universe-answer/index.ts` (default ветка для regular questions) на полный текст из `getUniverseSystemPrompt()`
+- Сохранить специальный астролог-промпт для daily advice (он отдельный)
+- Так же обновить `universe-dialogue/index.ts` чтобы оба диалоговых пути использовали идентичный 10-пунктовый промпт
+
+**Шаг 4. (Опционально) Заставить edge function уважать клиентский промпт**
+В `universe-answer/index.ts` добавить логику: если клиент прислал `systemPrompt` в body — использовать его, иначе — дефолтный. Это даст вам гибкость менять промпт с клиента без редеплоя функций.
+
+**Шаг 5. Проверка**
+- Убедиться что `useElevenLabsConversation.ts` не трогаем (Agent IDs ваши)
+- После добавления секрета и редеплоя — протестировать звонок и TTS
+
+---
+
+### Что НЕ меняем
+- Agent IDs (RU/EN/ES) — ваши, корректные
+- Текст ваших 10 пунктов промпта — ни одного слова
+- Логику выбора агента по языку
+- Astrologer prompt для daily advice (это отдельная фича)
 
