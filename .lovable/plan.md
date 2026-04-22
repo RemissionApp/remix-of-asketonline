@@ -1,57 +1,52 @@
 
 
-## Фикс: онбординг не проходит — state переключается обратно после завершения
-
-### Что показывают данные
-
-- В БД `user_onboarding_state` для текущего юзера уже корректно: `onboarding_step_completed=true`, `current_step='complete'`, `completed_at='20:36:55'`. То есть upsert из `OnboardingPage.completeOnboarding()` **проходит успешно**.
-- Но юзер всё ещё на `/onboarding` — значит в Zustand store `onboardingStepCompleted=false`, и `useAuthFlow` возвращает `targetRoute='/onboarding'`.
+## Фикс: убрать ложную ошибку RevenueCat в web-версии + дедупликация инициализации
 
 ### Корни проблемы
 
-**Корень №1 — `loadOnboardingState` имеет 5-минутный TTL-кэш**, который не учитывает ручные `setState` извне.
-В `OnboardingPage.completeOnboarding()` после upsert делается `useAppStore.setState({onboardingStepCompleted: true})` напрямую — но `lastSyncedAt` не обновляется. Любой следующий вызов `loadOnboardingState` (из `loadUserProfile` через `setTimeout`, при TOKEN_REFRESHED, при mount нового компонента, при возврате на вкладку) видит «кэш истёк» → делает свежий SELECT → если попал в гонку с upsert, получает старое значение и **перезатирает `true` обратно в `false`**.
+1. **`@revenuecat/purchases-capacitor` — нативный плагин**, в браузере всегда бросает `Web not supported in this plugin`. Это не баг, а ожидаемое поведение для web. Но `useRevenueCat` показывает destructive toast «Ошибка инициализации», пугая web-пользователей.
 
-**Корень №2 — каскадный вызов в `authSlice.loadUserProfile`** (строка 799):
+2. **Множественная инициализация**: `useRevenueCat(user?.id)` вызывается в нескольких компонентах одновременно (`UniverseMessageBlock`, `OfferingsDisplay`, `SubscriptionManager` и др.) — в логах видно 6 параллельных вызовов `initialize` с одним и тем же `userId`. Каждый бросает ошибку → 6 красных toast'ов.
+
+3. **Нет детекции платформы перед вызовом**: код пытается инициализировать RevenueCat всегда, даже когда `Capacitor.isNativePlatform() === false`.
+
+### План исправления
+
+**Шаг 1 — Детектить нативную платформу в `revenueCatSlice.initialize`**
+В `src/store/slices/revenueCatSlice.ts` в начале `initialize()`:
 ```ts
-setTimeout(() => get().loadOnboardingState(), 0);
+import { Capacitor } from '@capacitor/core';
+
+if (!Capacitor.isNativePlatform()) {
+  console.info('RevenueCat: skipping initialization on web (native-only plugin)');
+  set({ isInitialized: false, billingAvailable: false, isLoading: false });
+  return;
+}
 ```
-Каждый раз при загрузке профиля (а это происходит ПОСТОЯННО — в network видно 6+ запросов `/profiles?id=eq.` за 2 секунды на mount) триггерится `loadOnboardingState`. В сочетании с гонкой это перетирает только что выставленное `true`.
+Это **тихо** пропускает инициализацию в браузере, без throw, без toast.
 
-**Корень №3 — сам `loadOnboardingState` использует `|| false`** для дефолта. Если БД вернёт `null` (например, transient ошибка которая не выкинула throw), state обнулится.
+**Шаг 2 — Убрать destructive toast из `useRevenueCat`**
+В `src/hooks/useRevenueCat.ts` обернуть `initialize(userId).catch(...)` так, чтобы при ошибке `Web not supported` НЕ показывать toast — только в консоль. Реальные ошибки (на нативе) продолжают показываться.
 
-**Корень №4 — `OnboardingPage` не вызывает `navigate('/main')` напрямую**, полагаясь на ProtectedRoute + useAuthFlow. Но useAuthFlow зависит от Zustand state, который в любой момент может быть перетёрт `loadOnboardingState`. Нет надёжной точки «всё, мы закончили».
+**Шаг 3 — Дедупликация инициализации**
+В `revenueCatSlice` добавить guard: если `isInitialized === true` ИЛИ уже идёт `initializingPromise` — возвращать существующий promise вместо повторного вызова. Так 6 параллельных компонентов получат один общий init вместо 6 запросов.
 
-### План исправлений
-
-**Шаг 1 — Убрать каскад из `authSlice.loadUserProfile`**
-Удалить `setTimeout(() => get().loadOnboardingState(), 0)` со строки 799 `src/store/slices/authSlice.ts`. Загрузка onboarding state делается ровно один раз — в `useAuthFlowBootstrap.hydrateForUser()` через `Promise.all([loadUserProfile, loadOnboardingState])`. Дублирующие вызовы из `loadUserProfile` удалить.
-
-**Шаг 2 — Усилить `OnboardingPage.completeOnboarding`**
-После успешного upsert:
-1. Обновить `lastSyncedAt: new Date()` вместе с флагами, чтобы заблокировать повторное чтение из БД на 5 минут.
-2. Вызвать `navigate('/main', { replace: true })` напрямую (через `useNavigate`), не полагаясь на ProtectedRoute. Так редирект происходит мгновенно и детерминированно.
-3. Удалить вызов `setActiveScreen('main')` — это устаревший legacy-механизм, не имеющий отношения к React Router.
-
-**Шаг 3 — Сделать `loadOnboardingState` idempotent при наличии свежего `completed_at`**
-В `src/store/slices/onboardingSlice.ts:84-93`: если в стейте уже `onboardingStepCompleted === true && completedAt !== null`, **не перезаписывать** этот флаг даже при обновлении из БД (защитный switch: `prev || fromDb`). Это гарантирует, что race-условие не сможет откатить true → false.
-
-**Шаг 4 — Расширить TTL-кэш с учётом завершённого онбординга**
-Если `state.completedAt !== null` — пропускать загрузку из БД полностью (возврат раньше TTL-чека). Завершённый онбординг — финальный, никогда не возвращается в незавершённое состояние без явного `resetOnboarding`.
-
-**Шаг 5 — Убедиться, что `useAuthFlow` реагирует на изменение state**
-Текущий `useAuthFlow` уже подписан на `onboardingStepCompleted` через `useAppStore(s => s.onboardingStepCompleted)` — это OK, ничего не трогаем.
+**Шаг 4 — Отметить web как «billing недоступен» консистентно**
+- `hasActiveSubscription` в web-режиме должен возвращать `false` (free tier), пока не подключён web-провайдер платежей (Stripe/Paddle).
+- `OfferingsDisplay` уже корректно показывает «Google Play Billing недоступен» при `billingAvailable === false` — оставить.
 
 ### Файлы под изменение
-- `src/pages/OnboardingPage.tsx` — добавить `useNavigate`, обновить `lastSyncedAt`, прямой `navigate('/main')`.
-- `src/store/slices/authSlice.ts` — удалить каскадный `setTimeout(loadOnboardingState)` со строки 799.
-- `src/store/slices/onboardingSlice.ts` — защитное слияние (true-sticky), early-return при `completedAt !== null`.
+- `src/store/slices/revenueCatSlice.ts` — добавить platform check + дедупликацию.
+- `src/hooks/useRevenueCat.ts` — убрать toast при `Web not supported`.
 
 ### Что НЕ трогаем
-- БД и миграции — всё в порядке, данные в `user_onboarding_state` корректны.
-- `useAuthFlow`, `ProtectedRoute`, `AppRouter` — работают правильно.
-- RLS policies, триггер `on_auth_user_created` — без изменений.
+- Нативную работу RevenueCat (iOS/Android-сборки продолжат работать как раньше).
+- UI компоненты PRO (`ProFeatureOverlay`, `PaywallButton`).
+- БД таблицу `subscriptions`.
+
+### Дальнейший шаг (отдельным этапом, не сейчас)
+Для **web-монетизации** подключить Stripe/Paddle через `payments--recommend_payment_provider` — это даст работающий paywall в браузере и PWA. RevenueCat остаётся для нативных билдов.
 
 ### Ожидаемый результат
-После клика «Начать путь» / «Пропустить» в онбординге — мгновенный переход на `/main`, без отката state. Перезагрузка страницы не возвращает на `/onboarding`. Race-условие из множественных `loadUserProfile`/`TOKEN_REFRESHED` больше не способно откатить завершённый онбординг.
+В web-превью больше нет красного toast «Ошибка инициализации». В консоли — единственное info-сообщение «skipping on web». На нативном Android/iOS RevenueCat работает как раньше, paywall открывается.
 
