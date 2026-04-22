@@ -7,6 +7,10 @@ import {
 } from '@revenuecat/purchases-capacitor';
 import { revenueCatService } from '@/utils/revenueCat';
 import { useAppStore } from '../useAppStore';
+import { Capacitor } from '@capacitor/core';
+
+// Module-level promise for deduplication of concurrent initialize() calls
+let initializingPromise: Promise<void> | null = null;
 
 interface RevenueCatState {
   // State
