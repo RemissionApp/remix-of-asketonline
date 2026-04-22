@@ -22,16 +22,16 @@ function Calendar({
     props.defaultMonth || new Date()
   );
   const currentYear = new Date().getFullYear();
-  const yearRange = 50; // 50 years before and after current year
-  const minYear = currentYear - yearRange;
-  const maxYear = currentYear + yearRange;
+  // Respect fromYear/toYear props from DayPicker if provided.
+  const minYear = (props as any).fromYear ?? currentYear - 100;
+  const maxYear = (props as any).toYear ?? currentYear;
 
   // Get locale based on selected language
   const locale = getLocaleByLanguage(language);
 
   // Handle year slider change
   const handleYearChange = (values: number[]) => {
-    const newYear = values[0];
+    const newYear = Math.min(maxYear, Math.max(minYear, values[0]));
     const newDate = new Date(month);
     newDate.setFullYear(newYear);
     setMonth(newDate);
