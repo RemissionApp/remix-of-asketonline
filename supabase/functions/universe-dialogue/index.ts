@@ -30,9 +30,9 @@ serve(async req => {
   }
 
   try {
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not set');
     }
 
     const {
@@ -123,17 +123,17 @@ ${messageHistory}
 
 Ответь, учитывая все 9 пунктов из инструкции, сохраняя глубину экспертного мнения.`;
 
-    // Use GPT-4o for expert responses
-    const gptModel = 'gpt-4o';
+    // Use Gemini Flash via Lovable AI Gateway
+    const gptModel = 'google/gemini-2.5-flash';
 
     console.log(
       `Processing dialogue request with model ${gptModel}. Question: ${question}`
     );
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -148,16 +148,26 @@ ${messageHistory}
             content: userPrompt,
           },
         ],
-        temperature: 0.8,
-        max_tokens: 1000,
       }),
     });
 
     const data = await response.json();
 
+    if (response.status === 429) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded, try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (response.status === 402) {
+      return new Response(
+        JSON.stringify({ error: 'AI credits exhausted. Please top up your Lovable workspace.' }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     if (data.error) {
-      console.error('OpenAI API error:', data.error);
-      throw new Error(data.error.message || 'Error from OpenAI API');
+      console.error('AI Gateway error:', data.error);
+      throw new Error(data.error.message || 'Error from AI Gateway');
     }
 
     const answer = data.choices[0].message.content;
