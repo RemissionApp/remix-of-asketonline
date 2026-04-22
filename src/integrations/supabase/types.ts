@@ -943,7 +943,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_progress_summary: {
+        Row: {
+          achievements_count: number | null
+          artifacts_count: number | null
+          completed_missions_count: number | null
+          energy_points: number | null
+          id: string | null
+          missions_count: number | null
+          rank: string | null
+          total_days: number | null
+        }
+        Insert: {
+          achievements_count?: never
+          artifacts_count?: never
+          completed_missions_count?: never
+          energy_points?: number | null
+          id?: string | null
+          missions_count?: never
+          rank?: string | null
+          total_days?: number | null
+        }
+        Update: {
+          achievements_count?: never
+          artifacts_count?: never
+          completed_missions_count?: never
+          energy_points?: number | null
+          id?: string | null
+          missions_count?: never
+          rank?: string | null
+          total_days?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       batch_delete_user_data: {
