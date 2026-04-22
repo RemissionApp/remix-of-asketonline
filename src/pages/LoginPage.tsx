@@ -524,16 +524,18 @@ const LoginPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
-                        onClick={handleGuestLogin}
-                      >
-                        {t.auth.guestSignIn || 'Войти как гость'}
-                      </Button>
-                    </div>
+                    {import.meta.env.DEV && (
+                      <div className="pt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
+                          onClick={handleGuestLogin}
+                        >
+                          {t.auth.guestSignIn || 'Войти как гость'} (dev)
+                        </Button>
+                      </div>
+                    )}
                   </form>
                 </TabsContent>
 
