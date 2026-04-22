@@ -24,8 +24,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (targetRoute !== location.pathname) {
-    return <Navigate to={targetRoute} replace />;
+  // Force redirect only when the user must complete profile or onboarding.
+  // When status === 'ready', allow free navigation across all protected routes.
+  if (status === 'needs_profile' || status === 'needs_onboarding') {
+    if (targetRoute !== location.pathname) {
+      return <Navigate to={targetRoute} replace />;
+    }
   }
 
   return <>{children}</>;
