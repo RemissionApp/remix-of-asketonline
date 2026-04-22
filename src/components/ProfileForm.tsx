@@ -24,6 +24,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { formatDateLong, getLocaleByLanguage } from '@/utils/dateFormatUtils';
 import { useNavigate } from 'react-router-dom';
+import { subYears } from 'date-fns';
 
 interface ProfileFormProps {
   onSubmit: (values: z.infer<any>) => Promise<void>;
@@ -42,6 +43,16 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   const { t } = useTranslations();
   const { language } = useAppStore();
   const navigate = useNavigate();
+
+  // Birth date constraints: must be in the past, user at least 5 years old.
+  const today = new Date();
+  const maxBirthDate = subYears(today, 5);
+  const minBirthDate = new Date('1930-01-01');
+  const currentYear = today.getFullYear();
+  const defaultCalendarMonth =
+    defaultValues.birthDate && defaultValues.birthDate.getFullYear() < currentYear
+      ? defaultValues.birthDate
+      : new Date(1990, 0, 1);
 
   // Create form schema based on language
   const formSchema = z.object({
@@ -144,16 +155,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={date => {
-                      const minDate = new Date('1930-01-01');
-                      const maxDate = new Date('2025-12-31');
-                      return (
-                        date > maxDate ||
-                        date < minDate
-                      );
-                    }}
+                    disabled={date => date > maxBirthDate || date < minBirthDate}
+                    defaultMonth={defaultCalendarMonth}
+                    captionLayout="dropdown"
+                    fromYear={1930}
+                    toYear={currentYear - 5}
                     initialFocus
-                    className="pointer-events-auto"
+                    className="pointer-events-auto p-3"
                     locale={getLocaleByLanguage(language)}
                   />
                 </PopoverContent>

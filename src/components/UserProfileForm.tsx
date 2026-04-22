@@ -120,14 +120,19 @@ const UserProfileForm: React.FC = () => {
         birth_date: formattedBirthDate,
       });
 
-      // Update directly in Supabase
+      // Upsert directly in Supabase to handle the case when the trigger
+      // hasn't created the profile row yet.
       const { data: updateResult, error } = await supabase
         .from('profiles')
-        .update({
-          name: values.name,
-          birth_date: formattedBirthDate,
-        })
-        .eq('id', user.id)
+        .upsert(
+          {
+            id: user.id,
+            name: values.name,
+            birth_date: formattedBirthDate,
+            profile_step_completed: true,
+          },
+          { onConflict: 'id' }
+        )
         .select();
 
       if (error) {
@@ -137,7 +142,17 @@ const UserProfileForm: React.FC = () => {
 
       console.log('Supabase update successful:', updateResult);
 
-      // Force reload profile and onboarding data to sync with DB
+      // Optimistic local update so isProfileComplete() returns true immediately,
+      // before the async reload completes.
+      useAppStore.setState(state => ({
+        userProfile: {
+          ...state.userProfile,
+          name: values.name,
+          birthDate: values.birthDate,
+        },
+      }));
+
+      // Reload from DB (authoritative source).
       await loadUserProfile();
       
       // Load onboarding state to get updated profile_step_completed
