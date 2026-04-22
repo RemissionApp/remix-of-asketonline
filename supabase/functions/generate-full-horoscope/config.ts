@@ -6,7 +6,7 @@ export const corsHeaders = {
 };
 
 // OpenAI model to use for horoscope generation
-export const openAiModel = 'gpt-4o-mini';
+export const openAiModel = 'google/gemini-2.5-flash';
 
 // Temperature setting for OpenAI API
 export const openAiTemperature = 0.7;
