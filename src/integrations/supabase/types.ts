@@ -14,13 +14,982 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          achievement_type: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          title: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          title: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          title?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      astro_profiles: {
+        Row: {
+          birth_date: string
+          birth_place: string | null
+          birth_time: string | null
+          created_at: string
+          id: string
+          last_reading: Json | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          birth_place?: string | null
+          birth_time?: string | null
+          created_at?: string
+          id?: string
+          last_reading?: Json | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          birth_place?: string | null
+          birth_time?: string | null
+          created_at?: string
+          id?: string
+          last_reading?: Json | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      cached_daily_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          date: string
+          id: string
+          language: string
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          date: string
+          id?: string
+          language?: string
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          language?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      cached_monthly_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          id: string
+          language: string
+          month: number
+          year: number
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          id?: string
+          language?: string
+          month: number
+          year: number
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          id?: string
+          language?: string
+          month?: number
+          year?: number
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      cached_yearly_horoscopes: {
+        Row: {
+          birth_year: number
+          content: Json
+          created_at: string
+          id: string
+          language: string
+          target_year: number
+          zodiac_sign: string
+        }
+        Insert: {
+          birth_year: number
+          content: Json
+          created_at?: string
+          id?: string
+          language?: string
+          target_year: number
+          zodiac_sign: string
+        }
+        Update: {
+          birth_year?: number
+          content?: Json
+          created_at?: string
+          id?: string
+          language?: string
+          target_year?: number
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      cosmic_artifacts: {
+        Row: {
+          artifact_id: string
+          description: string
+          effects: Json
+          id: string
+          is_active: boolean
+          name: string
+          obtained_at: string
+          obtained_from_mission: string | null
+          rarity: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          artifact_id: string
+          description: string
+          effects?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          obtained_at?: string
+          obtained_from_mission?: string | null
+          rarity: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          artifact_id?: string
+          description?: string
+          effects?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          obtained_at?: string
+          obtained_from_mission?: string | null
+          rarity?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_limits: {
+        Row: {
+          cosmic_missions_count: number
+          created_at: string
+          date: string
+          id: string
+          meditations_count: number
+          universe_questions_count: number
+          updated_at: string
+          user_id: string
+          voice_calls_count: number
+        }
+        Insert: {
+          cosmic_missions_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          meditations_count?: number
+          universe_questions_count?: number
+          updated_at?: string
+          user_id: string
+          voice_calls_count?: number
+        }
+        Update: {
+          cosmic_missions_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          meditations_count?: number
+          universe_questions_count?: number
+          updated_at?: string
+          user_id?: string
+          voice_calls_count?: number
+        }
+        Relationships: []
+      }
+      daily_reflections: {
+        Row: {
+          answer: string
+          attachment_url: string | null
+          created_at: string
+          day_number: number
+          id: string
+          mission_id: string
+          question: string
+          reflection_type: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          attachment_url?: string | null
+          created_at?: string
+          day_number: number
+          id?: string
+          mission_id: string
+          question: string
+          reflection_type?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          attachment_url?: string | null
+          created_at?: string
+          day_number?: number
+          id?: string
+          mission_id?: string
+          question?: string
+          reflection_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      detailed_horoscopes: {
+        Row: {
+          content: Json
+          created_at: string
+          date: string
+          id: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          date: string
+          id?: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          user_id?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      email_verification_codes: {
+        Row: {
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          used: boolean
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          used?: boolean
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          used?: boolean
+        }
+        Relationships: []
+      }
+      full_horoscopes: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: string
+          user_id: string
+          zodiac_sign: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          user_id?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      mission_choices: {
+        Row: {
+          choice_event_id: string
+          choice_id: string
+          chosen_at: string
+          consequences: Json
+          id: string
+          mission_id: string
+          user_id: string
+        }
+        Insert: {
+          choice_event_id: string
+          choice_id: string
+          chosen_at?: string
+          consequences?: Json
+          id?: string
+          mission_id: string
+          user_id: string
+        }
+        Update: {
+          choice_event_id?: string
+          choice_id?: string
+          chosen_at?: string
+          consequences?: Json
+          id?: string
+          mission_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mission_progress: {
+        Row: {
+          accepted_at: string
+          completed: boolean
+          completed_at: string | null
+          id: string
+          last_updated_at: string
+          mission_id: string
+          progress: Json
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          last_updated_at?: string
+          mission_id: string
+          progress?: Json
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          last_updated_at?: string
+          mission_id?: string
+          progress?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mission_progress_detailed: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          completed_date: string | null
+          created_at: string
+          data: Json
+          day_number: number
+          id: string
+          mission_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_date?: string | null
+          created_at?: string
+          data?: Json
+          day_number: number
+          id?: string
+          mission_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_date?: string | null
+          created_at?: string
+          data?: Json
+          day_number?: number
+          id?: string
+          mission_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string
+          id: string
+          requirements: Json
+          reward: Json
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description: string
+          id?: string
+          requirements: Json
+          reward: Json
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          requirements?: Json
+          reward?: Json
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      numerology_descriptions: {
+        Row: {
+          created_at: string
+          description_data: Json
+          id: string
+          language: string
+          reading_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description_data: Json
+          id?: string
+          language?: string
+          reading_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description_data?: Json
+          id?: string
+          language?: string
+          reading_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "numerology_descriptions_reading_id_fkey"
+            columns: ["reading_id"]
+            isOneToOne: false
+            referencedRelation: "numerology_readings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      numerology_readings: {
+        Row: {
+          birth_date: string
+          created_at: string
+          id: string
+          matrix_data: Json
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string
+          id?: string
+          matrix_data: Json
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string
+          id?: string
+          matrix_data?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pact_days: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          id: string
+          pact_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date: string
+          id?: string
+          pact_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          pact_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pact_days_pact_id_fkey"
+            columns: ["pact_id"]
+            isOneToOne: false
+            referencedRelation: "pacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pacts: {
+        Row: {
+          break_reason: string | null
+          created_at: string
+          duration: number
+          id: string
+          reward: string | null
+          status: string
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          break_reason?: string | null
+          created_at?: string
+          duration: number
+          id?: string
+          reward?: string | null
+          status?: string
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          break_reason?: string | null
+          created_at?: string
+          duration?: number
+          id?: string
+          reward?: string | null
+          status?: string
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          active_mission: string | null
+          avatar_url: string | null
+          birth_date: string | null
+          created_at: string
+          energy_points: number
+          goal: string | null
+          id: string
+          name: string
+          profile_step_completed: boolean | null
+          rank: string
+          total_days: number
+          updated_at: string
+        }
+        Insert: {
+          active_mission?: string | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          created_at?: string
+          energy_points?: number
+          goal?: string | null
+          id: string
+          name: string
+          profile_step_completed?: boolean | null
+          rank?: string
+          total_days?: number
+          updated_at?: string
+        }
+        Update: {
+          active_mission?: string | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          created_at?: string
+          energy_points?: number
+          goal?: string | null
+          id?: string
+          name?: string
+          profile_step_completed?: boolean | null
+          rank?: string
+          total_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          id: string
+          is_active: boolean
+          settings: Json
+          subscription: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          id?: string
+          is_active?: boolean
+          settings?: Json
+          subscription: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          id?: string
+          is_active?: boolean
+          settings?: Json
+          subscription?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      raw_horoscopes: {
+        Row: {
+          content: string
+          created_at: string
+          detailed: boolean
+          id: string
+          language: string
+          zodiac_sign: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          detailed?: boolean
+          id?: string
+          language: string
+          zodiac_sign: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          detailed?: boolean
+          id?: string
+          language?: string
+          zodiac_sign?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          is_pro: boolean
+          original_transaction_id: string | null
+          platform: string | null
+          product_id: string | null
+          revenuecat_user_id: string | null
+          store_transaction_id: string | null
+          subscription_end: string | null
+          subscription_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_pro?: boolean
+          original_transaction_id?: string | null
+          platform?: string | null
+          product_id?: string | null
+          revenuecat_user_id?: string | null
+          store_transaction_id?: string | null
+          subscription_end?: string | null
+          subscription_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_pro?: boolean
+          original_transaction_id?: string | null
+          platform?: string | null
+          product_id?: string | null
+          revenuecat_user_id?: string | null
+          store_transaction_id?: string | null
+          subscription_end?: string | null
+          subscription_start?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      universe_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "universe_chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "universe_chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      universe_chat_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_message: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      universe_questions: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_onboarding_state: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          current_step: string | null
+          onboarding_step_completed: boolean | null
+          preferences_step_completed: boolean | null
+          profile_step_completed: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          onboarding_step_completed?: boolean | null
+          preferences_step_completed?: boolean | null
+          profile_step_completed?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          onboarding_step_completed?: boolean | null
+          preferences_step_completed?: boolean | null
+          profile_step_completed?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      user_progress_summary: {
+        Row: {
+          achievements_count: number | null
+          artifacts_count: number | null
+          completed_missions_count: number | null
+          energy_points: number | null
+          id: string | null
+          missions_count: number | null
+          rank: string | null
+          total_days: number | null
+        }
+        Insert: {
+          achievements_count?: never
+          artifacts_count?: never
+          completed_missions_count?: never
+          energy_points?: number | null
+          id?: string | null
+          missions_count?: never
+          rank?: string | null
+          total_days?: number | null
+        }
+        Update: {
+          achievements_count?: never
+          artifacts_count?: never
+          completed_missions_count?: never
+          energy_points?: number | null
+          id?: string | null
+          missions_count?: never
+          rank?: string | null
+          total_days?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      batch_delete_user_data: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      create_verification_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: string
+      }
+      validate_verification_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
