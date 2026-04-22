@@ -17,6 +17,9 @@ import {
   LoginVoiceGreeting,
   LoginVoiceGreetingRef,
 } from '@/components/auth/LoginVoiceGreeting';
+import PasswordStrengthIndicator, {
+  isPasswordStrongEnough,
+} from '@/components/auth/PasswordStrengthIndicator';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +39,9 @@ const LoginPage: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('login');
   const [emailSent, setEmailSent] = useState(false);
   const [otpSent, setOtpSent] = useState(false);

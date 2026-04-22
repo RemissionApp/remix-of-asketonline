@@ -5,6 +5,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+import { ArrowLeft } from 'lucide-react';
 
 const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,10 @@ const OnboardingPage: React.FC = () => {
       // Complete onboarding
       completeOnboarding();
     }
+  };
+
+  const handleBack = () => {
+    if (step > 0) setStep(step - 1);
   };
 
   const completeOnboarding = () => {
@@ -138,18 +143,37 @@ const OnboardingPage: React.FC = () => {
 
             <div className="flex justify-center mb-8">
               {[0, 1, 2].map(i => (
-                <div
+                <button
                   key={i}
-                  className={`w-3 h-3 mx-1 rounded-full ${i === step ? 'bg-cosmic-accent' : 'bg-cosmic-accent/30'}`}
+                  type="button"
+                  onClick={() => i <= step && setStep(i)}
+                  aria-label={`Шаг ${i + 1}`}
+                  className={`w-3 h-3 mx-1 rounded-full transition-colors ${
+                    i === step
+                      ? 'bg-cosmic-accent'
+                      : i < step
+                      ? 'bg-cosmic-accent/60 hover:bg-cosmic-accent cursor-pointer'
+                      : 'bg-cosmic-accent/30 cursor-default'
+                  }`}
                 />
               ))}
             </div>
 
-            <CosmicButton onClick={handleNext}>
-              {step < 2
-                ? t.onboarding.buttons.next
-                : t.onboarding.buttons.startJourney || 'Начать путь'}
-            </CosmicButton>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-1 px-4 py-2 rounded-md text-cosmic-secondary hover:text-cosmic-accent transition-colors text-sm"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {t.onboarding.buttons.back || 'Назад'}
+              </button>
+              <CosmicButton onClick={handleNext}>
+                {step < 2
+                  ? t.onboarding.buttons.next
+                  : t.onboarding.buttons.startJourney || 'Начать путь'}
+              </CosmicButton>
+            </div>
           </div>
         )}
       </div>
