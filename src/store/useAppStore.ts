@@ -156,12 +156,10 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
         // Delete all user data from tables
         const userId = user.id;
 
-        // Use optimized batch delete
-        const { useOptimizedDatabase } = await import(
+        // Use optimized batch delete (pure function, safe outside React)
+        const { batchDeleteUserData } = await import(
           '@/hooks/useOptimizedDatabase'
         );
-        const { batchDeleteUserData } = useOptimizedDatabase();
-
         const deleteResult = await batchDeleteUserData(userId);
         if (!deleteResult.success) {
           throw deleteResult.error;

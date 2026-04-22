@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
-import { useOptimizedDatabase } from '@/hooks/useOptimizedDatabase';
+import { getCachedUserProgress } from '@/hooks/useOptimizedDatabase';
 
 interface UserProgressStats {
   missionsCompleted: number;
@@ -50,9 +50,6 @@ export const useUserProgress = () => {
     setIsLoading(true);
     
     try {
-      // Use optimized cached database operations
-      const { getCachedUserProgress } = useOptimizedDatabase();
-      
       const progressData = await getCachedUserProgress(user.id);
       
       // Get additional detailed data for calculations

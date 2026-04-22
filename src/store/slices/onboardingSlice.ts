@@ -50,7 +50,7 @@ export const createOnboardingSlice: StateCreator<
       const [profileResult, onboardingResult] = await Promise.all([
         supabase
           .from('profiles')
-          .select('*, profile_step_completed')
+          .select('*')
           .eq('id', user.id)
           .single(),
         supabase

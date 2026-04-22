@@ -3,6 +3,7 @@ import { AppState } from '../../types';
 import { PactsState } from './types';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import { optimizedMarkDayComplete } from '@/hooks/useOptimizedDatabase';
 
 export interface MarkDayCompleteSlice {
   markDayComplete: (pactId: string) => Promise<void>;
@@ -28,10 +29,6 @@ export const createMarkDayCompleteSlice = (
     set({ loading: true });
 
     try {
-      // Use optimized database operations
-      const { useOptimizedDatabase } = await import('@/hooks/useOptimizedDatabase');
-      const { optimizedMarkDayComplete } = useOptimizedDatabase();
-      
       const result = await optimizedMarkDayComplete(pactId, user.id);
       
       if (result.success) {
