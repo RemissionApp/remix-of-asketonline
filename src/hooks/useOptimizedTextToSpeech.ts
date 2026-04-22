@@ -61,14 +61,19 @@ export const useOptimizedTextToSpeech = () => {
         }
       );
 
+      if (data && data.available === false) {
+        logger.warn('TTS unavailable:', data.message);
+        return null;
+      }
+
       if (error) {
-        logger.error('Supabase function error:', error);
-        throw new Error(`Text-to-speech error: ${error.message}`);
+        logger.warn('TTS function error (non-fatal):', error.message);
+        return null;
       }
 
       if (!data?.audioContent) {
-        logger.error('No audio content received from API');
-        throw new Error('No audio content received');
+        logger.warn('No audio content received from API');
+        return null;
       }
 
       const binaryString = atob(data.audioContent);

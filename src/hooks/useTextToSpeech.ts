@@ -59,14 +59,20 @@ export const useTextToSpeech = () => {
         }
       );
 
+      // Graceful: TTS service unavailable (e.g. ElevenLabs 401)
+      if (data && data.available === false) {
+        console.warn('TTS unavailable:', data.message);
+        return null;
+      }
+
       if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(`Text-to-speech error: ${error.message}`);
+        console.warn('TTS function error (non-fatal):', error.message);
+        return null;
       }
 
       if (!data?.audioContent) {
-        console.error('No audio content received from API');
-        throw new Error('No audio content received');
+        console.warn('No audio content received from API');
+        return null;
       }
 
       console.log('Received audio content, length:', data.audioContent.length);
