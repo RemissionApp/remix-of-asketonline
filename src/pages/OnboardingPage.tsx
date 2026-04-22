@@ -1,39 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const OnboardingPage: React.FC = () => {
-  const navigate = useNavigate();
-  const {
-    setOnboardingComplete,
-    setActiveScreen,
-    user,
-    checkOnboardingStatus,
-  } = useAppStore();
+  const { user, setActiveScreen } = useAppStore();
   const { t } = useTranslations();
   const [step, setStep] = useState(0);
-
-  // Check if user has already completed onboarding
-  useEffect(() => {
-    const isOnboardingComplete = checkOnboardingStatus();
-
-    if (isOnboardingComplete) {
-      console.log('Onboarding previously completed, redirecting to main');
-      navigate('/main');
-    }
-  }, [checkOnboardingStatus, navigate]);
+  const [saving, setSaving] = useState(false);
 
   const handleNext = () => {
     if (step < 2) {
-      // Just use a hardcoded number for steps (0, 1, 2)
       setStep(step + 1);
     } else {
-      // Complete onboarding
       completeOnboarding();
     }
   };
@@ -42,15 +25,44 @@ const OnboardingPage: React.FC = () => {
     if (step > 0) setStep(step - 1);
   };
 
-  const completeOnboarding = () => {
-    console.log('Completing onboarding');
+  const completeOnboarding = async () => {
+    if (!user || saving) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('user_onboarding_state')
+        .upsert(
+          {
+            user_id: user.id,
+            current_step: 'complete',
+            onboarding_step_completed: true,
+            preferences_step_completed: true,
+            completed_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        );
 
-    // Set onboarding complete and navigate to main screen
-    setOnboardingComplete(true);
-    setActiveScreen('main');
+      if (error) throw error;
 
-    // Navigate to main page (remove localStorage usage)
-    navigate('/main');
+      // Sync local store so useAuthFlow re-routes to /main
+      useAppStore.setState({
+        onboardingStepCompleted: true,
+        preferencesStepCompleted: true,
+        currentStep: 'complete',
+        completedAt: new Date(),
+      });
+      setActiveScreen('main');
+      // No navigate() — <ProtectedRoute> + useAuthFlow handle the redirect.
+    } catch (err: any) {
+      console.error('Failed to complete onboarding', err);
+      toast({
+        title: 'Ошибка',
+        description: err?.message || 'Не удалось завершить онбординг',
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Function to split text by newlines and render paragraphs
@@ -87,6 +99,7 @@ const OnboardingPage: React.FC = () => {
       <div className="absolute top-6 right-6 z-20">
         <button
           onClick={completeOnboarding}
+          disabled={saving}
           className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm"
         >
           {t.onboarding.buttons.skip || 'Пропустить'}
@@ -94,6 +107,9 @@ const OnboardingPage: React.FC = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-lg px-4">
+        <p className="text-center text-xs uppercase tracking-widest text-cosmic-secondary/60 mb-4">
+          Шаг 2 из 2
+        </p>
         {step === 0 ? (
           <div className="animate-fade-in text-center">
             <div className="w-56 h-56 mx-auto mb-8 relative">
@@ -123,7 +139,7 @@ const OnboardingPage: React.FC = () => {
               </p>
             </div>
 
-            <CosmicButton onClick={handleNext}>
+            <CosmicButton onClick={handleNext} disabled={saving}>
               {t.onboarding.buttons.enter || 'Войти'}
             </CosmicButton>
           </div>
@@ -168,7 +184,7 @@ const OnboardingPage: React.FC = () => {
                 <ArrowLeft className="h-4 w-4" />
                 {t.onboarding.buttons.back || 'Назад'}
               </button>
-              <CosmicButton onClick={handleNext}>
+              <CosmicButton onClick={handleNext} disabled={saving}>
                 {step < 2
                   ? t.onboarding.buttons.next
                   : t.onboarding.buttons.startJourney || 'Начать путь'}

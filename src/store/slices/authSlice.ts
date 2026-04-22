@@ -107,23 +107,12 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
   // Унифицированная функция проверки завершенности профиля
   isProfileComplete: () => {
     const { userProfile, user } = get();
-    console.log('isProfileComplete check - userProfile:', userProfile);
-
-    if (!user || !userProfile) {
-      console.log('isProfileComplete: No user or userProfile');
-      return false;
-    }
-
-    // Check if profile has required fields AND database flag is set
-    const hasRequiredFields = !!(
+    if (!user || !userProfile) return false;
+    return !!(
       userProfile.name &&
       userProfile.name.trim() !== '' &&
       userProfile.birthDate
     );
-
-    console.log('isProfileComplete - hasRequiredFields:', hasRequiredFields);
-
-    return hasRequiredFields;
   },
 
   // Унифицированная функция проверки завершенности onboarding
@@ -796,10 +785,14 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         birth_date: data?.birth_date,
       });
 
-      // Set profile state and trigger onboarding sync
-      set({ userProfile: updatedProfile });
+      // Set profile state AND sync profileStepCompleted from the same row
+      // (single source of truth for the profile flag).
+      set({
+        userProfile: updatedProfile,
+        profileStepCompleted: !!data?.profile_step_completed,
+      });
 
-      // Load onboarding state after profile is loaded
+      // Load onboarding-only flags (preferences/onboarding) from the other table
       setTimeout(() => get().loadOnboardingState(), 0);
 
       logger.debug('User profile state updated successfully', {

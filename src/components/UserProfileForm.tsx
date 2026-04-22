@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { differenceInYears } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDate } from '@/utils/dateFormatUtils';
 import { createLogger } from '@/utils/logger';
 import AvatarUpload from './AvatarUpload';
 import ZodiacInfo from './ZodiacInfo';
@@ -16,16 +15,10 @@ import * as z from 'zod';
 
 const UserProfileForm: React.FC = () => {
   const logger = createLogger('UserProfileForm');
-  const navigate = useNavigate();
   const location = useLocation();
   const {
-    updateUserProfile,
     userProfile,
-    language,
-    onboardingComplete,
-    setOnboardingComplete,
     user,
-    loadUserProfile,
   } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
@@ -37,69 +30,21 @@ const UserProfileForm: React.FC = () => {
     birthDate: new Date(),
   });
 
-  // Load user profile data when component mounts
+  // Hydrate the local form from store data once available.
   useEffect(() => {
-    const loadProfile = async () => {
-      if (!user) return;
-
-      setIsLoading(true);
-      try {
-        // First, try to load from the store
-        await loadUserProfile();
-
-        logger.debug('Profile loaded from store', {
-          profileName: userProfile.name,
-        });
-
-        // Then fetch the latest data from Supabase
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('name, birth_date, avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          logger.error('Error fetching profile', error);
-          return;
-        }
-
-        if (profileData) {
-          // Convert birth_date string from Supabase to a Date object
-          const birthDate = profileData.birth_date
-            ? new Date(profileData.birth_date)
-            : null;
-
-          // Update the store directly via loadUserProfile
-          await loadUserProfile();
-
-          setFormData({
-            name: profileData.name || '',
-            birthDate: birthDate || new Date(),
-          });
-
-          // Calculate and set age
-          if (birthDate) {
-            const calculatedAge = differenceInYears(new Date(), birthDate);
-            setAge(calculatedAge);
-          }
-        }
-      } catch (err) {
-        logger.error('Exception fetching profile', err);
-      } finally {
-        setIsLoading(false);
+    if (userProfile?.name || userProfile?.birthDate) {
+      setFormData({
+        name: userProfile.name || '',
+        birthDate: userProfile.birthDate || new Date(),
+      });
+      if (userProfile.birthDate) {
+        setAge(differenceInYears(new Date(), userProfile.birthDate));
       }
-    };
-
-    if (user) {
-      loadProfile();
     }
-  }, [user, userProfile.avatar_url, loadUserProfile, updateUserProfile]);
+  }, [userProfile?.name, userProfile?.birthDate]);
 
-  // Handle form submission
+  // Handle form submission - single upsert, optimistic local update, no navigation.
   const onSubmit = async (values: z.infer<any>) => {
-    console.log('=== FORM SUBMISSION STARTED ===');
-    console.log('Form values received:', values);
-    
     if (!user) {
       toast({
         title: 'Ошибка',
@@ -110,19 +55,10 @@ const UserProfileForm: React.FC = () => {
     }
 
     setIsSaving(true);
-
     try {
-      // Format birthDate to YYYY-MM-DD for Supabase (ISO format)
       const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
-      
-      console.log('Updating Supabase with:', {
-        name: values.name,
-        birth_date: formattedBirthDate,
-      });
 
-      // Upsert directly in Supabase to handle the case when the trigger
-      // hasn't created the profile row yet.
-      const { data: updateResult, error } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .upsert(
           {
@@ -132,81 +68,28 @@ const UserProfileForm: React.FC = () => {
             profile_step_completed: true,
           },
           { onConflict: 'id' }
-        )
-        .select();
+        );
 
-      if (error) {
-        console.error('Supabase update error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Supabase update successful:', updateResult);
-
-      // Optimistic local update so isProfileComplete() returns true immediately,
-      // before the async reload completes.
+      // Authoritative local update — useAuthFlow recomputes targetRoute
+      // and <ProtectedRoute> redirects automatically.
       useAppStore.setState(state => ({
         userProfile: {
           ...state.userProfile,
           name: values.name,
           birthDate: values.birthDate,
         },
+        profileStepCompleted: true,
       }));
 
-      // Reload from DB (authoritative source).
-      await loadUserProfile();
-      
-      // Load onboarding state to get updated profile_step_completed
-      const { loadOnboardingState } = useAppStore.getState();
-      await loadOnboardingState();
-      
-      // Update local form data immediately
-      setFormData({
-        name: values.name,
-        birthDate: values.birthDate,
-      });
-
-      // Trigger profile update event for immediate UI refresh
-      window.dispatchEvent(new CustomEvent('profileUpdated', { 
-        detail: { 
-          name: values.name,
-          birthDate: values.birthDate 
-        } 
-      }));
-
-      // Calculate and set age
-      const calculatedAge = differenceInYears(new Date(), values.birthDate);
-      setAge(calculatedAge);
+      setFormData({ name: values.name, birthDate: values.birthDate });
+      setAge(differenceInYears(new Date(), values.birthDate));
 
       toast({
         title: 'Профиль обновлен',
         description: 'Ваши данные успешно сохранены',
       });
-
-      // Only redirect if not on account settings page
-      if (location.pathname !== '/account-settings') {
-        // Check profile completion immediately after reload with fresh state
-        const currentState = useAppStore.getState();
-        console.log('=== CHECKING COMPLETION STATUS ===');
-        console.log('Current userProfile state:', currentState.userProfile);
-        
-        const profileComplete = currentState.isProfileComplete();
-        const onboardingComplete = currentState.checkOnboardingStatus();
-        
-        console.log('Profile complete:', profileComplete);
-        console.log('Onboarding complete:', onboardingComplete);
-        
-        if (profileComplete && !onboardingComplete) {
-          console.log('=== REDIRECTING TO ONBOARDING ===');
-          navigate('/onboarding');
-        } else if (profileComplete && onboardingComplete) {
-          console.log('=== REDIRECTING TO MAIN ===');
-          navigate('/main');
-        } else {
-          console.log('=== STAYING ON PROFILE PAGE - NOT COMPLETE ===');
-        }
-      } else {
-        console.log('=== ON ACCOUNT SETTINGS - NO REDIRECT ===');
-      }
     } catch (error: any) {
       logger.error('Error saving profile', error);
       toast({
@@ -221,6 +104,11 @@ const UserProfileForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto text-center">
+      {location.pathname === '/profile-setup' && (
+        <p className="text-xs uppercase tracking-widest text-cosmic-secondary/60 mb-4">
+          Шаг 1 из 2
+        </p>
+      )}
       <div className="flex justify-center mb-4 relative">
         <AvatarUpload />
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,9 +20,9 @@ import {
 import PasswordStrengthIndicator, {
   isPasswordStrongEnough,
 } from '@/components/auth/PasswordStrengthIndicator';
+import { useAuthFlow } from '@/hooks/useAuthFlow';
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
   const {
     signIn,
     signUp,
@@ -35,6 +35,7 @@ const LoginPage: React.FC = () => {
     verifyOtpCode,
   } = useAppStore();
   const { t } = useTranslations();
+  const { status, targetRoute } = useAuthFlow();
   const voiceGreetingRef = useRef<LoginVoiceGreetingRef>(null);
 
   const [email, setEmail] = useState('');
@@ -47,58 +48,11 @@ const LoginPage: React.FC = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [verifyingOtp, setVerifyingOtp] = useState(false);
-  const [authChecking, setAuthChecking] = useState(true);
 
-  // Эффект для проверки, вошел ли пользователь уже в систему
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        // Проверяем текущую сессию
-        const { data } = await supabase.auth.getSession();
-
-        // Если пользователь уже вошел в систему
-        if (data?.session?.user) {
-          console.log('Пользователь уже авторизован:', data.session.user);
-
-          // Проверяем подтверждение email
-          const isConfirmed = await checkEmailConfirmation();
-
-          if (!isConfirmed) {
-            toast({
-              title: 'Подтвердите email',
-              description:
-                'Пожалуйста, подтвердите ваш email перед продолжением',
-              variant: 'warning',
-            });
-            setAuthChecking(false);
-            return;
-          }
-
-          // Use centralized auth routing
-          const storeState = useAppStore.getState();
-          const profileComplete = storeState.isProfileComplete();
-          
-          if (profileComplete) {
-            const onboardingComplete = storeState.checkOnboardingStatus();
-            if (onboardingComplete) {
-              navigate('/main');
-            } else {
-              navigate('/onboarding');
-            }
-          } else {
-            navigate('/profile-setup');
-          }
-        } else {
-          setAuthChecking(false);
-        }
-      } catch (err) {
-        console.error('Ошибка при проверке статуса аутентификации:', err);
-        setAuthChecking(false);
-      }
-    };
-
-    checkAuthStatus();
-  }, [navigate, checkEmailConfirmation, userProfile]);
+  // Authenticated users are auto-redirected by useAuthFlow.
+  if (status !== 'unauthenticated' && status !== 'initializing' && targetRoute !== '/login') {
+    return <Navigate to={targetRoute} replace />;
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,43 +66,10 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    // Воспроизводим приветствие при нажатии кнопки входа
     voiceGreetingRef.current?.playGreeting();
-
-    // Очищаем состояние аутентификации перед входом в систему
     cleanupAuthState();
-
-    const success = await signIn(email, password);
-    if (success) {
-      console.log('Вход выполнен успешно');
-      // Проверяем, подтвержден ли email
-      const isConfirmed = await checkEmailConfirmation();
-
-      if (!isConfirmed) {
-        toast({
-          title: 'Подтвердите email',
-          description: 'Пожалуйста, подтвердите ваш email перед продолжением',
-          variant: 'warning',
-        });
-        return;
-      }
-
-      // Используем централизованную проверку профиля
-      const storeState = useAppStore.getState();
-      const profileComplete = storeState.isProfileComplete();
-      
-      if (!profileComplete) {
-        navigate('/profile-setup');
-      } else {
-        // Профиль заполнен, проверяем onboarding
-        const onboardingComplete = storeState.checkOnboardingStatus();
-        if (onboardingComplete) {
-          navigate('/main');
-        } else {
-          navigate('/onboarding');
-        }
-      }
-    }
+    // signIn() updates the store; useAuthFlow will redirect via <Navigate>.
+    await signIn(email, password);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -206,25 +127,9 @@ const LoginPage: React.FC = () => {
     try {
       const verified = await verifyOtpCode(email, otpCode, password);
       if (verified) {
-        // Check if user is logged in now
+        // Store updates trigger useAuthFlow → automatic <Navigate> to /profile-setup.
         const currentUser = useAppStore.getState().user;
-        if (currentUser) {
-          // User is automatically logged in, navigate appropriately
-          const storeState = useAppStore.getState();
-          const profileComplete = storeState.isProfileComplete();
-          
-          if (!profileComplete) {
-            navigate('/profile-setup');
-          } else {
-            const onboardingComplete = storeState.checkOnboardingStatus();
-            if (onboardingComplete) {
-              navigate('/main');
-            } else {
-              navigate('/onboarding');
-            }
-          }
-        } else {
-          // Fallback: user needs to sign in manually
+        if (!currentUser) {
           setActiveTab('login');
           setOtpSent(false);
           toast({
@@ -283,31 +188,14 @@ const LoginPage: React.FC = () => {
       description: t.auth.signInButton,
       variant: 'warning',
     });
-
-    // Перенаправляем на главную страницу как гость
     setTimeout(() => {
-      navigate('/main');
+      window.location.href = '/main';
     }, 1500);
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  // Показываем загрузку, пока проверяем статус аутентификации
-  if (authChecking) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
-        <StarField starCount={150} />
-        <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-cosmic-secondary">{t.auth.checkingAuth}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">

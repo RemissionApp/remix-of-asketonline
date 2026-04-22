@@ -15,7 +15,6 @@ import { createLogger } from '@/utils/logger';
 import { useTranslations } from '@/hooks/useTranslations';
 
 import { useAppStore } from './store/useAppStore';
-import { supabase, cleanupAuthState } from './lib/supabase';
 import WelcomePage from './pages/WelcomePage';
 import LanguagePage from './pages/LanguagePage';
 import LoginPage from './pages/LoginPage';
@@ -52,86 +51,28 @@ import { NotificationIntegrations } from './utils/notifications/notificationInte
 import { performanceMonitor } from './utils/performance';
 import { SafeAreaView } from './components/SafeAreaView';
 import { AppRouter } from './components/AppRouter';
-import { AuthGuard } from './components/auth/AuthGuard';
+import { AuthBootstrap } from './components/auth/AuthBootstrap';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
 
-// Компонент глобальной инициализации приложения
+// Lightweight non-auth initializer (settings, notifications, perf).
+// Auth is handled by <AuthBootstrap>.
 const AppInitializer = () => {
   const logger = createLogger('AppInitializer');
+  const initializeSettings = useAppStore(s => s.initializeSettings);
 
-  try {
-    const {
-      checkOnboardingStatus,
-      user,
-      loadUserProfile,
-      setUser,
-      initializeSettings,
-    } = useAppStore();
-
-    useEffect(() => {
-      // Инициализируем настройки из localStorage
+  useEffect(() => {
+    try {
       initializeSettings();
-
-      // Проверяем состояние onboarding при загрузке приложения
-      checkOnboardingStatus();
-
-      // Инициализируем push-уведомления
       NotificationIntegrations.initializeAll();
-
-      // Инициализируем мониторинг производительности
       performanceMonitor.initWebVitals();
+    } catch (err) {
+      logger.error('AppInitializer error', err);
+    }
+  }, [initializeSettings, logger]);
 
-      // Настраиваем слушатель изменений состояния аутентификации
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange(async (event, session) => {
-        logger.info('Auth state changed', { event, userId: session?.user?.id });
-
-        if (event === 'SIGNED_IN' && session) {
-          setUser(session.user);
-
-          // Отложенная загрузка данных пользователя для предотвращения deadlock
-          setTimeout(() => {
-            loadUserProfile();
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        }
-      });
-
-      // Проверяем текущую сессию при инициализации
-      const checkSession = async () => {
-        try {
-          const { data, error } = await supabase.auth.getSession();
-          if (error) {
-            logger.error('Ошибка получения сессии', error);
-            return;
-          }
-
-          if (data.session?.user) {
-            setUser(data.session.user);
-            await loadUserProfile();
-          }
-        } catch (error) {
-          logger.error('Не удалось проверить сессию', error);
-        }
-      };
-
-      checkSession();
-
-      // Отписываемся при размонтировании
-      return () => {
-        subscription.unsubscribe();
-      };
-    }, [checkOnboardingStatus, loadUserProfile, setUser, initializeSettings]);
-
-    return null;
-  } catch (error) {
-    logger.error('Error in AppInitializer', error);
-    return null;
-  }
+  return null;
 };
 
 const App = () => {
@@ -142,13 +83,13 @@ const App = () => {
           <SafeAreaView>
             <BrowserRouter>
               <AppInitializer />
-              <AuthGuard>
+              <AuthBootstrap>
                 <div className="">
                   <AppRouter />
                 </div>
                 <PWAInstallPrompt />
                 <PWAUpdateNotification />
-              </AuthGuard>
+              </AuthBootstrap>
               <Toaster />
               <Sonner />
             </BrowserRouter>

@@ -915,7 +915,6 @@ export type Database = {
           current_step: string | null
           onboarding_step_completed: boolean | null
           preferences_step_completed: boolean | null
-          profile_step_completed: boolean | null
           updated_at: string | null
           user_id: string
         }
@@ -925,7 +924,6 @@ export type Database = {
           current_step?: string | null
           onboarding_step_completed?: boolean | null
           preferences_step_completed?: boolean | null
-          profile_step_completed?: boolean | null
           updated_at?: string | null
           user_id: string
         }
@@ -935,7 +933,6 @@ export type Database = {
           current_step?: string | null
           onboarding_step_completed?: boolean | null
           preferences_step_completed?: boolean | null
-          profile_step_completed?: boolean | null
           updated_at?: string | null
           user_id?: string
         }

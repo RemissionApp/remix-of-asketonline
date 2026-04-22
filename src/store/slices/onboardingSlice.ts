@@ -79,9 +79,7 @@ export const createOnboardingSlice: StateCreator<
 
       // Update state with fetched data - prioritize profiles table for profile_step_completed
       const profileData = profileResult.data;
-      const profileCompleted = profileData?.profile_step_completed || 
-                               onboardingData?.profile_step_completed || 
-                               false;
+      const profileCompleted = profileData?.profile_step_completed || false;
       
       set({
         currentStep: (onboardingData?.current_step || 'profile') as 'profile' | 'preferences' | 'tour' | 'complete',
@@ -124,9 +122,11 @@ export const createOnboardingSlice: StateCreator<
     set(updates);
 
     try {
-      const updateData: any = { current_step: step };
-      
-      if (step !== 'complete') {
+      // profile_step_completed lives in profiles table now (single source of truth)
+      // Here we only persist onboarding-specific flags (preferences/onboarding/tour).
+      const updateData: any = { current_step: step, user_id: user.id };
+
+      if (step !== 'complete' && step !== 'profile') {
         updateData[`${step}_step_completed`] = completed;
       }
 
@@ -136,8 +136,7 @@ export const createOnboardingSlice: StateCreator<
 
       const { error } = await supabase
         .from('user_onboarding_state')
-        .update(updateData)
-        .eq('user_id', user.id);
+        .upsert(updateData, { onConflict: 'user_id' });
 
       if (error) throw error;
 
@@ -177,10 +176,9 @@ export const createOnboardingSlice: StateCreator<
         .from('user_onboarding_state')
         .update({
           current_step: 'profile',
-          profile_step_completed: false,
           onboarding_step_completed: false,
           preferences_step_completed: false,
-          completed_at: null
+          completed_at: null,
         })
         .eq('user_id', user.id);
 
