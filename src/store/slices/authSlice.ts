@@ -612,7 +612,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
       // Force fresh data from database with cache bypass, including profile_step_completed
       const { data, error } = await supabase
         .from('profiles')
-        .select('*, profile_step_completed')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
