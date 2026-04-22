@@ -5,12 +5,11 @@ import { useAppStore } from '@/store/useAppStore';
 import { CosmicButton } from '@/components/CosmicButton';
 import { StarField } from '@/components/StarField';
 import { SupportedLanguage } from '@/hooks/useTranslations';
-import { getNavigationRoute } from '@/utils/authUtils';
 import { useUserJourneyAnalytics } from '@/hooks/useUserJourneyAnalytics';
 
 const LanguagePage = () => {
   const navigate = useNavigate();
-  const { language, setLanguage, user, loadUserProfile } = useAppStore();
+  const { language, setLanguage, user } = useAppStore();
   const { trackJourneyStep } = useUserJourneyAnalytics();
   const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(
     language as SupportedLanguage
@@ -20,35 +19,20 @@ const LanguagePage = () => {
   useEffect(() => {
     setIsReady(true);
     trackJourneyStep('language_page_opened');
-    
-    // Check if user is already authenticated and has complete profile
-    const checkAuthAndRedirect = async () => {
-      if (user) {
-        await loadUserProfile();
-        const route = getNavigationRoute();
-        console.log('LanguagePage - User authenticated, redirecting to:', route);
-        trackJourneyStep('language_page_auth_redirect', { route });
-        navigate(route);
-      }
-    };
-    
-    checkAuthAndRedirect();
-  }, [user, loadUserProfile, navigate, trackJourneyStep]);
+
+    // If user already authenticated, useAuthFlow on protected/public routes
+    // will handle redirects. Just push them out of the language page.
+    if (user) {
+      navigate('/main');
+    }
+  }, [user, navigate, trackJourneyStep]);
 
   const handleContinue = async () => {
     setLanguage(selectedLang);
     trackJourneyStep('language_selected', { language: selectedLang });
-
-    // If user is already authenticated, determine correct route
     if (user) {
-      await loadUserProfile();
-      const route = getNavigationRoute();
-      console.log('LanguagePage - handleContinue: User authenticated, redirecting to:', route);
-      trackJourneyStep('continue_with_auth', { route });
-      navigate(route);
+      navigate('/main');
     } else {
-      // For non-authenticated users, always go to login
-      trackJourneyStep('continue_to_login');
       navigate('/login');
     }
   };
