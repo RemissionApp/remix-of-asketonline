@@ -19,6 +19,7 @@ const UserProfileForm: React.FC = () => {
   const {
     userProfile,
     user,
+    loadUserProfile,
   } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
@@ -56,7 +57,13 @@ const UserProfileForm: React.FC = () => {
 
     setIsSaving(true);
     try {
-      const formattedBirthDate = values.birthDate.toISOString().split('T')[0];
+      // Build YYYY-MM-DD using LOCAL date components to avoid timezone shifts
+      // (e.g. 1986-09-30 in +03:00 would otherwise become 1986-09-29 via toISOString).
+      const d = values.birthDate;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const formattedBirthDate = `${yyyy}-${mm}-${dd}`;
 
       const { error } = await supabase
         .from('profiles')
@@ -85,6 +92,13 @@ const UserProfileForm: React.FC = () => {
 
       setFormData({ name: values.name, birthDate: values.birthDate });
       setAge(differenceInYears(new Date(), values.birthDate));
+
+      // Reload once to normalize derived fields (zodiacSign, etc.)
+      try {
+        await loadUserProfile();
+      } catch (e) {
+        logger.warn('Profile reload after save failed (non-fatal)', e);
+      }
 
       toast({
         title: 'Профиль обновлен',

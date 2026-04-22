@@ -41,13 +41,12 @@ export const updateProfileAvatar = async (
   userId: string,
   avatarUrl: string
 ) => {
-  // Use upsert in case the profile row doesn't exist yet (race with trigger).
+  // Profile row is guaranteed to exist (created by on_auth_user_created trigger).
+  // Use UPDATE to avoid overwriting other columns like `name`.
   const { error } = await supabase
     .from('profiles')
-    .upsert(
-      { id: userId, avatar_url: avatarUrl, name: '' },
-      { onConflict: 'id', ignoreDuplicates: false }
-    );
+    .update({ avatar_url: avatarUrl })
+    .eq('id', userId);
 
   if (error) throw error;
 

@@ -69,38 +69,23 @@ const AvatarUpload: React.FC = () => {
       await updateProfileAvatar(user.id, publicUrl);
       logger.debug('Profile updated in database');
 
-      // Save timestamp for cache-busting
+      // Cache-busted URL so <img> reflects the new file immediately.
       const timestamp = Date.now();
+      const cacheBustedUrl = `${publicUrl}?v=${timestamp}`;
       localStorage.setItem('avatar-upload-timestamp', timestamp.toString());
-      
-      // Optimistic UI update - directly update local state
-      const store = useAppStore.getState();
-      useAppStore.setState(state => ({
-        userProfile: { 
-          ...state.userProfile, 
-          avatar_url: publicUrl 
-        }
-      }));
-      logger.debug('Local state updated optimistically');
 
-      // Force reload profile from database with cache bypass
-      setTimeout(async () => {
-        try {
-          logger.debug('Force reloading profile from database');
-          await loadUserProfile();
-          
-          // Trigger custom event for immediate avatar update
-          window.dispatchEvent(new CustomEvent('avatarUpdated', { 
-            detail: { 
-              avatarUrl: publicUrl,
-              timestamp 
-            } 
-          }));
-          logger.debug('Avatar update event dispatched');
-        } catch (err) {
-          logger.error('Error during profile reload', err);
-        }
-      }, 100);
+      // Single optimistic update — Zustand is the only source of truth.
+      useAppStore.setState(state => ({
+        userProfile: {
+          ...state.userProfile,
+          avatar_url: cacheBustedUrl,
+        },
+      }));
+
+      window.dispatchEvent(new CustomEvent('avatarUpdated', {
+        detail: { avatarUrl: cacheBustedUrl, timestamp },
+      }));
+      logger.debug('Local state updated with cache-busted URL');
 
       // Clean up
       setShowConfirm(false);
