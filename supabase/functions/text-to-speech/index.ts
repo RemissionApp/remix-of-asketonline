@@ -77,22 +77,23 @@ serve(async req => {
       // Graceful degradation: 401 from ElevenLabs (free tier blocked, invalid key,
       // unusual activity) should NOT crash the client. Return a structured 503
       // so callers can show a friendly toast and skip audio.
-      if (response.status === 401 || response.status === 403) {
-        return new Response(
-          JSON.stringify({
-            available: false,
-            error: 'tts_unavailable',
-            message:
-              'Голосовое озвучивание временно недоступно. Попробуйте позже.',
-          }),
-          {
-            status: 503,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-
-      throw new Error(`Eleven Labs API error: ${response.status} ${errorText}`);
+      // Graceful degradation: never throw 5xx for upstream provider issues.
+      // supabase.functions.invoke treats non-2xx as `error` and discards the
+      // body, so the client cannot read `available: false`. Always return 200
+      // with a structured payload — the client checks `data.available`.
+      return new Response(
+        JSON.stringify({
+          available: false,
+          error: 'tts_unavailable',
+          status: response.status,
+          message:
+            'Голосовое озвучивание временно недоступно. Попробуйте позже.',
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     console.log('Eleven Labs API response successful, processing audio...');
@@ -124,9 +125,18 @@ serve(async req => {
     );
   } catch (error) {
     console.error('Error in text-to-speech function:', error.message);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Return 200 with available:false so the client degrades gracefully
+    // instead of surfacing a 5xx as a hard error / blank screen.
+    return new Response(
+      JSON.stringify({
+        available: false,
+        error: 'tts_runtime_error',
+        message: error.message,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
