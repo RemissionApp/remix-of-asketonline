@@ -29,59 +29,78 @@ serve(async (req) => {
       );
     }
 
-    // Get OpenAI API key from environment
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      console.error('OpenAI API key not configured');
+    // Use Lovable AI Gateway (Gemini supports inline audio transcription)
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      console.error('LOVABLE_API_KEY not configured');
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        JSON.stringify({ error: 'AI service not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Convert base64 to blob
-    const audioBytes = Uint8Array.from(atob(audioData), c => c.charCodeAt(0));
-    
-    // Create FormData for OpenAI Whisper API
-    const formData = new FormData();
-    formData.append('file', new Blob([audioBytes], { type: 'audio/wav' }), 'audio.wav');
-    formData.append('model', 'whisper-1');
-    formData.append('language', language === 'en' ? 'en' : language === 'es' ? 'es' : 'ru');
+    const langInstruction =
+      language === 'en' ? 'English'
+      : language === 'es' ? 'Spanish'
+      : 'Russian';
 
-    // Call OpenAI Whisper API
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      body: formData,
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Transcribe this audio in ${langInstruction}. Return ONLY the transcribed text, nothing else. No quotes, no commentary.`,
+              },
+              {
+                type: 'input_audio',
+                input_audio: {
+                  data: audioData,
+                  format: 'wav',
+                },
+              },
+            ],
+          },
+        ],
+      }),
     });
+
+    if (response.status === 429) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded, try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (response.status === 402) {
+      return new Response(
+        JSON.stringify({ error: 'AI credits exhausted. Please top up your Lovable workspace.' }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI Whisper API error:', errorText);
+      console.error('AI Gateway transcription error:', errorText);
       return new Response(
         JSON.stringify({ error: 'Speech recognition failed' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const result = await response.json();
+    const text = result.choices?.[0]?.message?.content?.trim() || '';
 
     return new Response(
-      JSON.stringify({ 
-        text: result.text || '',
-        success: true 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      JSON.stringify({ text, success: true }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
