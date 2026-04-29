@@ -61,10 +61,11 @@ export const useElevenLabsConversation = () => {
       }
 
       // 3. Стартуем сессию через WebRTC с токеном
-      const id = await conversation.startSession({
+      await conversation.startSession({
         conversationToken: data.token,
         connectionType: 'webrtc',
       });
+      const id = conversation.getId?.() ?? null;
       setConversationId(id);
 
       return id;
