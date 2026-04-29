@@ -1,38 +1,42 @@
-Похоже, само приложение уже рендерится в iframe: я вижу стартовый экран Asket в Preview. Но есть несколько вещей в коде, которые могут делать Preview нестабильным или пустым у вас: PWA/service worker регистрируется прямо в dev-preview, manifest запрашивается без preview-токена и получает 401, а service worker может кэшировать/перехватывать навигацию внутри приватного preview-домена.
+Нашёл вероятную причину: опубликованная ссылка работает, а окно Lovable может оставаться пустым из-за уже зарегистрированного `public/sw.js`.
+
+Текущее состояние:
+- В свежей проверке приложение само рендерится нормально: страница `Asket` открывается.
+- В коде всё ещё есть полноценный service worker `public/sw.js`, который перехватывает навигацию и кэширует `/`, `/manifest.json`, и ассеты.
+- Предыдущее исправление отключило регистрацию service worker внутри приложения, но если старый service worker уже установлен в браузере/iframe, он может перехватить загрузку раньше, чем новый JS успеет выполнить очистку.
+- Поэтому в Lovable IDE iframe у вас может продолжать показываться пустое/устаревшее окно, хотя опубликованная ссылка работает.
 
 План исправления:
 
-1. Отключить PWA service worker в Lovable Preview и dev-режиме
-   - Не регистрировать `/sw.js`, когда приложение открыто на `lovableproject.com`, `lovable.app`, `localhost` или в Vite dev mode.
-   - Если service worker уже был зарегистрирован в preview, автоматически снять регистрацию и очистить связанные cache storage записи.
-   - В production/published web PWA-функции оставить включенными.
+1. Заменить `public/sw.js` на kill-switch service worker
+   - При установке он сразу активируется.
+   - При активации удаляет все Cache Storage записи.
+   - Перенаправляет открытые вкладки/iframe на свежий URL.
+   - После этого unregister самого service worker.
+   - Это нужно, чтобы удалить старый service worker с устройств/браузеров, где он уже успел установиться.
 
-2. Сделать manifest безопасным для Preview
-   - Не подключать `manifest.json` в dev/Lovable Preview, чтобы браузер не получал 401 и не создавал PWA-ошибки в консоли.
-   - Для опубликованной версии manifest останется доступен.
+2. Добавить такой же kill-switch как `public/service-worker.js`
+   - Даже если старый код когда-то регистрировал другой путь, этот файл тоже зачистит кэш.
+   - Это безопасная страховка для preview.
 
-3. Добавить iframe-safe guard
-   - Не добавлять запреты на iframe и не выполнять редиректы из iframe наружу.
-   - Добавить утилиту определения среды Preview, чтобы будущие нативные/PWA-интеграции не ломали web-preview.
+3. Усилить PWA guard в коде приложения
+   - Вынести проверку preview/iframe в экспортируемую функцию.
+   - Использовать её не только при регистрации service worker, но и в PWA-компонентах/хуках.
+   - В Lovable Preview не запускать install prompt, update notification, advanced caching, background sync и notification permission init.
 
-4. Проверить результат
-   - Открыть `/` в sandbox preview.
-   - Убедиться, что стартовый экран Asket виден.
-   - Проверить консоль: не должно быть критичных ошибок из-за manifest/service worker.
-   - Проверить network: основные файлы приложения грузятся с 200.
+4. Упростить `src/main.tsx`
+   - Не запускать PWA регистрацию в preview/dev вообще.
+   - Оставить только cleanup для уже существующих registrations.
 
-Технические детали:
+5. Проверить после правок
+   - Открыть preview в sandbox.
+   - Проверить Network/Console: не должно быть активной регистрации `/sw.js`, ошибок manifest/401, или перехвата навигации service worker.
+   - Вам нужно будет сделать hard refresh окна Lovable после применения, потому что мы чистим уже установленный кэш.
 
-- Основные файлы для изменения:
-  - `src/main.tsx`
-  - `src/utils/pwaUtils.ts`
-  - возможно `src/utils/pwaUpdateManager.ts`
-  - `index.html`
-
-- Предлагаемая логика среды:
-  - `import.meta.env.DEV === true` → не регистрировать service worker
-  - `window.location.hostname.includes('lovableproject.com')` → не регистрировать service worker
-  - `window.location.hostname.includes('lovable.app')` в preview-сценарии → не регистрировать service worker
-  - production/custom domain → PWA включена
+Технически это не проблема публикации и не проблема React-рендера. Главная причина — старый PWA service worker сохраняется в браузере и может ломать именно iframe preview в Lovable.
 
 После одобрения внесу эти изменения.
+
+<lov-actions>
+<lov-link url="https://docs.lovable.dev/tips-tricks/troubleshooting">Troubleshooting docs</lov-link>
+</lov-actions>

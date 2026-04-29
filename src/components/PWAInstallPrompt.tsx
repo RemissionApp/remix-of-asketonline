@@ -3,6 +3,7 @@ import { Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { installPWA, isPWAInstalled } from '@/utils/pwaUtils';
+import { isPwaDisabledEnvironment } from '@/utils/pwaUtils';
 
 interface PWAInstallPromptProps {
   onClose?: () => void;
@@ -15,6 +16,10 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
+    // В Lovable Preview/iframe/dev никогда не показываем install prompt.
+    if (isPwaDisabledEnvironment()) {
+      return;
+    }
     // Проверяем, не установлено ли уже приложение
     if (isPWAInstalled()) {
       return;

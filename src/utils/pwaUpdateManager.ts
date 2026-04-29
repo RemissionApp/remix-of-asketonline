@@ -1,4 +1,5 @@
 // Менеджер обновлений PWA
+import { isPwaDisabledEnvironment } from './pwaUtils';
 
 export class PWAUpdateManager {
   private static instance: PWAUpdateManager;
@@ -13,6 +14,10 @@ export class PWAUpdateManager {
   }
 
   async initialize(): Promise<void> {
+    if (isPwaDisabledEnvironment()) {
+      // В Lovable Preview/iframe/dev не регистрируем SW и не опрашиваем обновления.
+      return;
+    }
     if ('serviceWorker' in navigator) {
       try {
         this.registration = await navigator.serviceWorker.register('/sw.js');

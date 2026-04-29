@@ -18,6 +18,7 @@ import {
 } from '@/utils/badgeAPI';
 import { advancedCache, cacheServiceWorker } from '@/utils/advancedCaching';
 import { useToast } from '@/hooks/use-toast';
+import { isPwaDisabledEnvironment } from '@/utils/pwaUtils';
 
 export const usePWAFeatures = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -44,6 +45,11 @@ export const usePWAFeatures = () => {
   }, []);
 
   const initializePWAFeatures = async () => {
+    if (isPwaDisabledEnvironment()) {
+      // В Lovable Preview/iframe/dev пропускаем тяжёлую PWA-инициализацию.
+      setIsInitialized(true);
+      return;
+    }
     try {
       // Инициализация уведомлений
       const notificationPermission = await notificationManager.init();
