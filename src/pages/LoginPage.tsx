@@ -10,7 +10,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 import { supabase, cleanupAuthState } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -256,9 +256,10 @@ const LoginPage: React.FC = () => {
                 
                 <CosmicButton 
                   type="submit" 
-                  className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
+                  className="w-full min-h-[52px] bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80 flex items-center justify-center gap-2"
                   disabled={verifyingOtp || otpCode.length !== 6}
                 >
+                  {verifyingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
                   {verifyingOtp ? `${t.auth.verifyButton}...` : t.auth.verifyButton}
                 </CosmicButton>
                 
@@ -381,9 +382,10 @@ const LoginPage: React.FC = () => {
                     <div className="pt-4">
                       <CosmicButton
                         type="submit"
-                        className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80"
+                        className="w-full min-h-[52px] bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80 flex items-center justify-center gap-2"
                         disabled={loading}
                       >
+                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                         {loading ? 'Выполняется вход...' : t.auth.signInButton}
                       </CosmicButton>
                     </div>
@@ -514,13 +516,14 @@ const LoginPage: React.FC = () => {
                     <div className="pt-4">
                       <CosmicButton
                         type="submit"
-                        className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80"
+                        className="w-full min-h-[52px] bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80 flex items-center justify-center gap-2"
                         disabled={
                           loading ||
                           !isPasswordStrongEnough(password) ||
                           password !== confirmPassword
                         }
                       >
+                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                         {loading ? 'Регистрация...' : t.auth.signUpButton}
                       </CosmicButton>
                     </div>
