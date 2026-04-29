@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import universeAvatarDefault from '@/assets/universe-avatar-listening.png';
+import universeAvatarCall from '@/assets/universe-avatar-call.jpg';
 
 interface UniverseAvatarProps {
   isActive: boolean;
@@ -10,10 +10,8 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   isActive,
   isSpeaking,
 }) => {
-  // Выбираем аватар в зависимости от состояния соединения
-  const avatarSrc = isActive
-    ? universeAvatarDefault // С открытыми глазами когда активен
-    : 'https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png'; // Закрытые глаза когда неактивен
+  // Космический образ Вселенной — единый для активного и неактивного состояний
+  const avatarSrc = universeAvatarCall;
 
   // Создаем звезды для анимации - вдвое больше для активного состояния
   const stars = useMemo(() => {
