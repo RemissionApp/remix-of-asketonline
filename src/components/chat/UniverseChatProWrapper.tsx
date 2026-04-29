@@ -4,6 +4,7 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { Card } from '@/components/ui/card';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useEntitlement } from '@/hooks/useEntitlement';
 
 interface UniverseChatProWrapperProps {
   children: React.ReactNode;
@@ -15,8 +16,9 @@ export const UniverseChatProWrapper: React.FC<UniverseChatProWrapperProps> = ({
   isPro,
 }) => {
   const { t } = useTranslations();
+  const { isUnlocked } = useEntitlement();
 
-  if (!isPro) {
+  if (!isPro && !isUnlocked) {
     return (
       <div className="min-h-screen flex flex-col bg-cosmic">
         <StarField starCount={50} />
