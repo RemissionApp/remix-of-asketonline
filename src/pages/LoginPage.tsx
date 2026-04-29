@@ -21,6 +21,9 @@ import PasswordStrengthIndicator, {
   isPasswordStrongEnough,
 } from '@/components/auth/PasswordStrengthIndicator';
 import { useAuthFlow } from '@/hooks/useAuthFlow';
+import { signInWithApple } from '@/utils/appleSignIn';
+import { lovable } from '@/integrations/lovable';
+import { Apple } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const {
@@ -195,6 +198,45 @@ const LoginPage: React.FC = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const [oauthLoading, setOauthLoading] = useState<null | 'google' | 'apple'>(null);
+
+  const handleAppleSignIn = async () => {
+    setOauthLoading('apple');
+    try {
+      cleanupAuthState();
+      const res = await signInWithApple();
+      if (res.error) {
+        toast({
+          title: 'Apple Sign-In',
+          description: res.error.message,
+          variant: 'destructive',
+        });
+      }
+      // если res.redirected — браузер сам уведёт пользователя на Apple
+    } finally {
+      setOauthLoading(null);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setOauthLoading('google');
+    try {
+      cleanupAuthState();
+      const res = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
+      });
+      if (res.error) {
+        toast({
+          title: 'Google Sign-In',
+          description: (res.error as Error).message,
+          variant: 'destructive',
+        });
+      }
+    } finally {
+      setOauthLoading(null);
+    }
   };
 
   return (
@@ -426,6 +468,31 @@ const LoginPage: React.FC = () => {
                         </Button>
                       </div>
                     )}
+
+                    <div className="pt-2 space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-cosmic-accent/30 text-white hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm flex items-center justify-center gap-2"
+                        onClick={handleGoogleSignIn}
+                        disabled={oauthLoading !== null}
+                      >
+                        {oauthLoading === 'google' && <Loader2 className="h-4 w-4 animate-spin" />}
+                        Продолжить с Google
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-cosmic-accent/30 text-white hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm flex items-center justify-center gap-2"
+                        onClick={handleAppleSignIn}
+                        disabled={oauthLoading !== null}
+                      >
+                        {oauthLoading === 'apple'
+                          ? <Loader2 className="h-4 w-4 animate-spin" />
+                          : <Apple className="h-4 w-4" />}
+                        Продолжить с Apple
+                      </Button>
+                    </div>
                   </form>
                 </TabsContent>
 
