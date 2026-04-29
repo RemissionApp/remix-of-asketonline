@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -23,6 +23,11 @@ export function useEntitlement(): EntitlementState {
   const [loading, setLoading] = useState(true);
   // Tick state: пересчитываем isTrialActive каждые 60 секунд, даже без events.
   const [, setNowTick] = useState(0);
+  // Уникальный id на каждый инстанс хука — чтобы несколько компонентов,
+  // одновременно использующих useEntitlement, не делили один и тот же
+  // Realtime-канал (повторный .on() после .subscribe() кидает исключение
+  // и роняет приложение в ErrorBoundary).
+  const instanceId = useId();
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +50,7 @@ export function useEntitlement(): EntitlementState {
 
     // Realtime: сразу видим, когда trial_ends_at меняется (продление, отмена).
     const channel = supabase
-      .channel(`profiles:trial:${user.id}`)
+      .channel(`profiles:trial:${user.id}:${instanceId}`)
       .on(
         'postgres_changes',
         {
@@ -69,7 +74,7 @@ export function useEntitlement(): EntitlementState {
       supabase.removeChannel(channel);
       window.clearInterval(interval);
     };
-  }, [user?.id]);
+  }, [user?.id, instanceId]);
 
   const now = Date.now();
   const isTrialActive = !!trialEndsAt && trialEndsAt.getTime() > now;

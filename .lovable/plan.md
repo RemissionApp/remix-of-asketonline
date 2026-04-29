@@ -1,42 +1,68 @@
-Нашёл вероятную причину: опубликованная ссылка работает, а окно Lovable может оставаться пустым из-за уже зарегистрированного `public/sw.js`.
+# Fix onboarding/login crash ("Что-то пошло не так")
 
-Текущее состояние:
-- В свежей проверке приложение само рендерится нормально: страница `Asket` открывается.
-- В коде всё ещё есть полноценный service worker `public/sw.js`, который перехватывает навигацию и кэширует `/`, `/manifest.json`, и ассеты.
-- Предыдущее исправление отключило регистрацию service worker внутри приложения, но если старый service worker уже установлен в браузере/iframe, он может перехватить загрузку раньше, чем новый JS успеет выполнить очистку.
-- Поэтому в Lovable IDE iframe у вас может продолжать показываться пустое/устаревшее окно, хотя опубликованная ссылка работает.
+## Root cause
 
-План исправления:
+The runtime error from the console is:
 
-1. Заменить `public/sw.js` на kill-switch service worker
-   - При установке он сразу активируется.
-   - При активации удаляет все Cache Storage записи.
-   - Перенаправляет открытые вкладки/iframe на свежий URL.
-   - После этого unregister самого service worker.
-   - Это нужно, чтобы удалить старый service worker с устройств/браузеров, где он уже успел установиться.
+```
+Uncaught Error: cannot add `postgres_changes` callbacks for
+realtime:profiles:trial:<user.id> after `subscribe()`.
+  at useEntitlement.ts:28
+```
 
-2. Добавить такой же kill-switch как `public/service-worker.js`
-   - Даже если старый код когда-то регистрировал другой путь, этот файл тоже зачистит кэш.
-   - Это безопасная страховка для preview.
+`useEntitlement` is mounted simultaneously by several components on the
+main app screens (`TrialBanner`, `PaywallButton`, `ProFeatureOverlay`,
+`UniverseChatProWrapper`). Each instance does:
 
-3. Усилить PWA guard в коде приложения
-   - Вынести проверку preview/iframe в экспортируемую функцию.
-   - Использовать её не только при регистрации service worker, но и в PWA-компонентах/хуках.
-   - В Lovable Preview не запускать install prompt, update notification, advanced caching, background sync и notification permission init.
+```ts
+supabase.channel(`profiles:trial:${user.id}`)   // same name every time
+  .on('postgres_changes', ..., handler)
+  .subscribe();
+```
 
-4. Упростить `src/main.tsx`
-   - Не запускать PWA регистрацию в preview/dev вообще.
-   - Оставить только cleanup для уже существующих registrations.
+`supabase.channel(name)` returns the **existing** channel if one with
+that name already exists in the client. The first hook subscribes it,
+then the second hook gets that same already-subscribed channel and calls
+`.on(...)` on it — which is forbidden and throws. The throw happens
+inside a React effect, bubbles up, and the global `ErrorBoundary`
+(`src/App.tsx` / `src/components/ui/ErrorBoundary.tsx`) catches it and
+renders the "Что-то пошло не так / Обновить страницу" screen the user is
+seeing right after login/onboarding.
 
-5. Проверить после правок
-   - Открыть preview в sandbox.
-   - Проверить Network/Console: не должно быть активной регистрации `/sw.js`, ошибок manifest/401, или перехвата навигации service worker.
-   - Вам нужно будет сделать hard refresh окна Lovable после применения, потому что мы чистим уже установленный кэш.
+This is the only place in the codebase where a channel name can collide
+across mounts — `chat-${sessionId}` and `session-${sessionId}` are tied
+to a single owning component, so they are fine.
 
-Технически это не проблема публикации и не проблема React-рендера. Главная причина — старый PWA service worker сохраняется в браузере и может ломать именно iframe preview в Lovable.
+## Fix
 
-После одобрения внесу эти изменения.
+### 1. `src/hooks/useEntitlement.ts` — make the channel per-instance
 
-<lov-actions>
-<lov-link url="https://docs.lovable.dev/tips-tricks/troubleshooting">Troubleshooting docs</lov-link>
-</lov-actions>
+- Generate a unique suffix per hook instance (e.g. via `useId()` from
+  React or `crypto.randomUUID()` captured in a `useRef`).
+- Use it in the channel name:
+  `profiles:trial:${user.id}:${instanceId}`.
+- Keep the existing cleanup (`supabase.removeChannel(channel)`) so each
+  instance tears down its own channel on unmount / user change.
+
+This guarantees each component mounting `useEntitlement` gets its own
+channel object and `.on(...)` is always called before `.subscribe()`.
+
+### 2. Verification pass on the rest of the flow
+
+- Re-check onboarding (`src/pages/OnboardingPage.tsx`), login
+  (`src/pages/LoginPage.tsx`, `src/components/AuthCallback.tsx`,
+  `src/hooks/useAuthFlow.ts`) and `AppRouter` only to confirm no other
+  effect throws synchronously after auth. The console only reports the
+  channel error, so no other code changes are expected here — this is
+  just a read-through to confirm.
+- After the fix, reload the preview and confirm:
+  - No "cannot add `postgres_changes` callbacks ... after `subscribe()`"
+    error in the console.
+  - The "Что-то пошло не так" ErrorBoundary screen no longer appears
+    after login / on `/main`.
+
+## Files to change
+
+- `src/hooks/useEntitlement.ts` (only file that needs a code change).
+
+No DB changes, no auth changes, no new dependencies.
