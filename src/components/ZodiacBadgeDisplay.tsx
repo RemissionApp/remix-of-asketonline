@@ -60,23 +60,21 @@ export const ZodiacBadgeDisplay: React.FC = () => {
 
   const zodiacContent = (
     <div
-      className={`cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full ${hasActiveSubscription ? 'cursor-pointer hover:border-cosmic-accent/60 transition-all' : ''}`}
+      className={`cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6 w-full ${hasActiveSubscription ? 'cursor-pointer hover:border-cosmic-accent/60 transition-all' : ''}`}
       onClick={handleZodiacClick}
     >
-      <div className="p-4">
-        <div className="flex items-center mb-3">
-          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+      <div className="p-3 sm:p-4">
+        <div className="flex items-center mb-2 sm:mb-3">
+          <div className="bg-cosmic-accent/20 rounded-lg p-1.5 sm:p-2 mr-2 sm:mr-3">
             <div className="text-cosmic-accent">
               <ZodiacBadge size="md" />
             </div>
           </div>
           <div>
             <h3
-              className={
-                language === 'en'
-                  ? 'font-serif font-medium'
-                  : 'font-sans font-medium'
-              }
+              className={`text-base sm:text-xl font-medium ${
+                language === 'en' ? 'font-serif' : 'font-display'
+              }`}
             >
               {language === 'ru'
                 ? 'Гороскоп'

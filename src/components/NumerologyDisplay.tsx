@@ -78,19 +78,17 @@ export const NumerologyDisplay: React.FC = () => {
 
   // Create the numerology content component
   const numerologyContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 w-full">
-      <div className="p-4">
-        <div className="flex items-center mb-3">
-          <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
-            <Calculator size={20} className="text-cosmic-accent" />
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6 w-full">
+      <div className="p-3 sm:p-4">
+        <div className="flex items-center mb-2 sm:mb-3">
+          <div className="bg-cosmic-accent/20 rounded-lg p-1.5 sm:p-2 mr-2 sm:mr-3">
+            <Calculator size={18} className="text-cosmic-accent" />
           </div>
           <div>
             <h3
-              className={
-                language === 'en'
-                  ? 'font-serif font-medium'
-                  : 'font-sans font-medium'
-              }
+              className={`text-base sm:text-xl font-medium ${
+                language === 'en' ? 'font-serif' : 'font-display'
+              }`}
             >
               {numerologyText}
             </h3>

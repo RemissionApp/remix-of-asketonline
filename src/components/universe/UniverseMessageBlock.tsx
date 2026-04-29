@@ -33,10 +33,10 @@ const UniverseMessageBlockComponent: React.FC = () => {
         : 'Dialogue with the Universe';
 
   // Determine the correct font class based on language - matching other headings in the app
-  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-display';
 
   const messageContent = (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6 relative overflow-hidden">
+    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6 relative overflow-hidden">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-60 z-0"
@@ -46,25 +46,25 @@ const UniverseMessageBlockComponent: React.FC = () => {
         }}
       />
 
-      <div className="w-full p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
-        <div className="flex items-center mb-4">
-          <Avatar className="h-14 w-14 mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
+      <div className="w-full p-3 sm:p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
+        <div className="flex items-center mb-3 sm:mb-4">
+          <Avatar className="h-11 w-11 sm:h-14 sm:w-14 mr-2 sm:mr-3 border-2 border-cosmic-accent/30 bg-cosmic-dark">
             <AvatarImage
               src="https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Avataruniverse.png"
               alt="Universe Avatar"
             />
             <AvatarFallback className="bg-cosmic-accent/20 text-cosmic-accent">
-              <MessageSquare size={24} />
+              <MessageSquare size={20} />
             </AvatarFallback>
           </Avatar>
 
           <div>
             <h3
-              className={`text-xl ${headingFontClass} font-medium text-white`}
+              className={`text-base sm:text-xl ${headingFontClass} font-medium text-white`}
             >
               {universeTitle}
             </h3>
-            <div className="flex items-center text-xs text-cosmic-secondary">
+            <div className="flex items-center text-[10px] sm:text-xs text-cosmic-secondary">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse-slow"></span>
               {language === 'ru'
                 ? 'онлайн'
