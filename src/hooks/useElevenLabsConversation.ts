@@ -1,4 +1,4 @@
-import { useConversation } from '@11labs/react';
+import { useConversation } from '@elevenlabs/react';
 import { useAppStore } from '@/store/useAppStore';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -40,25 +40,32 @@ export const useElevenLabsConversation = () => {
 
   const startConversation = useCallback(async () => {
     try {
-      // Получаем ID агента на основе выбранного языка
       const agentId = AGENTS[language as keyof typeof AGENTS] || AGENTS.en;
 
-      // Запрашиваем подписанную ссылку от нашего edge function
-      const { data, error } = await supabase.functions.invoke(
-        'elevenlabs-signed-url',
-        {
-          body: { agentId },
-        }
-      );
-
-      if (error || !data?.signedUrl) {
-        throw new Error(error?.message || 'Failed to get signed URL');
+      // 1. Запрашиваем доступ к микрофону до старта сессии
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (micErr) {
+        logger.error('Microphone permission denied', micErr);
+        throw new Error('MIC_PERMISSION_DENIED');
       }
 
-      // Запускаем разговор с агентом
-      const id = await conversation.startSession({
-        agentId: agentId,
+      // 2. Получаем conversation token для WebRTC
+      const { data, error } = await supabase.functions.invoke(
+        'elevenlabs-conversation-token',
+        { body: { agentId } }
+      );
+
+      if (error || !data?.token) {
+        throw new Error(error?.message || 'Failed to get conversation token');
+      }
+
+      // 3. Стартуем сессию через WebRTC с токеном
+      await conversation.startSession({
+        conversationToken: data.token,
+        connectionType: 'webrtc',
       });
+      const id = conversation.getId?.() ?? null;
       setConversationId(id);
 
       return id;
