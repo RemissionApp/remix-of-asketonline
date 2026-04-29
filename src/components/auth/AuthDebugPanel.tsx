@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
-import { determineAuthRoute } from '@/utils/authRouter';
+import { useAuthFlow } from '@/hooks/useAuthFlow';
 import { ChevronDown, ChevronUp, Bug } from 'lucide-react';
 
 /**
@@ -20,13 +20,13 @@ export const AuthDebugPanel: React.FC = () => {
     isProfileComplete,
     checkOnboardingStatus,
   } = useAppStore();
+  const { status, targetRoute } = useAuthFlow();
 
   // Only show in development
   if (import.meta.env.PROD) {
     return null;
   }
 
-  const { route: determinedRoute, reason } = determineAuthRoute();
   const profileComplete = isProfileComplete();
   const onboardingComplete = checkOnboardingStatus();
 
@@ -63,8 +63,8 @@ export const AuthDebugPanel: React.FC = () => {
 
             <div className="border-b border-cosmic-accent/20 pb-2">
               <p className="text-cosmic-secondary">Determined Route:</p>
-              <p className="text-white font-mono">{determinedRoute}</p>
-              <p className="text-cosmic-accent text-xs">{reason}</p>
+              <p className="text-white font-mono">{targetRoute}</p>
+              <p className="text-cosmic-accent text-xs">{status}</p>
             </div>
 
             <div className="border-b border-cosmic-accent/20 pb-2">
