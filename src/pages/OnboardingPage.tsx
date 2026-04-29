@@ -5,7 +5,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles, Crown, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const OnboardingPage: React.FC = () => {
@@ -14,6 +14,9 @@ const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+
+  const totalSteps = 3;
+  const progress = ((step + 1) / totalSteps) * 100;
 
   const handleNext = () => {
     if (step < 2) {
@@ -101,21 +104,31 @@ const OnboardingPage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       <StarField starCount={150} />
 
-      {/* Skip link */}
-      <div className="absolute top-6 right-6 z-20">
+      {/* Top bar: progress + skip */}
+      <div className="absolute top-0 inset-x-0 z-20 px-6 pt-6 flex items-center justify-between gap-4">
+        <div className="flex-1 max-w-md">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs uppercase tracking-widest text-cosmic-secondary/70">
+              Шаг 2 из 2 · {step + 1}/{totalSteps}
+            </span>
+          </div>
+          <div className="h-1 w-full rounded-full bg-cosmic-accent/15 overflow-hidden">
+            <div
+              className="h-full bg-cosmic-accent transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
         <button
           onClick={completeOnboarding}
           disabled={saving}
-          className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm"
+          className="text-cosmic-secondary/70 hover:text-cosmic-accent transition-colors text-sm whitespace-nowrap py-2 px-3 -mr-2 min-h-[44px]"
         >
           {t.onboarding.buttons.skip || 'Пропустить'}
         </button>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg px-4">
-        <p className="text-center text-xs uppercase tracking-widest text-cosmic-secondary/60 mb-4">
-          Шаг 2 из 2
-        </p>
+      <div className="relative z-10 w-full max-w-lg px-5 pt-24 pb-10">
         {step === 0 ? (
           <div className="animate-fade-in text-center">
             <div className="w-56 h-56 mx-auto mb-8 relative">
@@ -135,63 +148,98 @@ const OnboardingPage: React.FC = () => {
               <div className="absolute inset-16 rounded-full bg-cosmic-accent/50 animate-circle-expand"></div>
             </div>
 
-            <h1 className="text-4xl font-serif text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl font-serif text-white mb-4 leading-tight">
               {t.onboarding.title}
             </h1>
 
-            <div className="mb-8">
-              <p className="text-xl text-cosmic-secondary mb-4">
-                {t.onboarding.description}
-              </p>
-            </div>
+            <p className="text-lg sm:text-xl text-cosmic-secondary mb-10 max-w-md mx-auto leading-relaxed">
+              {t.onboarding.description}
+            </p>
 
-            <CosmicButton onClick={handleNext} disabled={saving}>
+            <CosmicButton
+              onClick={handleNext}
+              disabled={saving}
+              className="min-h-[52px] px-8 text-base"
+            >
               {t.onboarding.buttons.enter || 'Войти'}
             </CosmicButton>
           </div>
         ) : (
-          <div className="animate-fade-in text-center">
-            <h1 className="text-3xl font-serif text-white mb-6">
-              {step === 1
-                ? t.onboarding.steps.features
-                : t.onboarding.steps.proFeatures}
-            </h1>
-
-            <div className="mb-6">
-              {step === 1
-                ? renderFeatureList(t.onboarding.freeFeatures)
-                : renderFeatureList(t.onboarding.proFeatures)}
+          <div className="animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cosmic-accent/15 border border-cosmic-accent/30 mb-5">
+                {step === 1 ? (
+                  <Sparkles className="h-7 w-7 text-cosmic-accent" />
+                ) : (
+                  <Crown className="h-7 w-7 text-cosmic-accent" />
+                )}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-serif text-white mb-2">
+                {step === 1
+                  ? t.onboarding.steps.features
+                  : t.onboarding.steps.proFeatures}
+              </h1>
+              <p className="text-sm text-cosmic-secondary/80">
+                {step === 1
+                  ? 'Доступно сразу после регистрации'
+                  : 'Открывается по подписке Pro'}
+              </p>
             </div>
 
-            <div className="flex justify-center mb-8">
+            <ul className="space-y-3 mb-10">
+              {(step === 1
+                ? t.onboarding.freeFeatures
+                : t.onboarding.proFeatures
+              ).map((feature, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-cosmic-dark/30 backdrop-blur-sm border border-cosmic-accent/15"
+                >
+                  <div className="shrink-0 w-7 h-7 rounded-full bg-cosmic-accent/20 flex items-center justify-center mt-0.5">
+                    <Check className="h-4 w-4 text-cosmic-accent" />
+                  </div>
+                  <span className="text-cosmic-secondary leading-relaxed text-[15px]">
+                    {feature}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex justify-center mb-6 gap-2">
               {[0, 1, 2].map(i => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => i <= step && setStep(i)}
                   aria-label={`Шаг ${i + 1}`}
-                  className={`w-3 h-3 mx-1 rounded-full transition-colors ${
+                  className={`h-1.5 rounded-full transition-all ${
                     i === step
-                      ? 'bg-cosmic-accent'
+                      ? 'w-8 bg-cosmic-accent'
                       : i < step
-                      ? 'bg-cosmic-accent/60 hover:bg-cosmic-accent cursor-pointer'
-                      : 'bg-cosmic-accent/30 cursor-default'
+                      ? 'w-4 bg-cosmic-accent/60 hover:bg-cosmic-accent cursor-pointer'
+                      : 'w-4 bg-cosmic-accent/25 cursor-default'
                   }`}
                 />
               ))}
             </div>
 
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex items-center gap-1 px-4 py-2 rounded-md text-cosmic-secondary hover:text-cosmic-accent transition-colors text-sm"
+                className="flex items-center gap-1.5 px-4 min-h-[44px] rounded-lg text-cosmic-secondary hover:text-cosmic-accent transition-colors text-sm"
               >
                 <ArrowLeft className="h-4 w-4" />
                 {t.onboarding.buttons.back || 'Назад'}
               </button>
-              <CosmicButton onClick={handleNext} disabled={saving}>
-                {step < 2
+              <CosmicButton
+                onClick={handleNext}
+                disabled={saving}
+                className="flex-1 min-h-[52px] text-base"
+              >
+                {saving
+                  ? '...'
+                  : step < 2
                   ? t.onboarding.buttons.next
                   : t.onboarding.buttons.startJourney || 'Начать путь'}
               </CosmicButton>
