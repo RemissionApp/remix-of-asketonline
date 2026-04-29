@@ -10,8 +10,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 import { supabase, cleanupAuthState } from '@/lib/supabase';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
