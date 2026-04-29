@@ -385,7 +385,6 @@ export const useRevenueCatStore = create<RevenueCatState>()(
         isInitialized: state.isInitialized,
         lastInitializedUserId: state.lastInitializedUserId,
         hasActiveSubscription: state.hasActiveSubscription,
-        customerInfo: state.customerInfo,
       }),
     }
   )
