@@ -90,9 +90,6 @@ export const AppRouter: React.FC = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
-      
-      {/* Auth debug panel (dev only) */}
-      <AuthDebugPanel />
     </>
   );
 };
