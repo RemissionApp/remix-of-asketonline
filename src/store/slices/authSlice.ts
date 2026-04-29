@@ -676,80 +676,84 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         profileData: data ? 'Found' : 'Not found',
       });
 
-      // Check subscription status (paid)
-      const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('is_pro, subscription_end, status, trial_ends_at')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      const isPaid =
-        subscription?.is_pro &&
-        subscription?.subscription_end &&
-        new Date(subscription.subscription_end) > new Date();
-
-      // Trial gives full access for 3 days from signup
+      // ---- Compute trial / pro from profile data alone ----
+      // Subscriptions request is best-effort and MUST NOT block profile hydration.
       const trialEndsAt = data?.trial_ends_at
         ? new Date(data.trial_ends_at)
         : null;
       const isTrialActive = !!trialEndsAt && trialEndsAt.getTime() > Date.now();
-
-      // Treat trial users as Pro everywhere — single source of truth
+      let isPaid = false;
+      try {
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('is_pro, subscription_end, status, trial_ends_at')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        isPaid = !!(
+          subscription?.is_pro &&
+          subscription?.subscription_end &&
+          new Date(subscription.subscription_end) > new Date()
+        );
+      } catch (e) {
+        logger.warn('subscriptions fetch failed (non-fatal)', e);
+      }
       const isPro = !!(isPaid || isTrialActive);
 
-      // Get achievements
-      const { data: achievements, error: achievementsError } = await supabase
-        .from('achievements')
-        .select('*')
-        .eq('user_id', user.id);
+      // ---- Achievements (best-effort) ----
+      let mappedAchievements = [...defaultAchievements];
+      try {
+        const { data: achievements } = await supabase
+          .from('achievements')
+          .select('*')
+          .eq('user_id', user.id);
+        mappedAchievements = defaultAchievements.map(defaultAch => {
+          const foundAch = achievements?.find(
+            a => a.achievement_type === defaultAch.id
+          );
+          return foundAch
+            ? {
+                id: defaultAch.id,
+                title: defaultAch.title,
+                description: defaultAch.description,
+                icon: defaultAch.icon,
+                unlocked: !!foundAch.unlocked_at,
+                unlockedAt: foundAch.unlocked_at,
+              }
+            : defaultAch;
+        });
+      } catch (e) {
+        logger.warn('achievements fetch failed (non-fatal)', e);
+      }
 
-      if (achievementsError) throw achievementsError;
-
-      // Map achievements to app format
-      const mappedAchievements = defaultAchievements.map(defaultAch => {
-        const foundAch = achievements?.find(
-          a => a.achievement_type === defaultAch.id
-        );
-        return foundAch
-          ? {
-              id: defaultAch.id,
-              title: defaultAch.title,
-              description: defaultAch.description,
-              icon: defaultAch.icon,
-              unlocked: !!foundAch.unlocked_at,
-              unlockedAt: foundAch.unlocked_at,
-            }
-          : defaultAch;
-      });
-
-      // Get active mission
-      const { data: missions, error: missionsError } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('completed', false)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (missionsError) throw missionsError;
-
-      const activeMission =
-        missions && missions.length > 0
-          ? {
-              id: missions[0].id,
-              title: missions[0].title,
-              description: missions[0].description,
-              requirements: missions[0].requirements as string[],
-              reward: missions[0].reward as {
-                energyPoints?: number;
-                achievement?: string;
-              },
-              completed: false,
-              difficulty: 'novice' as const,
-              category: 'ritual' as const,
-              duration: 1,
-            }
-          : undefined;
+      // ---- Active mission (best-effort) ----
+      let activeMission: any = undefined;
+      try {
+        const { data: missions } = await supabase
+          .from('missions')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('completed', false)
+          .order('created_at', { ascending: false })
+          .limit(1);
+        if (missions && missions.length > 0) {
+          activeMission = {
+            id: missions[0].id,
+            title: missions[0].title,
+            description: missions[0].description,
+            requirements: missions[0].requirements as string[],
+            reward: missions[0].reward as {
+              energyPoints?: number;
+              achievement?: string;
+            },
+            completed: false,
+            difficulty: 'novice' as const,
+            category: 'ritual' as const,
+            duration: 1,
+          };
+        }
+      } catch (e) {
+        logger.warn('missions fetch failed (non-fatal)', e);
+      }
 
       // Debug logging for date parsing
       // Optimized logging for production
@@ -811,22 +815,16 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         avatar_url: updatedProfile.avatar_url,
       });
 
-      // Preload horoscope data if birth date exists
+      // Preload horoscope data (fire & forget — must never block hydration)
       if (data.birth_date) {
-        try {
-          const { language } = get();
-          const sign = getZodiacSign(new Date(data.birth_date));
-          if (sign) {
-            await supabase.functions.invoke('fetch-horoscope', {
-              body: {
-                sign,
-                language,
-                detailed: false,
-              },
-            });
-          }
-        } catch (e) {
-          logger.warn('Failed to preload horoscope data', e);
+        const { language } = get();
+        const sign = getZodiacSign(new Date(data.birth_date));
+        if (sign) {
+          supabase.functions
+            .invoke('fetch-horoscope', {
+              body: { sign, language, detailed: false },
+            })
+            .catch(e => logger.warn('Failed to preload horoscope data', e));
         }
       }
     } catch (error) {
