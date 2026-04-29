@@ -119,18 +119,28 @@ const UserProfileForm: React.FC = () => {
   return (
     <div className="w-full max-w-md mx-auto text-center">
       {location.pathname === '/profile-setup' && (
-        <p className="text-xs uppercase tracking-widest text-cosmic-secondary/60 mb-4">
-          Шаг 1 из 2
-        </p>
+        <div className="mb-6">
+          <p className="text-xs uppercase tracking-widest text-cosmic-secondary/70 mb-2">
+            Шаг 1 из 2
+          </p>
+          <div className="h-1 w-full rounded-full bg-cosmic-accent/15 overflow-hidden max-w-xs mx-auto">
+            <div className="h-full w-1/2 bg-cosmic-accent" />
+          </div>
+        </div>
       )}
-      <div className="flex justify-center mb-4 relative">
+      <div className="flex justify-center mb-5 relative">
         <AvatarUpload />
       </div>
 
       {location.pathname !== '/profile' && (
-        <h2 className="text-3xl font-serif text-white mb-6">
-          {t.userProfile?.title || 'О тебе'}
-        </h2>
+        <>
+          <h2 className="text-3xl sm:text-4xl font-serif text-white mb-2">
+            {t.userProfile?.title || 'О тебе'}
+          </h2>
+          <p className="text-sm text-cosmic-secondary/80 mb-6">
+            Заполни данные, чтобы получить персональный гороскоп
+          </p>
+        </>
       )}
 
       <ProfileDataDisplay age={age} />
