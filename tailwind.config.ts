@@ -90,6 +90,7 @@ export default {
         serif: ['Cinzel', 'serif'],
         sans: ['Inter', 'sans-serif'],
         cormorant: ['Cormorant', 'serif'],
+        display: ['"Playfair Display"', 'Cinzel', 'serif'],
       },
       backgroundImage: {
         'cosmic-gradient':
