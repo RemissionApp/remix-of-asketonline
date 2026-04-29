@@ -20,7 +20,6 @@ const UserProfileForm: React.FC = () => {
     userProfile,
     user,
     loadUserProfile,
-    profileStepCompleted,
   } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
