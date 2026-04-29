@@ -1,95 +1,118 @@
-## Goal
+## Редизайн: «жидкое стекло» в стиле iOS
 
-Adapt the main page (`/main`) for mobile (390px) by:
-1. Reordering content blocks per user spec.
-2. Adding a beautiful display font for Russian (matching the elegance of Cinzel for English).
-3. Shrinking type sizes and vertical spacing on mobile.
+Цель — внести единый стеклянный (glassmorphism) визуальный язык по всему приложению: прозрачные блюр-поверхности, свечение, плавающие панели, мягкие тени и красивые иконки вместо длинных текстовых кнопок.
 
-## 1. New block order on MainPage
+---
 
-Edit `src/components/MainPageComponents/MainContent.tsx` to reorder:
+### 1. Глобальная стеклянная система (фундамент)
 
-```text
-1. UserGreetingSection      (приветствие — без изменений)
-2. PactDisplay              (текущий пакт)
-3. DailyAdviceDisplay       (Совет дня)
-4. UniverseMessageBlock     (Диалог со Вселенной)   ← перенесено вверх
-5. ZodiacBadgeDisplay       (Гороскоп)
-6. AffirmationsBlock        (Аффирмации)
-7. NumerologyDisplay        (Нумерология)
-8. MeditationBlock          (Медитации)
-9. CosmicMissionsEntryPoint (Космические миссии)    ← в самый низ
-10. ActiveMissionWidget + UserLevelDisplay остаются после миссий
-```
+**`src/styles/components.css`** — добавить переиспользуемые утилиты:
 
-## 2. Beautiful Russian display font
+- `.glass` — базовое стекло: `backdrop-blur-2xl`, `bg-white/5`, `border border-white/10`, тонкая внутренняя подсветка через `box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.35)`.
+- `.glass-strong` — более плотное стекло для верхней/нижней панелей (`bg-cosmic-dark/40`, `backdrop-blur-3xl`, `saturate-150`).
+- `.glass-card` — для контентных блоков на главной (`rounded-2xl`, мягкая подсветка края, hover-glow).
+- `.glass-icon-btn` — круглая стеклянная кнопка-иконка с свечением и `active:scale-95`.
+- `.glow-ring` — анимированное мягкое свечение по периметру (для активных элементов).
 
-Cinzel (текущий `font-serif`) не поддерживает кириллицу — поэтому русский текст падает на запасной шрифт. Добавим **Playfair Display** (поддерживает кириллицу, элегантный, парный к Cinzel по характеру) и заведём новую утилиту `font-display`, которая автоматически выбирает правильный шрифт в зависимости от языка.
+**`tailwind.config.ts`** — добавить:
+- `boxShadow.glass`, `boxShadow.glass-glow`
+- `backdropBlur.3xl: '40px'`
+- keyframes `shimmer` (медленное скольжение блика по стеклу) и `breathe` (мягкое пульсирующее свечение).
 
-Изменения:
+---
 
-- `src/styles/base.css` — подгрузить Playfair Display (cyrillic + latin):
-  ```css
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&display=swap');
-  ```
-- `tailwind.config.ts` — добавить:
-  ```ts
-  fontFamily: {
-    serif: ['Cinzel', 'serif'],
-    display: ['"Playfair Display"', 'Cinzel', 'serif'], // элегантный + кириллица
-    sans: ['Inter', 'sans-serif'],
-    cormorant: ['Cormorant', 'serif'],
-  }
-  ```
-- В заголовочных компонентах (`UserGreetingSection`, `UniverseMessageBlock`, `AffirmationsBlock`, `MeditationBlock`, `CosmicMissionsEntryPoint`, `NumerologyDisplay`, `ZodiacBadgeDisplay`, `DailyAdviceDisplay`) заменить логику:
-  ```tsx
-  // было
-  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
-  // станет
-  const headingFontClass = language === 'en' ? 'font-serif' : 'font-display';
-  ```
-  Это даёт RU/ES красивый антиквенный шрифт (Playfair Display поддерживает все три языка), а EN сохраняет нынешний Cinzel.
+### 2. Верхняя панель (TopBar) — плавающее стекло
 
-## 3. Mobile typography & spacing reduction
+`src/components/TopBar.tsx` + `src/pages/MainPage.tsx`:
 
-Применяем «mobile-first»: уменьшаем размеры по умолчанию, восстанавливаем большие на `sm:` (≥640px).
+- Убрать сплошной `bg-cosmic-dark/80` и border-bottom.
+- Сделать TopBar **плавающим**: отступ сверху (с учётом safe-area), отступы по бокам `mx-3`, `rounded-2xl`, класс `.glass-strong`.
+- Контейнер-обёртка получает `pointer-events-none`, сама панель — `pointer-events-auto`, чтобы свечение не блокировало контент.
+- Добавить тонкий блик сверху (`::before` градиент белый→прозрачный) и мягкое внешнее свечение `shadow-glass-glow`.
+- Иконки энергии/звука/зодиака — в стиле `.glass-icon-btn`.
 
-| Элемент | Сейчас | Станет (mobile → desktop) |
-|---|---|---|
-| Greeting username `<h2>` | `text-3xl sm:text-4xl mt-2` | `text-2xl sm:text-4xl mt-1` |
-| Greeting label | `text-sm` | `text-xs sm:text-sm` |
-| Block titles `<h3>` (Universe/Affirmations/Meditation/Missions) | `text-xl` | `text-base sm:text-xl` |
-| Block descriptions `<p>` | базовый | `text-sm sm:text-base` |
-| Daily Advice text | `text-base` | `text-sm sm:text-base leading-snug` |
-| Daily Advice title | базовый | `text-sm sm:text-base` |
-| Section vertical margins | `mb-6` / `mt-8` | `mb-4 sm:mb-6` / `mt-5 sm:mt-8` |
-| Block inner padding | `p-4` | `p-3 sm:p-4` |
-| Avatar/Icon (Universe) | `h-14 w-14` | `h-11 w-11 sm:h-14 sm:w-14` |
-| Icon wrappers (`size={24}`) | 24 | 20 на mobile через класс родителя (`p-1.5 sm:p-2`) |
-| `MainContent` container | `px-4 py-6 pt-20` | `px-3 py-4 pt-16 sm:px-4 sm:py-6 sm:pt-20` |
+---
 
-Все изменения — через адаптивные Tailwind-классы, чтобы desktop остался прежним.
+### 3. Нижняя навигация (BottomNavigation) — как в Telegram
 
-## 4. Files to edit
+`src/components/BottomNavigation.tsx`:
 
-- `src/styles/base.css` — добавить Playfair Display.
-- `tailwind.config.ts` — добавить `font-display`.
-- `src/components/MainPageComponents/MainContent.tsx` — порядок блоков + spacing.
-- `src/components/MainPageComponents/UserGreetingSection.tsx` — font-display, mobile sizes.
-- `src/components/DailyAdviceDisplay.tsx` — font-display, mobile sizes.
-- `src/components/universe/UniverseMessageBlock.tsx` — font-display, mobile sizes.
-- `src/components/MainPageComponents/AffirmationsBlock.tsx` — то же.
-- `src/components/MainPageComponents/MeditationBlock.tsx` — то же.
-- `src/components/MainPageComponents/CosmicMissionsEntryPoint.tsx` — то же.
-- `src/components/NumerologyDisplay.tsx` — font-display, mobile sizes.
-- `src/components/ZodiacBadgeDisplay.tsx` — font-display, mobile sizes.
+- Превратить в **плавающую плашку**: отступ от низа (`bottom: calc(env(safe-area-inset-bottom) + 12px)`), `mx-3`, `rounded-3xl`, `.glass-strong`.
+- Убрать `border-top`, добавить мягкую тень снизу и подсветку сверху.
+- Активная вкладка — кружок-«пилюля» позади иконки с `bg-cosmic-accent/25`, `backdrop-blur`, glow-ring и плавной `transition-all`.
+- Иконки слегка крупнее (20px), подписи `text-[10px]` с `tracking-wide`.
+- Учесть в `MainPage` — увеличить `pb-` контейнера, чтобы контент не уходил под плавающую панель.
 
-## 5. QA после внедрения
+---
 
-- Проверить `/main` на 390×740 (mobile) — заголовки компактнее, отступы меньше, читаемо.
-- Переключить язык RU → заголовки рендерятся Playfair Display (антиквенный), а не Inter.
-- Переключить EN → остаётся Cinzel (как сейчас).
-- Проверить десктоп ≥640px — размеры как раньше.
-- Порядок блоков соответствует ТЗ.
+### 4. Блок «Диалог со Вселенной» — иконочные кнопки
 
-Английская типографика остаётся эталонной и не меняется.
+`src/components/universe/UniverseMessageBlock.tsx`:
+
+- Переделать карточку под `.glass-card` с фоновой картинкой за стеклом (картинка остаётся, поверх — стеклянный слой `bg-white/5 backdrop-blur-xl`).
+- Заменить две широкие кнопки на **две круглые стеклянные иконки** по центру:
+  - **«Задать вопрос»** — иконка `MessageCircleQuestion` (lucide), золотое свечение.
+  - **«Позвонить Вселенной»** — иконка `PhoneCall`, фиолетово-индиго свечение, мягкая `breathe`-анимация.
+- Обе кнопки показываются **всегда** (не только PRO); если пользователь не PRO — нажатие на «Звонок» ведёт на paywall (через существующий механизм роутинга `/universe-call`, где уже есть гейт).
+- Под иконками — короткие подписи `text-xs` на трёх языках.
+- Размер иконок 56–64px, `rounded-full`, `.glass-icon-btn` + индивидуальное свечение через `shadow-[0_0_24px_rgba(...)]`.
+
+---
+
+### 5. Все блоки главной страницы — единый стеклянный язык
+
+Применить `.glass-card` (заменив текущие `bg-cosmic-dark/...`, плотные бордеры) в:
+
+- `DailyAdviceDisplay.tsx`
+- `AffirmationsBlock.tsx`
+- `MeditationBlock.tsx`
+- `NumerologyDisplay.tsx`
+- `ZodiacBadgeDisplay.tsx`
+- `CosmicMissionsEntryPoint.tsx`
+- `UserGreetingSection.tsx` (карточка приветствия с лёгким стеклом и shimmer-бликом)
+- `PactDisplay` (рамка-стекло)
+
+Общие правила:
+- `rounded-2xl`, тонкий `border-white/10`, `backdrop-blur-xl`, `bg-white/[0.04]`.
+- Иконки-заголовки в кружке-стекле `bg-white/10` вместо `bg-cosmic-accent/20`.
+- Hover: лёгкое усиление прозрачности и свечение края.
+
+---
+
+### 6. Генерация фоновых изображений (Lovable AI / Nano banana)
+
+Сгенерировать 2 PNG и положить в `public/`:
+
+1. `public/glass-bg-cosmic.png` — мягкий космический градиент (фиолетово-индиго-золото, размытые туманности) — фон под главной для усиления эффекта стекла.
+2. `public/universe-glass-bg.png` — обновлённая картинка для блока «Диалог со Вселенной» (силуэт галактики, чтобы стекло «играло» поверх).
+
+Использовать модель `google/gemini-2.5-flash-image` через Lovable AI Gateway (без ключа). Сохранить локально, подключить как фон в `body` (через `base.css`) и в `UniverseMessageBlock`.
+
+---
+
+### 7. Мелочи и QA
+
+- Проверить, что `pb` основного контейнера в `MainPage` достаточен с учётом плавающей нижней панели.
+- Убедиться, что `z-index` верхней/нижней панелей выше контента, но `pointer-events` не ломает скролл.
+- Сохранить адаптив: на mobile отступы плавающих панелей меньше (`mx-2`), на десктопе — `mx-4`.
+- Никаких изменений логики, переводов, роутов, авторизации.
+
+---
+
+### Затронутые файлы
+
+- `src/styles/components.css`, `src/styles/base.css`
+- `tailwind.config.ts`
+- `src/components/TopBar.tsx`
+- `src/components/BottomNavigation.tsx`
+- `src/pages/MainPage.tsx` (отступы под плавающие панели)
+- `src/components/universe/UniverseMessageBlock.tsx`
+- `src/components/MainPageComponents/UserGreetingSection.tsx`
+- `src/components/MainPageComponents/AffirmationsBlock.tsx`
+- `src/components/MainPageComponents/MeditationBlock.tsx`
+- `src/components/MainPageComponents/CosmicMissionsEntryPoint.tsx`
+- `src/components/MainPageComponents/PactDisplay.tsx`
+- `src/components/DailyAdviceDisplay.tsx`
+- `src/components/NumerologyDisplay.tsx`
+- `src/components/ZodiacBadgeDisplay.tsx`
+- `public/glass-bg-cosmic.png`, `public/universe-glass-bg.png` (новые)

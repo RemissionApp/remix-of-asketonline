@@ -51,20 +51,27 @@ export const MeditationBlock: React.FC = () => {
         : 'Meditations';
 
   return (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6 relative overflow-hidden">
+    <div className="glass-card glass-shimmer mb-4 sm:mb-6 relative">
       {/* Background image with reflection effect */}
       <div
-        className="absolute inset-0 bg-cover bg-left opacity-60 z-0"
+        className="absolute inset-0 bg-cover bg-left opacity-40 z-0"
         style={{
           backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//meditation2.png)`,
-          filter: 'brightness(1.9) contrast(1.15)', // Increased brightness by 40% (from 1.7 to 1.9)
+          filter: 'brightness(1.4) contrast(1.1)',
           transform: 'scaleX(-1)', // This creates the reflection effect (mirror)
         }}
       />
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(10,6,30,0.25) 0%, rgba(10,6,30,0.55) 100%)',
+        }}
+      />
 
-      <div className="w-full p-3 sm:p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
+      <div className="w-full p-3 sm:p-4 relative z-10">
         <div className="flex items-center mb-3 sm:mb-4">
-          <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
+          <div className="glass-icon-wrap">
             <Headphones size={20} className="text-cosmic-accent" />
           </div>
 

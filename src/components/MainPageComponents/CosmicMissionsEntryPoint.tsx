@@ -74,21 +74,28 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
   const headingFontClass = language === 'en' ? 'font-serif' : 'font-display';
 
   return (
-    <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6 relative overflow-hidden">
+    <div className="glass-card glass-shimmer mb-4 sm:mb-6 relative">
       {/* Background image with reflection and brightness effect */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-70 z-0 animate-image-brighten"
+        className="absolute inset-0 bg-cover bg-center opacity-40 z-0"
         style={{
           backgroundImage:
             "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg')",
-          filter: 'brightness(1.6) contrast(1.2)',
+          filter: 'brightness(1.3) contrast(1.1)',
           transform: 'scaleX(-1)', // This creates the reflection effect (mirror)
         }}
       />
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(10,6,30,0.25) 0%, rgba(10,6,30,0.55) 100%)',
+        }}
+      />
 
-      <div className="w-full p-3 sm:p-4 rounded-lg backdrop-blur-sm bg-transparent relative z-10">
+      <div className="w-full p-3 sm:p-4 relative z-10">
         <div className="flex items-center mb-3 sm:mb-4">
-          <div className="cosmic-block-icon-wrapper bg-cosmic-dark/60">
+          <div className="glass-icon-wrap">
             <Star size={20} className="text-cosmic-accent" />
           </div>
 

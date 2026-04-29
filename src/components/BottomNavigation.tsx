@@ -51,114 +51,136 @@ export const BottomNavigation = memo(() => {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[100] w-full bg-cosmic-dark/80 backdrop-blur-sm border-t border-cosmic-accent/20"
+      className="fixed left-0 right-0 z-[100] w-full pointer-events-none"
       style={{
-        paddingBottom: isAndroid()
-          ? `calc(env(safe-area-inset-bottom) + 1.9rem)`
-          : 'env(safe-area-inset-bottom)',
-        paddingLeft: 'env(safe-area-inset-left)',
-        paddingRight: 'env(safe-area-inset-right)',
+        bottom: isAndroid()
+          ? 'calc(env(safe-area-inset-bottom) + 1.4rem)'
+          : 'calc(env(safe-area-inset-bottom) + 0.6rem)',
+        paddingLeft: 'calc(env(safe-area-inset-left) + 0.6rem)',
+        paddingRight: 'calc(env(safe-area-inset-right) + 0.6rem)',
       }}
     >
-      <div className="flex justify-center">
-        <div className="w-full px-2">
-          <div className="flex justify-around items-center py-1 max-w-3xl mx-auto">
+      <div className="flex justify-center pointer-events-auto">
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="glass-strong glass-shimmer relative rounded-3xl flex justify-around items-center py-2 px-1 overflow-hidden">
             {/* Path button - Visible for both PRO and free users */}
-            <button
-              className={`flex flex-col items-center p-1 ${isActive('/main') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+            <NavItem
+              active={isActive('/main')}
               onClick={() => handleNavigation('main', '/main')}
-            >
-              <Home size={18} />
-              <span className="text-xs">{t.main.nav.path || 'Path'}</span>
-            </button>
+              icon={<Home size={20} />}
+              label={t.main.nav.path || 'Path'}
+            />
 
             {/* Ascesis button - Visible for both PRO and free users */}
-            <button
-              className={`flex flex-col items-center p-1 ${isActive('/create-pact') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+            <NavItem
+              active={isActive('/create-pact')}
               onClick={() => handleNavigation('create-pact', '/create-pact')}
-            >
-              <Sparkles size={18} />
-              <span className="text-xs">{t.main.nav.ascesis || 'Ascesis'}</span>
-            </button>
+              icon={<Sparkles size={20} />}
+              label={t.main.nav.ascesis || 'Ascesis'}
+            />
 
             {/* Different navigation options based on PRO status */}
             {isPro ? (
               <>
-                {/* Call button - Only visible for PRO users */}
-                <button
-                  className={`flex flex-col items-center p-1 ${isActive('/universe-call') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                <NavItem
+                  active={isActive('/universe-call')}
                   onClick={() =>
                     handleNavigation('universe-call', '/universe-call')
                   }
-                >
-                  <Phone size={18} />
-                  <span className="text-xs">
-                    {language === 'ru'
+                  icon={<Phone size={20} />}
+                  label={
+                    language === 'ru'
                       ? 'Звонок'
                       : language === 'es'
                         ? 'Llamada'
-                        : 'Call'}
-                  </span>
-                </button>
-
-                {/* Full Horoscope button - Only visible for PRO users */}
-                <button
-                  className={`flex flex-col items-center p-1 ${isActive('/full-horoscope') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+                        : 'Call'
+                  }
+                />
+                <NavItem
+                  active={isActive('/full-horoscope')}
                   onClick={() =>
                     handleNavigation('full-horoscope', '/full-horoscope')
                   }
-                >
-                  <Stars size={18} />
-                  <span className="text-xs">
-                    {language === 'ru'
+                  icon={<Stars size={20} />}
+                  label={
+                    language === 'ru'
                       ? 'Гороскоп'
                       : language === 'es'
                         ? 'Horóscopo'
-                        : 'Horoscope'}
-                  </span>
-                </button>
+                        : 'Horoscope'
+                  }
+                />
               </>
             ) : (
-              <>
-                {/* Universe question button - Only visible for free users */}
-                <button
-                  className={`flex flex-col items-center p-1 ${isActive('/universe') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
-                  onClick={() => handleNavigation('universe', '/universe')}
-                >
-                  <MessageSquare size={18} />
-                  <span className="text-xs">
-                    {t.main.nav.universe || 'Universe'}
-                  </span>
-                </button>
-              </>
+              <NavItem
+                active={isActive('/universe')}
+                onClick={() => handleNavigation('universe', '/universe')}
+                icon={<MessageSquare size={20} />}
+                label={t.main.nav.universe || 'Universe'}
+              />
             )}
 
             {/* Achievements button - Visible for both PRO and free users */}
-            <button
-              className={`flex flex-col items-center p-1 ${isActive('/achievements') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+            <NavItem
+              active={isActive('/achievements')}
               onClick={() => handleNavigation('achievements', '/achievements')}
-            >
-              <Trophy size={18} />
-              <span className="text-xs">
-                {language === 'ru'
+              icon={<Trophy size={20} />}
+              label={
+                language === 'ru'
                   ? 'Достижения'
                   : language === 'es'
                     ? 'Logros'
-                    : 'Achievements'}
-              </span>
-            </button>
+                    : 'Achievements'
+              }
+            />
 
             {/* Profile button - Visible for both PRO and free users */}
-            <button
-              className={`flex flex-col items-center p-1 ${isActive('/profile') ? 'text-cosmic-accent' : 'text-cosmic-secondary'}`}
+            <NavItem
+              active={isActive('/profile')}
               onClick={() => handleNavigation('profile', '/profile')}
-            >
-              <UserRound size={18} />
-              <span className="text-xs">{t.main.nav.profile || 'Profile'}</span>
-            </button>
+              icon={<UserRound size={20} />}
+              label={t.main.nav.profile || 'Profile'}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 });
+
+interface NavItemProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ active, onClick, icon, label }) => (
+  <button
+    onClick={onClick}
+    className="relative flex flex-col items-center justify-center px-2 py-1.5 transition-all duration-300 group"
+  >
+    <span
+      className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
+        active
+          ? 'bg-gradient-to-br from-cosmic-accent/45 to-cosmic-indigo/35 border border-white/25 shadow-[0_0_18px_rgba(139,92,246,0.55)]'
+          : 'border border-transparent group-hover:bg-white/5'
+      }`}
+    >
+      <span
+        className={`transition-colors duration-300 ${
+          active ? 'text-white' : 'text-cosmic-secondary'
+        }`}
+      >
+        {icon}
+      </span>
+    </span>
+    <span
+      className={`text-[10px] mt-0.5 tracking-wide transition-colors duration-300 ${
+        active ? 'text-white' : 'text-cosmic-secondary/80'
+      }`}
+    >
+      {label}
+    </span>
+  </button>
+);

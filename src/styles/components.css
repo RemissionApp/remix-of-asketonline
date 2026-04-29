@@ -62,4 +62,114 @@
   .text-shadow {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
   }
+
+  /* ============================================================
+     Liquid Glass system (iOS-inspired glassmorphism)
+     ============================================================ */
+  .glass {
+    @apply backdrop-blur-2xl border border-white/10;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .glass-strong {
+    @apply backdrop-blur-3xl border border-white/15;
+    background: linear-gradient(
+      135deg,
+      rgba(20, 14, 45, 0.55) 0%,
+      rgba(10, 6, 30, 0.45) 100%
+    );
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .glass-card {
+    @apply relative rounded-2xl border border-white/10 backdrop-blur-xl overflow-hidden transition-all duration-300;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 12px 36px rgba(139, 92, 246, 0.18),
+      0 8px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Subtle moving highlight at the top edge */
+  .glass-shimmer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    animation: shimmer 6s ease-in-out infinite;
+  }
+
+  /* Round glass icon button */
+  .glass-icon-btn {
+    @apply relative inline-flex items-center justify-center rounded-full backdrop-blur-xl border border-white/20 transition-all duration-300 active:scale-95;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+  .glass-icon-btn:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+  }
+
+  /* Glow ring used for active nav pill */
+  .glow-ring {
+    position: relative;
+  }
+  .glow-ring::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      rgba(139, 92, 246, 0.55) 0%,
+      rgba(139, 92, 246, 0) 70%
+    );
+    z-index: -1;
+    filter: blur(6px);
+  }
+
+  /* Section icon wrapper in glass style */
+  .glass-icon-wrap {
+    @apply rounded-xl p-2 mr-3 flex items-center justify-center backdrop-blur-md border border-white/10;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
 }
