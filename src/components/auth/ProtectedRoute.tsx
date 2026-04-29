@@ -26,6 +26,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // Force redirect only when the user must complete profile or onboarding.
   // When status === 'ready', allow free navigation across all protected routes.
+  // Note: useAuthFlow returns 'ready' during the profile-loading grace window,
+  // so a freshly-restored session lands on /main instead of bouncing through
+  // /profile-setup while data hydrates in the background.
   if (status === 'needs_profile' || status === 'needs_onboarding') {
     if (targetRoute !== location.pathname) {
       return <Navigate to={targetRoute} replace />;
