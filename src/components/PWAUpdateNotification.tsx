@@ -3,6 +3,7 @@ import { RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PWAUpdateManager } from '@/utils/pwaUpdateManager';
+import { isPwaDisabledEnvironment } from '@/utils/pwaUtils';
 
 export const PWAUpdateNotification: React.FC = () => {
   const [showUpdate, setShowUpdate] = useState(false);
@@ -12,6 +13,9 @@ export const PWAUpdateNotification: React.FC = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
+    if (isPwaDisabledEnvironment()) {
+      return;
+    }
     const handleUpdateAvailable = (event: CustomEvent) => {
       setUpdateManager(event.detail.updateManager);
       setShowUpdate(true);
