@@ -150,8 +150,19 @@ serve(async req => {
 
       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error.message || 'Error from OpenAI API');
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please try again later.');
+        }
+        if (response.status === 402) {
+          throw new Error('AI credits exhausted. Please add credits to continue.');
+        }
+        throw new Error(data?.error?.message || `AI gateway error: ${response.status}`);
+      }
+
+      if (!data?.choices?.[0]?.message?.content) {
+        console.error('Unexpected AI response shape:', JSON.stringify(data));
+        throw new Error('AI returned no content');
       }
 
       horoscopeText = data.choices[0].message.content;
