@@ -6,3 +6,6 @@
 
 /* Animation styles */
 @import './animations.css';
+
+/* StarField shared keyframes */
+@import './starfield.css';

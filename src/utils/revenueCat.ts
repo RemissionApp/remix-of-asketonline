@@ -15,6 +15,7 @@ const REVENUECAT_IOS_API_KEY = 'appl_SFBeDRUZdFrEaMxEmovtiUEhcdf';
 export class RevenueCatService {
   private static instance: RevenueCatService;
   private isConfigured = false;
+  private billingAvailableCache: boolean | null = null;
 
   private constructor() {}
 
@@ -26,50 +27,33 @@ export class RevenueCatService {
   }
 
   async initialize(userId?: string): Promise<void> {
-    console.log('🚀 REVENUECAT INITIALIZE called with userId:', userId);
-
     if (this.isConfigured) {
-      console.log('⚠️ RevenueCat already configured, skipping');
       return;
     }
 
     try {
-      // Включаем debug логи для разработки
-      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-      console.log('📝 RevenueCat debug logging enabled');
+      // DEBUG только в dev — в production оставляем INFO, чтобы не спамить логи покупок.
+      await Purchases.setLogLevel({
+        level: import.meta.env.DEV ? LOG_LEVEL.DEBUG : LOG_LEVEL.INFO,
+      });
 
       if (Capacitor.getPlatform() === 'ios') {
-        console.log('🍎 iOS platform detected');
-        console.log(
-          '🔑 Configuring RevenueCat with iOS API key and userId:',
-          userId
-        );
         await Purchases.configure({
           apiKey: REVENUECAT_IOS_API_KEY,
           appUserID: userId,
         });
-        console.log('✅ RevenueCat configured successfully for iOS');
       } else if (Capacitor.getPlatform() === 'android') {
-        console.log('🤖 Android platform detected');
-        console.log(
-          '🔑 Configuring RevenueCat with Android API key and userId:',
-          userId
-        );
         await Purchases.configure({
           apiKey: REVENUECAT_ANDROID_API_KEY,
           appUserID: userId,
         });
-        console.log('✅ RevenueCat configured successfully for Android');
       } else {
-        console.log('🌐 Web platform detected - RevenueCat not available');
-        console.warn('RevenueCat is not supported on web platform');
-        // На веб-платформе RevenueCat не работает, но не бросаем ошибку
+        // На веб-платформе RevenueCat не работает, но не бросаем ошибку.
         this.isConfigured = true;
         return;
       }
 
       this.isConfigured = true;
-      console.log('🎉 RevenueCat initialized successfully with user:', userId);
     } catch (error) {
       console.error('❌ Failed to initialize RevenueCat:', error);
       throw error;
@@ -150,29 +134,7 @@ export class RevenueCatService {
 
   async getCustomerInfo() {
     try {
-      console.log('📞 Getting customer info from RevenueCat...');
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log(
-        '📋 CUSTOMER INFO RECEIVED:',
-        JSON.stringify(customerInfo, null, 2)
-      );
-      console.log(
-        '🔍 CUSTOMER INFO DETAILS:',
-        JSON.stringify(
-          {
-            activeSubscriptions: customerInfo.customerInfo?.activeSubscriptions,
-            entitlements: customerInfo.customerInfo?.entitlements,
-            allPurchasedProductIdentifiers:
-              customerInfo.customerInfo?.allPurchasedProductIdentifiers,
-            originalAppUserId: customerInfo.customerInfo?.originalAppUserId,
-            firstSeen: customerInfo.customerInfo?.firstSeen,
-            originalPurchaseDate:
-              customerInfo.customerInfo?.originalPurchaseDate,
-          },
-          null,
-          2
-        )
-      );
       return customerInfo.customerInfo;
     } catch (error) {
       console.error('❌ Failed to get customer info:', error);
@@ -190,18 +152,24 @@ export class RevenueCatService {
     }
   }
 
-  // Новый метод для проверки доступности Google Play Billing
+  // Проверка доступности billing. Результат кешируется на сессию,
+  // чтобы не делать второй getOfferings() во время инициализации.
   async checkBillingAvailability(): Promise<boolean> {
+    if (this.billingAvailableCache !== null) {
+      return this.billingAvailableCache;
+    }
     try {
       await this.getOfferings();
+      this.billingAvailableCache = true;
       return true;
     } catch (error: unknown) {
       if (
         error &&
         typeof error === 'object' &&
         'code' in error &&
-        error.code === 'PurchaseNotAllowedError'
+        (error as { code: string }).code === 'PurchaseNotAllowedError'
       ) {
+        this.billingAvailableCache = false;
         return false;
       }
       throw error;

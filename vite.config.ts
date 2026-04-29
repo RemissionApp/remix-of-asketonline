@@ -19,7 +19,26 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      output: {},
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'radix-vendor': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+          ],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'revenuecat-vendor': [
+            '@revenuecat/purchases-capacitor',
+            '@revenuecat/purchases-capacitor-ui',
+          ],
+          'charts-vendor': ['recharts'],
+        },
+      },
     },
     chunkSizeWarningLimit: 1000,
   },
