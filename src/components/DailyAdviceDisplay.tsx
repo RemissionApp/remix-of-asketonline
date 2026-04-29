@@ -11,21 +11,19 @@ export const DailyAdviceDisplay: React.FC = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6">
-        <div className="p-4">
-          <div className="flex items-center mb-3">
-            <div className="bg-cosmic-accent/20 rounded-lg p-2 mr-3">
+      <div className="cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-4 sm:mb-6">
+        <div className="p-3 sm:p-4">
+          <div className="flex items-center mb-2 sm:mb-3">
+            <div className="bg-cosmic-accent/20 rounded-lg p-1.5 sm:p-2 mr-2 sm:mr-3">
               <LightbulbIcon
-                size={20}
+                size={18}
                 className="text-cosmic-gold animate-pulse-slow"
               />
             </div>
             <h3
-              className={
-                language === 'en'
-                  ? 'font-serif font-medium'
-                  : 'font-sans font-medium'
-              }
+              className={`text-sm sm:text-base font-medium ${
+                language === 'en' ? 'font-serif' : 'font-display'
+              }`}
             >
               {language === 'ru'
                 ? 'Совет дня'
@@ -36,10 +34,10 @@ export const DailyAdviceDisplay: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <Skeleton className="h-14 w-full bg-cosmic-accent/10 rounded-md" />
+            <Skeleton className="h-12 sm:h-14 w-full bg-cosmic-accent/10 rounded-md" />
           ) : (
-            <div className="px-1 py-2">
-              <p className="text-white text-base font-sans leading-relaxed text-center">
+            <div className="px-1 py-1 sm:py-2">
+              <p className="text-white text-sm sm:text-base font-sans leading-snug sm:leading-relaxed text-center">
                 {dailyAdvice}
               </p>
             </div>

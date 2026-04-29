@@ -1,68 +1,95 @@
-# Fix onboarding/login crash ("Что-то пошло не так")
+## Goal
 
-## Root cause
+Adapt the main page (`/main`) for mobile (390px) by:
+1. Reordering content blocks per user spec.
+2. Adding a beautiful display font for Russian (matching the elegance of Cinzel for English).
+3. Shrinking type sizes and vertical spacing on mobile.
 
-The runtime error from the console is:
+## 1. New block order on MainPage
 
+Edit `src/components/MainPageComponents/MainContent.tsx` to reorder:
+
+```text
+1. UserGreetingSection      (приветствие — без изменений)
+2. PactDisplay              (текущий пакт)
+3. DailyAdviceDisplay       (Совет дня)
+4. UniverseMessageBlock     (Диалог со Вселенной)   ← перенесено вверх
+5. ZodiacBadgeDisplay       (Гороскоп)
+6. AffirmationsBlock        (Аффирмации)
+7. NumerologyDisplay        (Нумерология)
+8. MeditationBlock          (Медитации)
+9. CosmicMissionsEntryPoint (Космические миссии)    ← в самый низ
+10. ActiveMissionWidget + UserLevelDisplay остаются после миссий
 ```
-Uncaught Error: cannot add `postgres_changes` callbacks for
-realtime:profiles:trial:<user.id> after `subscribe()`.
-  at useEntitlement.ts:28
-```
 
-`useEntitlement` is mounted simultaneously by several components on the
-main app screens (`TrialBanner`, `PaywallButton`, `ProFeatureOverlay`,
-`UniverseChatProWrapper`). Each instance does:
+## 2. Beautiful Russian display font
 
-```ts
-supabase.channel(`profiles:trial:${user.id}`)   // same name every time
-  .on('postgres_changes', ..., handler)
-  .subscribe();
-```
+Cinzel (текущий `font-serif`) не поддерживает кириллицу — поэтому русский текст падает на запасной шрифт. Добавим **Playfair Display** (поддерживает кириллицу, элегантный, парный к Cinzel по характеру) и заведём новую утилиту `font-display`, которая автоматически выбирает правильный шрифт в зависимости от языка.
 
-`supabase.channel(name)` returns the **existing** channel if one with
-that name already exists in the client. The first hook subscribes it,
-then the second hook gets that same already-subscribed channel and calls
-`.on(...)` on it — which is forbidden and throws. The throw happens
-inside a React effect, bubbles up, and the global `ErrorBoundary`
-(`src/App.tsx` / `src/components/ui/ErrorBoundary.tsx`) catches it and
-renders the "Что-то пошло не так / Обновить страницу" screen the user is
-seeing right after login/onboarding.
+Изменения:
 
-This is the only place in the codebase where a channel name can collide
-across mounts — `chat-${sessionId}` and `session-${sessionId}` are tied
-to a single owning component, so they are fine.
+- `src/styles/base.css` — подгрузить Playfair Display (cyrillic + latin):
+  ```css
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&display=swap');
+  ```
+- `tailwind.config.ts` — добавить:
+  ```ts
+  fontFamily: {
+    serif: ['Cinzel', 'serif'],
+    display: ['"Playfair Display"', 'Cinzel', 'serif'], // элегантный + кириллица
+    sans: ['Inter', 'sans-serif'],
+    cormorant: ['Cormorant', 'serif'],
+  }
+  ```
+- В заголовочных компонентах (`UserGreetingSection`, `UniverseMessageBlock`, `AffirmationsBlock`, `MeditationBlock`, `CosmicMissionsEntryPoint`, `NumerologyDisplay`, `ZodiacBadgeDisplay`, `DailyAdviceDisplay`) заменить логику:
+  ```tsx
+  // было
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
+  // станет
+  const headingFontClass = language === 'en' ? 'font-serif' : 'font-display';
+  ```
+  Это даёт RU/ES красивый антиквенный шрифт (Playfair Display поддерживает все три языка), а EN сохраняет нынешний Cinzel.
 
-## Fix
+## 3. Mobile typography & spacing reduction
 
-### 1. `src/hooks/useEntitlement.ts` — make the channel per-instance
+Применяем «mobile-first»: уменьшаем размеры по умолчанию, восстанавливаем большие на `sm:` (≥640px).
 
-- Generate a unique suffix per hook instance (e.g. via `useId()` from
-  React or `crypto.randomUUID()` captured in a `useRef`).
-- Use it in the channel name:
-  `profiles:trial:${user.id}:${instanceId}`.
-- Keep the existing cleanup (`supabase.removeChannel(channel)`) so each
-  instance tears down its own channel on unmount / user change.
+| Элемент | Сейчас | Станет (mobile → desktop) |
+|---|---|---|
+| Greeting username `<h2>` | `text-3xl sm:text-4xl mt-2` | `text-2xl sm:text-4xl mt-1` |
+| Greeting label | `text-sm` | `text-xs sm:text-sm` |
+| Block titles `<h3>` (Universe/Affirmations/Meditation/Missions) | `text-xl` | `text-base sm:text-xl` |
+| Block descriptions `<p>` | базовый | `text-sm sm:text-base` |
+| Daily Advice text | `text-base` | `text-sm sm:text-base leading-snug` |
+| Daily Advice title | базовый | `text-sm sm:text-base` |
+| Section vertical margins | `mb-6` / `mt-8` | `mb-4 sm:mb-6` / `mt-5 sm:mt-8` |
+| Block inner padding | `p-4` | `p-3 sm:p-4` |
+| Avatar/Icon (Universe) | `h-14 w-14` | `h-11 w-11 sm:h-14 sm:w-14` |
+| Icon wrappers (`size={24}`) | 24 | 20 на mobile через класс родителя (`p-1.5 sm:p-2`) |
+| `MainContent` container | `px-4 py-6 pt-20` | `px-3 py-4 pt-16 sm:px-4 sm:py-6 sm:pt-20` |
 
-This guarantees each component mounting `useEntitlement` gets its own
-channel object and `.on(...)` is always called before `.subscribe()`.
+Все изменения — через адаптивные Tailwind-классы, чтобы desktop остался прежним.
 
-### 2. Verification pass on the rest of the flow
+## 4. Files to edit
 
-- Re-check onboarding (`src/pages/OnboardingPage.tsx`), login
-  (`src/pages/LoginPage.tsx`, `src/components/AuthCallback.tsx`,
-  `src/hooks/useAuthFlow.ts`) and `AppRouter` only to confirm no other
-  effect throws synchronously after auth. The console only reports the
-  channel error, so no other code changes are expected here — this is
-  just a read-through to confirm.
-- After the fix, reload the preview and confirm:
-  - No "cannot add `postgres_changes` callbacks ... after `subscribe()`"
-    error in the console.
-  - The "Что-то пошло не так" ErrorBoundary screen no longer appears
-    after login / on `/main`.
+- `src/styles/base.css` — добавить Playfair Display.
+- `tailwind.config.ts` — добавить `font-display`.
+- `src/components/MainPageComponents/MainContent.tsx` — порядок блоков + spacing.
+- `src/components/MainPageComponents/UserGreetingSection.tsx` — font-display, mobile sizes.
+- `src/components/DailyAdviceDisplay.tsx` — font-display, mobile sizes.
+- `src/components/universe/UniverseMessageBlock.tsx` — font-display, mobile sizes.
+- `src/components/MainPageComponents/AffirmationsBlock.tsx` — то же.
+- `src/components/MainPageComponents/MeditationBlock.tsx` — то же.
+- `src/components/MainPageComponents/CosmicMissionsEntryPoint.tsx` — то же.
+- `src/components/NumerologyDisplay.tsx` — font-display, mobile sizes.
+- `src/components/ZodiacBadgeDisplay.tsx` — font-display, mobile sizes.
 
-## Files to change
+## 5. QA после внедрения
 
-- `src/hooks/useEntitlement.ts` (only file that needs a code change).
+- Проверить `/main` на 390×740 (mobile) — заголовки компактнее, отступы меньше, читаемо.
+- Переключить язык RU → заголовки рендерятся Playfair Display (антиквенный), а не Inter.
+- Переключить EN → остаётся Cinzel (как сейчас).
+- Проверить десктоп ≥640px — размеры как раньше.
+- Порядок блоков соответствует ТЗ.
 
-No DB changes, no auth changes, no new dependencies.
+Английская типографика остаётся эталонной и не меняется.

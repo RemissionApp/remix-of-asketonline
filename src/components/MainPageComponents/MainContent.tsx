@@ -43,7 +43,7 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   const { stats } = useUserProgress();
   return (
-    <main className="flex-1 container mx-auto px-4 py-6 pt-20 flex flex-col items-center">
+    <main className="flex-1 container mx-auto px-3 py-4 pt-16 sm:px-4 sm:py-6 sm:pt-20 flex flex-col items-center gap-3 sm:gap-4">
       {/* 1. User Greeting Section - First */}
       <UserGreetingSection />
 
@@ -68,11 +68,38 @@ export const MainContent: React.FC<MainContentProps> = ({
       </div>
 
       {/* 3. Daily Advice */}
-      <div className="mt-8">
-        <DailyAdviceDisplay />
+      <DailyAdviceDisplay />
+
+      {/* 4. Universe Message Block */}
+      <div className="w-full max-w-lg mx-auto">
+        <UniverseMessageBlock />
       </div>
 
-      {/* 3.1. User Level Display */}
+      {/* 5. Zodiac Badge Display (Horoscope) */}
+      <div className="w-full max-w-lg mx-auto">
+        <ZodiacBadgeDisplay />
+      </div>
+
+      {/* 6. Affirmations */}
+      <div className="w-full max-w-lg mx-auto">
+        <AffirmationsBlock />
+      </div>
+
+      {/* 7. Numerology */}
+      <div className="w-full max-w-lg mx-auto">
+        <NumerologyDisplay />
+      </div>
+
+      {/* 8. Meditations */}
+      <div className="w-full max-w-lg mx-auto">
+        <MeditationBlock />
+      </div>
+
+      {/* 9. Cosmic Missions */}
+      <CosmicMissionsEntryPoint />
+
+      {/* 10. Active Mission Widget + Level */}
+      <ActiveMissionWidget />
       <UserLevelDisplay
         level={stats?.level || 1}
         experiencePoints={stats?.experiencePoints || 0}
@@ -80,37 +107,6 @@ export const MainContent: React.FC<MainContentProps> = ({
         totalEnergyEarned={stats?.totalEnergyEarned || 0}
         className="w-full max-w-lg mx-auto"
       />
-
-      {/* 3. Active Mission Widget (if available) */}
-      <ActiveMissionWidget />
-
-      {/* 4. Cosmic Missions Entry Point */}
-      <CosmicMissionsEntryPoint />
-
-      {/* 5. Universe Message Block */}
-      <div className="w-full max-w-lg mx-auto">
-        <UniverseMessageBlock />
-      </div>
-
-      {/* 6. Zodiac Badge Display */}
-      <div className="w-full max-w-lg mx-auto">
-        <ZodiacBadgeDisplay />
-      </div>
-
-      {/* 7. Meditation Block */}
-      <div className="w-full max-w-lg mx-auto">
-        <MeditationBlock />
-      </div>
-
-      {/* 8. Numerology Display */}
-      <div className="w-full max-w-lg mx-auto">
-        <NumerologyDisplay />
-      </div>
-
-      {/* 9. Affirmations Block */}
-      <div className="w-full max-w-lg mx-auto">
-        <AffirmationsBlock />
-      </div>
     </main>
   );
 };
