@@ -21,6 +21,8 @@ export function useEntitlement(): EntitlementState {
   const { user, userProfile } = useAppStore();
   const [trialEndsAt, setTrialEndsAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
+  // Tick state: пересчитываем isTrialActive каждые 60 секунд, даже без events.
+  const [, setNowTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,8 +42,32 @@ export function useEntitlement(): EntitlementState {
         setTrialEndsAt(data?.trial_ends_at ? new Date(data.trial_ends_at) : null);
         setLoading(false);
       });
+
+    // Realtime: сразу видим, когда trial_ends_at меняется (продление, отмена).
+    const channel = supabase
+      .channel(`profiles:trial:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`,
+        },
+        payload => {
+          const next = (payload.new as { trial_ends_at?: string | null })?.trial_ends_at;
+          setTrialEndsAt(next ? new Date(next) : null);
+        },
+      )
+      .subscribe();
+
+    // Локальный tick на случай, если realtime пропустил событие истечения.
+    const interval = window.setInterval(() => setNowTick(t => t + 1), 60_000);
+
     return () => {
       cancelled = true;
+      supabase.removeChannel(channel);
+      window.clearInterval(interval);
     };
   }, [user?.id]);
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface NotificationData {
   type:
@@ -18,24 +18,53 @@ export interface NotificationData {
 }
 
 export class PushNotificationService {
+  // Клиентский rate-limit: не дёргать одну и ту же отправку чаще, чем раз в 60 сек.
+  private static lastSentAt = new Map<string, number>();
+  private static readonly THROTTLE_MS = 60_000;
+
+  private static throttleKey(n: NotificationData): string {
+    return `${n.type}:${n.userId ?? ''}:${(n.userIds ?? []).join(',')}`;
+  }
+
+  private static async invokeWithRetry(
+    notification: NotificationData,
+    attempts = 3,
+  ): Promise<{ data: unknown; error: unknown }> {
+    let lastErr: unknown = null;
+    for (let i = 0; i < attempts; i++) {
+      const { data, error } = await supabase.functions.invoke(
+        'send-push-notification',
+        { body: notification },
+      );
+      if (!error) return { data, error: null };
+      lastErr = error;
+      // exponential backoff: 300ms, 900ms, 2700ms
+      await new Promise(r => setTimeout(r, 300 * Math.pow(3, i)));
+    }
+    return { data: null, error: lastErr };
+  }
+
   /**
    * Отправляет push-уведомление через Edge Function
    */
   static async send(notification: NotificationData): Promise<boolean> {
     try {
-      const { data, error } = await supabase.functions.invoke(
-        'send-push-notification',
-        {
-          body: notification,
-        }
-      );
+      const key = this.throttleKey(notification);
+      const now = Date.now();
+      const last = this.lastSentAt.get(key) ?? 0;
+      if (now - last < this.THROTTLE_MS) {
+        console.warn('[push] throttled:', key);
+        return false;
+      }
+      this.lastSentAt.set(key, now);
+
+      const { error } = await this.invokeWithRetry(notification);
 
       if (error) {
         console.error('Ошибка отправки push-уведомления:', error);
         return false;
       }
 
-      console.log('Push-уведомление отправлено:', data);
       return true;
     } catch (error) {
       console.error('Ошибка сервиса push-уведомлений:', error);
