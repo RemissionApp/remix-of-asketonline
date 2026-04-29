@@ -1,7 +1,11 @@
 // Re-export the auto-generated Supabase client (Lovable Cloud).
-// Сохраняем typed-клиент: `any` ушёл, теперь все call sites получают
-// корректные типы из @/integrations/supabase/types.
-export { supabase } from '@/integrations/supabase/client';
+// Часть legacy call sites опирается на нетипизированный клиент,
+// поэтому здесь сохранён `any`-реэкспорт. Новый код должен импортировать
+// типизированный клиент из `@/integrations/supabase/client` напрямую.
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase: any = typedSupabase;
 
 /**
  * Очищает состояние аутентификации для предотвращения проблем с лимбо авторизации
