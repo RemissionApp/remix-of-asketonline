@@ -142,7 +142,7 @@ const MainPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative pb-32">
       <StarField starCount={100} />
 
       {/* Fixed TopBar at the top */}
