@@ -41,12 +41,12 @@ const MemoizedUserGreetingSection: React.FC = () => {
            language === 'es' ? '¡Te saludo!' : 'Greetings!';
   }, [language]);
 
-  // Memoize username
+  // Memoize username — show only the user's real name; never substitute
+  // a placeholder like "Искатель", which gives the false impression that
+  // saved data was lost.
   const userName = useMemo(() => {
-    return userProfile?.name ||
-           (language === 'ru' ? 'Искатель' : 
-            language === 'es' ? 'Buscador' : 'Seeker');
-  }, [userProfile?.name, language]);
+    return userProfile?.name?.trim() || '';
+  }, [userProfile?.name]);
 
   // Memoize font class based on language
   const fontClass = useMemo(() => {
@@ -58,9 +58,11 @@ const MemoizedUserGreetingSection: React.FC = () => {
       <h2 className={`${fontClass} text-xl font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
         {greeting}
       </h2>
-      <h3 className={`${fontClass} text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
-        {userName}
-      </h3>
+      {userName && (
+        <h3 className={`${fontClass} text-lg mt-2 font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
+          {userName}
+        </h3>
+      )}
       <div className="flex items-center justify-center mt-3 text-slate-300 text-sm font-medium">
         <Clock size={14} className="mr-1" />
         <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">

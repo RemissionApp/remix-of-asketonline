@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { subYears } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -98,7 +99,7 @@ const BirthDateEditor: React.FC<BirthDateEditorProps> = ({
             onSelect={date => setTempBirthDate(date)}
             disabled={date => {
               const minDate = new Date('1930-01-01');
-              const maxDate = new Date('2025-12-31');
+              const maxDate = subYears(new Date(), 5);
               return (
                 date > maxDate ||
                 date < minDate

@@ -1,52 +1,92 @@
+## Многоэтапный план полной доработки приложения для запуска
 
+Делим работу на 4 этапа. Каждый этап — отдельное сообщение/итерация: вы подтверждаете → я внедряю → проверяете в превью → переходим к следующему. Это безопаснее, чем менять всё разом.
 
-## Фикс: убрать ложную ошибку RevenueCat в web-версии + дедупликация инициализации
+---
 
-### Корни проблемы
+### Этап 1 (СЕЙЧАС) — Фикс профиля: «Искатель» + сегодняшняя дата + валидация
 
-1. **`@revenuecat/purchases-capacitor` — нативный плагин**, в браузере всегда бросает `Web not supported in this plugin`. Это не баг, а ожидаемое поведение для web. Но `useRevenueCat` показывает destructive toast «Ошибка инициализации», пугая web-пользователей.
+**Симптомы:**
+- При входе под существующим юзером на `/profile-setup` показывается имя «Искатель» и дата = сегодня.
+- Календарь позволяет выбрать дату вплоть до `2025-12-31` (хардкод) и/или сегодняшнюю.
 
-2. **Множественная инициализация**: `useRevenueCat(user?.id)` вызывается в нескольких компонентах одновременно (`UniverseMessageBlock`, `OfferingsDisplay`, `SubscriptionManager` и др.) — в логах видно 6 параллельных вызовов `initialize` с одним и тем же `userId`. Каждый бросает ошибку → 6 красных toast'ов.
+**Корни:**
 
-3. **Нет детекции платформы перед вызовом**: код пытается инициализировать RevenueCat всегда, даже когда `Capacitor.isNativePlatform() === false`.
+1. `src/components/UserProfileForm.tsx`:
+   - `useState({ name: '', birthDate: new Date() })` — стартовое значение даты = сегодня. Если профиль ещё не подгрузился, `ProfileForm` рендерится с этой датой и юзер видит «29 апреля 2026».
+   - В `ProfileForm` проп: `birthDate: formData.birthDate || userProfile.birthDate || new Date()` — то же самое, всегда есть fallback на `new Date()`.
+2. `src/components/MainPageComponents/UserGreetingSection.tsx`:
+   - `userName = userProfile?.name || 'Искатель'` — если имя пустое или профиль ещё грузится, всегда показывает «Искатель». Это даёт ложное ощущение, что данные не сохранились.
+3. `src/pages/UserProfilePage.tsx` использует **только** `loading` (общий флаг авторизации), не дожидается `userProfile.birthDate`. Форма монтируется со «свежим» `new Date()` до того, как профиль из БД хидрируется.
+4. `src/components/ProfileForm.tsx`:
+   - `maxBirthDate = subYears(today, 5)` — корректно, **но** дефолтное значение приходит сверху как `new Date()` (сегодня), что > maxBirthDate → форма стартует с невалидным значением.
+5. `src/components/BirthDateEditor.tsx`:
+   - `maxDate = new Date('2025-12-31')` — хардкод прошлого года, к 2026 уже неверный. Должно быть `subYears(today, 5)`.
 
-### План исправления
+**Правки:**
 
-**Шаг 1 — Детектить нативную платформу в `revenueCatSlice.initialize`**
-В `src/store/slices/revenueCatSlice.ts` в начале `initialize()`:
-```ts
-import { Capacitor } from '@capacitor/core';
+- **`UserProfileForm.tsx`**:
+  - Не инициализировать `formData.birthDate` значением `new Date()`. Использовать `null` пока профиль не загрузился.
+  - Пока `userProfile` не хидрирован (нет ни name, ни birthDate **и** нет флага «профиль точно пустой»), показывать спиннер вместо формы. Гарантировать, что для **существующих** пользователей форма стартует уже с реальными значениями из БД.
+  - Передавать в `ProfileForm` `birthDate: undefined` (не `new Date()`), если ничего нет — пусть поле будет пустым с плейсхолдером «Выберите дату рождения».
 
-if (!Capacitor.isNativePlatform()) {
-  console.info('RevenueCat: skipping initialization on web (native-only plugin)');
-  set({ isInitialized: false, billingAvailable: false, isLoading: false });
-  return;
-}
-```
-Это **тихо** пропускает инициализацию в браузере, без throw, без toast.
+- **`ProfileForm.tsx`**:
+  - Убрать fallback `defaultValues.birthDate || new Date()`. Принимать `Date | null | undefined`, не подставлять сегодня.
+  - `defaultCalendarMonth` считать от `subYears(today, 25)` если значения нет (более логично, чем 1990).
+  - Зод-схему оставить как есть (требует Date).
 
-**Шаг 2 — Убрать destructive toast из `useRevenueCat`**
-В `src/hooks/useRevenueCat.ts` обернуть `initialize(userId).catch(...)` так, чтобы при ошибке `Web not supported` НЕ показывать toast — только в консоль. Реальные ошибки (на нативе) продолжают показываться.
+- **`BirthDateEditor.tsx`**:
+  - Заменить хардкод `new Date('2025-12-31')` на `subYears(new Date(), 5)`.
+  - Импортировать `subYears` из `date-fns`.
 
-**Шаг 3 — Дедупликация инициализации**
-В `revenueCatSlice` добавить guard: если `isInitialized === true` ИЛИ уже идёт `initializingPromise` — возвращать существующий promise вместо повторного вызова. Так 6 параллельных компонентов получат один общий init вместо 6 запросов.
+- **`UserGreetingSection.tsx`**:
+  - Если `userProfile?.name` пустое — не показывать «Искатель», показывать просто приветствие без имени (или «—»). «Искатель» как ник навязывается насильно — уберём.
 
-**Шаг 4 — Отметить web как «billing недоступен» консистентно**
-- `hasActiveSubscription` в web-режиме должен возвращать `false` (free tier), пока не подключён web-провайдер платежей (Stripe/Paddle).
-- `OfferingsDisplay` уже корректно показывает «Google Play Billing недоступен» при `billingAvailable === false` — оставить.
+- **`UserProfilePage.tsx`**:
+  - Дожидаться загрузки профиля (если `user` есть, но `userProfile.name === '' && userProfile.birthDate === null && !profileStepCompleted` и идёт `loading` хидратации) — показывать спиннер.
 
-### Файлы под изменение
-- `src/store/slices/revenueCatSlice.ts` — добавить platform check + дедупликацию.
-- `src/hooks/useRevenueCat.ts` — убрать toast при `Web not supported`.
+**Ожидаемый результат этапа 1:**
+- Существующий юзер заходит → видит свои реальные имя и дату рождения, **не** «Искатель» и **не** сегодня.
+- В календаре выбрать дату позже, чем `today − 5 лет`, невозможно (ни в первичной форме, ни в редакторе из настроек).
+- На главной приветствие не подставляет «Искатель» вместо пустого имени.
 
-### Что НЕ трогаем
-- Нативную работу RevenueCat (iOS/Android-сборки продолжат работать как раньше).
-- UI компоненты PRO (`ProFeatureOverlay`, `PaywallButton`).
-- БД таблицу `subscriptions`.
+**Файлы:** `src/components/UserProfileForm.tsx`, `src/components/ProfileForm.tsx`, `src/components/BirthDateEditor.tsx`, `src/components/MainPageComponents/UserGreetingSection.tsx`, `src/pages/UserProfilePage.tsx`.
 
-### Дальнейший шаг (отдельным этапом, не сейчас)
-Для **web-монетизации** подключить Stripe/Paddle через `payments--recommend_payment_provider` — это даст работающий paywall в браузере и PWA. RevenueCat остаётся для нативных билдов.
+---
 
-### Ожидаемый результат
-В web-превью больше нет красного toast «Ошибка инициализации». В консоли — единственное info-сообщение «skipping on web». На нативном Android/iOS RevenueCat работает как раньше, paywall открывается.
+### Этап 2 — Сквозной аудит auth-флоу и удаление мёртвого кода
 
+- В кодовой базе сосуществуют **две системы** auth-навигации: новая `useAuthFlow` (`src/hooks/useAuthFlow.ts`) и старая `determineAuthRoute` (`src/utils/authRouter.ts`). `WelcomePage` всё ещё использует старую. Это источник рассинхронов.
+- Удалить `src/utils/authRouter.ts` после миграции `WelcomePage`, `useAuthDebug`, `ProtectedRoute`/`PublicRoute` (если используют) на `useAuthFlow`.
+- Привести `signIn` (`authSlice.ts`) к единому пути: после успеха не дублировать `loadUserProfile/loadOnboardingState` (их уже зовёт `onAuthStateChange` в `useAuthFlowBootstrap`). Убрать race.
+- Удалить `updateUserProfile` (помечен deprecated) и заменить вызовы на прямой upsert в `profiles` (он уже в `UserProfileForm`).
+- Тест end-to-end: новый юзер → OTP → `/profile-setup` → `/onboarding` → `/main`; existing юзер → `/login` → `/main` (без промежуточных мерцаний).
+
+**Файлы:** `src/utils/authRouter.ts` (удалить), `src/pages/WelcomePage.tsx`, `src/hooks/useAuthDebug.ts`, `src/store/slices/authSlice.ts`, `src/components/auth/ProtectedRoute.tsx`, `src/components/auth/PublicRoute.tsx`.
+
+---
+
+### Этап 3 — UX/дизайн полировка ключевых экранов
+
+- **LoginPage**: визуально перегружен (3 формы в одной карточке). Сделать более чистый, добавить состояния «загрузка» внутри кнопки, единый отступ.
+- **OnboardingPage**: 3 шага сейчас — заглушка с маркированными списками. Сделать карточный дизайн, иконки фич, прогресс-бар сверху, кнопки крупнее, лучшая читаемость на мобильном.
+- **UserProfilePage**: убрать «Шаг 1 из 2» дубль (он и в `UserProfileForm`, и можно ещё раз), добавить иллюстрацию/иконку, увеличить отступы.
+- **MainPage UserGreetingSection**: переработать в более минималистичный блок (часы/дата меньшим шрифтом, имя крупнее).
+- Глобально: проверить, что ничего не выпадает на мобильном (375px), все touch-targets ≥ 44px.
+
+---
+
+### Этап 4 — Подготовка к запуску: чек-лист
+
+- Включить **подтверждение email** в Auth (сейчас OTP-flow свой; убедиться, что обычный `signUp` тоже требует подтверждения).
+- Добавить **rate limiting** на edge functions (минимум `voice-to-text`, `text-to-speech`, `fetch-horoscope`, `universe-answer`) — сейчас любой авторизованный юзер может расходовать `LOVABLE_API_KEY` без ограничений сверх `daily_limits`.
+- Прогнать `security--run_security_scan`, поправить критичные находки.
+- Проверить, что все `console.log` в продакшен-коде закрыты `logger.debug` (сейчас в `authSlice.verifyOtpCode` много прямых `console.log` с email/code — вытащить).
+- Sentry / error tracking — опционально, но желательно для запуска.
+- Smoke-test всех платных фич (paywall пока только нативный — для web план в отдельной задаче через Stripe/Paddle).
+
+---
+
+## Что делаем прямо сейчас
+
+Начинаем с **Этапа 1**. Это закроет основную жалобу («показывает имя Искатель и старую/сегодняшнюю дату») и валидацию даты. Этапы 2–4 запускаем последовательно по вашему согласию после проверки результата каждого предыдущего.
