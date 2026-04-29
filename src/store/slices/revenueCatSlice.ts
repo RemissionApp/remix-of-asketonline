@@ -8,6 +8,7 @@ import {
 import { revenueCatService } from '@/utils/revenueCat';
 import { useAppStore } from '../useAppStore';
 import { Capacitor } from '@capacitor/core';
+import { supabase } from '@/integrations/supabase/client';
 
 // Module-level promise for deduplication of concurrent initialize() calls
 let initializingPromise: Promise<void> | null = null;
@@ -135,6 +136,59 @@ export const useRevenueCatStore = create<RevenueCatState>()(
         updateProStatus(hasActive);
 
         console.log('✅ Pro status updated in both stores:', hasActive);
+
+        // Best-effort upsert into public.subscriptions so the DB stays in sync
+        // even if the RevenueCat webhook is delayed. Webhook is still source of truth.
+        (async () => {
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user?.id) return;
+
+            // Pick the active entitlement (pro/premium/asket_premium_*)
+            const active = customerInfo?.entitlements?.active ?? {};
+            const ent = Object.values(active)[0] as any | undefined;
+            const productId = ent?.productIdentifier
+              ?? customerInfo?.activeSubscriptions?.[0]
+              ?? null;
+            const expiresAt = ent?.expirationDate ?? null;
+
+            const platform = Capacitor.getPlatform();
+            const status = hasActive
+              ? (ent?.willRenew === false ? 'canceled' : 'active')
+              : 'canceled';
+
+            const { data: existing } = await supabase
+              .from('subscriptions')
+              .select('id')
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            const row: any = {
+              user_id: user.id,
+              is_pro: hasActive,
+              status,
+              product_id: productId,
+              revenuecat_user_id: customerInfo?.originalAppUserId ?? null,
+              platform,
+              subscription_end: expiresAt,
+            };
+
+            if (existing?.id) {
+              await supabase.from('subscriptions').update(row).eq('id', existing.id);
+            } else {
+              await supabase.from('subscriptions').insert(row);
+            }
+
+            if (hasActive) {
+              await supabase
+                .from('profiles')
+                .update({ payment_method_attached: true })
+                .eq('id', user.id);
+            }
+          } catch (e) {
+            console.warn('subscriptions DB sync skipped:', e);
+          }
+        })();
       },
 
       // Initialize RevenueCat
