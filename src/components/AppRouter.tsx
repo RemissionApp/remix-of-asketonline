@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import { useBackButton } from '@/hooks/useBackButton';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublicRoute } from '@/components/auth/PublicRoute';
-import { AuthDebugPanel } from '@/components/auth/AuthDebugPanel';
 
 import WelcomePage from '@/pages/WelcomePage';
 import LanguagePage from '@/pages/LanguagePage';
@@ -91,9 +90,6 @@ export const AppRouter: React.FC = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
-      
-      {/* Auth debug panel (dev only) */}
-      <AuthDebugPanel />
     </>
   );
 };
