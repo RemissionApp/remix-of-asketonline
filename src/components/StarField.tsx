@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import bgImage from '@/assets/cosmic-bg.jpg';
 
 interface StarFieldProps {
   starCount?: number;
@@ -9,17 +10,20 @@ export const StarField: React.FC<StarFieldProps> = ({
   starCount = 60, // Reduced for mobile performance
   galaxyCount = 3, // Reduced for mobile performance
 }) => {
-  // Создаем массив с случайными позициями и размерами для звезд
+  // Создаём массив с случайными позициями и размерами для звезд.
+  // ВАЖНО: opacity тоже мемоизирован — иначе мерцание при каждом ре-рендере.
   const stars = useMemo(() => {
     return Array.from({ length: starCount }, (_, i) => ({
       id: i,
-      x: Math.random() * 100, // % позиция
-      y: Math.random() * 100, // % позиция
-      size: Math.random() * 2 + 1, // размер в px между 1-3px
-      animationDelay: `${Math.random() * 5}s`, // Случайная задержка анимации
-      animationDuration: `${Math.random() * 3 + 4}s`, // Случайная продолжительность анимации
-      moveDirection: Math.random() > 0.5 ? 'horizontal' : 'vertical', // Случайное направление движения
-      moveDistance: Math.random() * 20 + 10, // Расстояние движения (в пикселях)
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 1,
+      opacity: Math.random() * 0.7 + 0.3,
+      animationDelay: `${Math.random() * 5}s`,
+      animationDuration: `${Math.random() * 3 + 4}s`,
+      // 0..3 — выбор одного из 4 предзаготовленных keyframe-наборов
+      // (горизонтальный/вертикальный × short/long).
+      variant: Math.floor(Math.random() * 4),
     }));
   }, [starCount]);
 
@@ -38,15 +42,14 @@ export const StarField: React.FC<StarFieldProps> = ({
 
   return (
     <div className="main-background fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
-      {/* Background image optimized for mobile */}
+      {/* Background image. backgroundAttachment:'fixed' не используем — на iOS WebView
+          он не работает; вместо этого сам контейнер уже fixed inset-0. */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage:
-            'url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg)',
+          backgroundImage: `url(${bgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
           zIndex: -1,
           opacity: 1,
           filter: 'brightness(1.3)',
@@ -81,39 +84,25 @@ export const StarField: React.FC<StarFieldProps> = ({
         />
       ))}
 
-      {/* Звезды */}
-      {stars.map(star => {
-        const moveKeyframes =
-          star.moveDirection === 'horizontal'
-            ? `@keyframes move-${star.id} {
-              0%, 100% { transform: translateX(0); }
-              50% { transform: translateX(${star.moveDistance}px); }
-            }`
-            : `@keyframes move-${star.id} {
-              0%, 100% { transform: translateY(0); }
-              50% { transform: translateY(${star.moveDistance}px); }
-            }`;
-
-        return (
-          <div key={star.id}>
-            <style>{moveKeyframes}</style>
-            <div
-              className="star absolute rounded-full"
-              style={{
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                opacity: Math.random() * 0.7 + 0.3,
-                background: 'white',
-                boxShadow: `0 0 ${star.size * 2}px ${star.size / 2}px rgba(255, 255, 255, 0.8)`,
-                animation: `star-shine ${star.animationDuration} infinite, move-${star.id} ${star.animationDuration} infinite ease-in-out`,
-                animationDelay: star.animationDelay,
-              }}
-            />
-          </div>
-        );
-      })}
+      {/* Звёзды используют 4 общих keyframe-набора из starfield.css —
+          никаких <style>-тегов в DOM на каждую звезду. */}
+      {stars.map(star => (
+        <div
+          key={star.id}
+          className={`star absolute rounded-full starfield-move-${star.variant}`}
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            opacity: star.opacity,
+            background: 'white',
+            boxShadow: `0 0 ${star.size * 2}px ${star.size / 2}px rgba(255, 255, 255, 0.8)`,
+            animationDuration: star.animationDuration,
+            animationDelay: star.animationDelay,
+          }}
+        />
+      ))}
     </div>
   );
 };

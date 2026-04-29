@@ -1,0 +1,29 @@
+/*
+ * StarField shared keyframes. 4 фиксированных набора движения вместо
+ * инжектируемых <style>-тегов на каждую звезду.
+ */
+@keyframes starfield-move-h-short {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(12px); }
+}
+@keyframes starfield-move-h-long {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(28px); }
+}
+@keyframes starfield-move-v-short {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(12px); }
+}
+@keyframes starfield-move-v-long {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(28px); }
+}
+@keyframes star-shine {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.6); }
+}
+
+.starfield-move-0 { animation: star-shine 4s infinite, starfield-move-h-short 4s infinite ease-in-out; }
+.starfield-move-1 { animation: star-shine 4s infinite, starfield-move-h-long  4s infinite ease-in-out; }
+.starfield-move-2 { animation: star-shine 4s infinite, starfield-move-v-short 4s infinite ease-in-out; }
+.starfield-move-3 { animation: star-shine 4s infinite, starfield-move-v-long  4s infinite ease-in-out; }
