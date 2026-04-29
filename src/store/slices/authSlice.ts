@@ -612,16 +612,44 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
     logger.debug('Loading user profile', { userId: user.id });
 
     try {
-      // Force fresh data from database with cache bypass, including profile_step_completed
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+      // Resilient profile fetch: retry up to 3 times with exponential backoff.
+      // Auth token can take a moment to propagate to PostgREST on cold start,
+      // causing the first request to fail RLS (auth.uid() = null).
+      let data: any = null;
+      let error: any = null;
+      const delays = [0, 300, 600, 1200];
+      for (let attempt = 0; attempt < delays.length; attempt++) {
+        if (delays[attempt] > 0) {
+          await new Promise(r => setTimeout(r, delays[attempt]));
+        }
+        const res = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+        data = res.data;
+        error = res.error;
+        if (!error || error.code === 'PGRST116') break;
+        logger.warn(
+          `loadUserProfile attempt ${attempt + 1} failed, retrying...`,
+          error
+        );
+      }
 
       console.log('loadUserProfile - Raw data from DB:', data);
 
       if (error && error.code !== 'PGRST116') {
+        // Fatal fetch error after retries. Do NOT wipe an existing valid
+        // profile in memory — better to keep stale-but-correct than to
+        // bounce the user back to /profile-setup on a transient failure.
+        const existing = get().userProfile;
+        if (existing?.name && existing?.birthDate) {
+          logger.warn(
+            'Keeping existing in-memory profile after failed reload',
+            error
+          );
+          return;
+        }
         logger.error('Error loading profile data', error);
         throw error;
       }
@@ -804,9 +832,18 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       // Set profile state AND sync profileStepCompleted from the same row
       // (single source of truth for the profile flag).
+      // Sticky merge: never demote profileStepCompleted from true→false.
+      // Also infer "done" when the row clearly has name+birth_date even if
+      // the boolean flag wasn't explicitly set yet (legacy rows).
+      const inferredDone =
+        !!(updatedProfile.name && updatedProfile.birthDate);
+      const prev = get();
       set({
         userProfile: updatedProfile,
-        profileStepCompleted: !!data?.profile_step_completed,
+        profileStepCompleted:
+          prev.profileStepCompleted ||
+          !!data?.profile_step_completed ||
+          inferredDone,
       });
 
       logger.debug('User profile state updated successfully', {

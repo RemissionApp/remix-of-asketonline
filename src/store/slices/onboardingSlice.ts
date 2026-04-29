@@ -53,35 +53,47 @@ export const createOnboardingSlice: StateCreator<
     set({ loading: true, error: null });
 
     try {
-      // Batch fetch both profile and onboarding state
-      const [profileResult, onboardingResult] = await Promise.all([
+      // Independent fetches — one failing must not block the other.
+      const [profileSettled, onboardingSettled] = await Promise.allSettled([
         supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('user_onboarding_state')
           .select('*')
           .eq('user_id', user.id)
-          .single()
+          .maybeSingle(),
       ]);
 
+      const profileResult =
+        profileSettled.status === 'fulfilled'
+          ? profileSettled.value
+          : { data: null, error: profileSettled.reason };
+      const onboardingResult =
+        onboardingSettled.status === 'fulfilled'
+          ? onboardingSettled.value
+          : { data: null, error: onboardingSettled.reason };
+
       if (profileResult.error && profileResult.error.code !== 'PGRST116') {
-        throw profileResult.error;
+        logger.warn('profile fetch failed (non-fatal)', profileResult.error);
       }
 
       // Create onboarding state if it doesn't exist
       let onboardingData = onboardingResult.data;
-      if (onboardingResult.error && onboardingResult.error.code === 'PGRST116') {
+      if (!onboardingData && (!onboardingResult.error || onboardingResult.error.code === 'PGRST116')) {
         const { data: newOnboarding, error: createError } = await supabase
           .from('user_onboarding_state')
           .insert({ user_id: user.id })
           .select()
           .single();
 
-        if (createError) throw createError;
-        onboardingData = newOnboarding;
+        if (createError) {
+          logger.warn('Failed to create onboarding row (non-fatal)', createError);
+        } else {
+          onboardingData = newOnboarding;
+        }
       }
 
       // Update state with fetched data - prioritize profiles table for profile_step_completed
