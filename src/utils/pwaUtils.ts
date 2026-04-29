@@ -8,7 +8,7 @@ import { pwaUpdateManager } from './pwaUpdateManager';
  * - Inside an iframe (Lovable IDE preview)
  * - localhost
  */
-const isPwaDisabledEnvironment = (): boolean => {
+export const isPwaDisabledEnvironment = (): boolean => {
   if (typeof window === 'undefined') return true;
   try {
     if (import.meta.env?.DEV) return true;
@@ -38,7 +38,7 @@ const isPwaDisabledEnvironment = (): boolean => {
  * This is critical inside Lovable Preview because a stale SW would keep
  * serving an outdated app shell and break the iframe preview.
  */
-const cleanupServiceWorker = async (): Promise<void> => {
+export const cleanupServiceWorker = async (): Promise<void> => {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
   try {
     const regs = await navigator.serviceWorker.getRegistrations();

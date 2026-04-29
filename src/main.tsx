@@ -2,12 +2,21 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './styles/index.css';
-import { registerServiceWorker } from './utils/pwaUtils';
+import {
+  registerServiceWorker,
+  cleanupServiceWorker,
+  isPwaDisabledEnvironment,
+} from './utils/pwaUtils';
 import { initNativeSessionBridge } from './utils/nativeSessionBridge';
 import { initNativeDeepLinks } from './utils/nativeDeepLinks';
 
-// Регистрируем Service Worker для PWA
-registerServiceWorker();
+// В preview/iframe/dev — никогда не регистрируем SW и активно чистим
+// уже установленный (он мог перехватывать iframe Lovable IDE).
+if (isPwaDisabledEnvironment()) {
+  cleanupServiceWorker();
+} else {
+  registerServiceWorker();
+}
 
 // Восстанавливаем сессию из нативного хранилища (iOS/Android) до рендера
 initNativeSessionBridge();
