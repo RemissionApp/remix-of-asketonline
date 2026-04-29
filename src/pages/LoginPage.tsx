@@ -257,9 +257,10 @@ const LoginPage: React.FC = () => {
                 
                 <CosmicButton 
                   type="submit" 
-                  className="w-full bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80" 
+                  className="w-full min-h-[52px] bg-cosmic-accent/70 backdrop-blur-sm hover:bg-cosmic-accent/80 flex items-center justify-center gap-2"
                   disabled={verifyingOtp || otpCode.length !== 6}
                 >
+                  {verifyingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
                   {verifyingOtp ? `${t.auth.verifyButton}...` : t.auth.verifyButton}
                 </CosmicButton>
                 
