@@ -148,13 +148,13 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
       if (error) throw error;
 
+      // setUser + profile/onboarding hydration happen via the
+      // onAuthStateChange listener in useAuthFlowBootstrap. We deliberately
+      // do NOT re-trigger loadUserProfile / loadOnboardingState here to avoid
+      // race conditions that would briefly flip "completed" flags.
       set({ user: data.user });
 
-      await Promise.all([
-        get().loadUserProfile(),
-        get().loadOnboardingState(),
-      ]);
-
+      // Load secondary data that the bootstrap doesn't touch.
       setTimeout(async () => {
         try {
           await get().loadPacts();
