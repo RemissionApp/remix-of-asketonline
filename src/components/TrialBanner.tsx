@@ -4,12 +4,15 @@ import { useEntitlement } from '@/hooks/useEntitlement';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
-import { useRevenueCatStore } from '@/store/slices/revenueCatSlice';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useAppStore } from '@/store/useAppStore';
 
 export const TrialBanner: React.FC = () => {
   const { isTrialActive, isPro, daysLeft, hoursLeft, loading } = useEntitlement();
   const navigate = useNavigate();
-  const presentPaywall = useRevenueCatStore((s) => s.presentPaywall);
+  // Используем хук с toast-обёрткой, чтобы ошибки не были тихими.
+  const userId = useAppStore(s => s.user?.id);
+  const { presentPaywall } = useRevenueCat(userId);
 
   if (loading || isPro || !isTrialActive) return null;
 
