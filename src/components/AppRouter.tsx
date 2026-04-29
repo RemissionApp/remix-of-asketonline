@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useBackButton } from '@/hooks/useBackButton';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -18,13 +18,6 @@ import ProfilePage from '@/pages/ProfilePage';
 import NotFound from '@/pages/NotFound';
 import ComparisonPage from '@/pages/ComparisonPage';
 import MeditationPage from '@/pages/MeditationPage';
-import NewMeditationPage from '@/pages/NewMeditationPage';
-import DetailedHoroscopePage from '@/pages/DetailedHoroscopePage';
-import FullHoroscopePage from '@/pages/FullHoroscopePage';
-import UniverseChatPage from '@/pages/UniverseChatPage';
-import CallPage from '@/pages/CallPage';
-import NumerologyPage from '@/pages/NumerologyPage';
-import MeditationProPage from '@/pages/MeditationProPage';
 import AffirmationsPage from '@/pages/AffirmationsPage';
 import CosmicMissionsPage from '@/pages/CosmicMissionsPage';
 import { ArtifactCollectionPage } from '@/pages/ArtifactCollectionPage';
@@ -35,12 +28,28 @@ import DeleteAccountPage from '@/pages/DeleteAccountPage';
 import AccountSettingsPage from '@/pages/AccountSettingsPage';
 import { AuthCallback } from '@/components/AuthCallback';
 
+// Heavy pages — code-split via React.lazy to keep initial bundle small.
+const NewMeditationPage = lazy(() => import('@/pages/NewMeditationPage'));
+const DetailedHoroscopePage = lazy(() => import('@/pages/DetailedHoroscopePage'));
+const FullHoroscopePage = lazy(() => import('@/pages/FullHoroscopePage'));
+const UniverseChatPage = lazy(() => import('@/pages/UniverseChatPage'));
+const CallPage = lazy(() => import('@/pages/CallPage'));
+const NumerologyPage = lazy(() => import('@/pages/NumerologyPage'));
+const MeditationProPage = lazy(() => import('@/pages/MeditationProPage'));
+
+const RouteFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cosmic-dark">
+    <div className="h-8 w-8 rounded-full border-2 border-cosmic-accent border-t-transparent animate-spin" />
+  </div>
+);
+
 export const AppRouter: React.FC = () => {
   // Используем хук для обработки кнопки "Назад"
   useBackButton();
 
   return (
     <>
+      <Suspense fallback={<RouteFallback />}>
       <Routes>
         {/* Public routes - accessible to unauthenticated users */}
         <Route path="/" element={<PublicRoute><WelcomePage /></PublicRoute>} />
@@ -81,6 +90,7 @@ export const AppRouter: React.FC = () => {
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
       
       {/* Auth debug panel (dev only) */}
       <AuthDebugPanel />
