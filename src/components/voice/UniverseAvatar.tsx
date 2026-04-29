@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import universeAvatarCall from '@/assets/universe-avatar-call.jpg';
+import universeAvatarClosed from '@/assets/universe-avatar-call.jpg';
+import universeAvatarOpen from '@/assets/universe-avatar-call-open.jpg';
 
 interface UniverseAvatarProps {
   isActive: boolean;
@@ -10,8 +11,9 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   isActive,
   isSpeaking,
 }) => {
-  // Космический образ Вселенной — единый для активного и неактивного состояний
-  const avatarSrc = universeAvatarCall;
+  // Базовая картинка — закрытые глаза; поверх плавно проявляются открытые
+  // зелёные глаза, когда звонок активен.
+  const avatarSrc = universeAvatarClosed;
 
   // Создаем звезды для анимации - вдвое больше для активного состояния
   const stars = useMemo(() => {
@@ -30,19 +32,63 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
 
   return (
     <div className="relative w-32 h-32 mx-auto">
+      <style>{`
+        @keyframes eye-shimmer {
+          0%, 100% {
+            opacity: 0.85;
+            filter: brightness(1) saturate(1);
+          }
+          50% {
+            opacity: 1;
+            filter: brightness(1.25) saturate(1.4) drop-shadow(0 0 6px rgba(74,222,128,0.7));
+          }
+        }
+        @keyframes eye-glow-pulse {
+          0%, 100% {
+            box-shadow: 0 0 18px rgba(74,222,128,0.4), 0 0 40px rgba(34,197,94,0.2);
+          }
+          50% {
+            box-shadow: 0 0 36px rgba(74,222,128,0.75), 0 0 80px rgba(34,197,94,0.45);
+          }
+        }
+        .animate-eye-shimmer { animation: eye-shimmer 2.4s ease-in-out infinite; }
+        .animate-eye-glow-pulse { animation: eye-glow-pulse 2.4s ease-in-out infinite; }
+      `}</style>
+      {/* Зелёное мерцающее свечение во время активного звонка */}
+      {isActive && (
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none animate-eye-glow-pulse"
+          style={{
+            boxShadow:
+              '0 0 28px rgba(74,222,128,0.55), 0 0 60px rgba(34,197,94,0.35)',
+          }}
+        />
+      )}
+
       {/* Main avatar circle */}
       <div
         className={`w-full h-full rounded-full border-4 transition-all duration-500 relative overflow-hidden ${
           isActive
-            ? 'border-cosmic-accent shadow-lg shadow-cosmic-accent/50'
+            ? 'border-green-400/70 shadow-lg shadow-green-400/40'
             : 'border-cosmic-accent/30 shadow-sm'
         }`}
       >
-        {/* Universe Avatar Image */}
+        {/* Базовый аватар — закрытые глаза */}
         <img
           src={avatarSrc}
           alt="Universe Avatar"
           className="w-full h-full object-cover rounded-full transition-all duration-500"
+        />
+
+        {/* Открытые зелёные глаза — плавно проявляются при подключении и
+            мягко мерцают, имитируя живой взгляд Вселенной */}
+        <img
+          src={universeAvatarOpen}
+          alt=""
+          aria-hidden="true"
+          className={`absolute inset-0 w-full h-full object-cover rounded-full transition-opacity duration-700 pointer-events-none ${
+            isActive ? 'opacity-100 animate-eye-shimmer' : 'opacity-0'
+          }`}
         />
 
         {/* Animated stars overlay */}
