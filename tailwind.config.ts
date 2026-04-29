@@ -92,6 +92,19 @@ export default {
         cormorant: ['Cormorant', 'serif'],
         display: ['"Playfair Display"', 'Cinzel', 'serif'],
       },
+      backdropBlur: {
+        '3xl': '40px',
+      },
+      boxShadow: {
+        glass:
+          '0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
+        'glass-glow':
+          '0 10px 40px rgba(139,92,246,0.25), 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+        'glass-gold':
+          '0 0 30px rgba(232,193,108,0.45), inset 0 1px 0 rgba(255,255,255,0.2)',
+        'glass-violet':
+          '0 0 30px rgba(139,92,246,0.55), inset 0 1px 0 rgba(255,255,255,0.2)',
+      },
       backgroundImage: {
         'cosmic-gradient':
           'linear-gradient(to right, var(--tw-gradient-stops))',
@@ -147,6 +160,34 @@ export default {
               '0 0 15px rgba(139, 92, 246, 0.8), 0 0 20px rgba(139, 92, 246, 0.5)',
           },
         },
+        shimmer: {
+          '0%': { transform: 'translateX(-120%)' },
+          '100%': { transform: 'translateX(220%)' },
+        },
+        breathe: {
+          '0%, 100%': {
+            boxShadow:
+              '0 0 18px rgba(139,92,246,0.45), 0 0 0 rgba(139,92,246,0)',
+            transform: 'scale(1)',
+          },
+          '50%': {
+            boxShadow:
+              '0 0 32px rgba(139,92,246,0.75), 0 0 8px rgba(139,92,246,0.3)',
+            transform: 'scale(1.04)',
+          },
+        },
+        'breathe-gold': {
+          '0%, 100%': {
+            boxShadow:
+              '0 0 18px rgba(232,193,108,0.45), 0 0 0 rgba(232,193,108,0)',
+            transform: 'scale(1)',
+          },
+          '50%': {
+            boxShadow:
+              '0 0 32px rgba(232,193,108,0.75), 0 0 8px rgba(232,193,108,0.3)',
+            transform: 'scale(1.04)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -159,6 +200,9 @@ export default {
         'circle-expand': 'circle-expand 1s ease-out forwards',
         'particles-gather': 'particles-gather 1.5s ease-out forwards',
         'glow-pulse': 'glow-pulse 3s infinite ease-in-out',
+        shimmer: 'shimmer 6s ease-in-out infinite',
+        breathe: 'breathe 3.5s ease-in-out infinite',
+        'breathe-gold': 'breathe-gold 3.5s ease-in-out infinite',
       },
     },
   },
