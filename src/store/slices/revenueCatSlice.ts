@@ -53,15 +53,7 @@ export const useRevenueCatStore = create<RevenueCatState>()(
 
       // Check if subscription is active
       checkActiveSubscription: (customerInfo: CustomerInfo | null): boolean => {
-        console.log(
-          '🔍 CHECKING SUBSCRIPTION STATUS:',
-          JSON.stringify(customerInfo, null, 2)
-        );
-
-        if (!customerInfo) {
-          console.log('❌ No customer info provided');
-          return false;
-        }
+        if (!customerInfo) return false;
 
         // Проверяем активные entitlements
         const hasActiveEntitlements =
@@ -73,57 +65,28 @@ export const useRevenueCatStore = create<RevenueCatState>()(
           customerInfo.activeSubscriptions &&
           customerInfo.activeSubscriptions.length > 0;
 
-        // Проверяем конкретные подписки (для совместимости)
+        // Проверяем конкретные entitlements (для совместимости).
+        // Корректный ID — `asket_premium_monthly`. Старый `asket_premium_montly`
+        // оставлен как fallback для уже активных подписок до их обновления.
         const hasSpecificSubscription = !!(
+          customerInfo.entitlements?.active?.['asket_premium_monthly'] ||
           customerInfo.entitlements?.active?.['asket_premium_montly'] ||
           customerInfo.entitlements?.active?.['asket_premium_yearly'] ||
           customerInfo.entitlements?.active?.['premium'] ||
           customerInfo.entitlements?.active?.['pro']
         );
 
-        // Проверяем все купленные продукты (дополнительная проверка)
-        const hasPurchasedProducts =
-          customerInfo.allPurchasedProductIdentifiers &&
-          customerInfo.allPurchasedProductIdentifiers.length > 0;
-
-        const isActive =
-          hasActiveEntitlements ||
-          hasActiveSubscriptions ||
-          hasSpecificSubscription ||
-          hasPurchasedProducts;
-
-        console.log('📊 SUBSCRIPTION CHECK RESULTS:', {
-          hasActiveEntitlements,
-          hasActiveSubscriptions,
-          hasSpecificSubscription,
-          hasPurchasedProducts,
-          isActive,
-          entitlements: customerInfo.entitlements,
-          activeSubscriptions: customerInfo.activeSubscriptions,
-          allEntitlements: customerInfo.entitlements?.all,
-          allPurchasedProductIdentifiers:
-            customerInfo.allPurchasedProductIdentifiers,
-        });
-
-        console.log('🎯 FINAL RESULT - isActive:', isActive);
-        return isActive;
+        // ВАЖНО: НЕ используем allPurchasedProductIdentifiers — он включает
+        // истёкшие/возвращённые покупки и приводит к незаслуженному PRO.
+        return Boolean(
+          hasActiveEntitlements || hasActiveSubscriptions || hasSpecificSubscription
+        );
       },
 
       // Sync Pro status with app store
       syncProStatus: (customerInfo: CustomerInfo | null) => {
-        console.log(
-          '🔄 SYNCING PRO STATUS with customerInfo:',
-          JSON.stringify(customerInfo, null, 2)
-        );
-
         const { checkActiveSubscription } = get();
         const hasActive = checkActiveSubscription(customerInfo);
-
-        console.log('📈 PRO STATUS COMPARISON:', {
-          current: hasActive,
-          previous: get().hasActiveSubscription,
-          changed: hasActive !== get().hasActiveSubscription,
-        });
 
         // Update RevenueCat store state
         set({
@@ -134,8 +97,6 @@ export const useRevenueCatStore = create<RevenueCatState>()(
         // Sync with main app store
         const { updateProStatus } = useAppStore.getState();
         updateProStatus(hasActive);
-
-        console.log('✅ Pro status updated in both stores:', hasActive);
 
         // Best-effort upsert into public.subscriptions so the DB stays in sync
         // even if the RevenueCat webhook is delayed. Webhook is still source of truth.
