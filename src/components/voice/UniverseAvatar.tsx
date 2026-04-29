@@ -31,7 +31,7 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   }, [isActive]);
 
   return (
-    <div className="relative w-32 h-32 mx-auto">
+    <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto">
       <style>{`
         @keyframes eye-shimmer {
           0%, 100% {
@@ -51,9 +51,31 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
             box-shadow: 0 0 36px rgba(74,222,128,0.75), 0 0 80px rgba(34,197,94,0.45);
           }
         }
+        @keyframes breath {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.03); }
+        }
+        @keyframes ring-expand {
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
         .animate-eye-shimmer { animation: eye-shimmer 2.4s ease-in-out infinite; }
         .animate-eye-glow-pulse { animation: eye-glow-pulse 2.4s ease-in-out infinite; }
+        .animate-breath { animation: breath 4s ease-in-out infinite; }
+        .animate-ring-1 { animation: ring-expand 2.4s ease-out infinite; }
+        .animate-ring-2 { animation: ring-expand 2.4s ease-out infinite 0.8s; }
+        .animate-ring-3 { animation: ring-expand 2.4s ease-out infinite 1.6s; }
       `}</style>
+
+      {/* Expanding energy rings while Universe is speaking */}
+      {isSpeaking && (
+        <>
+          <div className="absolute inset-0 rounded-full border-2 border-green-400/50 pointer-events-none animate-ring-1" />
+          <div className="absolute inset-0 rounded-full border-2 border-green-400/40 pointer-events-none animate-ring-2" />
+          <div className="absolute inset-0 rounded-full border-2 border-green-400/30 pointer-events-none animate-ring-3" />
+        </>
+      )}
+
       {/* Зелёное мерцающее свечение во время активного звонка */}
       {isActive && (
         <div
@@ -65,9 +87,9 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
         />
       )}
 
-      {/* Main avatar circle */}
+      {/* Main avatar circle with breathing animation */}
       <div
-        className={`w-full h-full rounded-full border-4 transition-all duration-500 relative overflow-hidden ${
+        className={`w-full h-full rounded-full border-4 transition-all duration-500 relative overflow-hidden animate-breath ${
           isActive
             ? 'border-green-400/70 shadow-lg shadow-green-400/40'
             : 'border-cosmic-accent/30 shadow-sm'

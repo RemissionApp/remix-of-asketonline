@@ -16,22 +16,46 @@ export const useElevenLabsConversation = () => {
   const { language } = useAppStore();
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [lastAgentMessage, setLastAgentMessage] = useState<string | null>(null);
+  const [lastUserMessage, setLastUserMessage] = useState<string | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
       logger.info('ElevenLabs conversation connected');
       setIsConnected(true);
+      setLastAgentMessage(null);
+      setLastUserMessage(null);
     },
     onDisconnect: () => {
       logger.info('ElevenLabs conversation disconnected');
       setIsConnected(false);
       setConversationId(null);
     },
-    onMessage: message => {
-      logger.debug('Received message', {
-        messageContent: message.message,
-        source: message.source,
-      });
+    onMessage: (message: any) => {
+      logger.debug('Received message', { type: message?.type ?? message?.source });
+      try {
+        // New SDK shape with explicit event types
+        if (message?.type === 'agent_response') {
+          const text =
+            message.agent_response_event?.agent_response ?? message.message;
+          if (text) setLastAgentMessage(text);
+        } else if (message?.type === 'agent_response_correction') {
+          const text =
+            message.agent_response_correction_event?.corrected_agent_response;
+          if (text) setLastAgentMessage(text);
+        } else if (message?.type === 'user_transcript') {
+          const text =
+            message.user_transcription_event?.user_transcript ?? message.message;
+          if (text) setLastUserMessage(text);
+        } else if (message?.source === 'ai' && message?.message) {
+          // Fallback for simplified SDK shape
+          setLastAgentMessage(message.message);
+        } else if (message?.source === 'user' && message?.message) {
+          setLastUserMessage(message.message);
+        }
+      } catch (e) {
+        logger.error('Failed to parse onMessage', e);
+      }
     },
     onError: error => {
       logger.error('ElevenLabs conversation error', error);
@@ -104,5 +128,7 @@ export const useElevenLabsConversation = () => {
     isSpeaking: conversation.isSpeaking || false,
     status: conversation.status,
     conversationId,
+    lastAgentMessage,
+    lastUserMessage,
   };
 };
