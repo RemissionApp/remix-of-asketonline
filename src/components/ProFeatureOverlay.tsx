@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useToast } from '@/hooks/use-toast';
+import { useEntitlement } from '@/hooks/useEntitlement';
 
 interface ProFeatureOverlayProps {
   title?: string;
@@ -30,6 +31,12 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
     user?.id
   );
   const { toast } = useToast();
+  const { isUnlocked } = useEntitlement();
+
+  // During trial or for paying users — render children directly, no overlay.
+  if (isUnlocked) {
+    return <div className={className}>{children}</div>;
+  }
 
   const handleClick = async () => {
     try {
