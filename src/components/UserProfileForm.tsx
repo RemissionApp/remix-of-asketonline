@@ -20,15 +20,16 @@ const UserProfileForm: React.FC = () => {
     userProfile,
     user,
     loadUserProfile,
+    profileStepCompleted,
   } = useAppStore();
   const { t } = useTranslations();
   const [age, setAge] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingBirthDate, setEditingBirthDate] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ name: string; birthDate: Date | null }>({
     name: '',
-    birthDate: new Date(),
+    birthDate: null,
   });
 
   // Hydrate the local form from store data once available.
@@ -36,7 +37,7 @@ const UserProfileForm: React.FC = () => {
     if (userProfile?.name || userProfile?.birthDate) {
       setFormData({
         name: userProfile.name || '',
-        birthDate: userProfile.birthDate || new Date(),
+        birthDate: userProfile.birthDate || null,
       });
       if (userProfile.birthDate) {
         setAge(differenceInYears(new Date(), userProfile.birthDate));
@@ -139,13 +140,19 @@ const UserProfileForm: React.FC = () => {
         <div className="flex justify-center items-center h-32">
           <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full"></div>
         </div>
+      ) : !userProfile && user ? (
+        // Wait for profile hydration before rendering the form so we never
+        // briefly show today's date / empty name to a returning user.
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin w-8 h-8 border-4 border-cosmic-accent border-t-transparent rounded-full"></div>
+        </div>
       ) : (
         <ProfileForm
           onSubmit={onSubmit}
           isSaving={isSaving}
           defaultValues={{
             name: formData.name || userProfile.name || '',
-            birthDate: formData.birthDate || userProfile.birthDate || new Date(),
+            birthDate: formData.birthDate || userProfile.birthDate || null,
           }}
         />
       )}

@@ -31,14 +31,14 @@ interface ProfileFormProps {
   isSaving: boolean;
   defaultValues?: {
     name: string;
-    birthDate: Date;
+    birthDate: Date | null;
   };
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
   onSubmit,
   isSaving,
-  defaultValues = { name: '', birthDate: new Date() },
+  defaultValues = { name: '', birthDate: null },
 }) => {
   const { t } = useTranslations();
   const { language } = useAppStore();
@@ -52,7 +52,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   const defaultCalendarMonth =
     defaultValues.birthDate && defaultValues.birthDate.getFullYear() < currentYear
       ? defaultValues.birthDate
-      : new Date(1990, 0, 1);
+      : subYears(today, 25);
 
   // Create form schema based on language
   const formSchema = z.object({
@@ -70,17 +70,16 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: defaultValues.name,
-      birthDate: defaultValues.birthDate || new Date(),
+      birthDate: defaultValues.birthDate ?? undefined,
     },
   });
 
   // Update form values when defaultValues changes
   useEffect(() => {
     if (defaultValues && (defaultValues.name !== form.getValues('name') || defaultValues.birthDate !== form.getValues('birthDate'))) {
-      console.log('ProfileForm - Resetting form with defaultValues:', defaultValues);
       form.reset({
         name: defaultValues.name || '',
-        birthDate: defaultValues.birthDate || new Date(),
+        birthDate: defaultValues.birthDate ?? undefined,
       });
     }
   }, [defaultValues, form]);
