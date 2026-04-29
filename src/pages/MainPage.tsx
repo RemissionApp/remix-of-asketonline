@@ -6,6 +6,7 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { EnergyEffect } from '@/components/EnergyEffect';
 import { useNavigate } from 'react-router-dom';
 import { MainContent } from '@/components/MainPageComponents/MainContent';
+import { TrialBanner } from '@/components/TrialBanner';
 import { useMainPageUtils } from '@/components/MainPageComponents/mainPageUtils';
 import { useToast } from '@/hooks/use-toast';
 import { MissionReminder } from '@/components/missions/MissionReminder';
@@ -154,6 +155,9 @@ const MainPage: React.FC = () => {
 
       {/* Main content */}
       <div>
+        <div className="pt-16">
+          <TrialBanner />
+        </div>
         <MainContent
           activePacts={activePacts}
           allPacts={allPacts}

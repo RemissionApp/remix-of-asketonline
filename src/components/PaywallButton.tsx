@@ -4,6 +4,7 @@ import { Crown, Sparkles } from 'lucide-react';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/store/useAppStore';
+import { useEntitlement } from '@/hooks/useEntitlement';
 
 interface PaywallButtonProps {
   variant?: 'default' | 'outline' | 'premium';
@@ -23,9 +24,10 @@ export const PaywallButton: React.FC<PaywallButtonProps> = ({
   const { user } = useAppStore();
   const { hasActiveSubscription, isLoading } = useRevenueCat(user?.id);
   const { toast } = useToast();
+  const { isUnlocked } = useEntitlement();
 
-  // Если у пользователя уже есть подписка, не показываем кнопку
-  if (hasActiveSubscription) {
+  // Hide paywall button during trial or for paying users
+  if (hasActiveSubscription || isUnlocked) {
     return null;
   }
 

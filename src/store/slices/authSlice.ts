@@ -676,16 +676,26 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
         profileData: data ? 'Found' : 'Not found',
       });
 
-      // Check subscription status
+      // Check subscription status (paid)
       const { data: subscription } = await supabase
         .from('subscriptions')
-        .select('is_pro, subscription_end')
+        .select('is_pro, subscription_end, status, trial_ends_at')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      const isPro =
+      const isPaid =
         subscription?.is_pro &&
+        subscription?.subscription_end &&
         new Date(subscription.subscription_end) > new Date();
+
+      // Trial gives full access for 3 days from signup
+      const trialEndsAt = data?.trial_ends_at
+        ? new Date(data.trial_ends_at)
+        : null;
+      const isTrialActive = !!trialEndsAt && trialEndsAt.getTime() > Date.now();
+
+      // Treat trial users as Pro everywhere — single source of truth
+      const isPro = !!(isPaid || isTrialActive);
 
       // Get achievements
       const { data: achievements, error: achievementsError } = await supabase

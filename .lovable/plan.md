@@ -1,92 +1,70 @@
-## Многоэтапный план полной доработки приложения для запуска
+## Цель
+Заменить текущую модель «бесплатно с ограничениями + PRO» на **3-дневный полный trial**: новый пользователь получает все функции без блокировок, а на 3-й день со старта триала автоматически списывается оплата (или подписка отменяется, если способ оплаты не привязан).
 
-Делим работу на 4 этапа. Каждый этап — отдельное сообщение/итерация: вы подтверждаете → я внедряю → проверяете в превью → переходим к следующему. Это безопаснее, чем менять всё разом.
+## Этап 1. Снять блокировки со всех функций (быстрая ценность)
 
----
+Сейчас `isPro` управляет показом `ProFeatureOverlay`, `PaywallButton`, лимитов и блюра контента в ~30 файлах. Чтобы пользователь видел всё, делаем единый источник правды — `useEntitlement()`, который возвращает `isUnlocked = isPro || isTrialActive`.
 
-### Этап 1 (СЕЙЧАС) — Фикс профиля: «Искатель» + сегодняшняя дата + валидация
+- Создать хук `src/hooks/useEntitlement.ts`:
+  - `isTrialActive` — `trial_ends_at > now()`
+  - `isUnlocked` — `isPro || isTrialActive`
+  - `daysLeft`, `hoursLeft` для UI
+- Обновить компоненты-блокировщики так, чтобы при `isUnlocked` они **рендерили детей напрямую**, без overlay/blur/CTA:
+  - `ProFeatureOverlay`, `PaywallButton`, `HoroscopeProOverlay`, `UniverseChatProWrapper`, `UniverseMessageBlock`, `BriefHoroscopeDisplay`, `MeditationCard`, `NumerologyPreview`, `UniverseChatPreview`
+- Снять дневные лимиты (`useDailyLimits`, edge `check-daily-limits`) на время триала: возвращать `unlimited: true`.
+- В `BottomNavigation`, `MainPage`, `MeditationPage`, `NumerologyPage`, `CallPage`, `UniversePage`, `DetailedHoroscopePage` убрать ветки «показать paywall».
 
-**Симптомы:**
-- При входе под существующим юзером на `/profile-setup` показывается имя «Искатель» и дата = сегодня.
-- Календарь позволяет выбрать дату вплоть до `2025-12-31` (хардкод) и/или сегодняшнюю.
+## Этап 2. База данных: trial-поля
 
-**Корни:**
+Миграция:
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN trial_started_at timestamptz DEFAULT now(),
+  ADD COLUMN trial_ends_at timestamptz DEFAULT (now() + interval '3 days'),
+  ADD COLUMN payment_method_attached boolean DEFAULT false;
 
-1. `src/components/UserProfileForm.tsx`:
-   - `useState({ name: '', birthDate: new Date() })` — стартовое значение даты = сегодня. Если профиль ещё не подгрузился, `ProfileForm` рендерится с этой датой и юзер видит «29 апреля 2026».
-   - В `ProfileForm` проп: `birthDate: formData.birthDate || userProfile.birthDate || new Date()` — то же самое, всегда есть fallback на `new Date()`.
-2. `src/components/MainPageComponents/UserGreetingSection.tsx`:
-   - `userName = userProfile?.name || 'Искатель'` — если имя пустое или профиль ещё грузится, всегда показывает «Искатель». Это даёт ложное ощущение, что данные не сохранились.
-3. `src/pages/UserProfilePage.tsx` использует **только** `loading` (общий флаг авторизации), не дожидается `userProfile.birthDate`. Форма монтируется со «свежим» `new Date()` до того, как профиль из БД хидрируется.
-4. `src/components/ProfileForm.tsx`:
-   - `maxBirthDate = subYears(today, 5)` — корректно, **но** дефолтное значение приходит сверху как `new Date()` (сегодня), что > maxBirthDate → форма стартует с невалидным значением.
-5. `src/components/BirthDateEditor.tsx`:
-   - `maxDate = new Date('2025-12-31')` — хардкод прошлого года, к 2026 уже неверный. Должно быть `subYears(today, 5)`.
+ALTER TABLE public.subscriptions
+  ADD COLUMN trial_ends_at timestamptz,
+  ADD COLUMN status text DEFAULT 'trialing'  -- trialing | active | past_due | canceled
+    CHECK (status IN ('trialing','active','past_due','canceled'));
+```
+Обновить `handle_new_user()` чтобы вместе с профилем создавалась запись `subscriptions` со `status='trialing'` и `trial_ends_at = now()+3 days`.
 
-**Правки:**
+## Этап 3. UI триала
 
-- **`UserProfileForm.tsx`**:
-  - Не инициализировать `formData.birthDate` значением `new Date()`. Использовать `null` пока профиль не загрузился.
-  - Пока `userProfile` не хидрирован (нет ни name, ни birthDate **и** нет флага «профиль точно пустой»), показывать спиннер вместо формы. Гарантировать, что для **существующих** пользователей форма стартует уже с реальными значениями из БД.
-  - Передавать в `ProfileForm` `birthDate: undefined` (не `new Date()`), если ничего нет — пусть поле будет пустым с плейсхолдером «Выберите дату рождения».
+- Новый компонент `TrialBanner` в `TopBar`/`MainPage`: «Полный доступ ещё N дней Ч часов. Привяжите карту, чтобы продолжить после триала».
+- Кнопка «Привязать карту» открывает paywall (RevenueCat на нативе / заглушка на web).
+- На последнем дне (≤24ч) баннер становится акцентным (warning).
+- Если `payment_method_attached=false` и trial истёк → показывать мягкий paywall и блокировать только тогда.
 
-- **`ProfileForm.tsx`**:
-  - Убрать fallback `defaultValues.birthDate || new Date()`. Принимать `Date | null | undefined`, не подставлять сегодня.
-  - `defaultCalendarMonth` считать от `subYears(today, 25)` если значения нет (более логично, чем 1990).
-  - Зод-схему оставить как есть (требует Date).
+## Этап 4. Автосписание на 3-й день
 
-- **`BirthDateEditor.tsx`**:
-  - Заменить хардкод `new Date('2025-12-31')` на `subYears(new Date(), 5)`.
-  - Импортировать `subYears` из `date-fns`.
+Поскольку фактическое списание делает платёжный провайдер (RevenueCat/Stripe), наша задача — корректно сконфигурировать подписку с trial-периодом и обработать вебхуки.
 
-- **`UserGreetingSection.tsx`**:
-  - Если `userProfile?.name` пустое — не показывать «Искатель», показывать просто приветствие без имени (или «—»). «Искатель» как ник навязывается насильно — уберём.
+- В RevenueCat-офферинге включить **3-day free trial** на пакет (настройка в дашборде продукта; код передаёт `package` как есть — менять не нужно).
+- Edge-функция `trial-status` (новая): возвращает текущее состояние триала по `user_id` для клиента, чтобы UI не зависел от времени устройства.
+- Edge-функция `revenuecat-webhook` (новая, `verify_jwt = false`): обрабатывает события `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `BILLING_ISSUE` → апдейтит `subscriptions.status` и `profiles.is_pro`-эквивалент.
+- Cron `pg_cron` ежечасно: для записей со `status='trialing' AND trial_ends_at < now() AND payment_method_attached=false` ставит `status='canceled'`. Это страховка на случай, если вебхук не пришёл.
 
-- **`UserProfilePage.tsx`**:
-  - Дожидаться загрузки профиля (если `user` есть, но `userProfile.name === '' && userProfile.birthDate === null && !profileStepCompleted` и идёт `loading` хидратации) — показывать спиннер.
+## Этап 5. Web fallback (важно)
 
-**Ожидаемый результат этапа 1:**
-- Существующий юзер заходит → видит свои реальные имя и дату рождения, **не** «Искатель» и **не** сегодня.
-- В календаре выбрать дату позже, чем `today − 5 лет`, невозможно (ни в первичной форме, ни в редакторе из настроек).
-- На главной приветствие не подставляет «Искатель» вместо пустого имени.
+RevenueCat работает только на нативе. Для web-превью:
+- Триал «работает» по `trial_ends_at` из БД.
+- По истечении триала на web — мягкий экран «Скачайте приложение, чтобы продолжить» (без жёстких блокировок отдельных фич, единый paywall-route).
 
-**Файлы:** `src/components/UserProfileForm.tsx`, `src/components/ProfileForm.tsx`, `src/components/BirthDateEditor.tsx`, `src/components/MainPageComponents/UserGreetingSection.tsx`, `src/pages/UserProfilePage.tsx`.
+## Этап 6. Очистка
 
----
+- Убрать `DeveloperSwitch` тоггл `isPro` из продакшен-сборки (оставить только в dev).
+- Обновить `FeatureComparison` — теперь это страница-описание тарифа, без кнопок «разблокировать» в каждой фиче.
+- Тексты: «PRO» → «Полный доступ», «Откройте PRO» → «Управлять подпиской».
 
-### Этап 2 — Сквозной аудит auth-флоу и удаление мёртвого кода
+## Что нужно от вас перед стартом
+1. Подтвердите: на iOS/Android используем RevenueCat (текущий стек), или хотите Stripe для web-оплаты тоже?
+2. Цена и период подписки (например, 299₽/мес) — для текстов баннера.
+3. На время разработки **сразу разблокировать всё для всех существующих пользователей** (поставить им `trial_ends_at = now()+3 days`)?
 
-- В кодовой базе сосуществуют **две системы** auth-навигации: новая `useAuthFlow` (`src/hooks/useAuthFlow.ts`) и старая `determineAuthRoute` (`src/utils/authRouter.ts`). `WelcomePage` всё ещё использует старую. Это источник рассинхронов.
-- Удалить `src/utils/authRouter.ts` после миграции `WelcomePage`, `useAuthDebug`, `ProtectedRoute`/`PublicRoute` (если используют) на `useAuthFlow`.
-- Привести `signIn` (`authSlice.ts`) к единому пути: после успеха не дублировать `loadUserProfile/loadOnboardingState` (их уже зовёт `onAuthStateChange` в `useAuthFlowBootstrap`). Убрать race.
-- Удалить `updateUserProfile` (помечен deprecated) и заменить вызовы на прямой upsert в `profiles` (он уже в `UserProfileForm`).
-- Тест end-to-end: новый юзер → OTP → `/profile-setup` → `/onboarding` → `/main`; existing юзер → `/login` → `/main` (без промежуточных мерцаний).
-
-**Файлы:** `src/utils/authRouter.ts` (удалить), `src/pages/WelcomePage.tsx`, `src/hooks/useAuthDebug.ts`, `src/store/slices/authSlice.ts`, `src/components/auth/ProtectedRoute.tsx`, `src/components/auth/PublicRoute.tsx`.
-
----
-
-### Этап 3 — UX/дизайн полировка ключевых экранов
-
-- **LoginPage**: визуально перегружен (3 формы в одной карточке). Сделать более чистый, добавить состояния «загрузка» внутри кнопки, единый отступ.
-- **OnboardingPage**: 3 шага сейчас — заглушка с маркированными списками. Сделать карточный дизайн, иконки фич, прогресс-бар сверху, кнопки крупнее, лучшая читаемость на мобильном.
-- **UserProfilePage**: убрать «Шаг 1 из 2» дубль (он и в `UserProfileForm`, и можно ещё раз), добавить иллюстрацию/иконку, увеличить отступы.
-- **MainPage UserGreetingSection**: переработать в более минималистичный блок (часы/дата меньшим шрифтом, имя крупнее).
-- Глобально: проверить, что ничего не выпадает на мобильном (375px), все touch-targets ≥ 44px.
-
----
-
-### Этап 4 — Подготовка к запуску: чек-лист
-
-- Включить **подтверждение email** в Auth (сейчас OTP-flow свой; убедиться, что обычный `signUp` тоже требует подтверждения).
-- Добавить **rate limiting** на edge functions (минимум `voice-to-text`, `text-to-speech`, `fetch-horoscope`, `universe-answer`) — сейчас любой авторизованный юзер может расходовать `LOVABLE_API_KEY` без ограничений сверх `daily_limits`.
-- Прогнать `security--run_security_scan`, поправить критичные находки.
-- Проверить, что все `console.log` в продакшен-коде закрыты `logger.debug` (сейчас в `authSlice.verifyOtpCode` много прямых `console.log` с email/code — вытащить).
-- Sentry / error tracking — опционально, но желательно для запуска.
-- Smoke-test всех платных фич (paywall пока только нативный — для web план в отдельной задаче через Stripe/Paddle).
-
----
-
-## Что делаем прямо сейчас
-
-Начинаем с **Этапа 1**. Это закроет основную жалобу («показывает имя Искатель и старую/сегодняшнюю дату») и валидацию даты. Этапы 2–4 запускаем последовательно по вашему согласию после проверки результата каждого предыдущего.
+## Технические детали (для разработки)
+- Файлы для правок (Этап 1): `src/components/ProFeatureOverlay.tsx`, `PaywallButton.tsx`, `HoroscopeProOverlay.tsx`, `UniverseChatProWrapper.tsx`, `UniverseMessageBlock.tsx`, `BriefHoroscopeDisplay.tsx`, `MeditationCard.tsx`, `MeditationHeader.tsx`, `ProFeatures/*`, `BottomNavigation.tsx`, `DailyUsageStats.tsx`, страницы `Meditation*`, `Numerology*`, `Universe*`, `Call*`, `DetailedHoroscope*`.
+- Новые: `src/hooks/useEntitlement.ts`, `src/components/TrialBanner.tsx`, `supabase/functions/trial-status`, `supabase/functions/revenuecat-webhook`.
+- Миграция БД + обновление `handle_new_user`.
+- Backfill-INSERT для существующих пользователей.

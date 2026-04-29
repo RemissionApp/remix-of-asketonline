@@ -685,9 +685,12 @@ export type Database = {
           goal: string | null
           id: string
           name: string
+          payment_method_attached: boolean
           profile_step_completed: boolean | null
           rank: string
           total_days: number
+          trial_ends_at: string
+          trial_started_at: string
           updated_at: string
         }
         Insert: {
@@ -699,9 +702,12 @@ export type Database = {
           goal?: string | null
           id: string
           name: string
+          payment_method_attached?: boolean
           profile_step_completed?: boolean | null
           rank?: string
           total_days?: number
+          trial_ends_at?: string
+          trial_started_at?: string
           updated_at?: string
         }
         Update: {
@@ -713,9 +719,12 @@ export type Database = {
           goal?: string | null
           id?: string
           name?: string
+          payment_method_attached?: boolean
           profile_step_completed?: boolean | null
           rank?: string
           total_days?: number
+          trial_ends_at?: string
+          trial_started_at?: string
           updated_at?: string
         }
         Relationships: []
@@ -789,9 +798,11 @@ export type Database = {
           platform: string | null
           product_id: string | null
           revenuecat_user_id: string | null
+          status: string
           store_transaction_id: string | null
           subscription_end: string | null
           subscription_start: string | null
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
@@ -803,9 +814,11 @@ export type Database = {
           platform?: string | null
           product_id?: string | null
           revenuecat_user_id?: string | null
+          status?: string
           store_transaction_id?: string | null
           subscription_end?: string | null
           subscription_start?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -817,9 +830,11 @@ export type Database = {
           platform?: string | null
           product_id?: string | null
           revenuecat_user_id?: string | null
+          status?: string
           store_transaction_id?: string | null
           subscription_end?: string | null
           subscription_start?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }
