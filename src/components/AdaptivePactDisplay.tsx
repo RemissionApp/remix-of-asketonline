@@ -42,11 +42,11 @@ const MemoizedAdaptivePactDisplay: React.FC<AdaptivePactDisplayProps> = ({
   if (!currentPact) return null;
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 relative z-50">
+    <div className="w-full flex flex-col items-center gap-1.5 relative z-50">
       <CountdownTimer pactId={currentPact.id} />
 
       <div className="text-center">
-        <p className="text-xs text-foreground/70 mb-1">
+        <p className="text-xs text-foreground/70 mb-0.5">
           {getPactTypeName(currentPact)}
         </p>
         <h1 className="text-base sm:text-lg uppercase font-serif text-foreground text-shadow-lg">
