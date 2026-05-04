@@ -102,7 +102,7 @@ const WelcomePage: React.FC = () => {
         </div>
 
         <h1 className="text-5xl font-serif text-white mb-6 cosmic-gradient-text">
-          Asket
+          Asceta
         </h1>
 
         <p className="text-2xl text-cosmic-secondary mb-12 transition-all duration-300 ease-in-out">
