@@ -1,49 +1,55 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
-import { ProfileSection } from '@/components/ProfilePage/ProfileSection';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { PWASettingsPanel } from '@/components/PWAFeatures/PWASettingsPanel';
-import { ShareButton } from '@/components/PWAFeatures/ShareButton';
-import { LogoutButton } from '@/components/ProfilePage/LogoutButton';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
-import { useUserProgress } from '@/hooks/useUserProgress';
+import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
+import { ProfileTabs, ProfileTabId } from '@/components/profile/ProfileTabs';
+import { ProfileIdentityTab } from '@/components/profile/ProfileIdentityTab';
+import { ProfileSpiritualTab } from '@/components/profile/ProfileSpiritualTab';
+import { ProfileSubscriptionTab } from '@/components/profile/ProfileSubscriptionTab';
+import { ProfileNotificationsTab } from '@/components/profile/ProfileNotificationsTab';
+import { ProfilePrivacyTab } from '@/components/profile/ProfilePrivacyTab';
+import { ProfileAccountTab } from '@/components/profile/ProfileAccountTab';
+
+const VALID_TABS: ProfileTabId[] = ['identity','spiritual','subscription','notifications','privacy','account'];
 
 const ProfilePage: React.FC = () => {
-  const { userProfile, language } = useAppStore();
-  const { stats } = useUserProgress();
+  const { language } = useAppStore();
+  const [params, setParams] = useSearchParams();
+  const tabParam = params.get('tab') as ProfileTabId | null;
+  const active: ProfileTabId = tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'identity';
+
+  const setActive = (id: ProfileTabId) => {
+    const next = new URLSearchParams(params);
+    next.set('tab', id);
+    setParams(next, { replace: true });
+  };
+
+  const title = language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : 'Profile';
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
-      <StarField starCount={100} />
-
-      <PageHeader
-        title={
-          language === 'ru'
-            ? 'Профиль'
-            : language === 'es'
-              ? 'Perfil'
-              : 'Profile'
-        }
-      />
-
-      {/* Cosmic background */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark opacity-30" />
-
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-8 max-w-md mx-auto w-full space-y-6">
-        <ProfileSection />
-
-        {/* Share App Button */}
-        <ShareButton type="app" variant="outline" className="w-full" />
-
-        {/* Logout button at the bottom */}
-        <LogoutButton />
+    <MobileOptimizedInterface>
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+        <StarField starCount={80} />
+        <PageHeader title={title} />
+        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-4">
+          <ProfileTabs active={active} onChange={setActive} />
+          <div className="pt-1">
+            {active === 'identity' && <ProfileIdentityTab />}
+            {active === 'spiritual' && <ProfileSpiritualTab />}
+            {active === 'subscription' && <ProfileSubscriptionTab />}
+            {active === 'notifications' && <ProfileNotificationsTab />}
+            {active === 'privacy' && <ProfilePrivacyTab />}
+            {active === 'account' && <ProfileAccountTab />}
+          </div>
+        </div>
+        <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
+          <BottomNavigation />
+        </div>
       </div>
-
-      {/* Add the bottom navigation */}
-      <BottomNavigation />
-    </div>
+    </MobileOptimizedInterface>
   );
 };
 

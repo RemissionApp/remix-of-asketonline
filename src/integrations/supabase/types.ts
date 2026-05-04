@@ -748,9 +748,12 @@ export type Database = {
           goal: string | null
           id: string
           name: string
+          notification_settings: Json
           payment_method_attached: boolean
+          privacy_settings: Json
           profile_step_completed: boolean | null
           rank: string
+          timezone: string | null
           total_days: number
           trial_ends_at: string
           trial_started_at: string
@@ -765,9 +768,12 @@ export type Database = {
           goal?: string | null
           id: string
           name: string
+          notification_settings?: Json
           payment_method_attached?: boolean
+          privacy_settings?: Json
           profile_step_completed?: boolean | null
           rank?: string
+          timezone?: string | null
           total_days?: number
           trial_ends_at?: string
           trial_started_at?: string
@@ -782,9 +788,12 @@ export type Database = {
           goal?: string | null
           id?: string
           name?: string
+          notification_settings?: Json
           payment_method_attached?: boolean
+          privacy_settings?: Json
           profile_step_completed?: boolean | null
           rank?: string
+          timezone?: string | null
           total_days?: number
           trial_ends_at?: string
           trial_started_at?: string
