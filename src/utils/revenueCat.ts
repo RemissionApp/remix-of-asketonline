@@ -68,8 +68,7 @@ export class RevenueCatService {
   async logOut(): Promise<void> {
     try {
       if (!Capacitor.isNativePlatform()) return;
-      // @ts-expect-error — типы Purchases.logOut присутствуют в рантайме
-      await Purchases.logOut();
+      await (Purchases as any).logOut();
     } catch (e) {
       console.warn('RevenueCat logOut failed (non-fatal)', e);
     }
