@@ -54,16 +54,16 @@ const MemoizedUserGreetingSection: React.FC = () => {
   }, [language]);
 
   return (
-    <div className="mb-3 sm:mb-6 text-center px-3 sm:px-4 pt-3 sm:pt-6 pb-2 sm:pb-4 relative z-10">
+    <div className="mb-1 sm:mb-2 text-center px-3 sm:px-4 pt-1 sm:pt-2 pb-1 relative z-10">
       <p className={`${fontClass} text-xs sm:text-sm uppercase tracking-widest text-cosmic-secondary/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
         {greeting}
       </p>
       {userName && (
-        <h2 className={`${fontClass} text-2xl sm:text-4xl mt-1 sm:mt-2 font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}>
+        <h2 className={`${fontClass} text-2xl sm:text-4xl mt-0.5 font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}>
           {userName}
         </h2>
       )}
-      <div className="flex items-center justify-center mt-2 sm:mt-3 text-cosmic-secondary/70 text-[10px] sm:text-xs font-medium">
+      <div className="flex items-center justify-center mt-1 text-cosmic-secondary/70 text-[10px] sm:text-xs font-medium">
         <Clock size={12} className="mr-1.5" />
         <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
           {formattedDate}
