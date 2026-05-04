@@ -3,13 +3,9 @@ import { DailyAdviceDisplay } from '@/components/DailyAdviceDisplay';
 import { NoPactsView } from '@/components/NoPactsView';
 import { PactDisplay } from '@/components/MainPageComponents/PactDisplay';
 import { Pact } from '@/types';
-import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
-import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
-import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CallHero } from '@/components/MainPageComponents/CallHero';
-import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
 import { useUserProgress } from '@/hooks/useUserProgress';
@@ -78,25 +74,7 @@ export const MainContent: React.FC<MainContentProps> = ({
         <UniverseMessageBlock />
       </div>
 
-      {/* 5. Zodiac Badge Display (Horoscope) */}
-      <div className="w-full max-w-lg mx-auto">
-        <ZodiacBadgeDisplay />
-      </div>
-
-      {/* 6. Affirmations */}
-      <div className="w-full max-w-lg mx-auto">
-        <AffirmationsBlock />
-      </div>
-
-      {/* 7. Numerology */}
-      <div className="w-full max-w-lg mx-auto">
-        <NumerologyDisplay />
-      </div>
-
-      {/* 9. Cosmic Missions */}
-      <CosmicMissionsEntryPoint />
-
-      {/* 10. Active Mission Widget + Level */}
+      {/* Active Mission Widget + Level */}
       <ActiveMissionWidget />
       <UserLevelDisplay
         level={stats?.level || 1}
