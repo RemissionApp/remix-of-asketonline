@@ -43,8 +43,8 @@ const UniverseHubPage: React.FC = () => {
                 <span className="absolute inset-0 rounded-full bg-cosmic-accent/40 animate-ping" />
                 <Phone className="relative h-7 w-7 text-white" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-base font-semibold text-white">{callTitle}</div>
+              <div className="flex-1 min-w-0 text-center">
+                <div className={`text-base font-semibold text-white ${lang === 'en' ? 'font-serif' : ''}`}>{callTitle}</div>
                 <div className="mt-0.5 text-xs text-cosmic-secondary">{callSub}</div>
               </div>
             </div>
@@ -58,8 +58,8 @@ const UniverseHubPage: React.FC = () => {
               <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-accent/60 shadow-[0_0_30px_rgba(232,193,108,0.5)]">
                 <MessageCircleQuestion className="relative h-7 w-7 text-white" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-base font-semibold text-white">{askTitle}</div>
+              <div className="flex-1 min-w-0 text-center">
+                <div className={`text-base font-semibold text-white ${lang === 'en' ? 'font-serif' : ''}`}>{askTitle}</div>
                 <div className="mt-0.5 text-xs text-cosmic-secondary">{askSub}</div>
               </div>
             </div>

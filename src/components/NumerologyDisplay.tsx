@@ -29,8 +29,8 @@ export const NumerologyDisplay: React.FC = () => {
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-gold/60 shadow-[0_0_30px_rgba(232,193,108,0.55)]">
           <Calculator size={26} className="text-white" />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">{numerologyText}</div>
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{numerologyText}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{description}</div>
         </div>
       </div>
