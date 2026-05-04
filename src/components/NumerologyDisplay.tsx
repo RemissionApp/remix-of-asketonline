@@ -1,10 +1,12 @@
 import React from 'react';
 import { Calculator } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { NumerologyContent } from '@/components/numerology/NumerologyContent';
 
 export const NumerologyDisplay: React.FC = () => {
   const { userProfile, language } = useAppStore();
+  const navigate = useNavigate();
 
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
@@ -73,20 +75,17 @@ export const NumerologyDisplay: React.FC = () => {
 
   // Create the numerology content component
   return (
-    <div className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 shadow-lg shadow-cosmic-accent/10">
+    <button
+      onClick={() => navigate('/numerology')}
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 text-left shadow-lg shadow-cosmic-accent/10 transition-transform active:scale-[0.99]"
+    >
       <div className="flex items-start gap-4">
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
           <Calculator size={26} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="mb-3">
-            <h3
-              className={`text-base sm:text-xl font-medium text-white ${
-                language === 'en' ? 'font-serif' : 'font-display'
-              }`}
-            >
-              {numerologyText}
-            </h3>
+            <h3 className="text-base font-semibold text-white">{numerologyText}</h3>
             <p className="mt-0.5 text-xs text-cosmic-secondary">{description}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
@@ -104,7 +103,7 @@ export const NumerologyDisplay: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 
