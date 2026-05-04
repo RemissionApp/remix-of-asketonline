@@ -144,6 +144,35 @@ serve(async req => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Authenticate caller — must be a signed-in user (or service role)
+    const authHeader = req.headers.get('Authorization') ?? '';
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const isServiceRole = authHeader === `Bearer ${serviceKey}`;
+
+    let callerUserId: string | null = null;
+    if (!isServiceRole) {
+      if (!authHeader.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const token = authHeader.replace('Bearer ', '');
+      const userClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const { data: claims, error: claimsErr } = await userClient.auth.getClaims(token);
+      if (claimsErr || !claims?.claims?.sub) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      callerUserId = claims.claims.sub as string;
+    }
+
     const payload: NotificationPayload = await req.json();
 
     if (!payload.type || !payload.title || !payload.body) {
@@ -169,6 +198,17 @@ serve(async req => {
       targetUserIds = payload.userIds;
     } else {
       throw new Error('Either userId or userIds must be specified');
+    }
+
+    // Authorization: non-service callers may only target themselves
+    if (!isServiceRole) {
+      const allowed = targetUserIds.every((id) => id === callerUserId);
+      if (!allowed) {
+        return new Response(JSON.stringify({ error: 'Forbidden: can only push to self' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Получаем подписки пользователей
