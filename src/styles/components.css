@@ -1,50 +1,6 @@
 @tailwind components;
 
 @layer components {
-  /* iOS Liquid Glass utilities */
-  .glass-medium {
-    background: var(--glass-bg-medium);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border-bright);
-    box-shadow: var(--glass-shadow);
-  }
-  .glass-purple {
-    background: var(--glass-purple);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-purple-border);
-    box-shadow: var(--glass-shadow);
-  }
-  .glass-gold {
-    background: var(--glass-gold);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-gold-border);
-    box-shadow: var(--glass-shadow);
-  }
-  .glass-shine {
-    position: relative;
-  }
-  .glass-shine::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3) 30%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0.3) 70%,
-      transparent
-    );
-    border-radius: inherit;
-    pointer-events: none;
-  }
-
   .cosmic-block {
     @apply w-full max-w-lg mx-auto rounded-lg transition-all duration-300;
   }

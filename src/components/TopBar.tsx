@@ -33,38 +33,57 @@ export const TopBar: React.FC = memo(() => {
         paddingRight: 'calc(env(safe-area-inset-right) + 0.75rem)',
       }}
     >
-      <div className="pointer-events-auto flex items-center justify-between gap-2">
-        {/* Left: avatar pill */}
-        <div className="glass-medium glass-shine relative w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-          <UserAvatar size="sm" showZodiacBadge={false} />
-        </div>
+      <div className="glass-strong glass-shimmer pointer-events-auto relative flex items-center justify-between flex-row-reverse rounded-2xl px-3 py-2 min-h-14 overflow-hidden">
+      {/* Energy points and controls group - responsive spacing */}
+      <div className="flex items-center space-x-1.5 relative z-10">
+        {/* Sound toggle */}
+        <SoundToggle />
 
-        {/* Center: rank + Pro */}
-        <div className="glass glass-shine relative rounded-full px-3 py-1.5 flex items-center gap-2 overflow-hidden">
-          <RankBadge size="sm" />
-          {userProfile?.isPro && <ProBadge size="sm" />}
-        </div>
+        {/* Zodiac badge - hide on very small screens or show conditionally */}
+        {(!isMobile || userProfile?.isPro) && (
+          <div
+            onClick={handleZodiacClick}
+            className={
+              userProfile?.isPro && userProfile?.birthDate
+                ? 'cursor-pointer'
+                : ''
+            }
+          >
+            <ZodiacBadge size="sm" />
+          </div>
+        )}
 
-        {/* Right group */}
-        <div className="flex items-center gap-2">
-          {(!isMobile || userProfile?.isPro) && (
-            <div
-              onClick={handleZodiacClick}
-              className={`glass glass-shine relative rounded-full px-2 py-1 overflow-hidden ${
-                userProfile?.isPro && userProfile?.birthDate ? 'cursor-pointer' : ''
-              }`}
-            >
-              <ZodiacBadge size="sm" />
-            </div>
-          )}
-          <div className="glass glass-shine relative rounded-full px-3 py-1.5 flex items-center gap-1.5 overflow-hidden">
-            <CircleDot size={isMobile ? 12 : 14} className="text-cosmic-gold shrink-0" />
-            <span className="text-xs text-white/85 truncate">{userProfile?.energyPoints || 0}</span>
-          </div>
-          <div className="glass glass-shine relative rounded-full overflow-hidden">
-            <SoundToggle />
-          </div>
+        {/* Energy points display - glass pill */}
+        <div className="flex items-center px-2.5 py-1.5 rounded-full backdrop-blur-md border border-cosmic-gold/30 min-w-0"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(232,193,108,0.15) 0%, rgba(232,193,108,0.05) 100%)',
+            boxShadow:
+              'inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.3)',
+          }}
+        >
+          <CircleDot
+            size={isMobile ? 14 : 16}
+            className="text-cosmic-gold mr-1.5 shrink-0"
+          />
+          <span className="text-cosmic-gold font-medium text-sm truncate">
+            {userProfile?.energyPoints || 0}
+          </span>
         </div>
+      </div>
+
+      {/* Pro badge - repositioned on mobile to avoid overlaps */}
+      {userProfile?.isPro && (
+        <div className="absolute z-20 top-1 left-1/2 -translate-x-1/2">
+          <ProBadge size="sm" />
+        </div>
+      )}
+
+      {/* User avatar and rank badge - responsive positioning */}
+      <div className="flex items-center space-x-1.5 min-w-0 relative z-10">
+        <UserAvatar size="sm" showZodiacBadge={false} />
+        <RankBadge size="sm" />
+      </div>
       </div>
     </div>
   );
