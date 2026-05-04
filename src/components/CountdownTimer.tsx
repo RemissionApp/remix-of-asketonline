@@ -122,7 +122,7 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
 
   if (!activePact) {
     return (
-      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
+      <div className="w-full max-w-lg mx-auto rounded-2xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/40 to-cosmic-gold/10 backdrop-blur-md shadow-lg shadow-cosmic-accent/10 py-2 px-3">
         <div className="flex items-center justify-center text-xs text-muted-foreground">
           No active pact
         </div>
@@ -139,7 +139,7 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
     };
     
     return (
-      <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
+      <div className="w-full max-w-lg mx-auto rounded-2xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/40 to-cosmic-gold/10 backdrop-blur-md shadow-lg shadow-cosmic-accent/10 py-2 px-3">
         <div className="flex items-center justify-center text-xs text-muted-foreground">
           {statusMessages[activePact.status as keyof typeof statusMessages] || 'Inactive'}
         </div>
@@ -148,7 +148,7 @@ const MemoizedCountdownTimer: React.FC<CountdownTimerProps> = ({ pactId }) => {
   }
 
   return (
-    <div className="w-full bg-cosmic-dark/60 backdrop-blur-sm py-1 px-2">
+    <div className="w-full max-w-lg mx-auto rounded-2xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/40 to-cosmic-gold/10 backdrop-blur-md shadow-lg shadow-cosmic-accent/10 py-2 px-3">
       <div className="flex items-center justify-center text-xs">
         <Clock size={16} className="text-cosmic-secondary mr-1" />
         <div className="flex items-center space-x-2">
