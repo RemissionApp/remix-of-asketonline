@@ -52,7 +52,7 @@ export const BottomNavigation = memo(() => {
     >
       <div className="flex justify-center pointer-events-auto">
         <div className="w-full max-w-3xl mx-auto">
-          <div className="glass-strong glass-shimmer relative rounded-3xl flex justify-around items-center py-1 px-1 overflow-hidden">
+          <div className="glass-strong glass-shine relative rounded-2xl flex justify-around items-stretch h-16 px-1 overflow-hidden">
             {items.map(item => (
               <NavItem
                 key={item.path}
@@ -79,28 +79,15 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ active, onClick, icon, label }) => (
   <button
     onClick={onClick}
-    className="relative flex flex-col items-center justify-center px-2 py-1 transition-all duration-300 group"
+    className="flex-1 relative flex flex-col items-center justify-center gap-1 px-2 transition-all duration-200 active:scale-95 group"
   >
-    <span
-      className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
-        active
-          ? 'bg-gradient-to-br from-cosmic-accent/45 to-cosmic-indigo/35 border border-white/25 shadow-[0_0_18px_rgba(139,92,246,0.55)]'
-          : 'border border-transparent group-hover:bg-white/5'
-      }`}
-    >
-      <span
-        className={`transition-colors duration-300 ${
-          active ? 'text-white' : 'text-cosmic-secondary'
-        }`}
-      >
-        {icon}
-      </span>
+    {active && (
+      <span className="absolute inset-x-2 inset-y-1 rounded-xl bg-white/10 backdrop-blur-sm pointer-events-none" />
+    )}
+    <span className={`relative z-10 transition-colors duration-200 ${active ? 'text-white' : 'text-white/40'}`}>
+      {icon}
     </span>
-    <span
-      className={`text-[10px] mt-0.5 tracking-wide transition-colors duration-300 ${
-        active ? 'text-white' : 'text-cosmic-secondary/80'
-      }`}
-    >
+    <span className={`relative z-10 text-[10px] tracking-wide transition-colors duration-200 ${active ? 'text-white' : 'text-white/40'}`}>
       {label}
     </span>
   </button>
