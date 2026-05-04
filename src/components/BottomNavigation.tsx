@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Sparkles, Stars, UserRound } from 'lucide-react';
+import { Home, Sparkles, Stars, UserRound, ScrollText } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { usePlatform } from '@/hooks/usePlatform';
 import { isAndroid } from '@/utils/platform';
@@ -8,17 +8,21 @@ import { isAndroid } from '@/utils/platform';
 export const BottomNavigation = memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { language } = useAppStore();
+  const { language, pacts } = useAppStore();
   usePlatform();
 
   const isActive = (path: string) =>
     location.pathname === path ||
+    (path === '/pacts' && location.pathname === '/create-pact') ||
     (path === '/universe-hub' &&
       ['/universe', '/universe-call', '/universe-chat', '/lyra', '/lyra/call', '/lyra-chat'].includes(
         location.pathname
       ));
   const tr = (ru: string, en: string, es: string) =>
     language === 'ru' ? ru : language === 'es' ? es : en;
+
+  // Show Ascesis tab once user has at least one pact (created or in any state)
+  const hasPacts = (pacts?.length || 0) > 0;
 
   const items = [
     { path: '/main', icon: <Home size={20} />, label: tr('Главная', 'Home', 'Inicio') },
@@ -27,6 +31,15 @@ export const BottomNavigation = memo(() => {
       icon: <Sparkles size={20} />,
       label: tr('Вселенная', 'Lyra', 'Lyra'),
     },
+    ...(hasPacts
+      ? [
+          {
+            path: '/pacts',
+            icon: <ScrollText size={20} />,
+            label: tr('Аскеза', 'Ascesis', 'Ascesis'),
+          },
+        ]
+      : []),
     {
       path: '/cosmos',
       icon: <Stars size={20} />,
