@@ -138,39 +138,15 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
       if (!user) throw new Error('No user found');
 
       try {
-        // Import supabase client
         const { supabase } = await import('@/integrations/supabase/client');
 
-        // First verify password by trying to sign in
-        const { error: passwordError } = await supabase.auth.signInWithPassword(
-          {
-            email: user.email!,
-            password: password,
-          }
-        );
-
-        if (passwordError) {
-          throw new Error('Invalid password');
-        }
-
-        // Delete all user data from tables
-        const userId = user.id;
-
-        // Use optimized batch delete (pure function, safe outside React)
-        const { batchDeleteUserData } = await import(
-          '@/hooks/useOptimizedDatabase'
-        );
-        const deleteResult = await batchDeleteUserData(userId);
-        if (!deleteResult.success) {
-          throw deleteResult.error;
-        }
-
-        // Delete auth user account
-        const { error: deleteError } =
-          await supabase.auth.admin.deleteUser(userId);
-        if (deleteError) {
-          console.error('Error deleting auth user:', deleteError);
-        }
+        // Server-side delete: verifies password, wipes data, removes auth user
+        const { data, error } = await supabase.functions.invoke('delete-account', {
+          body: { password },
+        });
+        if (error) throw new Error(error.message || 'Failed to delete account');
+        if (data?.error === 'invalid_password') throw new Error('Invalid password');
+        if (data?.error) throw new Error(data.error);
 
         // Clean up auth state
         const cleanupAuthState = () => {

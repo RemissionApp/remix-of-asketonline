@@ -48,6 +48,20 @@ export function useEntitlement(): EntitlementState {
         setLoading(false);
       });
 
+    // Re-fetch authoritative PRO status from subscriptions table on mount,
+    // so a stale persisted store doesn't keep isPro=true after webhook revoke.
+    supabase
+      .from('subscriptions')
+      .select('is_pro,status')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const next = !!data?.is_pro && (data?.status === 'active' || data?.status === 'trialing');
+        const { updateProStatus } = useAppStore.getState();
+        updateProStatus(next);
+      });
+
     // Realtime: сразу видим, когда trial_ends_at меняется (продление, отмена).
     const channel = supabase
       .channel(`profiles:trial:${user.id}:${instanceId}`)
@@ -62,6 +76,23 @@ export function useEntitlement(): EntitlementState {
         payload => {
           const next = (payload.new as { trial_ends_at?: string | null })?.trial_ends_at;
           setTrialEndsAt(next ? new Date(next) : null);
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'subscriptions',
+          filter: `user_id=eq.${user.id}`,
+        },
+        payload => {
+          const row = (payload.new ?? payload.old) as
+            | { is_pro?: boolean; status?: string }
+            | null;
+          const next = !!row?.is_pro && (row?.status === 'active' || row?.status === 'trialing');
+          const { updateProStatus } = useAppStore.getState();
+          updateProStatus(next);
         },
       )
       .subscribe();
