@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Bug, Trash2, FileText } from 'lucide-react';
+import { BarChart3, Bug, Trash2, FileText, ScrollText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileSection } from './ui/ProfileSection';
@@ -17,6 +18,7 @@ const DEFAULTS: PrivacySettings = { analytics: true, crashReports: true };
 export const ProfilePrivacyTab: React.FC = () => {
   const lang = useProfileLang();
   const { user } = useAppStore();
+  const navigate = useNavigate();
   const [settings, setSettings] = useState<PrivacySettings>(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
 
@@ -45,7 +47,9 @@ export const ProfilePrivacyTab: React.FC = () => {
     data:      { ru: 'Данные',             en: 'Data',            es: 'Datos' }[lang],
     clearCalls:{ ru: 'Очистить историю звонков', en: 'Clear call history', es: 'Borrar llamadas' }[lang],
     privacyDoc:{ ru: 'Политика конфиденциальности', en: 'Privacy policy', es: 'Política de privacidad' }[lang],
+    terms:     { ru: 'Пользовательское соглашение', en: 'Terms of service', es: 'Términos del servicio' }[lang],
     cleared:   { ru: 'История очищена',    en: 'History cleared', es: 'Borrado' }[lang],
+    legal:     { ru: 'Документы',          en: 'Legal',           es: 'Legal' }[lang],
   };
 
   const clearCalls = async () => {
@@ -63,8 +67,11 @@ export const ProfilePrivacyTab: React.FC = () => {
           toggle={{ value: settings.crashReports, onChange: v => setSettings(s => ({ ...s, crashReports: v })) }} />
       </ProfileSection>
       <ProfileSection title={t.data}>
-        <ProfileRow icon={Trash2}   iconColor="red"  label={t.clearCalls} rounded="top"    onPress={clearCalls} />
-        <ProfileRow icon={FileText} iconColor="gray" label={t.privacyDoc} rounded="bottom" onPress={() => window.open('https://asceta.app/privacy', '_blank')} />
+        <ProfileRow icon={Trash2}   iconColor="red"  label={t.clearCalls} rounded="single" onPress={clearCalls} />
+      </ProfileSection>
+      <ProfileSection title={t.legal}>
+        <ProfileRow icon={FileText}   iconColor="gray" label={t.privacyDoc} rounded="top"    onPress={() => navigate('/privacy-policy')} />
+        <ProfileRow icon={ScrollText} iconColor="gray" label={t.terms}      rounded="bottom" onPress={() => navigate('/terms-of-service')} />
       </ProfileSection>
     </div>
   );
