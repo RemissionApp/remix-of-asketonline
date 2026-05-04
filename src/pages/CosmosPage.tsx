@@ -7,7 +7,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
-import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
+import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 
 const titles = {
   ru: 'Космос',
@@ -25,10 +25,10 @@ const CosmosPage: React.FC = () => {
         <StarField />
         <PageHeader title={titles[lang] ?? titles.ru} />
         <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+          <ZodiacAstroMini lang={lang} />
           <ZodiacBadgeDisplay />
           <NumerologyDisplay />
           <AffirmationsBlock />
-          <CosmicMissionsEntryPoint />
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
           <BottomNavigation />
