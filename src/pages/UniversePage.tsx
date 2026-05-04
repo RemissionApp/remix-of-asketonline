@@ -1,181 +1,111 @@
 import React, { useState, useEffect } from 'react';
+import { Sparkles, MessageCircleQuestion } from 'lucide-react';
 import { StarField } from '@/components/StarField';
 import { useAppStore } from '@/store/useAppStore';
-import { UniverseChatPreview } from '@/components/ProFeatures/UniverseChatPreview';
 import { BottomNavigation } from '@/components/BottomNavigation';
-import { CountdownTimer } from '@/components/CountdownTimer';
-import { UniverseHeader } from '@/components/universe/UniverseHeader';
-import { VoiceGreeting } from '@/components/universe/VoiceGreeting';
 import { QuestionForm } from '@/components/universe/QuestionForm';
 import { ThinkingAnimation } from '@/components/universe/ThinkingAnimation';
 import { UniverseAnswer } from '@/components/universe/UniverseAnswer';
-import { PreviousQuestions } from '@/components/universe/PreviousQuestions';
+import { RecentQuestionsBlock } from '@/components/universe/RecentQuestionsBlock';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
-import { PageHeader } from '@/components/PageHeader';
-import { useDailyLimits } from '@/hooks/useDailyLimits';
-import { UpgradePrompt } from '@/components/UpgradePrompt';
-import { LimitIndicator } from '@/components/ui/LimitIndicator';
-import { toast } from 'sonner';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
 
 const UniversePage: React.FC = () => {
-  const { askUniverse, activeQuestions, userProfile, language, pacts } =
-    useAppStore();
+  const { askUniverse, language } = useAppStore();
   const { generateAndPlaySpeech, stopSpeech } = useTextToSpeech();
-  const { limits, updateUsage } = useDailyLimits();
   const [isAsking, setIsAsking] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState<null | {
     question: string;
     answer: string;
   }>(null);
 
-  // Останавливаем воспроизведение при размонтировании компонента
-  useEffect(() => {
-    return () => {
-      stopSpeech();
-    };
-  }, []); // Remove stopSpeech dependency to prevent excessive calls
+  useEffect(() => () => stopSpeech(), []);
 
-  // Check if there are active pacts
-  const activePacts = pacts?.filter(p => p.status === 'active') || [];
-  const hasActivePacts = activePacts.length > 0;
+  const lang = (language as 'ru' | 'en' | 'es') ?? 'ru';
+  const tr = (ru: string, en: string, es: string) =>
+    lang === 'ru' ? ru : lang === 'es' ? es : en;
 
-  // Determine if user has PRO access
-  const isPro = userProfile?.isPro || false;
-
-  const handleAskUniverse = async (question: string) => {
-    // Check limits before asking
-    if (!limits?.universe_questions.canUse) {
-      const errorText =
-        language === 'ru'
-          ? 'Достигнут дневной лимит вопросов. Обновитесь до PRO для большего доступа.'
-          : language === 'es'
-            ? 'Has alcanzado el límite diario de preguntas. Actualiza a PRO para más acceso.'
-            : 'Daily question limit reached. Upgrade to PRO for more access.';
-      toast.error(errorText);
-      return;
-    }
-
+  const handleAsk = async (question: string) => {
     setIsAsking(true);
-
-    // Effect of "Universe thinking"
     setTimeout(async () => {
       try {
         const response = await askUniverse(question);
-        setCurrentAnswer({
-          question: response.question,
-          answer: response.answer,
-        });
-
-        // Update usage count
-        await updateUsage('universe_question');
-
-        // Автоматически произносим фразу при получении ответа
-        const announcementText =
-          language === 'ru'
-            ? 'Вот тебе мой ответ! Если ты хочешь услышать его, нажми на кнопку воспроизведение.'
-            : language === 'es'
-              ? '¡Aquí tienes mi respuesta! Si quieres escucharla, presiona el botón de reproducción.'
-              : 'Here is my answer! If you want to hear it, press the play button.';
-
-        generateAndPlaySpeech(announcementText, {
-          voice: 'Custom',
-          model: 'eleven_multilingual_v2',
-        });
-      } catch (error) {
-        console.error('Error asking universe:', error);
+        setCurrentAnswer({ question: response.question, answer: response.answer });
+        const announce = tr(
+          'Вот тебе мой ответ! Если хочешь услышать его, нажми на кнопку воспроизведения.',
+          'Here is my answer! If you want to hear it, press the play button.',
+          '¡Aquí tienes mi respuesta! Si quieres escucharla, presiona el botón de reproducción.'
+        );
+        generateAndPlaySpeech(announce, { voice: 'Custom', model: 'eleven_multilingual_v2' });
+      } catch (e) {
+        console.error('Error asking universe:', e);
       } finally {
         setIsAsking(false);
       }
-    }, 2000); // Delay for effect
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen flex flex-col pt-20 relative pb-20">
-      <StarField starCount={150} />
+    <MobileOptimizedInterface>
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+        <StarField starCount={120} />
+        <PageHeader title={tr('Вопрос Вселенной', 'Ask the Universe', 'Pregunta al Universo')} />
 
-      <PageHeader
-        title={
-          language === 'ru'
-            ? 'Вселенная'
-            : language === 'es'
-              ? 'Universo'
-              : 'Universe'
-        }
-      />
-
-      {/* Voice Greeting без автозапуска для улучшения производительности */}
-      <VoiceGreeting
-        userProfile={userProfile}
-        language={language}
-        autoPlay={false}
-      />
-
-      {/* Show countdown timer if there are active pacts */}
-      {hasActivePacts && <CountdownTimer pactId={activePacts[0]?.id} />}
-
-      {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-20 py-4 max-w-3xl mx-auto w-full">
-        {currentAnswer ? (
-          <UniverseAnswer
-            question={currentAnswer.question}
-            answer={currentAnswer.answer}
-            onNewQuestion={() => setCurrentAnswer(null)}
-          />
-        ) : isAsking ? (
-          <ThinkingAnimation />
-        ) : (
-          <div className="w-full animate-fade-in">
-            {/* Show limit indicator */}
-            {limits && (
-              <div className="mb-6">
-                <LimitIndicator
-                  used={limits.universe_questions.used}
-                  limit={limits.universe_questions.limit}
-                  label={
-                    language === 'ru'
-                      ? 'Вопросы Вселенной сегодня'
-                      : language === 'es'
-                        ? 'Preguntas del Universo hoy'
-                        : 'Universe Questions Today'
-                  }
-                  isPro={limits.isPro}
-                />
-              </div>
-            )}
-
-            {/* Show upgrade prompt if limit reached */}
-            {limits && !limits.universe_questions.canUse ? (
-              <UpgradePrompt
-                feature={
-                  language === 'ru'
-                    ? 'вопросов Вселенной'
-                    : language === 'es'
-                      ? 'preguntas del Universo'
-                      : 'Universe questions'
-                }
-                currentUsage={`${limits.universe_questions.used}/${limits.universe_questions.limit}`}
-              />
-            ) : (
-              <QuestionForm
-                onSubmit={handleAskUniverse}
-                isLoading={isAsking}
-                language={language}
-              />
-            )}
-
-            {/* Only show Chat Preview for all users, but with PRO overlay for non-pro */}
-            <div className="mt-10">
-              <UniverseChatPreview />
+        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+          {currentAnswer ? (
+            <UniverseAnswer
+              question={currentAnswer.question}
+              answer={currentAnswer.answer}
+              onNewQuestion={() => setCurrentAnswer(null)}
+            />
+          ) : isAsking ? (
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md p-6">
+              <ThinkingAnimation />
             </div>
+          ) : (
+            <>
+              {/* Hero intro */}
+              <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-gold/15 via-cosmic-dark/60 to-cosmic-accent/15 backdrop-blur-md shadow-lg shadow-cosmic-gold/10 p-5 text-center">
+                <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-accent flex items-center justify-center shadow-[0_0_24px_rgba(232,193,108,0.4)] mb-3">
+                  <Sparkles size={20} className="text-white" />
+                </div>
+                <h1 className="font-serif text-lg text-white mb-1">
+                  {tr('Спроси у Вселенной', 'Ask the Universe', 'Pregunta al Universo')}
+                </h1>
+                <p className="text-xs text-cosmic-secondary leading-relaxed">
+                  {tr(
+                    'Опиши свою ситуацию подробно — чем точнее вопрос, тем глубже ответ.',
+                    'Describe your situation in detail — the more precise your question, the deeper the answer.',
+                    'Describe tu situación en detalle — cuanto más preciso, más profunda la respuesta.'
+                  )}
+                </p>
+              </section>
 
-            <PreviousQuestions questions={activeQuestions} />
-          </div>
-        )}
+              {/* Question form */}
+              <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md shadow-lg shadow-cosmic-accent/10 p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo flex items-center justify-center">
+                    <MessageCircleQuestion size={14} className="text-white" />
+                  </div>
+                  <h3 className="font-serif text-sm text-white">
+                    {tr('Твой вопрос', 'Your question', 'Tu pregunta')}
+                  </h3>
+                </div>
+                <QuestionForm onSubmit={handleAsk} isLoading={isAsking} language={lang} />
+              </section>
+
+              {/* History */}
+              <RecentQuestionsBlock />
+            </>
+          )}
+        </div>
+
+        <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
+          <BottomNavigation />
+        </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
-    </div>
+    </MobileOptimizedInterface>
   );
 };
 

@@ -20,10 +20,10 @@ export const ZodiacBadgeDisplay: React.FC = () => {
     navigate('/full-horoscope');
     const phrase =
       language === 'ru'
-        ? 'Переходим к полному гороскопу. Узнайте что говорят звезды о вашем будущем.'
+        ? 'Переходим к гороскопу. Узнайте что говорят звёзды о вашем будущем.'
         : language === 'es'
-          ? 'Vamos al horóscopo completo. Descubre lo que las estrellas dicen sobre tu futuro.'
-          : 'Let us go to the full horoscope. Discover what the stars say about your future.';
+          ? 'Vamos al horóscopo. Descubre lo que las estrellas dicen sobre tu futuro.'
+          : 'Let us go to the horoscope. Discover what the stars say about your future.';
     try {
       generateAndPlaySpeech(phrase, { voice: 'Custom', model: 'eleven_multilingual_v2' });
     } catch (error) {

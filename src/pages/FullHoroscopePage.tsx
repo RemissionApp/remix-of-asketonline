@@ -58,10 +58,10 @@ export default function FullHoroscopePage() {
       <PageHeader
         title={
           language === 'ru'
-            ? 'Полный гороскоп'
+            ? 'Гороскоп'
             : language === 'es'
-              ? 'Horóscopo completo'
-              : 'Full Horoscope'
+              ? 'Horóscopo'
+              : 'Horoscope'
         }
       />
 
