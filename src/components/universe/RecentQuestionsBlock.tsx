@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { MessageCircleQuestion, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageCircleQuestion, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
+import { cn } from '@/lib/utils';
 
 interface QRow {
   id: string;
@@ -24,7 +25,7 @@ export const RecentQuestionsBlock: React.FC = () => {
       .select('id,question,answer,created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(5)
+      .limit(10)
       .then(({ data }) => {
         setItems((data as any) || []);
         setLoading(false);
@@ -38,14 +39,27 @@ export const RecentQuestionsBlock: React.FC = () => {
     new Date(iso).toLocaleDateString(lang === 'ru' ? 'ru-RU' : lang === 'es' ? 'es-ES' : 'en-US');
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-gold/15 via-cosmic-dark/60 to-cosmic-accent/10 backdrop-blur-md shadow-lg shadow-cosmic-gold/10 p-4">
-      <header className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-accent flex items-center justify-center">
-          <MessageCircleQuestion size={14} className="text-white" />
+    <section className="rounded-3xl border border-cosmic-gold/25 bg-gradient-to-br from-cosmic-gold/25 via-cosmic-dark/60 to-cosmic-accent/15 backdrop-blur-md shadow-lg shadow-cosmic-gold/20 p-4">
+      <header className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-accent/60 flex items-center justify-center shadow-[0_0_18px_rgba(232,193,108,0.4)]">
+            <MessageCircleQuestion size={14} className="text-white" />
+          </div>
+          <div>
+            <h3 className="font-serif text-sm text-white leading-tight">
+              {tr('Последние вопросы', 'Recent questions', 'Preguntas recientes')}
+            </h3>
+            {items.length > 0 && (
+              <p className="text-[10px] text-cosmic-secondary mt-0.5">
+                {items.length} {tr(
+                  items.length === 1 ? 'запись' : 'записей',
+                  items.length === 1 ? 'entry' : 'entries',
+                  items.length === 1 ? 'entrada' : 'entradas'
+                )}
+              </p>
+            )}
+          </div>
         </div>
-        <h3 className="font-serif text-sm text-white">
-          {tr('Последние вопросы', 'Recent questions', 'Preguntas recientes')}
-        </h3>
       </header>
 
       {loading ? (
@@ -64,24 +78,54 @@ export const RecentQuestionsBlock: React.FC = () => {
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {items.map(q => {
             const open = openId === q.id;
             return (
-              <li key={q.id} className="rounded-2xl border border-white/5 bg-cosmic-dark/40">
+              <li
+                key={q.id}
+                className={cn(
+                  'rounded-2xl border border-white/10 bg-cosmic-dark/30 backdrop-blur-sm transition-colors',
+                  open && 'border-cosmic-gold/40 bg-cosmic-dark/50'
+                )}
+              >
                 <button
                   onClick={() => setOpenId(open ? null : q.id)}
-                  className="w-full text-left p-3 flex items-start gap-2"
+                  className="w-full text-left px-3 py-2.5 flex items-center gap-3"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-white/90 line-clamp-2">{q.question}</p>
-                    <p className="text-[10px] text-cosmic-secondary mt-1">{dateStr(q.created_at)}</p>
+                    <p className="text-xs text-white/95 truncate font-medium">{q.question}</p>
+                    <p className="text-[10px] text-cosmic-secondary mt-0.5">
+                      {dateStr(q.created_at)}
+                    </p>
                   </div>
-                  {open ? <ChevronUp size={14} className="text-cosmic-secondary mt-1" /> : <ChevronDown size={14} className="text-cosmic-secondary mt-1" />}
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 items-center justify-center rounded-full bg-cosmic-gold/15 text-cosmic-gold transition-transform',
+                      open && 'rotate-180'
+                    )}
+                  >
+                    <ChevronDown size={13} />
+                  </span>
                 </button>
                 {open && (
-                  <div className="px-3 pb-3 border-t border-white/5 pt-2">
-                    <p className="text-xs text-cosmic-secondary whitespace-pre-line">{q.answer}</p>
+                  <div className="px-3 pb-3 pt-1 border-t border-white/5 space-y-2">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-cosmic-gold/80 mb-1">
+                        {tr('Вопрос', 'Question', 'Pregunta')}
+                      </p>
+                      <p className="text-xs text-white/90 whitespace-pre-line leading-relaxed">
+                        {q.question}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-cosmic-accent/80 mb-1">
+                        {tr('Ответ Вселенной', 'Universe answer', 'Respuesta del Universo')}
+                      </p>
+                      <p className="text-xs text-cosmic-secondary/90 whitespace-pre-line leading-relaxed">
+                        {q.answer}
+                      </p>
+                    </div>
                   </div>
                 )}
               </li>
