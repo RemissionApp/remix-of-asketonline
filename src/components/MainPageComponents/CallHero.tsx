@@ -9,7 +9,7 @@ export const CallHero: React.FC = () => {
   const navigate = useNavigate();
   const { language } = useAppStore();
   const { t } = useTranslations();
-  const { minutesLeft, limitReached } = useCallMinutes();
+  const { minutesLeft } = useCallMinutes();
 
   const lyra = (t as any).lyra || {};
   const title =
@@ -18,9 +18,7 @@ export const CallHero: React.FC = () => {
   const subtitle =
     lyra.callSubtitle ||
     (language === 'ru' ? 'Высший разум всегда слышит тебя' : language === 'es' ? 'La sabiduría siempre te escucha' : 'The higher mind always hears you');
-  const minutes = limitReached
-    ? lyra.limitReachedCta || 'Limit reached'
-    : (lyra.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft));
+  const minutes = (lyra.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft));
 
   return (
     <button

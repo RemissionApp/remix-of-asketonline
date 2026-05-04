@@ -55,13 +55,13 @@ const DetailedHoroscopePage: React.FC = () => {
     } else {
       console.log('Birth date is set:', userProfile.birthDate);
 
-      // Auto-generate for Pro users on mount
-      if (userProfile?.isPro && zodiacSign) {
+        // Auto-generate on mount when birth date exists
+        if (zodiacSign) {
         console.log('Auto-triggering horoscope generation for PRO user');
         setShouldFetchHoroscope(true);
       }
     }
-  }, [userProfile?.birthDate, userProfile?.isPro, language, toast, zodiacSign]);
+    }, [userProfile?.birthDate, language, toast, zodiacSign]);
 
   // Handle manually triggering horoscope generation with improved logging
   const handleGenerateHoroscope = () => {
@@ -91,7 +91,7 @@ const DetailedHoroscopePage: React.FC = () => {
     userProfile,
     language,
     translations,
-    isPro: !!userProfile?.isPro,
+    isPro: true,
     shouldFetchHoroscope,
   });
 

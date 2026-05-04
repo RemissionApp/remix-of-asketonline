@@ -47,9 +47,6 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 1. User Greeting Section - First */}
       <UserGreetingSection />
 
-      {/* 1.5 Hero call block */}
-      <CallHero />
-
       {/* 2. PactDisplay */}
       <div
         className={`w-full relative z-50 ${showEnergyEffect ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
@@ -70,10 +67,13 @@ export const MainContent: React.FC<MainContentProps> = ({
         ) : null}
       </div>
 
-      {/* 3. Daily Advice */}
+      {/* 3. Hero call block */}
+      <CallHero />
+
+      {/* 4. Daily Advice */}
       <DailyAdviceDisplay />
 
-      {/* 4. Universe Message Block */}
+      {/* 5. Universe Message Block */}
       <div className="w-full max-w-lg mx-auto">
         <UniverseMessageBlock />
       </div>

@@ -1,26 +1,21 @@
 import React from 'react';
 import ZodiacInfo from '@/components/ZodiacInfo';
 import { useAppStore } from '@/store/useAppStore';
-import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
-import { useTranslations } from '@/hooks/useTranslations';
 import { ZodiacBadge } from '@/components/ZodiacBadge';
 import { useNavigate } from 'react-router-dom';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { createLogger } from '@/utils/logger';
 
 export const ZodiacBadgeDisplay: React.FC = () => {
   const logger = createLogger('ZodiacBadgeDisplay');
-  const { userProfile, language, user } = useAppStore();
-  const { t } = useTranslations();
+  const { userProfile, language } = useAppStore();
   const navigate = useNavigate();
   const { generateAndPlaySpeech } = useTextToSpeech();
-  const { hasActiveSubscription } = useRevenueCat(user?.id);
 
   logger.debug('Component rendering', {
     hasUserProfile: !!userProfile,
     hasBirthDate: !!userProfile?.birthDate,
-    isPro: hasActiveSubscription,
+    isPro: true,
   });
 
   // Only display if user has a birthdate
@@ -30,20 +25,16 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   }
 
   const handleZodiacClick = async () => {
-    if (hasActiveSubscription) {
-      // Переходим сразу
-      navigate('/full-horoscope');
+    navigate('/full-horoscope');
 
-      // Воспроизводим фразу в фоновом режиме
-      const horoscopePhrase = getHoroscopePhrase();
-      try {
-        generateAndPlaySpeech(horoscopePhrase, {
-          voice: 'Custom',
-          model: 'eleven_multilingual_v2',
-        });
-      } catch (error) {
-        console.error('Error playing horoscope phrase:', error);
-      }
+    const horoscopePhrase = getHoroscopePhrase();
+    try {
+      generateAndPlaySpeech(horoscopePhrase, {
+        voice: 'Custom',
+        model: 'eleven_multilingual_v2',
+      });
+    } catch (error) {
+      console.error('Error playing horoscope phrase:', error);
     }
   };
 
@@ -60,19 +51,19 @@ export const ZodiacBadgeDisplay: React.FC = () => {
 
   const zodiacContent = (
     <div
-      className={`glass-card mb-4 sm:mb-6 w-full ${hasActiveSubscription ? 'cursor-pointer' : ''}`}
+      className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-indigo/30 via-cosmic-dark/60 to-cosmic-accent/25 p-5 shadow-lg shadow-cosmic-accent/15 cursor-pointer"
       onClick={handleZodiacClick}
     >
-      <div className="p-3 sm:p-4">
-        <div className="flex items-center mb-2 sm:mb-3">
-          <div className="glass-icon-wrap !p-1.5 sm:!p-2 !mr-2 sm:!mr-3">
-            <div className="text-cosmic-accent">
-              <ZodiacBadge size="md" />
-            </div>
+      <div className="flex items-start gap-4">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+          <div className="text-white">
+            <ZodiacBadge size="md" />
           </div>
-          <div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="mb-3">
             <h3
-              className={`text-base sm:text-xl font-medium ${
+              className={`text-base sm:text-xl font-medium text-white ${
                 language === 'en' ? 'font-serif' : 'font-display'
               }`}
             >
@@ -82,47 +73,24 @@ export const ZodiacBadgeDisplay: React.FC = () => {
                   ? 'Horóscopo'
                   : 'Horoscope'}
             </h3>
+            <p className="mt-0.5 text-xs text-cosmic-secondary">
+              {language === 'ru'
+                ? 'Звёздная карта и прогноз по вашему пути'
+                : language === 'es'
+                  ? 'Mapa estelar y pronóstico para tu camino'
+                  : 'Star map and guidance for your path'}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
+            <div className="text-cosmic-accent">
+              <ZodiacInfo />
+            </div>
           </div>
         </div>
-        <ZodiacInfo />
       </div>
     </div>
   );
-
-  // If user is not PRO, wrap with ProFeatureOverlay
-  if (!hasActiveSubscription) {
-    const proUnlockText =
-      language === 'ru'
-        ? 'Открой функции PRO'
-        : language === 'es'
-          ? 'Desbloquea funciones PRO'
-          : 'Unlock PRO functions';
-
-    return (
-      <ProFeatureOverlay
-        title={
-          language === 'ru'
-            ? 'Гороскоп'
-            : language === 'es'
-              ? 'Horóscopo'
-              : 'Horoscope'
-        }
-        message={
-          language === 'ru'
-            ? 'Разблокируй PRO чтобы получить полный доступ к гороскопу'
-            : language === 'es'
-              ? 'Desbloquea PRO para acceso completo al horóscopo'
-              : 'Unlock PRO to get full access to horoscope'
-        }
-        className="mb-6 w-full"
-        navigateTo="/comparison"
-        showUnlockPrompt={true}
-        unlockText={proUnlockText}
-      >
-        {zodiacContent}
-      </ProFeatureOverlay>
-    );
-  }
 
   return zodiacContent;
 };
