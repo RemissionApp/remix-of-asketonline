@@ -74,48 +74,28 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
   const headingFontClass = language === 'en' ? 'font-serif' : 'font-display';
 
   return (
-    <div className="glass-card glass-shimmer mb-4 sm:mb-6 relative">
-      {/* Background image with reflection and brightness effect */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-40 z-0"
-        style={{
-          backgroundImage:
-            "url('https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//un1.jpeg')",
-          filter: 'brightness(1.3) contrast(1.1)',
-          transform: 'scaleX(-1)', // This creates the reflection effect (mirror)
-        }}
-      />
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(10,6,30,0.25) 0%, rgba(10,6,30,0.55) 100%)',
-        }}
-      />
-
-      <div className="w-full p-3 sm:p-4 relative z-10">
-        <div className="flex items-center mb-3 sm:mb-4">
-          <div className="glass-icon-wrap">
-            <Star size={20} className="text-cosmic-accent" />
-          </div>
-
+    <div className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-indigo/30 via-cosmic-dark/60 to-cosmic-accent/20 p-5 shadow-lg shadow-cosmic-accent/10">
+      <div className="flex items-start gap-4">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+          <Star size={24} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
           <h3 className={`text-base sm:text-xl ${headingFontClass} font-medium text-white`}>
             {getTitle()}
           </h3>
-        </div>
-
-        <p className="text-white mb-3 sm:mb-4 text-sm sm:text-base text-shadow text-center">
+          <p className="mt-1 mb-3 text-sm sm:text-base text-white/90">
           {getDescription()}
-        </p>
+          </p>
 
-        <CosmicButton
-          onClick={handleViewMissions}
-          size="md"
-          variant="default"
-          className="w-full bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/10"
-        >
-          {getButtonText()}
-        </CosmicButton>
+          <CosmicButton
+            onClick={handleViewMissions}
+            size="md"
+            variant="default"
+            className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/15 text-white"
+          >
+            {getButtonText()}
+          </CosmicButton>
+        </div>
       </div>
     </div>
   );
