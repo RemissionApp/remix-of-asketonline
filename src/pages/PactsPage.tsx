@@ -241,11 +241,12 @@ const PactsPage: React.FC = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Break dialog */}
+        {breakPact && (
         <BreakAscesisDialog
-          pact={breakPact}
-          isOpen={!!breakPact}
-          onClose={() => setBreakPact(null)}
+          <BreakAscesisDialog
+            pact={breakPact}
+            isOpen={!!breakPact}
+            onClose={() => setBreakPact(null)}
           onConfirm={handleBreak}
         />
       </div>
