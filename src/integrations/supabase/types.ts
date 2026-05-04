@@ -861,6 +861,30 @@ export type Database = {
         }
         Relationships: []
       }
+      revenuecat_events: {
+        Row: {
+          event_id: string
+          event_timestamp_ms: number | null
+          processed_at: string
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          event_id: string
+          event_timestamp_ms?: number | null
+          processed_at?: string
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          event_id?: string
+          event_timestamp_ms?: number | null
+          processed_at?: string
+          type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
