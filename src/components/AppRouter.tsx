@@ -34,6 +34,7 @@ const LyraChatPage = UniverseChatPage;
 const CallPage = lazy(() => import('@/pages/CallPage'));
 const NumerologyPage = lazy(() => import('@/pages/NumerologyPage'));
 const CosmosPage = lazy(() => import('@/pages/CosmosPage'));
+const UniverseHubPage = lazy(() => import('@/pages/UniverseHubPage'));
 
 const RouteFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-cosmic-dark">
@@ -73,6 +74,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/numerology" element={<ProtectedRoute requireProfile requireOnboarding><NumerologyPage /></ProtectedRoute>} />
         <Route path="/affirmations" element={<ProtectedRoute requireProfile requireOnboarding><AffirmationsPage /></ProtectedRoute>} />
         <Route path="/cosmic-missions" element={<ProtectedRoute requireProfile requireOnboarding><CosmicMissionsPage /></ProtectedRoute>} />
+        <Route path="/universe-hub" element={<ProtectedRoute requireProfile requireOnboarding><UniverseHubPage /></ProtectedRoute>} />
         <Route path="/cosmos" element={<ProtectedRoute requireProfile requireOnboarding><CosmosPage /></ProtectedRoute>} />
         <Route path="/achievements" element={<ProtectedRoute requireProfile requireOnboarding><AchievementsPage /></ProtectedRoute>} />
         <Route path="/delete-account" element={<ProtectedRoute requireProfile requireOnboarding><DeleteAccountPage /></ProtectedRoute>} />
