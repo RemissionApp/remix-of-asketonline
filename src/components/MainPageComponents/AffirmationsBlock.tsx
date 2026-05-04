@@ -55,10 +55,10 @@ export const AffirmationsBlock: React.FC = () => {
   return (
     <button
       onClick={handleAffirmationsClick}
-      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-accent2/25 bg-gradient-to-br from-cosmic-accent2/30 via-cosmic-dark/60 to-cosmic-accent2/10 p-5 text-left shadow-lg shadow-cosmic-accent2/30 transition-transform active:scale-[0.99]"
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-cosmic-dark/60 to-emerald-500/10 p-5 text-left shadow-lg shadow-emerald-500/25 transition-transform active:scale-[0.99]"
     >
       <div className="flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent2 to-cosmic-accent/60 shadow-[0_0_30px_rgba(217,70,239,0.55)]">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600/70 shadow-[0_0_30px_rgba(52,211,153,0.55)]">
           <Quote size={26} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
