@@ -39,7 +39,7 @@ export const RecentQuestionsBlock: React.FC = () => {
     new Date(iso).toLocaleDateString(lang === 'ru' ? 'ru-RU' : lang === 'es' ? 'es-ES' : 'en-US');
 
   return (
-    <section className="rounded-3xl border border-cosmic-gold/25 bg-gradient-to-br from-cosmic-gold/25 via-cosmic-dark/60 to-cosmic-accent/15 backdrop-blur-md shadow-lg shadow-cosmic-gold/20 p-4">
+    <section className="rounded-3xl border border-cosmic-gold/25 bg-gradient-to-br from-cosmic-gold/25 via-cosmic-dark/60 to-cosmic-accent/15 backdrop-blur-md shadow-lg shadow-cosmic-gold/25 p-4">
       <header className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-accent/60 flex items-center justify-center shadow-[0_0_18px_rgba(232,193,108,0.4)]">
