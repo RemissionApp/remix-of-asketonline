@@ -8,7 +8,6 @@ import {
 import { revenueCatService } from '@/utils/revenueCat';
 import { useAppStore } from '../useAppStore';
 import { Capacitor } from '@capacitor/core';
-import { supabase } from '@/integrations/supabase/client';
 
 // Module-level promise for deduplication of concurrent initialize() calls
 let initializingPromise: Promise<void> | null = null;
