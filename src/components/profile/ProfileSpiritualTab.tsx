@@ -1,6 +1,7 @@
 import React from 'react';
-import { Star, Flame, Globe2, Hash, Phone, Trophy, Sparkles } from 'lucide-react';
+import { Star, Flame, Globe2, Hash, Phone, Trophy, Sparkles, BookOpen, Grid3X3 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { useNavigate } from 'react-router-dom';
 import { ProfileSection } from './ui/ProfileSection';
 import { ProfileRow } from './ui/ProfileRow';
 import { ProfileStatCard } from './ui/ProfileStatCard';
@@ -12,6 +13,7 @@ import { useCallMinutes } from '@/hooks/useCallMinutes';
 export const ProfileSpiritualTab: React.FC = () => {
   const lang = useProfileLang();
   const { userProfile, pacts } = useAppStore();
+  const navigate = useNavigate();
   const { minutesUsed, minutesLimit } = useCallMinutes();
 
   const t = {
@@ -29,6 +31,9 @@ export const ProfileSpiritualTab: React.FC = () => {
     pactsCount: { ru: 'Аскезы',          en: 'Pacts',         es: 'Pactos' }[lang],
     energy:     { ru: 'Энергия',         en: 'Energy',        es: 'Energía' }[lang],
     notSet:     { ru: 'не указано',      en: 'not set',       es: 'no definido' }[lang],
+    explore:    { ru: 'Подробнее',       en: 'Explore',       es: 'Explorar' }[lang],
+    horoscope:  { ru: 'Подробный гороскоп', en: 'Detailed horoscope', es: 'Horóscopo detallado' }[lang],
+    matrix:     { ru: 'Матрица судьбы',  en: 'Destiny matrix',es: 'Matriz del destino' }[lang],
   };
 
   const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
@@ -62,6 +67,11 @@ export const ProfileSpiritualTab: React.FC = () => {
           <ProfileStatCard icon={Trophy}   label={t.pactsCount} value={pacts?.length ?? 0} />
           <ProfileStatCard icon={Sparkles} label={t.energy}     value={userProfile?.energyPoints ?? 0} />
         </div>
+      </ProfileSection>
+
+      <ProfileSection title={t.explore}>
+        <ProfileRow icon={BookOpen}  iconColor="gold"   label={t.horoscope} rounded="top"    onPress={() => navigate('/detailed-horoscope')} />
+        <ProfileRow icon={Grid3X3}   iconColor="purple" label={t.matrix}    rounded="bottom" onPress={() => navigate('/numerology')} />
       </ProfileSection>
     </div>
   );
