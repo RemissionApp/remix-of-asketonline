@@ -24,6 +24,36 @@ export const createAddPactSlice = (
       return;
     }
 
+    // Prevent double-submit (race / double-tap)
+    if ((get() as any).loading) {
+      return;
+    }
+
+    // Validate inputs
+    if (!pact.title || pact.title.trim().length === 0 || pact.title.length > 200) {
+      toast({ title: 'Ошибка', description: 'Некорректное название аскезы', variant: 'destructive' });
+      return;
+    }
+    if (!pact.duration || pact.duration < 1 || pact.duration > 365) {
+      toast({ title: 'Ошибка', description: 'Длительность 1–365 дней', variant: 'destructive' });
+      return;
+    }
+
+    // Limit max active pacts per user
+    const { count: activeCount } = await supabase
+      .from('pacts')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'active');
+    if ((activeCount ?? 0) >= 10) {
+      toast({
+        title: 'Лимит активных аскез',
+        description: 'Максимум 10 активных аскез одновременно',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     set({ loading: true });
 
     try {

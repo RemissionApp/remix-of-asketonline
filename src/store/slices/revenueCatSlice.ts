@@ -335,8 +335,19 @@ export const useRevenueCatStore = create<RevenueCatState>()(
       partialize: state => ({
         isInitialized: state.isInitialized,
         lastInitializedUserId: state.lastInitializedUserId,
-        hasActiveSubscription: state.hasActiveSubscription,
+        // Do NOT persist hasActiveSubscription or customerInfo — they would
+        // let an attacker grant themselves PRO by editing localStorage. PRO
+        // status is always re-derived from RevenueCat / Supabase on init.
       }),
+      version: 2,
+      migrate: (persisted: any, fromVersion) => {
+        // Drop any previously-persisted PRO flags from older versions
+        if (persisted && typeof persisted === 'object') {
+          delete persisted.hasActiveSubscription;
+          delete persisted.customerInfo;
+        }
+        return persisted;
+      },
     }
   )
 );
