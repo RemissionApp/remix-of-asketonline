@@ -1,100 +1,111 @@
-# План: Переработка страницы Профиля в стиле Asceta (Главная / Вселенная / Космос)
+## 1. Экран Вселенная (UniverseHubPage) — заполнить пустоту
 
-Сделаем пошагово в **3 этапа**, чтобы можно было проверять прогресс между ними.
+Под двумя карточками «Позвонить» / «Задать вопрос» добавить два секционных блока в едином cosmic-glass стиле:
 
----
+**Блок «Последние разговоры»** (`Recent calls`)
+- Тянем из таблицы `call_summaries` (last 5, order by `called_at desc`).
+- Карточка списка: аватар-иконка `Phone`, заголовок (короткая суммаризация / первые 60 символов `summary`), длительность из `duration_seconds`, относительное время («сегодня», «вчера», «3 дня назад» — i18n).
+- Tap → открывает раскрывающую карточку с полным `summary` и `key_topics` чипами.
+- Empty state: иллюстрация (Phone в круге) + «Твой первый разговор с Вселенной изменит многое» (ru/en/es).
 
-## Дизайн-основа
+**Блок «Последние вопросы»** (`Recent questions`)
+- Уже есть `PreviousQuestions` на `/universe`, но в hub его нет. Тянем `universe_questions` (last 5).
+- Карточка: иконка `MessageCircleQuestion`, текст вопроса (truncate 2 lines), дата.
+- Tap → expand, показать `answer`.
+- Empty state: «Задай свой первый вопрос — Вселенная всегда отвечает».
 
-Используем те же визуальные приёмы, что и на страницах Cosmos / Universe / Main:
-- Контейнер `min-h-screen flex flex-col relative pb-24`, `<StarField />`, плавающий `<PageHeader />`, плавающий `<BottomNavigation />`.
-- Карточки: `rounded-3xl border border-cosmic-*/25 bg-gradient-to-br from-…/40 via-cosmic-dark/60 to-…/15 p-5 shadow-lg`, `active:scale-[0.99]`.
-- Иконка слева в круге 56–64px с цветным glow (как Cosmos / Lyra), текст по центру блока, заголовки `text-base font-semibold text-white` (+`font-serif` для `en`), сабтекст `text-xs text-cosmic-secondary`.
-- Только существующие cosmic-токены (`cosmic-gold`, `cosmic-accent`, `cosmic-indigo`, `cosmic-dark`, `cosmic-secondary`, `cosmic-deep-blue`).
+Стиль карточек идентичен `UniverseMessageBlock` / `PactsPage` (rounded-3xl, border white/10, gradient cosmic-accent/15 → cosmic-dark/60 → cosmic-gold/10, backdrop-blur-md).
 
-Создадим переиспользуемые UI:
-- `src/components/profile/ui/ProfileRow.tsx` — строка-кнопка в стиле glass-карточки (icon + label + sublabel + value/toggle/badge/chevron).
-- `src/components/profile/ui/ProfileSection.tsx` — заголовок секции (`text-[10px] uppercase tracking-[0.15em]`) + flex-колонка строк со скруглением группы.
-- `src/components/profile/ui/ProfileStatCard.tsx` — числовая карточка статистики.
+Новые файлы:
+- `src/components/universe/RecentCallsBlock.tsx`
+- `src/components/universe/RecentQuestionsBlock.tsx`
 
-Шапка вкладок (`ProfileTabs`):
-- Sticky под `PageHeader` (`top-16`), `overflow-x-auto`, скрытый scrollbar, `backdrop-blur` + полупрозрачный фон.
-- Активная: текст `text-cosmic-gold`, нижняя подсветка `border-b-2 border-cosmic-gold`; неактивная `text-cosmic-secondary`.
-- Кнопки `px-5 py-3 text-[11px] uppercase tracking-widest`.
+Изменения:
+- `src/pages/UniverseHubPage.tsx` — добавить секции после двух CTA.
 
----
+## 2. Главная — уменьшить вертикальные отступы
 
-## Этап 1 — Каркас + вкладки «Профиль» и «Духовное»
+`src/components/MainPageComponents/UserGreetingSection.tsx`
+- Убрать лишние `pt-3 sm:pt-6` и `mb-3 sm:mb-6` → `pt-1 mb-1 sm:pt-2 sm:mb-2`.
+- Уменьшить `mt-1 sm:mt-2` у `<h2>` до `mt-0.5`.
 
-Файлы:
-1. `src/components/profile/ui/ProfileRow.tsx`
-2. `src/components/profile/ui/ProfileSection.tsx`
-3. `src/components/profile/ui/ProfileStatCard.tsx`
-4. `src/components/profile/ProfileTabs.tsx` — горизонтальные вкладки (state в URL `?tab=` или локально).
-5. `src/components/profile/ProfileIdentityTab.tsx`
-   - Аватар с кольцом + кнопка редактирования (используем `usePhotoUpload`).
-   - Имя, ранг + энергия (из `useUserProgress`).
-   - 3 stat-карточки: дни в приложении, активные пакты, звонки.
-   - Прогресс до следующего ранга (пороги 0/300/700/1500/3000) — bar в стиле `from-cosmic-gold`.
-   - Секции: «Личные данные» (имя, дата рождения, цель, аватар), «Язык и регион» (язык → `/language`, таймзона), «Достижения» → `/achievements`.
-6. `src/components/profile/ProfileSpiritualTab.tsx`
-   - Астро-карточка (зодиак, стихия, планета, модальность) — переиспользуем `utils/zodiac.ts` / `zodiacTraits.ts`.
-   - Нумерология — `utils/numerologyUtils.ts` (судьба/душа/личность/год).
-   - Секции «Звонки» (минуты — `useCallMinutes`, всего сессий, история → `/lyra/history` если маршрут есть, иначе `/universe`).
-   - Секции «Пакты» (активные/лучший streak/завершённые) — данные из существующего стора.
-7. `src/pages/ProfilePage.tsx` — переписать: `StarField`, `PageHeader title="Профиль/Profile/Perfil"`, `ProfileTabs`, рендер активной вкладки, плавающая `BottomNavigation`.
-8. Минимальные переводы для табов и обоих экранов в `ru.ts/en.ts/es.ts` (`profile.tabs.*`, `profile.sections.*`, `profile.stats.*`, `ranks.*`, `spiritual.*`).
+`src/components/MainPageComponents/MainContent.tsx`
+- `pt-16 sm:pt-20` → `pt-10 sm:pt-12`, `gap-3 sm:gap-4` → `gap-2 sm:gap-3`.
 
-После этапа 1: страница работает, две первые вкладки полностью функциональны, остальные четыре — заглушки «Скоро».
+`src/components/AdaptivePactDisplay.tsx`
+- `gap-3` → `gap-1.5`, между title и кругом убрать лишний `mb-1`.
 
----
+## 3. Снять ограничение на создание аскез
 
-## Этап 2 — Вкладки «Подписка», «Уведомления», «Конфиденциальность»
+Триал теперь даёт полный доступ 3 дня — лимита на количество аскез нет.
 
-Файлы:
-1. `src/components/profile/ProfileSubscriptionTab.tsx`
-   - Градиентная карточка Asceta Pro: статус (Pro / Trial / Free) через `useEntitlement`, цена/план через `useRevenueCat`, список фич, кнопки Upgrade/Manage + History.
-   - Секция «Детали» (только если Pro): дата следующего списания, способ оплаты, авто-продление (toggle — пока локально, persist в `profiles` если есть колонка, иначе TODO-заметка).
-   - Секция «Минуты»: прогресс минут (`useCallMinutes`), кнопка «Купить минуты» с badge.
-   - Секция «Другое»: восстановить покупки, реферал, сравнить планы → `/comparison`.
-2. `src/components/profile/ProfileNotificationsTab.tsx`
-   - Локальный state + сохранение в `profiles` (одно JSONB поле `notification_settings`) с debounce 500мс. Если колонки нет — добавим миграцией (`alter table profiles add column notification_settings jsonb default '{}'::jsonb`).
-   - 5 секций (Пакты / Звонки / Миссии / Гороскоп / Подписка) с тогглами; время напоминания пактов — отдельная строка-пикер (input type="time").
-   - Интеграция с существующим `PushNotificationManager` / `usePushNotifications` (если нет хука — оставить TODO, тогглы всё равно пишут в БД).
-3. `src/components/profile/ProfilePrivacyTab.tsx`
-   - Аналитика / crash-reports (тогглы, локальный state + localStorage).
-   - Память звонков: тоггл «хранить историю», кнопка «Очистить историю» (delete из `call_summaries` для `user_id`), предупреждение.
-   - Документы → `/privacy-policy`, `/terms`, `/licenses` (последний — TODO если нет страницы).
-   - Поддержка: mailto, rate (Capacitor App store link), Share (`webShare.ts`).
-   - О приложении: версия из `package.json` через Vite `import.meta.env`.
-4. Миграция: добавить `notification_settings jsonb`, `privacy_settings jsonb`, `timezone text` в `public.profiles` (если их ещё нет).
-5. Переводы `subscription.*`, `notifications.*`, `privacy.*` в трёх языках.
+`src/pages/CreatePactPage.tsx`
+- Убрать импорт `useDailyLimits`, `UpgradePrompt`.
+- Удалить переменную `canCreatePact` и весь блок `!canCreatePact ? <UpgradePrompt …/> : renderStep()`.
+- Всегда рендерить `renderStep()` и кнопку «Next».
 
----
+`src/hooks/useDailyLimits.ts`
+- Поле `pacts` оставляем в типе для обратной совместимости, но больше нигде не используется. (Серверная функция `check-daily-limits` остаётся as-is.)
 
-## Этап 3 — Вкладка «Аккаунт», финальная подчистка
+## 4. Профиль — план редактирования и аудит кнопок
 
-Файлы:
-1. `src/components/profile/ProfileAccountTab.tsx`
-   - Email, смена пароля, подключённые провайдеры (Apple/Google) — статус из `user.app_metadata.providers`.
-   - Экспорт данных: собираем выборки из таблиц пользователя → JSON → `Share.share` / download blob.
-   - Sign out (через AlertDialog) + очистка стора.
-   - «Опасная зона» в красной рамке: «Очистить все данные» и «Удалить аккаунт» (вызов существующего `/delete-account` или `batch_delete_user_data` RPC).
-2. Удалить устаревшие компоненты, которые перестали использоваться:
-   - `src/components/ProfilePage/ProfileSection.tsx` (старый), `LanguageSelector.tsx`, `LegalDocuments.tsx`, `LogoutButton.tsx`, `SubscriptionManager.tsx` — если ни одна страница больше не импортирует.
-   - Перепроверить `AccountSettingsPage.tsx`: либо удалить и редиректить на `/profile?tab=account`, либо оставить как deep-link, переведя на новые компоненты.
-3. Финальные переводы `account.*` + ревизия всех ключей в `ru/en/es`.
-4. Проверка маршрутов в `AppRouter.tsx` (deep-link `/profile?tab=subscription` и т.п.).
+Цель: каждая строка профиля редактируема, все кнопки рабочие.
 
----
+### 4.1 Универсальный inline-edit
+Новый компонент `src/components/profile/ui/EditableRow.tsx`:
+- расширяет `ProfileRow`, при tap открывает `Dialog` с полем (text / date / textarea / select).
+- prop `onSave(value) => Promise<void>` — обновляет через `updateUserProfile` в zustand-сторе и Supabase `profiles`.
+- Валидация через zod (имя 1–60, дата 1900–today, цель ≤ 200).
 
-## Технические детали / решения
+### 4.2 ProfileIdentityTab
+Сделать редактируемыми:
+- **Имя** → inline (`name`).
+- **Дата рождения** → date picker (`birth_date`).
+- **Цель** → textarea (`goal`).
+- Аватар уже работает.
 
-- **Состояние вкладок**: `useSearchParams` (`?tab=identity`) — позволяет deep-link и сохраняется при навигации назад.
-- **Tabs UI**: чистый Tailwind, без `@/components/ui/tabs` (там radix с другим стилем) — нужен горизонтальный скролл + sticky.
-- **Иконки**: `lucide-react` — `User, Calendar, Target, Image, Globe, Clock, Trophy, Sparkles, Hash, Phone, BookOpen, Flame, Zap, CheckCircle, Crown, CreditCard, RefreshCw, Plus, Gift, Users, BarChart, Bell, AlertTriangle, Sun, Moon, Timer, BarChart2, Bug, Lock, Trash2, FileText, ScrollText, Scale, MessageCircle, Star, Share2, Info, Mail, Key, Apple, Chrome, Package, LogOut`.
-- **Цветовые карты иконок**: `gold → cosmic-gold`, `purple → cosmic-accent`, `blue → cosmic-deep-blue`, `green → emerald-400`, `red → rose-500`, `gray → cosmic-secondary`.
-- **Не трогаем**: `supabase/client.ts`, `supabase/types.ts`, `.env`, `capacitor.config.ts`, `ios/`, `android/`, логику пактов, RevenueCat конфиг.
-- **БД-миграции** (только в этапе 2): добавление nullable JSONB-полей с дефолтами — безопасно для существующих данных.
+### 4.3 ProfileSpiritualTab
+Карты Астро/Нумерология вычисляются из `birthDate` и `name` — изменяются автоматически. Добавить кнопку «Открыть подробный гороскоп» → `/detailed-horoscope`, «Матрица судьбы» → `/numerology`.
 
-После этапа 3 страница профиля полностью соответствует визуальному языку Asceta и закрывает все 6 разделов.
+### 4.4 ProfileNotificationsTab
+- Каждый toggle сохраняет в `profiles.notification_settings` (jsonb merge) через `updateUserProfile`. Привязать `PushNotificationManager` к разделу.
+
+### 4.5 ProfilePrivacyTab
+- Toggles → `profiles.privacy_settings` jsonb merge.
+- Кнопка «Политика конфиденциальности» → `/privacy-policy`, «Пользовательское соглашение» → `/terms-of-service`.
+
+### 4.6 ProfileSubscriptionTab
+- Кнопка «Оформить подписку» → существующий flow сравнения / `/comparison`.
+- Показ статуса триала (`trial_ends_at`).
+
+### 4.7 ProfileAccountTab
+Уже работает (logout, export, delete, language). Добавить:
+- «Сменить email» → диалог с `supabase.auth.updateUser({ email })` + toast.
+- «Сменить пароль» → диалог (для email-провайдера) с `supabase.auth.updateUser({ password })`.
+
+### 4.8 Аудит существующих кнопок
+Пройти по всем `ProfileRow` во всех табах, убедиться что у каждой есть `onPress` или `to`. Те, что сейчас декоративные (без обработчика), либо подключаем, либо удаляем.
+
+## Файлы
+
+**Создать**
+- `src/components/universe/RecentCallsBlock.tsx`
+- `src/components/universe/RecentQuestionsBlock.tsx`
+- `src/components/profile/ui/EditableRow.tsx`
+- `src/components/profile/dialogs/EditFieldDialog.tsx`
+- `src/components/profile/dialogs/ChangeEmailDialog.tsx`
+- `src/components/profile/dialogs/ChangePasswordDialog.tsx`
+
+**Изменить**
+- `src/pages/UniverseHubPage.tsx`
+- `src/components/MainPageComponents/UserGreetingSection.tsx`
+- `src/components/MainPageComponents/MainContent.tsx`
+- `src/components/AdaptivePactDisplay.tsx`
+- `src/pages/CreatePactPage.tsx`
+- `src/components/profile/ProfileIdentityTab.tsx`
+- `src/components/profile/ProfileNotificationsTab.tsx`
+- `src/components/profile/ProfilePrivacyTab.tsx`
+- `src/components/profile/ProfileSubscriptionTab.tsx`
+- `src/components/profile/ProfileAccountTab.tsx`
+
+Подтверди — реализую.
