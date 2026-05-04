@@ -317,6 +317,20 @@ export const PactOath: React.FC<PactOathProps> = ({
             {getReadAloudButtonText()}
           </CosmicButton>
 
+          <button
+            onClick={handleSignContract}
+            className="mt-3 w-full rounded-2xl border border-cosmic-gold/40 bg-gradient-to-r from-cosmic-gold/30 to-cosmic-accent/30 backdrop-blur-md py-3 text-sm sm:text-base font-medium text-white shadow-[0_0_20px_rgba(232,193,108,0.25)] transition-transform active:scale-[0.99] hover:from-cosmic-gold/40 hover:to-cosmic-accent/40"
+          >
+            {getSignButtonText()}
+          </button>
+          <p className="mt-2 text-[11px] text-cosmic-secondary/80">
+            {language === 'ru'
+              ? 'Рекомендуем сначала прочитать клятву вслух'
+              : language === 'es'
+                ? 'Recomendamos leer el juramento en voz alta primero'
+                : 'We recommend reading the oath aloud first'}
+          </p>
+
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="bg-cosmic-dark border-cosmic-accent text-white max-w-md mx-2 sm:mx-auto">
               <DialogHeader>
