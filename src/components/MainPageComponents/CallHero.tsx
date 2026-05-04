@@ -30,7 +30,7 @@ export const CallHero: React.FC = () => {
           <span className="absolute inset-0 rounded-full bg-cosmic-accent/40 animate-ping" />
           <Phone className="relative h-7 w-7 text-white" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 text-center">
           <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{title}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
           <div className="mt-1 text-[11px] text-white/60">{minutes}</div>

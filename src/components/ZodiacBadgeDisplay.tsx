@@ -42,8 +42,8 @@ export const ZodiacBadgeDisplay: React.FC = () => {
             <ZodiacBadge size="md" />
           </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>
             {language === 'ru' ? 'Гороскоп' : language === 'es' ? 'Horóscopo' : 'Horoscope'}
           </div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">

@@ -67,8 +67,8 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-deep-blue to-cosmic-indigo/70 shadow-[0_0_30px_rgba(56,189,248,0.5)]">
           <Star size={26} className="text-white" />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">{getTitle()}</div>
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{getTitle()}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{getDescription()}</div>
         </div>
       </div>

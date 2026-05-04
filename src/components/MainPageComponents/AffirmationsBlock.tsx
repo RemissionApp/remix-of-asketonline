@@ -61,8 +61,8 @@ export const AffirmationsBlock: React.FC = () => {
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600/70 shadow-[0_0_30px_rgba(52,211,153,0.55)]">
           <Quote size={26} className="text-white" />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">{affirmationsTitle}</div>
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{affirmationsTitle}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
         </div>
       </div>
