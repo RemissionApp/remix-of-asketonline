@@ -51,55 +51,36 @@ export const AffirmationsBlock: React.FC = () => {
         : 'Affirmations';
 
   return (
-    <div className="glass-card glass-shimmer mb-4 sm:mb-6 relative">
-      {/* Background image with reflection effect */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-40 z-0"
-        style={{
-          backgroundImage: `url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//affirmation.png)`,
-          filter: 'brightness(1.4) contrast(1.1)',
-          transform: 'scaleX(-1)', // This creates the reflection effect (mirror)
-        }}
-      />
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(10,6,30,0.25) 0%, rgba(10,6,30,0.55) 100%)',
-        }}
-      />
-
-      <div className="w-full p-3 sm:p-4 relative z-10">
-        <div className="flex items-center mb-3 sm:mb-4">
-          <div className="glass-icon-wrap">
-            <TextCursor size={20} className="text-cosmic-accent" />
-          </div>
-
+    <div className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 shadow-lg shadow-cosmic-accent/10">
+      <div className="flex items-start gap-4">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+          <TextCursor size={24} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
           <h3 className={`text-base sm:text-xl ${headingFontClass} font-medium text-white`}>
             {affirmationsTitle}
           </h3>
-        </div>
-
-        <p className="text-white mb-3 sm:mb-4 text-sm sm:text-base text-shadow text-center">
+          <p className="mt-1 mb-3 text-sm sm:text-base text-white/90">
           {language === 'ru'
             ? 'Позитивные утверждения для вдохновения и личностного роста.'
             : language === 'es'
               ? 'Afirmaciones positivas para inspiración y crecimiento personal.'
               : 'Positive affirmations for inspiration and personal growth.'}
-        </p>
+          </p>
 
-        <CosmicButton
-          onClick={handleAffirmationsClick}
-          size="md"
-          variant="default"
-          className="w-full bg-gradient-to-r from-purple-500/60 to-indigo-500/50 hover:from-purple-500/70 hover:to-indigo-500/60 backdrop-blur-md border border-white/20"
-        >
-          {language === 'ru'
-            ? 'Открыть аффирмации'
-            : language === 'es'
-              ? 'Abrir afirmaciones'
-              : 'Open affirmations'}
-        </CosmicButton>
+          <CosmicButton
+            onClick={handleAffirmationsClick}
+            size="md"
+            variant="default"
+            className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/15 text-white"
+          >
+            {language === 'ru'
+              ? 'Открыть аффирмации'
+              : language === 'es'
+                ? 'Abrir afirmaciones'
+                : 'Open affirmations'}
+          </CosmicButton>
+        </div>
       </div>
     </div>
   );
