@@ -105,6 +105,8 @@ export const esTranslations: Translations = {
       universeChat: 'Chat',
       profile: 'Perfil',
     },
+    failed: 'Interrumpida',
+    completed: 'Completada',
   },
   pactOath: {
     title: 'Contrato con el Universo',
