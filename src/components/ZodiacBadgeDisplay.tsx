@@ -34,10 +34,10 @@ export const ZodiacBadgeDisplay: React.FC = () => {
   return (
     <button
       onClick={handleZodiacClick}
-      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-cosmic-dark/60 to-emerald-500/10 p-5 text-left shadow-lg shadow-emerald-500/25 transition-transform active:scale-[0.99]"
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-violet-400/25 bg-gradient-to-br from-violet-500/30 via-cosmic-dark/60 to-violet-500/10 p-5 text-left shadow-lg shadow-violet-500/30 transition-transform active:scale-[0.99]"
     >
       <div className="flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600/70 shadow-[0_0_30px_rgba(52,211,153,0.55)]">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-violet-600/70 shadow-[0_0_30px_rgba(139,92,246,0.55)]">
           <div className="text-white">
             <ZodiacBadge size="md" />
           </div>
