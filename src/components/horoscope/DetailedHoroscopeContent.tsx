@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { DetailedHoroscope, HoroscopeTranslations } from '@/types/horoscope';
 import { ZodiacInfo } from '@/utils/zodiac';
 import { NoZodiacInfoMessage } from './sections/NoZodiacInfoMessage';
-import { HoroscopeProOverlay } from './HoroscopeProOverlay';
 import { GenerateButton } from './sections/GenerateButton';
 import { LoadingHoroscope } from './sections/LoadingHoroscope';
 import { ErrorMessage } from './sections/ErrorMessage';
@@ -54,9 +53,8 @@ export const DetailedHoroscopeContent: React.FC<
   });
 
   useEffect(() => {
-    // Auto-generate horoscope on component mount if user is PRO and has zodiac sign
+    // Auto-generate horoscope on component mount if user has zodiac sign
     if (
-      userProfile?.isPro &&
       zodiacInfo &&
       onGenerateHoroscope &&
       !horoscope &&
@@ -69,7 +67,7 @@ export const DetailedHoroscopeContent: React.FC<
       setShowGenerateButton(false);
       onGenerateHoroscope();
     }
-  }, [userProfile?.isPro, zodiacInfo, onGenerateHoroscope, horoscope, loading]);
+  }, [zodiacInfo, onGenerateHoroscope, horoscope, loading]);
 
   logger.debug('Component render state', {
     hasHoroscope: !!horoscope,
@@ -184,14 +182,7 @@ export const DetailedHoroscopeContent: React.FC<
         </div>
       )}
 
-      {/* Check if user is PRO */}
-      {!userProfile?.isPro ? (
-        <HoroscopeProOverlay
-          translations={translations}
-          language={language}
-          zodiacInfo={zodiacInfo}
-        />
-      ) : loading ? (
+      {loading ? (
         <LoadingHoroscope
           translations={translations}
           language={language}
@@ -226,7 +217,7 @@ export const DetailedHoroscopeContent: React.FC<
       )}
 
       {/* Full Horoscope Link */}
-      {userProfile?.isPro && horoscope && (
+      {horoscope && (
         <div className="mt-8 mb-4 flex justify-center">
           <Button
             onClick={goToFullHoroscope}
