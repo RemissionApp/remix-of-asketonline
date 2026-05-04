@@ -5,7 +5,7 @@ import { ProfileSection } from './ui/ProfileSection';
 import { ProfileRow } from './ui/ProfileRow';
 import { ProfileStatCard } from './ui/ProfileStatCard';
 import { useProfileLang } from './i18n';
-import { getZodiacSign, zodiacSigns } from '@/utils/zodiac';
+import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { calculateLifePathNumber, calculatePersonalityNumber, calculateDestinyMatrix } from '@/utils/numerologyUtils';
 import { useCallMinutes } from '@/hooks/useCallMinutes';
 
@@ -33,7 +33,7 @@ export const ProfileSpiritualTab: React.FC = () => {
 
   const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
   const sign = birthDate ? getZodiacSign(birthDate) : null;
-  const signData = sign ? zodiacSigns[sign] : null;
+  const signData = sign ? zodiacData[sign] : null;
   const signName = signData ? `${signData.symbol} ${signData.name[lang]}` : t.notSet;
 
   const birthStr = userProfile?.birthDate ? String(userProfile.birthDate) : null;
