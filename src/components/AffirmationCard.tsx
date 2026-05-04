@@ -91,8 +91,8 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
   };
 
   return (
-    <Card className="w-full backdrop-blur-sm bg-cosmic-dark/80 border-cosmic-accent/30 hover:border-cosmic-accent/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-cosmic-accent/20">
-      <div className="relative overflow-hidden rounded-t-lg">
+    <Card className="w-full overflow-hidden rounded-3xl backdrop-blur-md bg-cosmic-dark/40 border border-white/10 shadow-lg shadow-cosmic-accent/10 hover:border-cosmic-accent/40 transition-all duration-300">
+      <div className="relative overflow-hidden rounded-t-3xl">
         <img
           src={affirmation.image}
           alt={affirmation.text}
@@ -107,7 +107,7 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
         <button
           onClick={handleHear}
           aria-label={hearLabel}
-          className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-cosmic-dark/70 backdrop-blur px-3 py-1.5 text-xs text-white border border-cosmic-accent/40 hover:bg-cosmic-accent/30 transition"
+          className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-cosmic-dark/60 backdrop-blur-md px-3 py-1.5 text-xs text-white border border-cosmic-accent/30 hover:bg-cosmic-accent/30 transition"
         >
           {isPlaying || isGenerating ? <Square size={14} /> : <Volume2 size={14} />}
           <span className="hidden sm:inline">{hearLabel}</span>
@@ -118,7 +118,7 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
         <CollapsibleTrigger asChild>
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-center text-cosmic-accent border-t border-b border-cosmic-accent/20 rounded-none h-12"
+            className="w-full flex items-center justify-center text-cosmic-secondary hover:text-white hover:bg-cosmic-accent/10 border-t border-white/5 rounded-none h-12 text-xs"
           >
             {open ? (
               <ChevronUp className="mr-2 h-4 w-4" />
@@ -142,7 +142,7 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
         <CollapsibleContent>
           <CardContent className="pt-4">
             <div className="mb-4">
-              <h3 className="text-cosmic-accent mb-2 text-sm font-medium">
+              <h3 className="text-cosmic-gold mb-2 text-xs font-medium uppercase tracking-wider">
                 {instructionLabel}:
               </h3>
               <div className="flex flex-col md:flex-row gap-4 items-start">
@@ -150,7 +150,7 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
                   <img
                     src={affirmation.guideImage}
                     alt="Visual guide"
-                    className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg border border-cosmic-accent/30"
+                    className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl border border-white/10 shadow-lg shadow-cosmic-accent/10"
                   />
                 </div>
                 <div className="flex-1">
@@ -162,27 +162,26 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
             </div>
 
             <div>
-              <h3 className="text-cosmic-accent mb-1 text-sm font-medium">
+              <h3 className="text-cosmic-gold mb-1 text-xs font-medium uppercase tracking-wider">
                 {actionLabel}:
               </h3>
               <p className="text-white/80 text-sm">{affirmation.action}</p>
             </div>
           </CardContent>
 
-          <CardFooter className="flex justify-between pt-0 pb-4">
+          <CardFooter className="flex justify-between gap-2 pt-0 pb-4 px-4">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
+              className="rounded-2xl border border-white/10 bg-cosmic-dark/40 text-cosmic-secondary hover:text-white hover:border-cosmic-accent/30 backdrop-blur-md text-xs"
               onClick={toggleFavorite}
             >
               {favoriteText}
             </Button>
 
             <Button
-              variant="default"
               size="sm"
-              className="bg-gradient-to-r from-purple-500/80 to-indigo-500/80 hover:from-purple-500 hover:to-indigo-500"
+              className="rounded-2xl border border-cosmic-gold/40 bg-gradient-to-r from-cosmic-gold/40 to-cosmic-accent/40 backdrop-blur-md text-white shadow-[0_0_14px_rgba(232,193,108,0.3)] hover:from-cosmic-gold/50 hover:to-cosmic-accent/50 text-xs"
               onClick={() => setIsPracticeOpen(true)}
             >
               {practiceText}

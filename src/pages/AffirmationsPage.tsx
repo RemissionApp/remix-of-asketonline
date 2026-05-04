@@ -4,6 +4,7 @@ import { AffirmationCard } from '@/components/AffirmationCard';
 import { PageHeader } from '@/components/PageHeader';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
 
 // Импорт фоновых изображений
 import successBg from '@/assets/affirmation-success-bg.jpg';
@@ -87,53 +88,59 @@ const AffirmationsPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-20">
-      <StarField starCount={100} />
+    <MobileOptimizedInterface>
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+        <StarField starCount={100} />
+        <PageHeader title={affirmationsTitle} />
 
-      <PageHeader title={affirmationsTitle} />
-
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-6">
-        <div className="w-full max-w-2xl flex flex-col items-center">
-          {/* Categories filter */}
-          <div className="w-full max-w-2xl mb-6 overflow-x-auto">
-            <div className="flex space-x-2 p-1 min-w-max">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
-                    ${
-                      selectedCategory === category.id
-                        ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
-                        : 'bg-cosmic-dark/60 text-white/70 hover:bg-cosmic-dark/80'
-                    }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Affirmations */}
-          <div className="w-full max-w-2xl space-y-4">
-            <p className="text-white/80 text-center mb-8 backdrop-blur-sm bg-cosmic-dark/30 p-4 rounded-lg border border-cosmic-accent/20 max-w-2xl mx-auto">
+        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-20 max-w-lg mx-auto w-full flex flex-col gap-4">
+          {/* Intro */}
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md p-4 text-center">
+            <p className="text-xs sm:text-sm text-cosmic-secondary leading-relaxed">
               {language === 'ru'
                 ? 'Выберите аффирмацию, медитируйте над ней и повторяйте ежедневно для трансформирующего эффекта.'
                 : language === 'es'
                   ? 'Selecciona una afirmación, medita sobre ella y repítela diariamente para un efecto transformador.'
                   : 'Choose an affirmation, meditate on it, and repeat it daily for transformative effect.'}
             </p>
+          </div>
 
+          {/* Categories filter */}
+          <div className="-mx-3 px-3 overflow-x-auto">
+            <div className="flex gap-2 min-w-max">
+              {categories.map(category => {
+                const active = selectedCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all border backdrop-blur-md ${
+                      active
+                        ? 'bg-gradient-to-r from-cosmic-gold/40 to-cosmic-accent/40 text-white border-cosmic-gold/50 shadow-[0_0_14px_rgba(232,193,108,0.3)]'
+                        : 'bg-cosmic-dark/40 text-cosmic-secondary border-white/10 hover:text-white hover:border-cosmic-accent/30'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Affirmations */}
+          <div className="space-y-4">
             <AffirmationsContent
               selectedCategory={selectedCategory}
               language={language}
             />
           </div>
         </div>
-      </div>
 
-      <BottomNavigation />
-    </div>
+        <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
+          <BottomNavigation />
+        </div>
+      </div>
+    </MobileOptimizedInterface>
   );
 };
 

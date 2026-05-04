@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Phone, ChevronDown, ChevronUp, Clock } from 'lucide-react';
+import { Phone, ChevronDown, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
@@ -45,7 +45,7 @@ export const RecentCallsBlock: React.FC = () => {
       .select('id,summary,duration_seconds,emotional_tone,key_topics,called_at')
       .eq('user_id', user.id)
       .order('called_at', { ascending: false })
-      .limit(5)
+      .limit(10)
       .then(({ data }) => {
         setItems((data as any) || []);
         setLoading(false);
@@ -56,14 +56,27 @@ export const RecentCallsBlock: React.FC = () => {
     lang === 'ru' ? ru : lang === 'es' ? es : en;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md shadow-lg shadow-cosmic-accent/10 p-4">
-      <header className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo flex items-center justify-center">
-          <Phone size={14} className="text-white" />
+    <section className="rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/20 backdrop-blur-md shadow-lg shadow-cosmic-accent/20 p-4">
+      <header className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo flex items-center justify-center shadow-[0_0_18px_rgba(139,92,246,0.45)]">
+            <Phone size={14} className="text-white" />
+          </div>
+          <div>
+            <h3 className="font-serif text-sm text-white leading-tight">
+              {tr('Последние разговоры', 'Recent calls', 'Llamadas recientes')}
+            </h3>
+            {items.length > 0 && (
+              <p className="text-[10px] text-cosmic-secondary mt-0.5">
+                {items.length} {tr(
+                  items.length === 1 ? 'запись' : 'записей',
+                  items.length === 1 ? 'entry' : 'entries',
+                  items.length === 1 ? 'entrada' : 'entradas'
+                )}
+              </p>
+            )}
+          </div>
         </div>
-        <h3 className={cn('font-serif text-sm text-white', lang === 'en' && 'font-serif')}>
-          {tr('Последние разговоры', 'Recent calls', 'Llamadas recientes')}
-        </h3>
       </header>
 
       {loading ? (
@@ -82,20 +95,27 @@ export const RecentCallsBlock: React.FC = () => {
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {items.map(c => {
             const open = openId === c.id;
+            const title =
+              (c.summary || '').split('\n')[0].slice(0, 80) ||
+              tr('Без названия', 'Untitled', 'Sin título');
             return (
-              <li key={c.id} className="rounded-2xl border border-white/5 bg-cosmic-dark/40">
+              <li
+                key={c.id}
+                className={cn(
+                  'rounded-2xl border border-white/10 bg-cosmic-dark/30 backdrop-blur-sm transition-colors',
+                  open && 'border-cosmic-accent/40 bg-cosmic-dark/50'
+                )}
+              >
                 <button
                   onClick={() => setOpenId(open ? null : c.id)}
-                  className="w-full text-left p-3 flex items-start gap-2"
+                  className="w-full text-left px-3 py-2.5 flex items-center gap-3"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-white/90 line-clamp-2">
-                      {c.summary || tr('Без названия', 'Untitled', 'Sin título')}
-                    </p>
-                    <div className="flex items-center gap-2 text-[10px] text-cosmic-secondary mt-1">
+                    <p className="text-xs text-white/95 truncate font-medium">{title}</p>
+                    <div className="flex items-center gap-2 text-[10px] text-cosmic-secondary mt-0.5">
                       <span>{formatRel(c.called_at, lang)}</span>
                       {c.duration_seconds ? (
                         <span className="flex items-center gap-0.5">
@@ -104,15 +124,27 @@ export const RecentCallsBlock: React.FC = () => {
                       ) : null}
                     </div>
                   </div>
-                  {open ? <ChevronUp size={14} className="text-cosmic-secondary mt-1" /> : <ChevronDown size={14} className="text-cosmic-secondary mt-1" />}
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 items-center justify-center rounded-full bg-cosmic-accent/15 text-cosmic-accent transition-transform',
+                      open && 'rotate-180'
+                    )}
+                  >
+                    <ChevronDown size={13} />
+                  </span>
                 </button>
-                {open && (
-                  <div className="px-3 pb-3 border-t border-white/5 pt-2">
-                    <p className="text-xs text-cosmic-secondary whitespace-pre-line">{c.summary}</p>
+                {open && c.summary && (
+                  <div className="px-3 pb-3 pt-1 border-t border-white/5">
+                    <p className="text-xs text-cosmic-secondary/90 whitespace-pre-line leading-relaxed">
+                      {c.summary}
+                    </p>
                     {c.key_topics && c.key_topics.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {c.key_topics.map((k, i) => (
-                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-cosmic-accent/15 text-cosmic-accent border border-cosmic-accent/25">
+                          <span
+                            key={i}
+                            className="text-[10px] px-2 py-0.5 rounded-full bg-cosmic-accent/15 text-cosmic-accent border border-cosmic-accent/25"
+                          >
                             {k}
                           </span>
                         ))}
