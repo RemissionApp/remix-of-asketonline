@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Volume2, Square } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,6 +16,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { AffirmationPracticeModal } from './AffirmationPracticeModal';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface Affirmation {
   id: number;
@@ -40,6 +42,18 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
   const [favorite, setFavorite] = useState(false);
   const [isPracticeOpen, setIsPracticeOpen] = useState(false);
   const { userProfile } = useAppStore();
+  const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
+  const { t } = useTranslations();
+  const hearLabel = (t as any).lyra?.hearFromGuide ||
+    (language === 'ru' ? 'Услышать от Вселенной' : language === 'es' ? 'Escuchar de Lyra' : 'Hear from Lyra');
+
+  const handleHear = () => {
+    if (isPlaying || isGenerating) {
+      stopSpeech();
+      return;
+    }
+    void generateAndPlaySpeech(affirmation.text, { voice: 'Custom', model: 'eleven_multilingual_v2' });
+  };
 
   const instructionLabel =
     language === 'ru'
@@ -90,6 +104,14 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
             {affirmation.text}
           </CardTitle>
         </div>
+        <button
+          onClick={handleHear}
+          aria-label={hearLabel}
+          className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-cosmic-dark/70 backdrop-blur px-3 py-1.5 text-xs text-white border border-cosmic-accent/40 hover:bg-cosmic-accent/30 transition"
+        >
+          {isPlaying || isGenerating ? <Square size={14} /> : <Volume2 size={14} />}
+          <span className="hidden sm:inline">{hearLabel}</span>
+        </button>
       </div>
 
       <Collapsible open={open} onOpenChange={setOpen}>
