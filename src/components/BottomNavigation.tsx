@@ -44,15 +44,15 @@ export const BottomNavigation = memo(() => {
       className="fixed left-0 right-0 z-[100] w-full pointer-events-none"
       style={{
         bottom: isAndroid()
-          ? 'calc(env(safe-area-inset-bottom) + 0.4rem)'
-          : 'calc(env(safe-area-inset-bottom) + 0.1rem)',
+          ? 'calc(env(safe-area-inset-bottom) + 1rem)'
+          : 'calc(env(safe-area-inset-bottom) + 0.6rem)',
         paddingLeft: 'calc(env(safe-area-inset-left) + 0.6rem)',
         paddingRight: 'calc(env(safe-area-inset-right) + 0.6rem)',
       }}
     >
       <div className="flex justify-center pointer-events-auto">
         <div className="w-full max-w-3xl mx-auto">
-          <div className="glass-strong glass-shimmer relative rounded-3xl flex justify-around items-center py-1.5 px-1 overflow-hidden">
+          <div className="glass-strong glass-shimmer relative rounded-3xl flex justify-around items-center py-1 px-1 overflow-hidden">
             {items.map(item => (
               <NavItem
                 key={item.path}
@@ -82,7 +82,7 @@ const NavItem: React.FC<NavItemProps> = ({ active, onClick, icon, label }) => (
     className="relative flex flex-col items-center justify-center px-2 py-1 transition-all duration-300 group"
   >
     <span
-      className={`relative flex items-center justify-center w-9 h-9 rounded-full transition-all duration-300 ${
+      className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
         active
           ? 'bg-gradient-to-br from-cosmic-accent/45 to-cosmic-indigo/35 border border-white/25 shadow-[0_0_18px_rgba(139,92,246,0.55)]'
           : 'border border-transparent group-hover:bg-white/5'
