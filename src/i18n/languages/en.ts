@@ -104,6 +104,8 @@ export const enTranslations: Translations = {
       universeChat: 'Chat',
       profile: 'Profile',
     },
+    failed: 'Broken',
+    completed: 'Completed',
   },
   pactOath: {
     title: 'Contract with the Universe',
