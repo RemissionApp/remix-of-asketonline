@@ -61,14 +61,6 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   return (
     <div className="w-full animate-fade-in">
-      <h2 className="text-2xl font-cormorant font-medium text-white mb-6 text-center">
-        {language === 'ru'
-          ? 'Подробно опиши свою проблему Вселенной'
-          : language === 'es'
-            ? 'Describe detalladamente tu problema al Universo'
-            : 'Describe your problem to the Universe in detail'}
-      </h2>
-
       <div className="relative">
         <textarea
           value={question}
@@ -80,7 +72,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
                 ? 'Describe tu situación en detalle (mínimo 100 caracteres)...'
                 : 'Describe your situation in detail (minimum 100 characters)...'
           }
-          className="cosmic-input font-inter w-full h-40 resize-none mb-2 pr-12"
+          className="w-full h-40 resize-none mb-2 pr-12 rounded-2xl bg-cosmic-dark/40 border border-cosmic-accent/20 text-white text-sm p-3 placeholder:text-cosmic-secondary/60 focus:outline-none focus:border-cosmic-accent/50"
         />
         
         {/* Voice Input Button */}
