@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, ScrollText, FileText, X, Trophy, AlertCircle } from 'lucide-react';
+import { Plus, ScrollText, FileText, X, Trophy, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { StarField } from '@/components/StarField';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { BreakAscesisDialog } from '@/components/BreakAscesisDialog';
 import type { Pact } from '@/types';
@@ -238,6 +239,18 @@ const PactsPage: React.FC = () => {
                 {oathPact && getOathText(oathPact, userProfile?.name || '', language)}
               </p>
             </div>
+            <DialogFooter className="flex-col gap-2 sm:flex-col">
+              <div className="w-full flex items-center justify-center gap-2 rounded-2xl border border-green-500/40 bg-green-500/15 py-3 text-sm font-medium text-green-300">
+                <CheckCircle2 size={16} />
+                {tr('Подписана', 'Signed', 'Firmada')}
+              </div>
+              <button
+                onClick={() => setOathPact(null)}
+                className="w-full rounded-2xl border border-white/10 bg-cosmic-dark/40 py-2 text-xs text-cosmic-secondary hover:text-white hover:border-cosmic-accent/40 transition-colors"
+              >
+                {tr('Закрыть', 'Close', 'Cerrar')}
+              </button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 
