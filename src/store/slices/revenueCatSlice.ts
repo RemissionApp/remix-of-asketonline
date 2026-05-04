@@ -98,58 +98,10 @@ export const useRevenueCatStore = create<RevenueCatState>()(
         const { updateProStatus } = useAppStore.getState();
         updateProStatus(hasActive);
 
-        // Best-effort upsert into public.subscriptions so the DB stays in sync
-        // even if the RevenueCat webhook is delayed. Webhook is still source of truth.
-        (async () => {
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user?.id) return;
-
-            // Pick the active entitlement (pro/premium/asket_premium_*)
-            const active = customerInfo?.entitlements?.active ?? {};
-            const ent = Object.values(active)[0] as any | undefined;
-            const productId = ent?.productIdentifier
-              ?? customerInfo?.activeSubscriptions?.[0]
-              ?? null;
-            const expiresAt = ent?.expirationDate ?? null;
-
-            const platform = Capacitor.getPlatform();
-            const status = hasActive
-              ? (ent?.willRenew === false ? 'canceled' : 'active')
-              : 'canceled';
-
-            const { data: existing } = await supabase
-              .from('subscriptions')
-              .select('id')
-              .eq('user_id', user.id)
-              .maybeSingle();
-
-            const row: any = {
-              user_id: user.id,
-              is_pro: hasActive,
-              status,
-              product_id: productId,
-              revenuecat_user_id: customerInfo?.originalAppUserId ?? null,
-              platform,
-              subscription_end: expiresAt,
-            };
-
-            if (existing?.id) {
-              await supabase.from('subscriptions').update(row).eq('id', existing.id);
-            } else {
-              await supabase.from('subscriptions').insert(row);
-            }
-
-            if (hasActive) {
-              await supabase
-                .from('profiles')
-                .update({ payment_method_attached: true })
-                .eq('id', user.id);
-            }
-          } catch (e) {
-            console.warn('subscriptions DB sync skipped:', e);
-          }
-        })();
+        // NOTE: Subscriptions are now written exclusively by the
+        // `revenuecat-webhook` edge function (service role). Client must
+        // never write to public.subscriptions — RLS now blocks it and the
+        // webhook is the single source of truth.
       },
 
       // Initialize RevenueCat
