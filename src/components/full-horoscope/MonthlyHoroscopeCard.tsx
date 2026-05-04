@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Sparkles, CalendarDays, Loader2, Heart, Briefcase, Leaf, Star } from 'lucide-react';
+import { CalendarDays, Loader2, Heart, Briefcase, Leaf, Star } from 'lucide-react';
 import { ZodiacSign } from '@/utils/zodiac';
+import { useAppStore } from '@/store/useAppStore';
 
 interface MonthlyHoroscopeData {
   generalForecast: string;
@@ -21,99 +20,62 @@ interface MonthlyHoroscopeCardProps {
 }
 
 export const MonthlyHoroscopeCard: React.FC<MonthlyHoroscopeCardProps> = ({
-  zodiacSign,
   horoscope,
   loading,
   onGenerate,
   uiText,
 }) => {
-  const currentMonth = new Date().toLocaleDateString('ru-RU', {
-    month: 'long',
-    year: 'numeric'
-  });
+  const { language } = useAppStore();
+  const locale = language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US';
+  const currentMonth = new Date().toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 
-  const sections = horoscope ? [
-    {
-      title: uiText.generalForecast,
-      content: horoscope.generalForecast,
-      icon: Star,
-    },
-    {
-      title: uiText.careerFinance,
-      content: horoscope.careerFinance,
-      icon: Briefcase,
-    },
-    {
-      title: uiText.loveRelationships,
-      content: horoscope.loveRelationships,
-      icon: Heart,
-    },
-    {
-      title: uiText.healthWellbeing,
-      content: horoscope.healthWellbeing,
-      icon: Leaf,
-    },
-  ] : [];
+  const sections = horoscope
+    ? [
+        { title: uiText.generalForecast, content: horoscope.generalForecast, icon: Star },
+        { title: uiText.careerFinance, content: horoscope.careerFinance, icon: Briefcase },
+        { title: uiText.loveRelationships, content: horoscope.loveRelationships, icon: Heart },
+        { title: uiText.healthWellbeing, content: horoscope.healthWellbeing, icon: Leaf },
+      ]
+    : [];
 
   return (
-    <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
-          <CalendarDays className="h-5 w-5" />
-          {uiText.monthlyTitle} ({currentMonth})
-        </CardTitle>
-        <CardDescription className="text-white/80">
-          {uiText.monthlyDescription}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!horoscope && !loading && (
-          <Button
-            onClick={onGenerate}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-            disabled={loading}
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            {uiText.generateMonthlyButton}
-          </Button>
-        )}
-
-        {loading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center space-y-2">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-300" />
-              <p className="text-white/80">{uiText.loadingMonthly}</p>
-            </div>
+    <button
+      onClick={onGenerate}
+      disabled={loading}
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-deep-blue/30 bg-gradient-to-br from-cosmic-deep-blue/40 via-cosmic-dark/60 to-cosmic-deep-blue/15 p-4 text-left shadow-lg shadow-cosmic-deep-blue/35 transition-transform active:scale-[0.99] disabled:active:scale-100"
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-deep-blue to-cosmic-indigo/70 shadow-[0_0_24px_rgba(56,189,248,0.5)]">
+          {loading ? (
+            <Loader2 className="h-6 w-6 text-white animate-spin" />
+          ) : (
+            <CalendarDays className="h-6 w-6 text-white" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>
+            {uiText.monthlyTitle}
           </div>
-        )}
+          <div className="mt-0.5 text-[11px] text-cosmic-secondary">{currentMonth}</div>
+        </div>
+      </div>
 
-        {horoscope && (
-          <div className="space-y-4">
-            {sections.map((section, index) => {
-              const IconComponent = section.icon;
-              return (
-                <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <IconComponent className="h-4 w-4 text-blue-300" />
-                    <h4 className="font-medium text-white">{section.title}</h4>
-                  </div>
-                  <p className="text-white/90 text-sm leading-relaxed">
-                    {section.content}
-                  </p>
+      {horoscope && (
+        <div className="mt-3 space-y-2">
+          {sections.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-2.5">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Icon className="h-3.5 w-3.5 text-cosmic-deep-blue" />
+                  <h4 className="text-xs font-medium text-white">{s.title}</h4>
                 </div>
-              );
-            })}
-            <Button
-              onClick={onGenerate}
-              variant="outline"
-              className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10"
-              disabled={loading}
-            >
-              {uiText.regenerateButton}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                <p className="text-[11px] text-white/85 leading-relaxed text-justify">{s.content}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </button>
   );
 };
