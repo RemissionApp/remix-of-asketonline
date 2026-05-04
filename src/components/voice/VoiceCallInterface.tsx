@@ -20,7 +20,7 @@ export const VoiceCallInterface: React.FC = () => {
   const navigate = useNavigate();
   const [callDuration, setCallDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const { minutesLeft, limitReached, addMinutes } = useCallMinutes();
+  const { minutesLeft, limitReached, addMinutes, refresh: refreshMinutes } = useCallMinutes();
 
   const {
     startConversation,
@@ -31,18 +31,50 @@ export const VoiceCallInterface: React.FC = () => {
     lastUserMessage,
   } = useElevenLabsConversation();
 
-  // Simulate call duration
+  // Tick call duration; auto-hangup at minute boundary if limit reached
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isConnected) {
       interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration(prev => {
+          const next = prev + 1;
+          // Every 30s, persist accrued minutes and re-check limit
+          if (next > 0 && next % 30 === 0) {
+            void (async () => {
+              try {
+                await addMinutes(30);
+                await refreshMinutes();
+              } catch (_) {}
+            })();
+          }
+          return next;
+        });
       }, 1000);
     } else {
       setCallDuration(0);
     }
     return () => clearInterval(interval);
-  }, [isConnected]);
+  }, [isConnected, addMinutes, refreshMinutes]);
+
+  // Force hangup when monthly limit reached during a live call
+  useEffect(() => {
+    if (isConnected && limitReached) {
+      void endConversation();
+    }
+  }, [isConnected, limitReached, endConversation]);
+
+  // Persist remaining seconds on tab close
+  useEffect(() => {
+    const handler = () => {
+      const accrued = callDuration % 30;
+      if (isConnected && accrued > 0) {
+        // Best effort; may not complete on unload
+        void addMinutes(accrued);
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isConnected, callDuration, addMinutes]);
 
   const handleStartCall = async () => {
     setIsLoading(true);
@@ -85,8 +117,10 @@ export const VoiceCallInterface: React.FC = () => {
   const handleEndCall = async () => {
     try {
       await endConversation();
-      if (callDuration > 0) {
-        await addMinutes(callDuration);
+      // Add only the trailing seconds not yet posted by the 30s tick
+      const trailing = callDuration % 30;
+      if (trailing > 0) {
+        await addMinutes(trailing);
       }
       setCallDuration(0);
     } catch (error) {
