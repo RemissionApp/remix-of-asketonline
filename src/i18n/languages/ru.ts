@@ -58,7 +58,7 @@ export const ruTranslations: Translations = {
     invalidCode: 'Неверный код',
     checkCodeCorrectness: 'Проверьте правильность введенного кода',
     emailVerifiedSuccess: 'Ваш email успешно подтвержден',
-    welcomeToAsceta: 'Добро пожаловать в Аскет!',
+    welcomeToAsceta: 'Добро пожаловать в Асцета!',
     emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
     verificationError: 'Произошла ошибка при проверке кода',
     // Voice greeting
@@ -541,14 +541,14 @@ export const ruTranslations: Translations = {
     protection: 'Защита',
   },
   emailOtp: {
-    subject: 'Ваш код подтверждения | Аскет',
+    subject: 'Ваш код подтверждения | Асцета',
     title: 'Код подтверждения',
     subtitle: 'Духовное развитие и самопознание',
     codeLabel: 'Ваш код подтверждения',
     validTime: 'Код действителен 5 минут',
     instructionsTitle: 'Инструкции',
-    instructions: 'Введите этот код в приложении Аскет для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
-    footerNote: 'Если вы не регистрировались в Аскет, проигнорируйте это письмо.',
+    instructions: 'Введите этот код в приложении Асцета для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
+    footerNote: 'Если вы не регистрировались в Асцета, проигнорируйте это письмо.',
   },
   notFound: {
     title: '404',
