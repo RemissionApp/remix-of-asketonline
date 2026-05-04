@@ -100,7 +100,7 @@ const PactsPage: React.FC = () => {
     return (
       <div
         key={pact.id}
-        className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 shadow-lg shadow-cosmic-accent/10 backdrop-blur-md p-4 sm:p-5"
+        className="rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/30 shadow-lg shadow-cosmic-accent/30 backdrop-blur-md p-4 sm:p-5"
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="min-w-0 flex-1">
