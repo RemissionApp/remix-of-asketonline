@@ -3,7 +3,7 @@ import { ruLegalTranslations } from './ru-legal';
 
 export const ruTranslations: Translations = {
   welcome: {
-    title: 'Аскет',
+    title: 'Асцета',
     description: 'Платформа для духовного роста через аскезу',
     startButton: 'Начать',
     subtitle: 'Ваш путь к духовной силе',
@@ -58,11 +58,11 @@ export const ruTranslations: Translations = {
     invalidCode: 'Неверный код',
     checkCodeCorrectness: 'Проверьте правильность введенного кода',
     emailVerifiedSuccess: 'Ваш email успешно подтвержден',
-    welcomeToAsket: 'Добро пожаловать в Аскет!',
+    welcomeToAsceta: 'Добро пожаловать в Аскет!',
     emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
     verificationError: 'Произошла ошибка при проверке кода',
     // Voice greeting
-    voiceGreeting: 'Приветствую тебя в Asket',
+    voiceGreeting: 'Приветствую тебя в Asceta',
     clickForAudio: 'Нажмите для активации звука',
     stop: 'Остановить',
     playGreeting: 'Воспроизвести приветствие',
@@ -148,7 +148,7 @@ export const ruTranslations: Translations = {
     nextButton: 'Далее',
   },
   onboarding: {
-    title: 'Добро пожаловать в Asket',
+    title: 'Добро пожаловать в Asceta',
     description:
       'Ваш проводник к осознанной жизни через духовные практики и аскезу',
     goal1: 'Достичь внутренней гармонии',
@@ -565,8 +565,8 @@ export const ruTranslations: Translations = {
     shareButton: 'Поделиться',
     newPactButton: 'Новая аскеза',
     closeButton: 'Продолжить',
-    shareTitle: 'Завершил аскезу в Asket!',
-    shareText: 'Я завершил аскезу "{title}" длительностью {days} дней и получил {energy} энергии! Присоединяйтесь к духовному развитию в Asket.',
+    shareTitle: 'Завершил аскезу в Asceta!',
+    shareText: 'Я завершил аскезу "{title}" длительностью {days} дней и получил {energy} энергии! Присоединяйтесь к духовному развитию в Asceta.',
   },
   
   missions: {
