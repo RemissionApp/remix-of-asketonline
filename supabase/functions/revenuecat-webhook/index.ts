@@ -31,6 +31,13 @@ const REVOKE_STATUSES = new Set([
   'REFUND',
 ]);
 
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return mismatch === 0;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -38,7 +45,7 @@ Deno.serve(async (req) => {
 
   // Verify shared-secret Authorization header
   const auth = req.headers.get('authorization') || '';
-  if (!WEBHOOK_AUTH || auth !== WEBHOOK_AUTH) {
+  if (!WEBHOOK_AUTH || !timingSafeEqual(auth, WEBHOOK_AUTH)) {
     console.warn('[revenuecat-webhook] unauthorized', { has: !!auth });
     return new Response(JSON.stringify({ error: 'unauthorized' }), {
       status: 401,
@@ -74,6 +81,22 @@ Deno.serve(async (req) => {
     auth: { persistSession: false },
   });
 
+  // Idempotency: skip if we have already processed this event id
+  const eventId: string | undefined = event.id;
+  if (eventId) {
+    const { data: existingEvent } = await supabase
+      .from('revenuecat_events')
+      .select('event_id')
+      .eq('event_id', eventId)
+      .maybeSingle();
+    if (existingEvent) {
+      console.log('[revenuecat-webhook] duplicate event ignored', eventId);
+      return new Response(JSON.stringify({ ok: true, duplicate: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
   // app_user_id is the Supabase user id (we pass it to RC.configure)
   const userId: string | undefined =
     event.app_user_id || event.original_app_user_id;
@@ -107,9 +130,28 @@ Deno.serve(async (req) => {
   // Find existing subscription row
   const { data: existing } = await supabase
     .from('subscriptions')
-    .select('id')
+    .select('id, subscription_end')
     .eq('user_id', userId)
     .maybeSingle();
+
+  // Out-of-order protection: ignore stale event whose timestamp is older
+  // than the currently stored subscription_end (e.g. delayed EXPIRATION
+  // arriving after a fresh RENEWAL).
+  const eventTsMs: number | undefined = event.event_timestamp_ms ?? event.purchased_at_ms;
+  if (existing?.subscription_end && eventTsMs) {
+    const currentEndMs = new Date(existing.subscription_end).getTime();
+    if (eventTsMs < currentEndMs && (event.type === 'EXPIRATION' || event.type === 'CANCELLATION')) {
+      console.log('[revenuecat-webhook] stale event ignored', { eventTsMs, currentEndMs });
+      if (eventId) {
+        await supabase.from('revenuecat_events').insert({
+          event_id: eventId, user_id: userId, type: event.type, event_timestamp_ms: eventTsMs,
+        });
+      }
+      return new Response(JSON.stringify({ ok: true, stale: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
 
   const row = {
     user_id: userId,
@@ -143,6 +185,16 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: upsertErr.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Record processed event
+  if (eventId) {
+    await supabase.from('revenuecat_events').insert({
+      event_id: eventId,
+      user_id: userId,
+      type: event.type,
+      event_timestamp_ms: eventTsMs ?? null,
     });
   }
 
