@@ -141,6 +141,40 @@ const NumerologyPage = () => {
           </p>
         </div>
 
+        {/* Core numbers summary (moved from main screen) */}
+        {userProfile?.birthDate && (
+          <Card className="bg-cosmic-dark/50 border-cosmic-accent/20 mb-6">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-full bg-cosmic-accent/20 flex items-center justify-center mb-2 font-serif text-xl text-cosmic-accent">
+                    {numerologyData.lifePathNumber}
+                  </div>
+                  <p className="text-cosmic-secondary text-xs text-center">
+                    {language === 'ru' ? 'Путь жизни' : language === 'es' ? 'Sendero de vida' : 'Life Path'}
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-full bg-cosmic-accent/20 flex items-center justify-center mb-2 font-serif text-xl text-cosmic-accent">
+                    {numerologyData.expressionNumber}
+                  </div>
+                  <p className="text-cosmic-secondary text-xs text-center">
+                    {language === 'ru' ? 'Число выражения' : language === 'es' ? 'Número de expresión' : 'Expression'}
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-full bg-cosmic-accent/20 flex items-center justify-center mb-2 font-serif text-xl text-cosmic-accent">
+                    {numerologyData.personalityNumber}
+                  </div>
+                  <p className="text-cosmic-secondary text-xs text-center">
+                    {language === 'ru' ? 'Число личности' : language === 'es' ? 'Número de personalidad' : 'Personality'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
           <div className="bg-cosmic-dark/80 backdrop-blur-sm rounded-lg p-1 border border-cosmic-accent/30">
