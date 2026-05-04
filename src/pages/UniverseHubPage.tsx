@@ -7,7 +7,7 @@ import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterfa
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppStore } from '@/store/useAppStore';
 
-const titles = { ru: 'Вселенная', en: 'Universe', es: 'Universo' };
+const titles = { ru: 'Вселенная', en: 'Lyra', es: 'Lyra' };
 
 const UniverseHubPage: React.FC = () => {
   const navigate = useNavigate();

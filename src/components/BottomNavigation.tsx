@@ -25,7 +25,7 @@ export const BottomNavigation = memo(() => {
     {
       path: '/universe-hub',
       icon: <Sparkles size={20} />,
-      label: tr('Вселенная', 'Universe', 'Universo'),
+      label: tr('Вселенная', 'Lyra', 'Lyra'),
     },
     {
       path: '/cosmos',

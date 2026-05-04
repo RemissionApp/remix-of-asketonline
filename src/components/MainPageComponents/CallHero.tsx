@@ -31,7 +31,7 @@ export const CallHero: React.FC = () => {
           <Phone className="relative h-7 w-7 text-white" />
         </div>
         <div className="flex-1">
-          <div className="text-base font-semibold text-white">{title}</div>
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{title}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
           <div className="mt-1 text-[11px] text-white/60">{minutes}</div>
         </div>

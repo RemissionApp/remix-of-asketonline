@@ -23,7 +23,7 @@ export const DailyAdviceDisplay: React.FC = () => {
           <LightbulbIcon size={28} className="relative text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">{title}</div>
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{title}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
         </div>
       </div>
@@ -31,7 +31,7 @@ export const DailyAdviceDisplay: React.FC = () => {
         {isLoading ? (
           <Skeleton className="h-14 w-full rounded-2xl bg-cosmic-accent/10" />
         ) : (
-          <p className="text-sm leading-relaxed text-white/90">{dailyAdvice}</p>
+          <p className="text-sm leading-relaxed text-white/90 text-justify">{dailyAdvice}</p>
         )}
       </div>
     </div>
