@@ -23,10 +23,10 @@ export const NumerologyDisplay: React.FC = () => {
   return (
     <button
       onClick={() => navigate('/numerology')}
-      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 text-left shadow-lg shadow-cosmic-accent/10 transition-transform active:scale-[0.99]"
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-gold/25 bg-gradient-to-br from-cosmic-gold/25 via-cosmic-dark/60 to-cosmic-gold/10 p-5 text-left shadow-lg shadow-cosmic-gold/30 transition-transform active:scale-[0.99]"
     >
       <div className="flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-gold to-cosmic-gold/60 shadow-[0_0_30px_rgba(232,193,108,0.55)]">
           <Calculator size={26} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
