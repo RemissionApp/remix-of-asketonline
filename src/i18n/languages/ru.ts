@@ -101,6 +101,7 @@ export const ruTranslations: Translations = {
       path: 'Путь',
       ascesis: 'Аскеза',
       universe: 'Вселенная',
+      universeChat: 'Чат',
       profile: 'Профиль',
     },
     failed: 'Прервана',
