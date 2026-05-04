@@ -62,11 +62,7 @@ export const ZodiacBadgeDisplay: React.FC = () => {
         </div>
         <div className="flex-1 min-w-0">
           <div className="mb-3">
-            <h3
-              className={`text-base sm:text-xl font-medium text-white ${
-                language === 'en' ? 'font-serif' : 'font-display'
-              }`}
-            >
+            <h3 className="text-base font-semibold text-white">
               {language === 'ru'
                 ? 'Гороскоп'
                 : language === 'es'

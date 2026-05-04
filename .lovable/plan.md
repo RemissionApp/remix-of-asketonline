@@ -1,102 +1,57 @@
-## План изменений
 
-### 1. Перестроить порядок блоков на главном экране
-В `MainContent.tsx` поменять последовательность секций на:
-1. Аскезы
-2. Позвонить Вселенной
-3. Совет дня
-4. Задать вопрос Вселенной
-5. Гороскоп
-6. Аффирмации
-7. Нумерология
-8. Космические миссии
-9. Уровень
+## Цель
+Привести все блоки главного экрана к единому стилю, как у "Позвонить Вселенной" (`CallHero`): шрифты `text-base font-semibold` для заголовка, `text-xs text-cosmic-secondary` для подзаголовка, без отдельных кнопок — весь блок кликабелен.
 
-При этом приветственный блок оставлю сверху, если он не конфликтует с композицией экрана.
+## Изменения по блокам
 
-### 2. Привести “Совет дня” к стилю блока звонка
-В `DailyAdviceDisplay.tsx` переделать карточку под тот же glassmorphism-паттерн, что и у `CallHero`:
-- полупрозрачный градиентный фон
-- мягкая рамка и свечение
-- аккуратная иконка слева
-- прозрачная CTA-кнопка внутри блока
-- типографика и отступы в том же визуальном ритме
+### 1. `DailyAdviceDisplay.tsx` — Совет дня
+- Убрать декоративную иконку `Sparkles` (фоновая звезда за лампочкой) — оставить только `LightbulbIcon`.
+- Убрать кнопку "Принять совет" (`Button` с `action`).
+- Текст совета вывести на полную ширину блока (вынести `<p>{dailyAdvice}</p>` ниже основной строки `flex`, в отдельный блок под header'ом).
+- Шрифты заголовка/подзаголовка привести к `text-base font-semibold text-white` + `text-xs text-cosmic-secondary` (как в CallHero).
 
-### 3. Привести “Задать вопрос Вселенной” к тому же стилю
-Вместо текущего более сложного блока с двумя действиями в `UniverseMessageBlock.tsx` сделать основной акцент на одном действии — “Задать вопрос Вселенной” — в таком же glassmorphism-стиле, как `CallHero`.
+### 2. `UniverseMessageBlock.tsx` — Задать вопрос Вселенной
+- Убрать кнопку "Задать вопрос Вселенной" (`Button`).
+- Корневой `<div>` заменить на `<button onClick={handleQuestionClick}>` — весь блок становится кликабельным (по аналогии с `CallHero`).
+- Шрифты уже совпадают с CallHero — оставить.
 
-Технически:
-- сохранить переход на `/universe`
-- убрать визуальную конкуренцию с кнопкой звонка
-- оставить единый визуальный язык: иконка, заголовок, подзаголовок, прозрачная кнопка/поверхность
+### 3. `ZodiacBadgeDisplay.tsx` — Гороскоп
+- Заголовок: убрать `text-base sm:text-xl font-medium` + условный `font-serif/font-display`. Заменить на `text-base font-semibold text-white` (как в CallHero).
+- Внутрь блока с `<ZodiacInfo />` (вверху, над контентом) добавить компактную полоску с детальными данными знака (Телец, даты, стихия, управитель, характеристики) — то есть `ZodiacInfo` уже это содержит, нужно убедиться, что он отображается **внутри** карточки `rounded-2xl border border-white/10 bg-white/5` — это уже так.
+- Главное: убрать дублирующее отображение детальных данных знака зодиака снаружи карточки (если такое есть на `/main` — проверить родителя). В текущем `ZodiacBadgeDisplay` дубля нет; данные уже только внутри `ZodiacInfo`. Действие: сохраняем структуру, но унифицируем шрифты.
 
-### 4. Унифицировать остальные главные карточки под glassmorphism
-Обновить стили блоков:
-- `ZodiacBadgeDisplay.tsx`
-- `AffirmationsBlock.tsx`
-- `NumerologyDisplay.tsx`
-- `CosmicMissionsEntryPoint.tsx`
-- `UserLevelDisplay.tsx`
+### 4. `AffirmationsBlock.tsx` — Аффирмации
+- Иконку `TextCursor` заменить на более подходящую, например `Heart` или `Quote` из `lucide-react` (выбрать `Quote`).
+- Убрать `CosmicButton "Открыть аффирмации"`.
+- Корневой `<div>` → `<button onClick={handleAffirmationsClick}>` (весь блок кликабельный).
+- Заголовок: `text-base font-semibold text-white` (убрать `font-serif/font-display`, `sm:text-xl`).
+- Подпись: `text-xs text-cosmic-secondary`.
 
-Что изменю:
-- общий полупрозрачный фон
-- одинаковая глубина blur/бордера/свечения
-- согласованные внутренние отступы
-- единый стиль заголовков, подписи и CTA
-- убрать визуально “тяжёлые” отличия между блоками
+### 5. `NumerologyDisplay.tsx` + `NumerologyContent.tsx` — Нумерология
+- Шрифты заголовка к стилю CallHero (`text-base font-semibold text-white`, без `font-serif/font-display`).
+- В `NumerologyContent`: убрать кнопку "Подробнее" (`button` с `Star`), убрать дублирующий блок описания внизу.
+- Корневой `<div>` блока сделать `<button onClick={() => navigate('/numerology')}>` — весь блок кликабельный.
+- Внутренние данные (Путь жизни, Число выражения, Число личности) уже находятся внутри карточки — структура верная.
 
-### 5. Убрать trial/PRO-блокировки с нужных экранов
-Так как у вас сейчас режим trial и все функции должны быть открыты, сниму блокировки с экранов и entry-point’ов, которые сейчас завязаны на PRO:
-- гороскоп
-- аффирмации
-- нумерология
-- космические миссии
-- уровень
-- вопрос/диалог со Вселенной, если где-то есть обёртки-гейты
+### 6. `CosmicMissionsEntryPoint.tsx` — Космические миссии
+- Убрать `CosmicButton "Открыть миссии"`.
+- Корневой `<div>` → `<button onClick={handleViewMissions}>`.
+- Заголовок: `text-base font-semibold text-white` (убрать `font-serif/font-display`, `sm:text-xl`).
+- Подпись: `text-xs text-cosmic-secondary`.
 
-По коду это затрагивает как минимум:
-- `ZodiacBadgeDisplay.tsx`
-- `NumerologyDisplay.tsx`
-- `NumerologyPage.tsx`
-- `UniverseChatProWrapper.tsx`
-- связанные overlay/guard-проверки в horoscope/numerology flow
+## Единый стиль (как CallHero)
+- Корень: `<button>` с `group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br ... p-5 text-left shadow-lg transition-transform active:scale-[0.99]`.
+- Заголовок: `text-base font-semibold text-white`.
+- Подзаголовок: `text-xs text-cosmic-secondary`.
+- Иконка: круг 64×64 с градиентом и shadow.
 
-### 6. Сохранить только визуальные и доступовые изменения
-Логику данных и навигацию не меняю. Изменения будут в двух типах:
-- визуальная консолидация компонентов
-- снятие paywall/PRO-overlay для trial-режима
-
-## Технические детали
-
-### Файлы, которые почти наверняка будут изменены
-- `src/components/MainPageComponents/MainContent.tsx`
-- `src/components/MainPageComponents/CallHero.tsx`
+## Файлы к изменению
 - `src/components/DailyAdviceDisplay.tsx`
 - `src/components/universe/UniverseMessageBlock.tsx`
 - `src/components/ZodiacBadgeDisplay.tsx`
-- `src/components/NumerologyDisplay.tsx`
 - `src/components/MainPageComponents/AffirmationsBlock.tsx`
+- `src/components/NumerologyDisplay.tsx`
+- `src/components/numerology/NumerologyContent.tsx`
 - `src/components/MainPageComponents/CosmicMissionsEntryPoint.tsx`
-- `src/components/achievements/UserLevelDisplay.tsx`
-- `src/pages/NumerologyPage.tsx`
-- `src/components/chat/UniverseChatProWrapper.tsx`
-- возможно `src/components/horoscope/*`, если там остались локальные PRO-ветки
 
-### Что именно я уберу из блокировок
-- `ProFeatureOverlay`
-- проверки `hasActiveSubscription` / `isPro`, если они только скрывают экран или CTA
-- редиректы на `/comparison`, где они мешают trial-режиму
-
-### Что не буду менять
-- бизнес-логику расчётов
-- запросы к базе
-- голосовую/чат-логику
-- маршруты, кроме случаев, где они завязаны на overlay-переходы в paywall
-
-## Ожидаемый результат
-- главный экран станет визуально единым
-- сначала будут аскезы, потом звонок, потом совет дня, потом вопрос Вселенной
-- все ключевые блоки будут выглядеть как одна продуктовая система
-- в trial-режиме пользователь сможет открывать все нужные экраны без paywall-перекрытий
-
-После одобрения я реализую это напрямую в коде.
+Логика навигации, расчёты нумерологии и данные знаков зодиака не изменяются — только разметка и стили.

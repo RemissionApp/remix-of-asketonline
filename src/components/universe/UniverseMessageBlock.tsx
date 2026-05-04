@@ -2,11 +2,7 @@ import React, { memo } from 'react';
 import { MessageCircleQuestion } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
-/**
- * Component that displays the Universe chat entry point with an avatar and action buttons
- */
 const UniverseMessageBlockComponent: React.FC = () => {
   const { language } = useAppStore();
   const navigate = useNavigate();
@@ -22,13 +18,6 @@ const UniverseMessageBlockComponent: React.FC = () => {
         ? 'Hacer una pregunta a Lyra'
         : 'Ask Lyra a question';
 
-  const askLabel =
-    language === 'ru'
-      ? 'Задать вопрос Вселенной'
-      : language === 'es'
-        ? 'Preguntar a Lyra'
-        : 'Ask Lyra';
-
   const subtitle =
     language === 'ru'
       ? 'Получите ясный ответ и направление прямо сейчас'
@@ -37,28 +26,21 @@ const UniverseMessageBlockComponent: React.FC = () => {
         : 'Receive a clear answer and direction right now';
 
   return (
-    <div className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-gold/20 via-cosmic-dark/60 to-cosmic-accent/20 p-5 text-left shadow-lg shadow-cosmic-gold/10">
+    <button
+      onClick={handleQuestionClick}
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-gold/20 via-cosmic-dark/60 to-cosmic-accent/20 p-5 text-left shadow-lg shadow-cosmic-gold/10 transition-transform active:scale-[0.99]"
+    >
       <div className="flex items-center gap-4">
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-gold/80 to-cosmic-accent/60 shadow-[0_0_30px_rgba(232,193,108,0.3)]">
           <MessageCircleQuestion className="relative h-7 w-7 text-white" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="text-base font-semibold text-white">{universeTitle}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
-          <div className="mt-3">
-            <Button
-              variant="outline"
-              onClick={handleQuestionClick}
-              className="border-white/15 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm"
-            >
-              {askLabel}
-            </Button>
-          </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 
-// Export memoized version to prevent unnecessary re-renders
 export const UniverseMessageBlock = memo(UniverseMessageBlockComponent);
