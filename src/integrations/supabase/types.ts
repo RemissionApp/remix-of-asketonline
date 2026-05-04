@@ -215,6 +215,39 @@ export type Database = {
         }
         Relationships: []
       }
+      call_summaries: {
+        Row: {
+          called_at: string
+          created_at: string
+          duration_seconds: number | null
+          emotional_tone: string | null
+          id: string
+          key_topics: string[] | null
+          summary: string | null
+          user_id: string
+        }
+        Insert: {
+          called_at?: string
+          created_at?: string
+          duration_seconds?: number | null
+          emotional_tone?: string | null
+          id?: string
+          key_topics?: string[] | null
+          summary?: string | null
+          user_id: string
+        }
+        Update: {
+          called_at?: string
+          created_at?: string
+          duration_seconds?: number | null
+          emotional_tone?: string | null
+          id?: string
+          key_topics?: string[] | null
+          summary?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cosmic_artifacts: {
         Row: {
           artifact_id: string
@@ -538,6 +571,36 @@ export type Database = {
           requirements?: Json
           reward?: Json
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      monthly_call_minutes: {
+        Row: {
+          created_at: string
+          id: string
+          minutes_limit: number
+          minutes_used: number
+          month_year: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          minutes_limit?: number
+          minutes_used?: number
+          month_year: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          minutes_limit?: number
+          minutes_used?: number
+          month_year?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -997,6 +1060,10 @@ export type Database = {
       create_verification_code: {
         Args: { p_code: string; p_email: string }
         Returns: string
+      }
+      increment_call_minutes: {
+        Args: { p_minutes: number; p_month_year: string; p_user_id: string }
+        Returns: undefined
       }
       validate_verification_code: {
         Args: { p_code: string; p_email: string }

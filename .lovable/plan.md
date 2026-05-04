@@ -1,150 +1,113 @@
-## Universe Call — Redesign («Живая Вселенная-собеседник»)
+## Стратегический рефакторинг Asceta — план по этапам
 
-Концепция: экран превращается в кинематографичную сцену общения с Вселенной. Большой аватар, эмоции через глаза/свечение, живые субтитры её речи как Apple Live Captions. Только одна кнопка — «положить трубку». Лимиты убираем (триал-only).
-
----
-
-### 1. Layout (mobile-first, 390×618 baseline)
-
-```text
-┌─────────────────────────────┐
-│  ←  Звонок Вселенной        │  ← компактный header
-│                             │
-│        ╭─────────╮          │
-│       │  AVATAR  │          │  ~55% ширины экрана
-│        ╰─────────╯          │  лёгкое дыхание (scale 1↔1.03)
-│   • статус соединения •     │  «Соединение…» / «На связи · 00:42»
-│                             │
-│   ░░ wave visualization ░░  │  тонкая, только при isSpeaking
-│                             │
-│ ┌─────────────────────────┐ │
-│ │ «Я здесь. Расскажи,    │ │  ← LIVE CAPTIONS
-│ │  что тебя тревожит…»   │ │     fade-in по словам
-│ └─────────────────────────┘ │
-│                             │
-│           ( 📞 )            │  одна красная кнопка hangup
-│                             │
-└─────────────────────────────┘
-```
-
-До звонка — то же самое, но вместо субтитров мягкая подсказка «Коснитесь, чтобы Вселенная услышала вас», а вместо красной кнопки — большая зелёная пульсирующая «Позвонить».
+Большая работа разбита на 10 последовательных шагов. После каждого шага останавливаюсь и жду подтверждения.
 
 ---
 
-### 2. Аватар как живое существо
+### Шаг 1. База данных (SQL миграции)
 
-Состояния (управляются через `conversation.status` и `conversation.isSpeaking`):
-
-| Состояние | Поведение |
-|---|---|
-| `disconnected` | Глаза закрыты, спокойное дыхание, тёплое золотистое свечение |
-| `connecting` | Глаза приоткрываются, аура пульсирует быстрее, спиннер-кольцо |
-| `connected` + слушает | Глаза открыты, мягкое зелёное мерцание, медленное дыхание |
-| `connected` + `isSpeaking` | Зелёное свечение пульсирует в такт волне, аура расширяется кольцами |
-
-Реализация: уже есть два изображения (`universe-avatar-call.jpg` закрытые / `universe-avatar-call-open.jpg` открытые). Добавить:
-- слой `<div>` с `radial-gradient` зелёного свечения, `opacity` зависит от состояния
-- 2–3 расходящихся `ring` через `@keyframes` (масштаб + fade) когда `isSpeaking`
-- плавный кросс-фейд между closed/open eyes (250ms)
+Создать через миграционный инструмент:
+- Таблица `call_summaries` (id, user_id, called_at, duration_seconds, summary, key_topics text[], emotional_tone) + RLS «users see own».
+- Таблица `monthly_call_minutes` (user_id, month_year, minutes_used numeric, minutes_limit int default 30, UNIQUE) + RLS.
+- Функция `increment_call_minutes(uuid, text, numeric)` SECURITY DEFINER с UPSERT.
 
 ---
 
-### 3. Live Captions (главная новая фича)
+### Шаг 2. Переименование Asket → Asceta и наставника
 
-Новый компонент `src/components/voice/UniverseCaptions.tsx`:
-- Слушает события `agent_response` и `user_transcript` через `onMessage` в `useElevenLabsConversation`
-- Показывает **последнюю реплику Вселенной** крупным шрифтом по центру внизу
-- Реплика пользователя — мелким серым текстом сверху от реплики Вселенной (опционально)
-- Каждая новая фраза появляется через `animate-fade-in` (уже есть в tailwind config)
-- Старые реплики плавно затухают через 8 секунд (или при появлении новой)
-- Glass-карточка с тонкой зелёной рамкой когда Вселенная говорит
-
-Хранение в хуке: добавить `lastAgentMessage`, `lastUserMessage` как `useState`, обновлять в `onMessage`.
-
-Важно: чтобы события `user_transcript` и `agent_response` приходили — они должны быть включены в настройках агентов в ElevenLabs dashboard. Если выключены, субтитры просто не появятся, остальное работает.
+- Глобальный поиск/замена «Asket» → «Asceta» в `index.html`, `manifest.json`, `package.json` (display name полей), splash, meta, onboarding-копиях. Технические идентификаторы (`com.asket.*` в Android/iOS, `capacitor.config.ts`) **не трогаем** — это сломает сборку.
+- В `src/i18n/languages/ru.ts|en.ts|es.ts` добавить ключи: `voiceGuide`, `callButton`, `callScreen`, `callHistory`, `callSubtitle`, `minutesLeft` (с плейсхолдером `{{count}}`), `hearFromGuide`, `limitReachedCta`. Значения — по тексту задания (RU=Вселенная, EN/ES=Lyra).
+- Переименование файлов и роутов:
+  - `UniversePage.tsx` → `LyraPage.tsx`, роут `/universe` → `/lyra`
+  - `UniverseChatPage.tsx` → `LyraChatPage.tsx`, роут `/universe-chat` → `/lyra-chat`
+  - `store/slices/universeSlice.ts` → `lyraSlice.ts`
+  - `store/slices/universeQuestionSlice.ts` → `lyraQuestionSlice.ts`
+  - Обновить все импорты, `App.tsx`, `useAppStore.ts`, `BottomNavigation.tsx`.
+- Edge functions `universe-answer`, `universe-dialogue` — **URL не меняем** (deploy slug остаётся), только внутренние строки/комментарии можно обновить.
 
 ---
 
-### 4. Управление (упрощение)
+### Шаг 3. Удалить медитации
 
-Удаляем: кнопки mute, speaker, индикатор лимитов, UpgradePrompt, LimitIndicator с CallPage.
-
-Оставляем:
-- До звонка: одна большая зелёная кнопка `Phone` с pulse-анимацией
-- Во время звонка: одна красная кнопка `PhoneOff` снизу по центру
-
-Громкость по умолчанию 0.8, mute-функции вырезаем из `VoiceCallInterface`.
+- Удалить файлы: `MeditationPage.tsx`, `NewMeditationPage.tsx`, `MeditationProPage.tsx`, `data/meditationData.ts`.
+- Убрать роуты `/meditation`, `/new-meditation`, `/meditation-pro` из `App.tsx`.
+- Удалить пункт медитации из `BottomNavigation.tsx` и любые ссылки/импорты в `MainPage`, `ProfilePage` и т.д.
+- Поле `meditations_count` в `daily_limits` оставляем (БД не ломаем), просто не используем.
 
 ---
 
-### 5. Состояния и переходы
+### Шаг 4. Удалить артефакты
 
-- При нажатии «позвонить»: кнопка превращается в spinner-кольцо, аватар начинает «просыпаться» (глаза приоткрываются), статус — «Соединение со Вселенной…»
-- При `onConnect`: лёгкая виброотдача, статус → «На связи · 00:00», запускается таймер, появляется красная кнопка
-- При ошибке: тост + аватар возвращается в спящее состояние, кнопка снова зелёная
-- При `onDisconnect`: плавный fade-out субтитров и волны, аватар закрывает глаза
-
----
-
-### 6. Очистка лимитов (по запросу «у нас триал»)
-
-- Из `CallPage.tsx` удалить `useDailyLimits`, `LimitIndicator`, `UpgradePrompt` и условие `limits.voice_calls.canUse`
-- Из `VoiceCallInterface.tsx` убрать `updateUsage('voice_call')` (или оставить телеметрию без блокировки)
+- Удалить `pages/ArtifactCollectionPage.tsx`, роут `/artifacts`, `useCosmicArtifacts.ts` если он только для UI.
+- Убрать ссылки/иконки артефактов из навигации, профиля, наград.
+- Таблицу `cosmic_artifacts` оставляем (БД не ломаем).
+- `UserLevelDisplay`, `AchievementsPage`, ранги, energy_points, `gamificationSlice` — не трогаем.
 
 ---
 
-### 7. Файлы, которые меняем
+### Шаг 5. Память звонков (buildLyraContext)
 
-- `src/components/voice/VoiceCallInterface.tsx` — убрать mute/speaker, добавить captions, упростить layout
-- `src/components/voice/UniverseAvatar.tsx` — добавить кольца, слой свечения, плавные переходы глаз
-- `src/components/voice/UniverseCaptions.tsx` — **новый** компонент субтитров
-- `src/components/voice/CallStatus.tsx` — упростить до строки «На связи · MM:SS»
-- `src/hooks/useElevenLabsConversation.ts` — экспортировать `lastAgentMessage`, `lastUserMessage`, расширить `onMessage` (`user_transcript`, `agent_response`, `agent_response_correction`)
-- `src/pages/CallPage.tsx` — убрать лимиты и upgrade-блок
-
-Edge function и токены WebRTC уже работают после прошлой миграции, ничего не трогаем.
+- В `useElevenLabsConversation.ts` добавить `buildLyraContext(userId)`: тянет последние 5 `call_summaries`, активные `pacts`, `profile`. Локализация контекста по языку из `useAppStore` (вместо несуществующего `profile.language`).
+- Передавать контекст через `overrides.agent.prompt.prompt` в `conversation.startSession({...})` (Eleven Labs SDK позволяет override промпта на сессию — должно быть включено в dashboard агента).
+- На `onDisconnect`: если длительность > 20 сек — вызвать edge function `universe-dialogue` с заданием «сделай саммари + темы + эмоциональный тон в JSON», результат записать в `call_summaries`. Длительность считаем по таймеру звонка.
 
 ---
 
-### 8. Технические детали (для разработки)
+### Шаг 6. Лимит минут
 
-```typescript
-// useElevenLabsConversation.ts — расширение onMessage
-onMessage: (message) => {
-  switch (message.type) {
-    case 'agent_response':
-      setLastAgentMessage(message.agent_response_event.agent_response);
-      break;
-    case 'agent_response_correction':
-      setLastAgentMessage(
-        message.agent_response_correction_event.corrected_agent_response
-      );
-      break;
-    case 'user_transcript':
-      setLastUserMessage(
-        message.user_transcription_event.user_transcript
-      );
-      break;
-  }
-}
-```
-
-```tsx
-// UniverseCaptions.tsx — каркас
-{lastAgentMessage && (
-  <div className="animate-fade-in glass border border-green-400/30 rounded-2xl px-5 py-4 max-w-md">
-    <p className="text-white text-base leading-relaxed">{lastAgentMessage}</p>
-  </div>
-)}
-```
+- Создать `src/hooks/useCallMinutes.ts` (по спецификации задания) с `monthYear = YYYY-MM`, селектом текущего месяца, `addMinutes(seconds)` через RPC `increment_call_minutes`.
+- В `VoiceCallInterface.tsx` запускать таймер при `onConnect`, при `onDisconnect` вызывать `addMinutes(elapsed)`.
+- Если `limitReached` — вместо большой кнопки звонка показывать кнопку-CTA `t('limitReachedCta')`, ведущую на пейволл (RevenueCat/`useRevenueCat`).
 
 ---
 
-### Что нужно от тебя помимо кода
+### Шаг 7. Hero-блок звонка
 
-1. **В ElevenLabs dashboard** для каждого из трёх агентов (RU/EN/ES):
-   - Включить события `user_transcript` и `agent_response` в Client Events
-   - Убедиться, что WebRTC включён как transport
-2. Больше ничего — `ELEVENLABS_API_KEY` уже в секретах, edge function развёрнута.
+- На `CallPage.tsx`: крупный пульсирующий круг (CSS keyframes `pulse-ring`), подпись `t('callSubtitle')`, метка `t('minutesLeft', {count: minutesLeft})`.
+- На `MainPage.tsx`: добавить hero-блок ВЫШЕ пактов:
+  ```
+  TopBar → TrialBanner → CallHero → Активные пакты → Миссия дня → UserLevelDisplay
+  ```
+- Стили через существующие cosmic-токены (`--cosmic-dark`, `cosmic-accent`).
 
-После одобрения переключаюсь в build-режим и применяю изменения.
+---
+
+### Шаг 8. Новая навигация + CosmosPage
+
+- `BottomNavigation.tsx` — ровно 5 вкладок: Главная (`/main`), Вселенная/Lyra (`/lyra`), Миссии (`/missions` или существующий `/cosmic-missions`), Космос (`/cosmos`), Профиль (`/profile`).
+- Создать `src/pages/CosmosPage.tsx` — три карточки-ссылки: Гороскоп → `/full-horoscope` (или существующий роут), Нумерология → `/numerology`, Аффирмации → `/affirmations`. Дизайн — тёмный космический, существующие токены.
+- Зарегистрировать роут `/cosmos` в `App.tsx`.
+
+---
+
+### Шаг 9. Аффирмации с голосом
+
+- В `AffirmationsPage.tsx` рядом с каждой аффирмацией — кнопка `t('hearFromGuide')` (RU «Услышать от Вселенной», EN/ES «Hear/Escuchar de Lyra»).
+- Использовать существующий `useTextToSpeech` (он уже на ElevenLabs). Voice ID — тот же, что у голосового агента (берём из конфигурации, оставляем дефолт).
+
+---
+
+### Шаг 10. Финальная сверка переводов
+
+- Пройтись по `ru.ts/en.ts/es.ts` и проверить, что все новые ключи (`voiceGuide`, `callButton`, `callScreen`, `callHistory`, `callSubtitle`, `minutesLeft`, `limitReachedCta`, `hearFromGuide`) присутствуют во всех трёх языках, что в EN/ES «pact» переведён как `ascetic vow` / `voto ascético`, а в RU остаётся «пакт аскезы».
+- Прогнать UI визуально на всех трёх языках на ключевых экранах (Main, Call, Lyra, Cosmos, Affirmations, Pacts).
+
+---
+
+### Что НЕ трогаем
+
+`src/integrations/supabase/client.ts`, `types.ts`, `.env`, `capacitor.config.ts`, папки `ios/` и `android/`, RevenueCat-конфиг (кроме использования хука), `supabase/config.toml` (project_id).
+
+---
+
+### Технические уточнения / отступления от ТЗ
+
+1. **`profile.language` не существует** в таблице `profiles` — для локализации контекста Lyra использую язык из `useAppStore` (там уже хранится выбранный язык пользователя).
+2. **`pacts.current_streak` / `is_active`** — в текущей схеме `pacts` нет таких колонок (есть `status`, `duration`, и `pact_days`). В `buildLyraContext` использую `status='active'` как фильтр и считаю streak из `pact_days` (или подставляю `duration` если streak считать дорого — уточню в реализации).
+3. **Передача системного промпта** в Eleven Labs: требует, чтобы в dashboard каждого из трёх агентов было разрешено `agent.prompt` override. Если не включено — контекст не применится (уведомлю в финале).
+4. **Edge function URL** для `universe-*` оставляю без изменений, как просили.
+5. **Таблицы `cosmic_artifacts`, `meditations*`-related поля** в БД оставляю — миграции на удаление не делаю, только убираю UI.
+
+---
+
+После Шага 1 остановлюсь и покажу результат миграции для подтверждения, затем продолжу Шаг 2 и т.д.
