@@ -368,4 +368,14 @@ export interface Translations {
   notFound?: NotFoundTranslations;
   pactCompletion?: PactCompletionTranslations;
   missions?: Record<string, MissionTranslations>;
+  lyra?: {
+    voiceGuide: string;
+    callButton: string;
+    callScreen: string;
+    callHistory: string;
+    callSubtitle: string;
+    minutesLeft: string; // contains {{count}}
+    limitReachedCta: string;
+    hearFromGuide: string;
+  };
 }

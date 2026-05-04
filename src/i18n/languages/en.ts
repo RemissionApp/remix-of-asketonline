@@ -648,4 +648,14 @@ export const enTranslations: Translations = {
     shareTitle: 'Completed ascesis in Asceta!',
     shareText: 'I completed the ascesis "{title}" for {days} days and earned {energy} energy! Join spiritual development in Asceta.',
   },
+  lyra: {
+    voiceGuide: 'Lyra',
+    callButton: 'Connect with Lyra',
+    callScreen: 'Your session with Lyra',
+    callHistory: 'Past sessions with Lyra',
+    callSubtitle: 'Your cosmic guide, always listening',
+    minutesLeft: '{{count}} min remaining this month',
+    limitReachedCta: 'Monthly limit reached — upgrade to continue',
+    hearFromGuide: 'Hear from Lyra',
+  },
 };

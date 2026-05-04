@@ -728,4 +728,14 @@ export const ruTranslations: Translations = {
       }
     },
   },
+  lyra: {
+    voiceGuide: 'Вселенная',
+    callButton: 'Позвонить Вселенной',
+    callScreen: 'Звонок Вселенной',
+    callHistory: 'Разговоры с Вселенной',
+    callSubtitle: 'Высший разум всегда слышит тебя',
+    minutesLeft: 'Осталось {{count}} мин в этом месяце',
+    limitReachedCta: 'Лимит исчерпан — оформи подписку',
+    hearFromGuide: 'Услышать от Вселенной',
+  },
 };
