@@ -1,100 +1,78 @@
-# План: Переработка страницы Профиля в стиле Asceta (Главная / Вселенная / Космос)
+# Liquid Glass redesign — Asceta
 
-Сделаем пошагово в **3 этапа**, чтобы можно было проверять прогресс между ними.
+Visual-only refresh in iOS "Liquid Glass" style. Logic, routes, data and hooks remain untouched. Work is grouped into 4 stages so each can be reviewed independently.
 
----
+## Stage 1 — Design tokens + core chrome
 
-## Дизайн-основа
+Foundation that every other screen relies on.
 
-Используем те же визуальные приёмы, что и на страницах Cosmos / Universe / Main:
-- Контейнер `min-h-screen flex flex-col relative pb-24`, `<StarField />`, плавающий `<PageHeader />`, плавающий `<BottomNavigation />`.
-- Карточки: `rounded-3xl border border-cosmic-*/25 bg-gradient-to-br from-…/40 via-cosmic-dark/60 to-…/15 p-5 shadow-lg`, `active:scale-[0.99]`.
-- Иконка слева в круге 56–64px с цветным glow (как Cosmos / Lyra), текст по центру блока, заголовки `text-base font-semibold text-white` (+`font-serif` для `en`), сабтекст `text-xs text-cosmic-secondary`.
-- Только существующие cosmic-токены (`cosmic-gold`, `cosmic-accent`, `cosmic-indigo`, `cosmic-dark`, `cosmic-secondary`, `cosmic-deep-blue`).
+- `src/styles/base.css`
+  - Add `:root` glass tokens: `--glass-bg`, `--glass-bg-medium`, `--glass-bg-strong`, `--glass-border`, `--glass-border-bright`, `--glass-shadow`, `--glass-blur`, `--glass-blur-heavy`, plus accent variants `--glass-purple`, `--glass-purple-border`, `--glass-gold`, `--glass-gold-border`, `--glass-green`, `--glass-red`.
+- `src/styles/components.css`
+  - Add utility classes `.glass`, `.glass-medium`, `.glass-strong`, `.glass-purple`, `.glass-gold` with both `backdrop-filter` and `-webkit-backdrop-filter`.
+  - Add `.glass-shine::before` highlight stripe.
+- `src/components/BottomNavigation.tsx`
+  - Floating `mx-3 mb-3 rounded-2xl glass-strong` pill, 16px tab buttons, active tab pill (`bg-white/10`), inactive icons `text-white/40`, `active:scale-95`. Preserve existing tab list, routes and `pb-safe`.
+- `src/components/TopBar.tsx`
+  - Replace dark bar with three floating glass pills: avatar (left), rank (center, `Star` + label), energy (right, ⚡ + value). Use `glass-medium` / `glass` + `glass-shine`.
 
-Создадим переиспользуемые UI:
-- `src/components/profile/ui/ProfileRow.tsx` — строка-кнопка в стиле glass-карточки (icon + label + sublabel + value/toggle/badge/chevron).
-- `src/components/profile/ui/ProfileSection.tsx` — заголовок секции (`text-[10px] uppercase tracking-[0.15em]`) + flex-колонка строк со скруглением группы.
-- `src/components/profile/ui/ProfileStatCard.tsx` — числовая карточка статистики.
+## Stage 2 — Card template + main hub screens
 
-Шапка вкладок (`ProfileTabs`):
-- Sticky под `PageHeader` (`top-16`), `overflow-x-auto`, скрытый scrollbar, `backdrop-blur` + полупрозрачный фон.
-- Активная: текст `text-cosmic-gold`, нижняя подсветка `border-b-2 border-cosmic-gold`; неактивная `text-cosmic-secondary`.
-- Кнопки `px-5 py-3 text-[11px] uppercase tracking-widest`.
+Standardise the card-button pattern, then re-skin Main / Universe / Cosmos.
 
----
+- New helper `src/components/ui/GlassCard.tsx`
+  - Reusable button with: `glass-medium glass-shine`, colored left-side glow, 56px icon container, title + subtitle, `ChevronRight`, `active:scale-[0.98]`. Accepts `variant: 'purple' | 'gold' | 'green' | 'blue' | 'amber' | 'violet'`.
+- `src/pages/MainPage.tsx` and `src/components/MainPageComponents/*`
+  - Keep greeting block as-is.
+  - "Заключить договор" → glass CTA with subtle gold gradient overlay.
+  - `CallHero` → `GlassCard` purple variant linking to `/lyra` (route unchanged).
+  - `DailyAdviceDisplay` → amber `GlassCard` with advice text in inner block separated by `border-t border-white/8`.
+  - `AffirmationsBlock`, `CosmicMissionsEntryPoint` → glass cards via template.
+- `src/pages/UniverseHubPage.tsx` (Lyra hub)
+  - Two existing action cards re-skinned via `GlassCard`.
+  - Add "Последние разговоры" section: read existing `call_summaries` already loaded by current hooks (do not add new queries unless trivially via existing hook); render glass cards with date + duration + summary, plus empty state.
+  - Add monthly minutes indicator using the existing `useCallMinutes` hook.
+- `src/pages/CosmosPage.tsx`
+  - Remove the "Космические миссии" entry from this page (visual move only — route stays).
+  - Add top astro mini-card (`glass-gold glass-shine`) with zodiac emoji watermark, sign name, element · ruler — using already available `getZodiacSign` + `zodiacData`.
+  - Re-skin Horoscope / Numerology / Affirmations entries via `GlassCard` (violet / gold / green glows).
 
-## Этап 1 — Каркас + вкладки «Профиль» и «Духовное»
+## Stage 3 — Profile, banner, buttons, modals
 
-Файлы:
-1. `src/components/profile/ui/ProfileRow.tsx`
-2. `src/components/profile/ui/ProfileSection.tsx`
-3. `src/components/profile/ui/ProfileStatCard.tsx`
-4. `src/components/profile/ProfileTabs.tsx` — горизонтальные вкладки (state в URL `?tab=` или локально).
-5. `src/components/profile/ProfileIdentityTab.tsx`
-   - Аватар с кольцом + кнопка редактирования (используем `usePhotoUpload`).
-   - Имя, ранг + энергия (из `useUserProgress`).
-   - 3 stat-карточки: дни в приложении, активные пакты, звонки.
-   - Прогресс до следующего ранга (пороги 0/300/700/1500/3000) — bar в стиле `from-cosmic-gold`.
-   - Секции: «Личные данные» (имя, дата рождения, цель, аватар), «Язык и регион» (язык → `/language`, таймзона), «Достижения» → `/achievements`.
-6. `src/components/profile/ProfileSpiritualTab.tsx`
-   - Астро-карточка (зодиак, стихия, планета, модальность) — переиспользуем `utils/zodiac.ts` / `zodiacTraits.ts`.
-   - Нумерология — `utils/numerologyUtils.ts` (судьба/душа/личность/год).
-   - Секции «Звонки» (минуты — `useCallMinutes`, всего сессий, история → `/lyra/history` если маршрут есть, иначе `/universe`).
-   - Секции «Пакты» (активные/лучший streak/завершённые) — данные из существующего стора.
-7. `src/pages/ProfilePage.tsx` — переписать: `StarField`, `PageHeader title="Профиль/Profile/Perfil"`, `ProfileTabs`, рендер активной вкладки, плавающая `BottomNavigation`.
-8. Минимальные переводы для табов и обоих экранов в `ru.ts/en.ts/es.ts` (`profile.tabs.*`, `profile.sections.*`, `profile.stats.*`, `ranks.*`, `spiritual.*`).
+- `src/components/profile/ProfileTabs.tsx`
+  - Sticky pill bar with `glass` background, active pill `bg-white/15 border border-white/20`, inactive `text-white/40`.
+- `src/components/profile/ui/ProfileRow.tsx`
+  - Switch to `glass glass-shine` rows, 32px icon tile with per-color glass background, `text-white/90` label, `text-white/40` sublabel, `ChevronRight text-white/25`. Toggle/value rendering preserved.
+- `src/components/profile/ui/ProfileSection.tsx`
+  - Section title styled as `text-[10px] uppercase tracking-[0.15em] text-white/30`.
+- `src/components/TrialBanner.tsx`
+  - Normal state: emerald glass (`bg-emerald-500/8 border-emerald-400/20 backdrop-blur-xl glass-shine`).
+  - Critical (<24 h left) state: red glass (`bg-red-500/10 border-red-400/30`). Reuse existing condition.
+- `src/components/ui/button.tsx`
+  - Add three variants without removing existing ones:
+    - `primary-glass` — `bg-white/15 border-white/25 backdrop-blur-xl glass-shine`.
+    - `gold` — solid `bg-cosmic-gold/90 text-[#0d0d12]` with shadow.
+    - `ghost-glass` — `glass border-white/10 text-white/60`.
+  - All include `active:scale-[0.98] transition-all duration-150`.
+- `src/components/ui/dialog.tsx` and `src/components/ui/drawer.tsx`
+  - Overlay: `bg-black/50 backdrop-blur-sm`.
+  - Content: bottom-sheet `glass-strong glass-shine rounded-t-3xl pb-safe max-h-[85vh]` with handle bar.
 
-После этапа 1: страница работает, две первые вкладки полностью функциональны, остальные четыре — заглушки «Скоро».
+## Stage 4 — Polish & consistency pass
 
----
+- Search for legacy `bg-cosmic-dark/40 border border-cosmic-accent/15 backdrop-blur-sm` patterns and replace with `glass` utility for visual consistency (no behavior change).
+- Verify `overflow-hidden` is present on every glass element with rounded corners.
+- Confirm no text drops below `text-white/40`.
+- Manual visual QA on 390×740 viewport: Main, Lyra hub, Cosmos, Profile (all 6 tabs), TrialBanner states, a sample dialog.
 
-## Этап 2 — Вкладки «Подписка», «Уведомления», «Конфиденциальность»
+## Technical notes
 
-Файлы:
-1. `src/components/profile/ProfileSubscriptionTab.tsx`
-   - Градиентная карточка Asceta Pro: статус (Pro / Trial / Free) через `useEntitlement`, цена/план через `useRevenueCat`, список фич, кнопки Upgrade/Manage + History.
-   - Секция «Детали» (только если Pro): дата следующего списания, способ оплаты, авто-продление (toggle — пока локально, persist в `profiles` если есть колонка, иначе TODO-заметка).
-   - Секция «Минуты»: прогресс минут (`useCallMinutes`), кнопка «Купить минуты» с badge.
-   - Секция «Другое»: восстановить покупки, реферал, сравнить планы → `/comparison`.
-2. `src/components/profile/ProfileNotificationsTab.tsx`
-   - Локальный state + сохранение в `profiles` (одно JSONB поле `notification_settings`) с debounce 500мс. Если колонки нет — добавим миграцией (`alter table profiles add column notification_settings jsonb default '{}'::jsonb`).
-   - 5 секций (Пакты / Звонки / Миссии / Гороскоп / Подписка) с тогглами; время напоминания пактов — отдельная строка-пикер (input type="time").
-   - Интеграция с существующим `PushNotificationManager` / `usePushNotifications` (если нет хука — оставить TODO, тогглы всё равно пишут в БД).
-3. `src/components/profile/ProfilePrivacyTab.tsx`
-   - Аналитика / crash-reports (тогглы, локальный state + localStorage).
-   - Память звонков: тоггл «хранить историю», кнопка «Очистить историю» (delete из `call_summaries` для `user_id`), предупреждение.
-   - Документы → `/privacy-policy`, `/terms`, `/licenses` (последний — TODO если нет страницы).
-   - Поддержка: mailto, rate (Capacitor App store link), Share (`webShare.ts`).
-   - О приложении: версия из `package.json` через Vite `import.meta.env`.
-4. Миграция: добавить `notification_settings jsonb`, `privacy_settings jsonb`, `timezone text` в `public.profiles` (если их ещё нет).
-5. Переводы `subscription.*`, `notifications.*`, `privacy.*` в трёх языках.
+- All `backdrop-filter` rules duplicated with `-webkit-backdrop-filter` for iOS Safari.
+- `StarField` remains untouched — it's the background under the glass.
+- No DB, no hooks, no routes touched. Imports stay the same; only JSX class names and a few small wrappers change.
+- Existing semantic color tokens (`cosmic-gold`, `cosmic-accent`, etc.) are preserved; new glass tokens are additive.
 
----
+## Out of scope
 
-## Этап 3 — Вкладка «Аккаунт», финальная подчистка
-
-Файлы:
-1. `src/components/profile/ProfileAccountTab.tsx`
-   - Email, смена пароля, подключённые провайдеры (Apple/Google) — статус из `user.app_metadata.providers`.
-   - Экспорт данных: собираем выборки из таблиц пользователя → JSON → `Share.share` / download blob.
-   - Sign out (через AlertDialog) + очистка стора.
-   - «Опасная зона» в красной рамке: «Очистить все данные» и «Удалить аккаунт» (вызов существующего `/delete-account` или `batch_delete_user_data` RPC).
-2. Удалить устаревшие компоненты, которые перестали использоваться:
-   - `src/components/ProfilePage/ProfileSection.tsx` (старый), `LanguageSelector.tsx`, `LegalDocuments.tsx`, `LogoutButton.tsx`, `SubscriptionManager.tsx` — если ни одна страница больше не импортирует.
-   - Перепроверить `AccountSettingsPage.tsx`: либо удалить и редиректить на `/profile?tab=account`, либо оставить как deep-link, переведя на новые компоненты.
-3. Финальные переводы `account.*` + ревизия всех ключей в `ru/en/es`.
-4. Проверка маршрутов в `AppRouter.tsx` (deep-link `/profile?tab=subscription` и т.п.).
-
----
-
-## Технические детали / решения
-
-- **Состояние вкладок**: `useSearchParams` (`?tab=identity`) — позволяет deep-link и сохраняется при навигации назад.
-- **Tabs UI**: чистый Tailwind, без `@/components/ui/tabs` (там radix с другим стилем) — нужен горизонтальный скролл + sticky.
-- **Иконки**: `lucide-react` — `User, Calendar, Target, Image, Globe, Clock, Trophy, Sparkles, Hash, Phone, BookOpen, Flame, Zap, CheckCircle, Crown, CreditCard, RefreshCw, Plus, Gift, Users, BarChart, Bell, AlertTriangle, Sun, Moon, Timer, BarChart2, Bug, Lock, Trash2, FileText, ScrollText, Scale, MessageCircle, Star, Share2, Info, Mail, Key, Apple, Chrome, Package, LogOut`.
-- **Цветовые карты иконок**: `gold → cosmic-gold`, `purple → cosmic-accent`, `blue → cosmic-deep-blue`, `green → emerald-400`, `red → rose-500`, `gray → cosmic-secondary`.
-- **Не трогаем**: `supabase/client.ts`, `supabase/types.ts`, `.env`, `capacitor.config.ts`, `ios/`, `android/`, логику пактов, RevenueCat конфиг.
-- **БД-миграции** (только в этапе 2): добавление nullable JSONB-полей с дефолтами — безопасно для существующих данных.
-
-После этапа 3 страница профиля полностью соответствует визуальному языку Asceta и закрывает все 6 разделов.
+- Onboarding, login, legal, achievements, mission detail screens (can be done in a follow-up using the same `GlassCard` and tokens).
+- Animations beyond the existing `active:scale-[0.98]` tactile feedback.
