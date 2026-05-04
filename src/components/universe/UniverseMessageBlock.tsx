@@ -35,7 +35,7 @@ const UniverseMessageBlockComponent: React.FC = () => {
           <MessageCircleQuestion className="relative h-7 w-7 text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white">{universeTitle}</div>
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>{universeTitle}</div>
           <div className="mt-0.5 text-xs text-cosmic-secondary">{subtitle}</div>
         </div>
       </div>
