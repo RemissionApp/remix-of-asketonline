@@ -1,6 +1,11 @@
-// Helper function to get date string in YYYY-MM-DD format
+// Helper function to get date string in YYYY-MM-DD format using LOCAL date
+// components. Using toISOString() converts to UTC and shifts the calendar day
+// for users east/west of UTC, breaking streak math near midnight.
 export const getDateString = (date: Date): string => {
-  return date.toISOString().split('T')[0];
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 };
 
 // Helper function to compare two dates (ignoring time)

@@ -73,14 +73,19 @@ export const createAddPactSlice = (
 
       if (pactError) throw pactError;
 
-      // Create pact days
-      const pactDays = Array.from({ length: pact.duration }, (_, i) => ({
-        pact_id: newPact.id,
-        date: new Date(Date.now() + i * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0],
-        completed: false,
-      }));
+      // Create pact days using LOCAL calendar dates (avoid UTC drift at night)
+      const today = new Date();
+      const pactDays = Array.from({ length: pact.duration }, (_, i) => {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return {
+          pact_id: newPact.id,
+          date: `${y}-${m}-${day}`,
+          completed: false,
+        };
+      });
 
       const { error: daysError } = await supabase
         .from('pact_days')
