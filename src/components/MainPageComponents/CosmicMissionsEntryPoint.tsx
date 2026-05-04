@@ -61,10 +61,10 @@ export const CosmicMissionsEntryPoint: React.FC = () => {
   return (
     <button
       onClick={handleViewMissions}
-      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-indigo/30 via-cosmic-dark/60 to-cosmic-accent/20 p-5 text-left shadow-lg shadow-cosmic-accent/10 transition-transform active:scale-[0.99]"
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-deep-blue/30 bg-gradient-to-br from-cosmic-deep-blue/40 via-cosmic-dark/60 to-cosmic-deep-blue/15 p-5 text-left shadow-lg shadow-cosmic-deep-blue/35 transition-transform active:scale-[0.99]"
     >
       <div className="flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-deep-blue to-cosmic-indigo/70 shadow-[0_0_30px_rgba(56,189,248,0.5)]">
           <Star size={26} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
