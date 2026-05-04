@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { zodiacData, ZodiacSign } from '@/utils/zodiac';
-import { Star, Calendar } from 'lucide-react';
 import { translateElement, translateRuler } from '@/utils/zodiacTranslations';
 import { translateTraits } from '@/utils/zodiacTraits';
 
@@ -18,7 +16,6 @@ export const UserZodiacInfo: React.FC<UserZodiacInfoProps> = ({
   birthDate,
   userName,
   language,
-  uiText,
 }) => {
   const zodiacInfo = zodiacData[zodiacSign];
   const zodiacName = zodiacInfo.name[language as keyof typeof zodiacInfo.name] || zodiacInfo.name.en;
@@ -26,69 +23,49 @@ export const UserZodiacInfo: React.FC<UserZodiacInfoProps> = ({
   const ruler = translateRuler(zodiacInfo.ruler, language as any);
   const traits = translateTraits(zodiacInfo.traits, language as any);
 
-  const formattedDate = new Date(birthDate).toLocaleDateString(
-    language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : 'en-US',
-    { day: 'numeric', month: 'long', year: 'numeric' }
-  );
-
   const elementLabel = language === 'ru' ? 'Стихия' : language === 'es' ? 'Elemento' : 'Element';
   const rulerLabel = language === 'ru' ? 'Управитель' : language === 'es' ? 'Regente' : 'Ruler';
   const traitsLabel =
     language === 'ru' ? 'Характеристики' : language === 'es' ? 'Características' : 'Traits';
 
   return (
-    <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-      <CardContent className="p-6 space-y-5">
-        <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-3">
-            <div className="text-4xl" title={zodiacName}>
-              {zodiacInfo.symbol}
-            </div>
-            <div className="text-left">
-              <h2 className="text-xl font-bold text-white">
-                {userName ? `${userName} — ${zodiacName}` : zodiacName}
-              </h2>
-              <div className="flex items-center gap-2 text-white/80">
-                <Calendar className="h-4 w-4" />
-                <span className="text-sm">{zodiacInfo.dates}</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/60 mt-0.5">
-                <span className="text-xs">{formattedDate}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 text-white/70">
-            <Star className="h-4 w-4" />
-            <span className="text-sm">{uiText.personalizedReading}</span>
-          </div>
+    <div className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-violet-400/25 bg-gradient-to-br from-violet-500/30 via-cosmic-dark/60 to-violet-500/10 p-4 shadow-lg shadow-violet-500/30">
+      <div className="flex items-center gap-3">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-violet-600/70 shadow-[0_0_24px_rgba(139,92,246,0.55)]">
+          <span className="text-2xl">{zodiacInfo.symbol}</span>
         </div>
-
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-            <p className="text-xs text-white/60">{elementLabel}</p>
-            <p className="font-medium text-white mt-1">{element}</p>
+        <div className="flex-1 min-w-0 text-center">
+          <div className={`text-base font-semibold text-white ${language === 'en' ? 'font-serif' : ''}`}>
+            {userName ? `${userName} — ${zodiacName}` : zodiacName}
           </div>
-          <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-            <p className="text-xs text-white/60">{rulerLabel}</p>
-            <p className="font-medium text-white mt-1">{ruler}</p>
-          </div>
+          <div className="mt-0.5 text-[11px] text-cosmic-secondary">{zodiacInfo.dates}</div>
         </div>
+      </div>
 
-        <div>
-          <p className="text-xs text-white/60 mb-2 text-center">{traitsLabel}</p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {traits.map((trait, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-white/10 border border-white/15 text-white text-sm rounded-full"
-              >
-                {trait}
-              </span>
-            ))}
-          </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="rounded-xl bg-white/5 border border-white/10 p-2 text-center">
+          <p className="text-[10px] text-white/60">{elementLabel}</p>
+          <p className="text-xs font-medium text-white mt-0.5">{element}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="rounded-xl bg-white/5 border border-white/10 p-2 text-center">
+          <p className="text-[10px] text-white/60">{rulerLabel}</p>
+          <p className="text-xs font-medium text-white mt-0.5">{ruler}</p>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <p className="text-[10px] text-white/60 mb-1.5 text-center">{traitsLabel}</p>
+        <div className="flex flex-wrap gap-1.5 justify-center">
+          {traits.map((trait, i) => (
+            <span
+              key={i}
+              className="px-2 py-0.5 bg-white/10 border border-white/15 text-white text-[11px] rounded-full"
+            >
+              {trait}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };

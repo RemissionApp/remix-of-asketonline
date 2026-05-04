@@ -65,7 +65,7 @@ export default function FullHoroscopePage() {
         }
       />
 
-      <div className="max-w-4xl mx-auto relative z-10 pt-20 p-4 md:p-8 space-y-6">
+      <div className="max-w-lg mx-auto relative z-10 pt-20 px-3 sm:px-4 pb-24 flex flex-col gap-3 sm:gap-4">
         {!zodiacSign && <SetBirthDateCard uiText={uiText} />}
 
         {error && (
