@@ -69,25 +69,16 @@ export const createUniverseQuestionSlice: StateCreator<
     if (!user) return;
 
     try {
-      // Insert without client-side id (DB generates uuid)
-      const { data, error } = await supabase
-        .from('universe_questions')
-        .insert({
-          user_id: user.id,
-          question: question.question,
-          answer: question.answer,
-        })
-        .select('id, created_at')
-        .single();
+      // Insert without client-side id (DB generates uuid).
+      // The previous code used Date.now().toString() which is not a valid UUID
+      // and caused inserts to silently fail.
+      const { error } = await supabase.from('universe_questions').insert({
+        user_id: user.id,
+        question: question.question,
+        answer: question.answer,
+      });
 
       if (error) throw error;
-
-      // Update local state with DB-generated id
-      if (data) {
-        const updated = { ...question, id: data.id, created_at: data.created_at, date: data.created_at };
-        // @ts-ignore - access store via this in StateCreator pattern not available; mutate via set
-        // We'll instead update activeQuestions through a setter pattern
-      }
     } catch (error) {
       console.error('Error saving universe question:', error);
     }
