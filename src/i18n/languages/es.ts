@@ -102,6 +102,7 @@ export const esTranslations: Translations = {
       path: 'Camino',
       ascesis: 'Ascesis',
       universe: 'Universo',
+      universeChat: 'Chat',
       profile: 'Perfil',
     },
   },
