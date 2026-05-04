@@ -1,111 +1,49 @@
-## 1. Экран Вселенная (UniverseHubPage) — заполнить пустоту
+## 1. PactOath — кнопка «Подпись» внизу вкладки «Клятва»
 
-Под двумя карточками «Позвонить» / «Задать вопрос» добавить два секционных блока в едином cosmic-glass стиле:
+`src/components/PactOath.tsx`:
+- На основной странице (вкладка клятвы), под полем с текстом клятвы и кнопкой «Прочитать вслух», добавить **второй CTA** — `Подписать договор` (золотистый акцент в стиле приложения), вызывающий `handleSignContract` напрямую.
+- Кнопка всегда видна (без обязательного открытия диалога), но если пользователь ещё не нажал «Прочитать вслух» — показать тонкую подсказку под ней («Рекомендуем сначала прочитать клятву вслух»).
+- Сохранить существующий поток через `Dialog` для тех, кто читает вслух.
+- Локализация ru/en/es: «Подписать клятву» / «Sign the oath» / «Firmar el juramento».
 
-**Блок «Последние разговоры»** (`Recent calls`)
-- Тянем из таблицы `call_summaries` (last 5, order by `called_at desc`).
-- Карточка списка: аватар-иконка `Phone`, заголовок (короткая суммаризация / первые 60 символов `summary`), длительность из `duration_seconds`, относительное время («сегодня», «вчера», «3 дня назад» — i18n).
-- Tap → открывает раскрывающую карточку с полным `summary` и `key_topics` чипами.
-- Empty state: иллюстрация (Phone в круге) + «Твой первый разговор с Вселенной изменит многое» (ru/en/es).
+## 2. PactsPage → диалог «Клятва» — кнопка «Подписана»
 
-**Блок «Последние вопросы»** (`Recent questions`)
-- Уже есть `PreviousQuestions` на `/universe`, но в hub его нет. Тянем `universe_questions` (last 5).
-- Карточка: иконка `MessageCircleQuestion`, текст вопроса (truncate 2 lines), дата.
-- Tap → expand, показать `answer`.
-- Empty state: «Задай свой первый вопрос — Вселенная всегда отвечает».
+`src/pages/PactsPage.tsx`:
+- В `Dialog` просмотра клятвы (`oathPact`) добавить футер с неактивной (disabled) зелёной кнопкой-бейджем «✓ Подписана / Signed / Firmada» — визуальное подтверждение, что договор уже заключён. Закрытие — кнопка «Закрыть».
 
-Стиль карточек идентичен `UniverseMessageBlock` / `PactsPage` (rounded-3xl, border white/10, gradient cosmic-accent/15 → cosmic-dark/60 → cosmic-gold/10, backdrop-blur-md).
+## 3. BreakAscesisDialog — единый космический стиль
 
-Новые файлы:
-- `src/components/universe/RecentCallsBlock.tsx`
-- `src/components/universe/RecentQuestionsBlock.tsx`
+`src/components/BreakAscesisDialog.tsx`:
+- Заменить дефолтные shadcn-стили на космический glassmorphism:
+  - `AlertDialogContent`: `bg-cosmic-dark/80 backdrop-blur-xl border border-cosmic-accent/30 rounded-3xl text-white max-w-md`.
+  - Заголовок — `cosmic-gradient-text font-serif`, иконка `AlertTriangle` в круглом контейнере с градиентом `from-red-500/30 to-cosmic-accent/20`.
+  - Внутренние `Card` → `rounded-2xl border-white/10 bg-cosmic-dark/40 backdrop-blur-md`.
+  - Жёлтую карточку «Помните» перекрасить под космос: `bg-cosmic-gold/10 border-cosmic-gold/30`, текст `text-cosmic-gold` / `text-cosmic-secondary`.
+  - Кнопки причин — `rounded-2xl border-white/10 bg-cosmic-dark/40`, активная — `bg-cosmic-accent/30 border-cosmic-accent`.
+  - Основной CTA «Прервать» — красный градиент `from-red-600 to-red-500` с лёгким glow.
+  - `Textarea` — `bg-cosmic-dark/40 border-cosmic-accent/20 text-white`.
+- Добавить `<StarField />` оверлей внутри диалога (низкая плотность ~30 звёзд) для атмосферы — позиционировать `absolute inset-0 pointer-events-none rounded-3xl overflow-hidden`.
 
-Изменения:
-- `src/pages/UniverseHubPage.tsx` — добавить секции после двух CTA.
+## 4. NumerologyPage — переименование и редизайн
 
-## 2. Главная — уменьшить вертикальные отступы
+`src/pages/NumerologyPage.tsx`:
 
-`src/components/MainPageComponents/UserGreetingSection.tsx`
-- Убрать лишние `pt-3 sm:pt-6` и `mb-3 sm:mb-6` → `pt-1 mb-1 sm:pt-2 sm:mb-2`.
-- Уменьшить `mt-1 sm:mt-2` у `<h2>` до `mt-0.5`.
+**Переименование:**
+- `PageHeader title` → `t.numerology.title` со значением «Нумерология / Numerology / Numerología». Добавить ключ `numerology.title` в `src/translations/*` (ru/en/es), оставить `numerology.analysis` для совместимости.
 
-`src/components/MainPageComponents/MainContent.tsx`
-- `pt-16 sm:pt-20` → `pt-10 sm:pt-12`, `gap-3 sm:gap-4` → `gap-2 sm:gap-3`.
+**Структура (по образцу UniverseHubPage / CosmosPage):**
+- Обернуть содержимое в `<MobileOptimizedInterface>`, использовать `pt-20 pb-24`, `max-w-lg mx-auto`.
+- Hero-блок сверху: имя пользователя + дата рождения внутри стеклянной карточки `rounded-3xl border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md`, с маленьким бейджем `Sparkles` («Ваш числовой портрет»).
+- Карточка «Ключевые числа» (Path / Expression / Personality): тот же glass-стиль; круги чисел — `bg-gradient-to-br from-cosmic-gold/30 to-cosmic-accent/30 border border-white/10 shadow-[0_0_20px_rgba(232,193,108,0.2)]`.
+- **Переключатель режимов** (`viewMode`): заменить на сегментный pill-control в космическом стиле — `rounded-full bg-cosmic-dark/60 border border-cosmic-accent/20 backdrop-blur-md p-1`, активный сегмент — `bg-gradient-to-r from-cosmic-gold/40 to-cosmic-accent/40 text-white shadow`. Лейблы: «Матрица / Простая / Подробно».
+- Все вложенные `Card` (определения чисел, periods) перевести на тот же glass-класс `rounded-3xl border-white/10 bg-cosmic-dark/40 backdrop-blur-md`. Цифры — золотой градиент.
+- Periods: каждая строка — горизонтальная glass-карточка с круглым числом слева и описанием справа.
+- Локализовать жёстко зашитый русский текст (определения чисел, «Простая», «Данные», «Периоды жизни», «Формирующий период» и т.д.) через `useTranslations` (новые ключи `numerology.definitions.*`, `numerology.periods.*`).
 
-`src/components/AdaptivePactDisplay.tsx`
-- `gap-3` → `gap-1.5`, между title и кругом убрать лишний `mb-1`.
+## 5. Технические детали
 
-## 3. Снять ограничение на создание аскез
-
-Триал теперь даёт полный доступ 3 дня — лимита на количество аскез нет.
-
-`src/pages/CreatePactPage.tsx`
-- Убрать импорт `useDailyLimits`, `UpgradePrompt`.
-- Удалить переменную `canCreatePact` и весь блок `!canCreatePact ? <UpgradePrompt …/> : renderStep()`.
-- Всегда рендерить `renderStep()` и кнопку «Next».
-
-`src/hooks/useDailyLimits.ts`
-- Поле `pacts` оставляем в типе для обратной совместимости, но больше нигде не используется. (Серверная функция `check-daily-limits` остаётся as-is.)
-
-## 4. Профиль — план редактирования и аудит кнопок
-
-Цель: каждая строка профиля редактируема, все кнопки рабочие.
-
-### 4.1 Универсальный inline-edit
-Новый компонент `src/components/profile/ui/EditableRow.tsx`:
-- расширяет `ProfileRow`, при tap открывает `Dialog` с полем (text / date / textarea / select).
-- prop `onSave(value) => Promise<void>` — обновляет через `updateUserProfile` в zustand-сторе и Supabase `profiles`.
-- Валидация через zod (имя 1–60, дата 1900–today, цель ≤ 200).
-
-### 4.2 ProfileIdentityTab
-Сделать редактируемыми:
-- **Имя** → inline (`name`).
-- **Дата рождения** → date picker (`birth_date`).
-- **Цель** → textarea (`goal`).
-- Аватар уже работает.
-
-### 4.3 ProfileSpiritualTab
-Карты Астро/Нумерология вычисляются из `birthDate` и `name` — изменяются автоматически. Добавить кнопку «Открыть подробный гороскоп» → `/detailed-horoscope`, «Матрица судьбы» → `/numerology`.
-
-### 4.4 ProfileNotificationsTab
-- Каждый toggle сохраняет в `profiles.notification_settings` (jsonb merge) через `updateUserProfile`. Привязать `PushNotificationManager` к разделу.
-
-### 4.5 ProfilePrivacyTab
-- Toggles → `profiles.privacy_settings` jsonb merge.
-- Кнопка «Политика конфиденциальности» → `/privacy-policy`, «Пользовательское соглашение» → `/terms-of-service`.
-
-### 4.6 ProfileSubscriptionTab
-- Кнопка «Оформить подписку» → существующий flow сравнения / `/comparison`.
-- Показ статуса триала (`trial_ends_at`).
-
-### 4.7 ProfileAccountTab
-Уже работает (logout, export, delete, language). Добавить:
-- «Сменить email» → диалог с `supabase.auth.updateUser({ email })` + toast.
-- «Сменить пароль» → диалог (для email-провайдера) с `supabase.auth.updateUser({ password })`.
-
-### 4.8 Аудит существующих кнопок
-Пройти по всем `ProfileRow` во всех табах, убедиться что у каждой есть `onPress` или `to`. Те, что сейчас декоративные (без обработчика), либо подключаем, либо удаляем.
-
-## Файлы
-
-**Создать**
-- `src/components/universe/RecentCallsBlock.tsx`
-- `src/components/universe/RecentQuestionsBlock.tsx`
-- `src/components/profile/ui/EditableRow.tsx`
-- `src/components/profile/dialogs/EditFieldDialog.tsx`
-- `src/components/profile/dialogs/ChangeEmailDialog.tsx`
-- `src/components/profile/dialogs/ChangePasswordDialog.tsx`
-
-**Изменить**
-- `src/pages/UniverseHubPage.tsx`
-- `src/components/MainPageComponents/UserGreetingSection.tsx`
-- `src/components/MainPageComponents/MainContent.tsx`
-- `src/components/AdaptivePactDisplay.tsx`
-- `src/pages/CreatePactPage.tsx`
-- `src/components/profile/ProfileIdentityTab.tsx`
-- `src/components/profile/ProfileNotificationsTab.tsx`
-- `src/components/profile/ProfilePrivacyTab.tsx`
-- `src/components/profile/ProfileSubscriptionTab.tsx`
-- `src/components/profile/ProfileAccountTab.tsx`
-
-Подтверди — реализую.
+- Никаких изменений схемы БД.
+- Никаких новых зависимостей.
+- Edge-функции не трогаем.
+- Файлы:
+  - **edit:** `src/components/PactOath.tsx`, `src/pages/PactsPage.tsx`, `src/components/BreakAscesisDialog.tsx`, `src/pages/NumerologyPage.tsx`, `src/translations/ru.ts`, `src/translations/en.ts`, `src/translations/es.ts` (или единый файл, в зависимости от структуры — проверим при имплементации).

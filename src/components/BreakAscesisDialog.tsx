@@ -22,6 +22,8 @@ import {
   MessageSquare,
   X,
 } from 'lucide-react';
+import { StarField } from '@/components/StarField';
+import { cn } from '@/lib/utils';
 import { usePWAFeatures } from '@/hooks/usePWAFeatures';
 import { useAppStore } from '@/store/useAppStore';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
@@ -222,24 +224,30 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-md overflow-hidden rounded-3xl border border-cosmic-accent/30 bg-cosmic-dark/80 backdrop-blur-xl text-white shadow-[0_0_40px_rgba(116,90,242,0.25)]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl opacity-60">
+          <StarField starCount={30} />
+        </div>
+        <div className="relative z-10">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-destructive" />
-            {getTitle()}
+          <AlertDialogTitle className="flex items-center gap-3 font-serif">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-500/30 to-cosmic-accent/20 border border-red-400/30">
+              <AlertTriangle className="w-5 h-5 text-red-300" />
+            </span>
+            <span className="cosmic-gradient-text text-lg">{getTitle()}</span>
           </AlertDialogTitle>
         </AlertDialogHeader>
 
         {step === 'warning' && (
           <>
             <AlertDialogDescription className="space-y-4">
-              <p>{getWarningMessage()}</p>
+              <p className="text-cosmic-secondary">{getWarningMessage()}</p>
 
-              <Card className="border-destructive/20 bg-destructive/5">
+              <Card className="rounded-2xl border-red-400/20 bg-cosmic-dark/40 backdrop-blur-md">
                 <CardContent className="pt-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertTriangle className="w-4 h-4 text-destructive" />
-                    <span className="font-medium text-destructive">
+                    <AlertTriangle className="w-4 h-4 text-red-300" />
+                    <span className="font-medium text-red-300">
                       {language === 'ru'
                         ? 'Внимание!'
                         : language === 'es'
@@ -247,7 +255,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                           : 'Warning!'}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-cosmic-secondary">
                     {language === 'ru'
                       ? 'Прерывание аскезы негативно влияет на ваше духовное развитие и прогресс в приложении.'
                       : language === 'es'
@@ -258,15 +266,21 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
               </Card>
             </AlertDialogDescription>
 
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleCancel}>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel
+                onClick={handleCancel}
+                className="rounded-2xl border-white/10 bg-cosmic-dark/40 text-cosmic-secondary hover:bg-cosmic-dark/60 hover:text-white"
+              >
                 {language === 'ru'
                   ? 'Продолжить аскезу'
                   : language === 'es'
                     ? 'Continuar ascesis'
                     : 'Continue Ascesis'}
               </AlertDialogCancel>
-              <Button variant="destructive" onClick={handleWarningNext}>
+              <Button
+                onClick={handleWarningNext}
+                className="rounded-2xl bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)] hover:from-red-500 hover:to-red-400"
+              >
                 {language === 'ru'
                   ? 'Все равно прервать'
                   : language === 'es'
@@ -281,8 +295,8 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           <>
             <AlertDialogDescription className="space-y-4">
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
-                <span className="font-medium">
+                <MessageSquare className="w-4 h-4 text-cosmic-accent" />
+                <span className="font-medium text-white">
                   {language === 'ru'
                     ? 'Расскажите, почему вы прерываете аскезу:'
                     : language === 'es'
@@ -295,11 +309,14 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                 {commonReasons.map(reasonOption => (
                   <Button
                     key={reasonOption}
-                    variant={
-                      selectedReason === reasonOption ? 'default' : 'outline'
-                    }
+                    variant="ghost"
                     size="sm"
-                    className="w-full justify-start"
+                    className={cn(
+                      'w-full justify-start rounded-2xl border text-sm transition-colors',
+                      selectedReason === reasonOption
+                        ? 'border-cosmic-accent/60 bg-cosmic-accent/25 text-white'
+                        : 'border-white/10 bg-cosmic-dark/40 text-cosmic-secondary hover:text-white hover:border-cosmic-accent/30'
+                    )}
                     onClick={async () => {
                       try {
                         await haptic.buttonTap();
@@ -327,13 +344,16 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                   }
                   value={reason}
                   onChange={e => setReason(e.target.value)}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] rounded-2xl bg-cosmic-dark/40 border-cosmic-accent/20 text-white placeholder:text-cosmic-secondary/60"
                 />
               )}
             </AlertDialogDescription>
 
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setStep('warning')}>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel
+                onClick={() => setStep('warning')}
+                className="rounded-2xl border-white/10 bg-cosmic-dark/40 text-cosmic-secondary hover:bg-cosmic-dark/60 hover:text-white"
+              >
                 {language === 'ru'
                   ? 'Назад'
                   : language === 'es'
@@ -341,8 +361,8 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                     : 'Back'}
               </AlertDialogCancel>
               <Button
-                variant="destructive"
                 onClick={handleReasonNext}
+                className="rounded-2xl bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)] hover:from-red-500 hover:to-red-400 disabled:opacity-50"
                 disabled={
                   !selectedReason ||
                   (selectedReason.includes('причина') && !reason.trim())
@@ -362,26 +382,26 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
           <>
             <AlertDialogDescription className="space-y-4">
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-destructive" />
-                <span className="font-medium text-destructive">
+                <Target className="w-4 h-4 text-red-300" />
+                <span className="font-medium text-red-300">
                   {consequences.title}
                 </span>
               </div>
 
               <ul className="space-y-2">
                 {consequences.items.map((item, index) => (
-                  <li key={index} className="flex items-center gap-2 text-sm">
-                    <X className="w-3 h-3 text-destructive flex-shrink-0" />
+                  <li key={index} className="flex items-center gap-2 text-sm text-cosmic-secondary">
+                    <X className="w-3 h-3 text-red-300 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
 
-              <Card className="border-amber-200 bg-amber-50">
+              <Card className="rounded-2xl border-cosmic-gold/30 bg-cosmic-gold/10 backdrop-blur-md">
                 <CardContent className="pt-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Heart className="w-4 h-4 text-amber-600" />
-                    <span className="font-medium text-amber-800">
+                    <Heart className="w-4 h-4 text-cosmic-gold" />
+                    <span className="font-medium text-cosmic-gold">
                       {language === 'ru'
                         ? 'Помните:'
                         : language === 'es'
@@ -389,7 +409,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
                           : 'Remember:'}
                     </span>
                   </div>
-                  <p className="text-sm text-amber-700">
+                  <p className="text-sm text-cosmic-secondary">
                     {language === 'ru'
                       ? 'Духовный путь - это марафон, а не спринт. Каждая попытка делает вас сильнее.'
                       : language === 'es'
@@ -400,15 +420,21 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
               </Card>
             </AlertDialogDescription>
 
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setStep('reason')}>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel
+                onClick={() => setStep('reason')}
+                className="rounded-2xl border-white/10 bg-cosmic-dark/40 text-cosmic-secondary hover:bg-cosmic-dark/60 hover:text-white"
+              >
                 {language === 'ru'
                   ? 'Назад'
                   : language === 'es'
                     ? 'Atrás'
                     : 'Back'}
               </AlertDialogCancel>
-              <Button variant="destructive" onClick={handleConfirm}>
+              <Button
+                onClick={handleConfirm}
+                className="rounded-2xl bg-gradient-to-r from-red-600 to-red-500 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)] hover:from-red-500 hover:to-red-400"
+              >
                 <Zap className="w-4 h-4 mr-1" />
                 {language === 'ru'
                   ? 'Прервать аскезу'
@@ -419,6 +445,7 @@ export const BreakAscesisDialog: React.FC<BreakAscesisDialogProps> = ({
             </AlertDialogFooter>
           </>
         )}
+        </div>
       </AlertDialogContent>
     </AlertDialog>
   );
