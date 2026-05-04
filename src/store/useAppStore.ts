@@ -168,6 +168,12 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
         const { reset: resetRevenueCat } = useRevenueCatStore.getState();
         resetRevenueCat();
 
+        // Detach RevenueCat appUserID (best effort, native only)
+        try {
+          const { revenueCatService } = await import('@/utils/revenueCat');
+          await revenueCatService.logOut();
+        } catch (_) {}
+
         // Sign out globally
         try {
           await supabase.auth.signOut({ scope: 'global' });
