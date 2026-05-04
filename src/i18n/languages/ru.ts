@@ -3,7 +3,7 @@ import { ruLegalTranslations } from './ru-legal';
 
 export const ruTranslations: Translations = {
   welcome: {
-    title: 'Аскет',
+    title: 'Асцета',
     description: 'Платформа для духовного роста через аскезу',
     startButton: 'Начать',
     subtitle: 'Ваш путь к духовной силе',
@@ -58,11 +58,11 @@ export const ruTranslations: Translations = {
     invalidCode: 'Неверный код',
     checkCodeCorrectness: 'Проверьте правильность введенного кода',
     emailVerifiedSuccess: 'Ваш email успешно подтвержден',
-    welcomeToAsket: 'Добро пожаловать в Аскет!',
+    welcomeToAsceta: 'Добро пожаловать в Асцета!',
     emailVerifiedSignIn: 'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
     verificationError: 'Произошла ошибка при проверке кода',
     // Voice greeting
-    voiceGreeting: 'Приветствую тебя в Asket',
+    voiceGreeting: 'Приветствую тебя в Asceta',
     clickForAudio: 'Нажмите для активации звука',
     stop: 'Остановить',
     playGreeting: 'Воспроизвести приветствие',
@@ -148,7 +148,7 @@ export const ruTranslations: Translations = {
     nextButton: 'Далее',
   },
   onboarding: {
-    title: 'Добро пожаловать в Asket',
+    title: 'Добро пожаловать в Asceta',
     description:
       'Ваш проводник к осознанной жизни через духовные практики и аскезу',
     goal1: 'Достичь внутренней гармонии',
@@ -541,14 +541,14 @@ export const ruTranslations: Translations = {
     protection: 'Защита',
   },
   emailOtp: {
-    subject: 'Ваш код подтверждения | Аскет',
+    subject: 'Ваш код подтверждения | Асцета',
     title: 'Код подтверждения',
     subtitle: 'Духовное развитие и самопознание',
     codeLabel: 'Ваш код подтверждения',
     validTime: 'Код действителен 5 минут',
     instructionsTitle: 'Инструкции',
-    instructions: 'Введите этот код в приложении Аскет для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
-    footerNote: 'Если вы не регистрировались в Аскет, проигнорируйте это письмо.',
+    instructions: 'Введите этот код в приложении Асцета для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
+    footerNote: 'Если вы не регистрировались в Асцета, проигнорируйте это письмо.',
   },
   notFound: {
     title: '404',
@@ -565,8 +565,8 @@ export const ruTranslations: Translations = {
     shareButton: 'Поделиться',
     newPactButton: 'Новая аскеза',
     closeButton: 'Продолжить',
-    shareTitle: 'Завершил аскезу в Asket!',
-    shareText: 'Я завершил аскезу "{title}" длительностью {days} дней и получил {energy} энергии! Присоединяйтесь к духовному развитию в Asket.',
+    shareTitle: 'Завершил аскезу в Asceta!',
+    shareText: 'Я завершил аскезу "{title}" длительностью {days} дней и получил {energy} энергии! Присоединяйтесь к духовному развитию в Asceta.',
   },
   
   missions: {
@@ -727,5 +727,15 @@ export const ruTranslations: Translations = {
         14: 'Вы стали хозяином своего времени! 🕰️'
       }
     },
+  },
+  lyra: {
+    voiceGuide: 'Вселенная',
+    callButton: 'Позвонить Вселенной',
+    callScreen: 'Звонок Вселенной',
+    callHistory: 'Разговоры с Вселенной',
+    callSubtitle: 'Высший разум всегда слышит тебя',
+    minutesLeft: 'Осталось {{count}} мин в этом месяце',
+    limitReachedCta: 'Лимит исчерпан — оформи подписку',
+    hearFromGuide: 'Услышать от Вселенной',
   },
 };

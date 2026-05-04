@@ -27,7 +27,7 @@ const getTranslations = (language: string) => {
         invalidCode: 'Неверный код',
         checkCodeCorrectness: 'Проверьте правильность введенного кода',
         emailVerifiedSuccess: 'Ваш email успешно подтвержден',
-        welcomeToAsket: 'Добро пожаловать в Аскет!',
+        welcomeToAsceta: 'Добро пожаловать в Аскет!',
         emailVerifiedSignIn:
           'Ваш email успешно подтвержден. Теперь войдите в систему с вашими данными.',
         verificationError: 'Произошла ошибка при проверке кода',
@@ -45,7 +45,7 @@ const getTranslations = (language: string) => {
         invalidCode: 'Código inválido',
         checkCodeCorrectness: 'Verifica la correcta introducción del código',
         emailVerifiedSuccess: 'Tu email ha sido verificado exitosamente',
-        welcomeToAsket: '¡Bienvenido a Asket!',
+        welcomeToAsceta: '¡Bienvenido a Asceta!',
         emailVerifiedSignIn:
           'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
         verificationError: 'Ocurrió un error al verificar el código',
@@ -63,7 +63,7 @@ const getTranslations = (language: string) => {
         invalidCode: 'Invalid code',
         checkCodeCorrectness: 'Check the correctness of the entered code',
         emailVerifiedSuccess: 'Your email has been successfully verified',
-        welcomeToAsket: 'Welcome to Asket!',
+        welcomeToAsceta: 'Welcome to Asceta!',
         emailVerifiedSignIn:
           'Your email has been successfully verified. Now sign in with your credentials.',
         verificationError: 'An error occurred while verifying the code',
@@ -505,7 +505,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (
 
         toast({
           title: t.emailVerifiedSuccess,
-          description: t.welcomeToAsket,
+          description: t.welcomeToAsceta,
         });
 
         console.log('🔍 === OTP VERIFICATION WITH USER CREATION END ===');

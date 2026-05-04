@@ -7,7 +7,7 @@ export const TermsOfService: React.FC = () => {
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-serif text-cosmic-text">
-          Условия использования Asket App
+          Условия использования Asceta App
         </CardTitle>
         <p className="text-sm text-cosmic-muted">
           Дата последнего обновления: 7 июля 2025 г.
@@ -21,7 +21,7 @@ export const TermsOfService: React.FC = () => {
               </h3>
               <p className="text-sm leading-relaxed">
                 Эти Условия использования ("Условия") регулируют ваш доступ и
-                использование приложения Asket App ("Приложение"), доступного на
+                использование приложения Asceta App ("Приложение"), доступного на
                 различных платформах, включая мобильные устройства (Android,
                 iOS), веб-браузеры и Telegram Mini App, предоставляемого
                 RemissionSoft. Используя Приложение, вы соглашаетесь соблюдать

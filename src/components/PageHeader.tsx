@@ -51,10 +51,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <div className="flex items-center space-x-2 shrink-0">
           <img
             src="/asket-logo.png"
-            alt="Asket Logo"
+            alt="Asceta Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
-          <span className="text-white font-serif text-sm">Asket</span>
+          <span className="text-white font-serif text-sm">Asceta</span>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ export const PrivacyPolicy: React.FC = () => {
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-serif text-cosmic-text">
-          {t.legal?.privacyPolicyTitle || 'Политика конфиденциальности Asket App'}
+          {t.legal?.privacyPolicyTitle || 'Политика конфиденциальности Asceta App'}
         </CardTitle>
         <p className="text-sm text-cosmic-muted">
           {t.legal?.lastUpdated || 'Дата последнего обновления'}: {t.legal?.currentDate || '17 августа 2025 г.'}
@@ -23,7 +23,7 @@ export const PrivacyPolicy: React.FC = () => {
                 {t.legal?.introduction || 'Введение'}
               </h3>
               <p className="text-sm leading-relaxed">
-                {t.legal?.introText || 'Добро пожаловать в Asket App! Мы ценим ваше доверие и стремимся обеспечить максимальную прозрачность в отношении обработки ваших личных данных. Эта Политика конфиденциальности объясняет, как Asket App собирает, использует, хранит и защищает информацию, которую вы предоставляете нам при использовании нашего приложения, доступного на различных платформах, включая мобильные устройства (Android, iOS), веб-браузеры и Telegram Mini App.'}
+                {t.legal?.introText || 'Добро пожаловать в Asceta App! Мы ценим ваше доверие и стремимся обеспечить максимальную прозрачность в отношении обработки ваших личных данных. Эта Политика конфиденциальности объясняет, как Asceta App собирает, использует, хранит и защищает информацию, которую вы предоставляете нам при использовании нашего приложения, доступного на различных платформах, включая мобильные устройства (Android, iOS), веб-браузеры и Telegram Mini App.'}
               </p>
             </section>
 
@@ -82,7 +82,7 @@ export const PrivacyPolicy: React.FC = () => {
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm ml-4">
                 <li>
-                  <strong>{t.legal?.provideServices || 'Предоставление и поддержка сервиса:'}</strong> {t.legal?.provideServicesText || 'Обеспечение работы Asket App на всех доступных платформах, предоставление персонализированного духовного пути, отслеживание прогресса в аскезах и медитациях.'}
+                  <strong>{t.legal?.provideServices || 'Предоставление и поддержка сервиса:'}</strong> {t.legal?.provideServicesText || 'Обеспечение работы Asceta App на всех доступных платформах, предоставление персонализированного духовного пути, отслеживание прогресса в аскезах и медитациях.'}
                 </li>
                 <li>
                   <strong>{t.legal?.personalization || 'Персонализация:'}</strong> {t.legal?.personalizationText || 'Предоставление ответов от Вселенной, астрологических данных и гороскопов, адаптированных к вашему профилю.'}
@@ -120,7 +120,7 @@ export const PrivacyPolicy: React.FC = () => {
                   <strong>{t.legal?.legal || 'По закону:'}</strong> {t.legal?.legalText || 'Если этого требует закон, судебное постановление или другой юридический процесс.'}
                 </li>
                 <li>
-                  <strong>{t.legal?.protection || 'Для защиты наших прав:'}</strong> {t.legal?.protectionText || 'Для защиты прав, собственности или безопасности Asket App, наших пользователей или общественности.'}
+                  <strong>{t.legal?.protection || 'Для защиты наших прав:'}</strong> {t.legal?.protectionText || 'Для защиты прав, собственности или безопасности Asceta App, наших пользователей или общественности.'}
                 </li>
               </ul>
             </section>

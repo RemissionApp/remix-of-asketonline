@@ -251,7 +251,7 @@ const LoginPage: React.FC = () => {
 
       <div className="relative z-10 max-w-md w-full mx-auto px-4">
         <h1 className="text-4xl font-serif text-white text-center mb-8">
-          Asket
+          Asceta
         </h1>
 
         {otpSent ? (

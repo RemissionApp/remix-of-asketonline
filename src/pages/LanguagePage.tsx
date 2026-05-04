@@ -77,7 +77,7 @@ const LanguagePage = () => {
             isReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h1 className="text-4xl font-serif text-white mb-8">Asket</h1>
+          <h1 className="text-4xl font-serif text-white mb-8">Asceta</h1>
 
           <p className="text-white text-lg mb-12">{getWelcomeText()}</p>
 

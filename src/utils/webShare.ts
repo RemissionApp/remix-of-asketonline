@@ -122,8 +122,8 @@ export const shareUtils = {
     totalDays: number
   ) => {
     return shareContent({
-      title: 'Мой прогресс в Asket App',
-      text: `Я прохожу аскезу "${pactTitle}" уже ${completedDays} из ${totalDays} дней! 🔥\nПрисоединяйся к духовному развитию в Asket App`,
+      title: 'Мой прогресс в Asceta App',
+      text: `Я прохожу аскезу "${pactTitle}" уже ${completedDays} из ${totalDays} дней! 🔥\nПрисоединяйся к духовному развитию в Asceta App`,
       url: 'https://asket.online',
     });
   },
@@ -134,8 +134,8 @@ export const shareUtils = {
     achievementDescription: string
   ) => {
     return shareContent({
-      title: 'Новое достижение в Asket App! 🏆',
-      text: `Получил достижение: "${achievementTitle}"\n${achievementDescription}\nРазвивайся вместе со мной в Asket App!`,
+      title: 'Новое достижение в Asceta App! 🏆',
+      text: `Получил достижение: "${achievementTitle}"\n${achievementDescription}\nРазвивайся вместе со мной в Asceta App!`,
       url: 'https://asket.online',
     });
   },
@@ -144,7 +144,7 @@ export const shareUtils = {
   shareUniverseWisdom: (wisdom: string) => {
     return shareContent({
       title: 'Мудрость от Вселенной 🌌',
-      text: `"${wisdom}"\n\nПолучено через Asket App - твой путь к просветлению`,
+      text: `"${wisdom}"\n\nПолучено через Asceta App - твой путь к просветлению`,
       url: 'https://asket.online',
     });
   },
@@ -152,7 +152,7 @@ export const shareUtils = {
   // Поделиться приложением
   shareApp: () => {
     return shareContent({
-      title: 'Asket App - Путь к просветлению',
+      title: 'Asceta App - Путь к просветлению',
       text: 'Открой для себя мир аскезы, медитации и связи с Космосом. Развивайся духовно каждый день! 🧘‍♀️✨',
       url: 'https://asket.online',
     });

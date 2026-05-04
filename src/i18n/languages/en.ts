@@ -3,7 +3,7 @@ import { enLegalTranslations } from './en-legal';
 
 export const enTranslations: Translations = {
   welcome: {
-    title: 'Asket',
+    title: 'Asceta',
     description: 'Platform for spiritual growth through ascesis',
     startButton: 'Start',
     subtitle: 'Your path to spiritual power',
@@ -58,11 +58,11 @@ export const enTranslations: Translations = {
     invalidCode: 'Invalid code',
     checkCodeCorrectness: 'Check the correctness of the entered code',
     emailVerifiedSuccess: 'Your email has been successfully verified',
-    welcomeToAsket: 'Welcome to Asket!',
+    welcomeToAsceta: 'Welcome to Asceta!',
     emailVerifiedSignIn: 'Your email has been successfully verified. Now sign in with your credentials.',
     verificationError: 'An error occurred while verifying the code',
     // Voice greeting
-    voiceGreeting: 'Welcome to Asket',
+    voiceGreeting: 'Welcome to Asceta',
     clickForAudio: 'Click to activate sound',
     stop: 'Stop',
     playGreeting: 'Play greeting',
@@ -147,7 +147,7 @@ export const enTranslations: Translations = {
     nextButton: 'Next',
   },
   onboarding: {
-    title: 'Welcome to Asket',
+    title: 'Welcome to Asceta',
     description:
       'Your guide to a mindful life through spiritual practices and ascesis',
     goal1: 'Achieve inner harmony',
@@ -448,14 +448,14 @@ export const enTranslations: Translations = {
     },
   },
   emailOtp: {
-    subject: 'Your verification code | Asket',
+    subject: 'Your verification code | Asceta',
     title: 'Verification Code',
     subtitle: 'Spiritual development and self-knowledge',
     codeLabel: 'Your verification code',
     validTime: 'Code valid for 5 minutes',
     instructionsTitle: 'Instructions',
-    instructions: 'Enter this code in the Asket app to verify your email address. The code is valid for 5 minutes.',
-    footerNote: 'If you didn\'t sign up for Asket, please ignore this email.',
+    instructions: 'Enter this code in the Asceta app to verify your email address. The code is valid for 5 minutes.',
+    footerNote: 'If you didn\'t sign up for Asceta, please ignore this email.',
   },
   deleteAccount: {
     title: 'Delete Account',
@@ -645,7 +645,17 @@ export const enTranslations: Translations = {
     shareButton: 'Share',
     newPactButton: 'New Ascesis',
     closeButton: 'Continue',
-    shareTitle: 'Completed ascesis in Asket!',
-    shareText: 'I completed the ascesis "{title}" for {days} days and earned {energy} energy! Join spiritual development in Asket.',
+    shareTitle: 'Completed ascesis in Asceta!',
+    shareText: 'I completed the ascesis "{title}" for {days} days and earned {energy} energy! Join spiritual development in Asceta.',
+  },
+  lyra: {
+    voiceGuide: 'Lyra',
+    callButton: 'Connect with Lyra',
+    callScreen: 'Your session with Lyra',
+    callHistory: 'Past sessions with Lyra',
+    callSubtitle: 'Your cosmic guide, always listening',
+    minutesLeft: '{{count}} min remaining this month',
+    limitReachedCta: 'Monthly limit reached — upgrade to continue',
+    hearFromGuide: 'Hear from Lyra',
   },
 };

@@ -3,7 +3,7 @@ import { esLegalTranslations } from './es-legal';
 
 export const esTranslations: Translations = {
   welcome: {
-    title: 'Asket',
+    title: 'Asceta',
     description:
       'Plataforma para el crecimiento espiritual a través de la ascesis',
     startButton: 'Comenzar',
@@ -59,11 +59,11 @@ export const esTranslations: Translations = {
     invalidCode: 'Código inválido',
     checkCodeCorrectness: 'Verifica la correcta introducción del código',
     emailVerifiedSuccess: 'Tu email ha sido verificado exitosamente',
-    welcomeToAsket: '¡Bienvenido a Asket!',
+    welcomeToAsceta: '¡Bienvenido a Asceta!',
     emailVerifiedSignIn: 'Tu email ha sido verificado exitosamente. Ahora inicia sesión con tus credenciales.',
     verificationError: 'Ocurrió un error al verificar el código',
     // Voice greeting
-    voiceGreeting: 'Bienvenido a Asket',
+    voiceGreeting: 'Bienvenido a Asceta',
     clickForAudio: 'Haz clic para activar el sonido',
     stop: 'Detener',
     playGreeting: 'Reproducir saludo',
@@ -147,7 +147,7 @@ export const esTranslations: Translations = {
     nextButton: 'Siguiente',
   },
   onboarding: {
-    title: 'Bienvenido a Asket',
+    title: 'Bienvenido a Asceta',
     description:
       'Tu guía hacia una vida consciente a través de prácticas espirituales y ascesis',
     goal1: 'Lograr armonía interior',
@@ -414,14 +414,14 @@ export const esTranslations: Translations = {
   },
   legal: esLegalTranslations,
   emailOtp: {
-    subject: 'Tu código de verificación | Asket',
+    subject: 'Tu código de verificación | Asceta',
     title: 'Código de verificación',
     subtitle: 'Desarrollo espiritual y autoconocimiento',
     codeLabel: 'Tu código de verificación',
     validTime: 'Código válido por 5 minutos',
     instructionsTitle: 'Instrucciones',
-    instructions: 'Ingresa este código en la aplicación Asket para verificar tu dirección de email. El código es válido por 5 minutos.',
-    footerNote: 'Si no te registraste en Asket, ignora este email.',
+    instructions: 'Ingresa este código en la aplicación Asceta para verificar tu dirección de email. El código es válido por 5 minutos.',
+    footerNote: 'Si no te registraste en Asceta, ignora este email.',
   },
   deleteAccount: {
     title: 'Eliminar Cuenta',
@@ -611,7 +611,17 @@ export const esTranslations: Translations = {
     shareButton: 'Compartir',
     newPactButton: 'Nueva Ascesis',
     closeButton: 'Continuar',
-    shareTitle: '¡Completé ascesis en Asket!',
-    shareText: 'Completé la ascesis "{title}" durante {days} días y gané {energy} energía! Únete al desarrollo espiritual en Asket.',
+    shareTitle: '¡Completé ascesis en Asceta!',
+    shareText: 'Completé la ascesis "{title}" durante {days} días y gané {energy} energía! Únete al desarrollo espiritual en Asceta.',
+  },
+  lyra: {
+    voiceGuide: 'Lyra',
+    callButton: 'Conectar con Lyra',
+    callScreen: 'Tu sesión con Lyra',
+    callHistory: 'Conversaciones con Lyra',
+    callSubtitle: 'Tu guía espiritual, siempre presente',
+    minutesLeft: 'Tienes {{count}} minutos este mes',
+    limitReachedCta: 'Límite alcanzado — suscríbete para continuar',
+    hearFromGuide: 'Escuchar de Lyra',
   },
 };

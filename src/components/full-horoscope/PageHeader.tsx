@@ -57,7 +57,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             alt="Universe Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
-          <span className="text-white font-serif text-lg">Asket</span>
+          <span className="text-white font-serif text-lg">Asceta</span>
         </div>
       </div>
       <CosmicButton
