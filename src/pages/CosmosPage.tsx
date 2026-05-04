@@ -15,6 +15,25 @@ const titles = {
   es: 'Cosmos',
 };
 
+const ZodiacAstroMini: React.FC<{ lang: 'ru' | 'en' | 'es' }> = ({ lang }) => {
+  const { userProfile } = useAppStore();
+  const birth = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
+  const sign = birth ? getZodiacSign(birth) : null;
+  if (!sign) return null;
+  const d = zodiacData[sign];
+  const label = { ru: 'Твой знак', en: 'Your sign', es: 'Tu signo' }[lang];
+  return (
+    <div className="glass-gold glass-shine relative rounded-2xl p-4 overflow-hidden">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-6xl opacity-15 select-none">{d.symbol}</div>
+      <div className="relative z-10">
+        <div className="text-[10px] uppercase tracking-widest text-white/40 mb-1">{label}</div>
+        <div className="text-xl font-semibold text-white">{d.symbol} {d.name[lang]}</div>
+        <div className="text-xs text-white/55 mt-1">{d.element} · {d.ruler}</div>
+      </div>
+    </div>
+  );
+};
+
 const CosmosPage: React.FC = () => {
   const { language } = useAppStore();
   const lang = (language as keyof typeof titles) ?? 'ru';
