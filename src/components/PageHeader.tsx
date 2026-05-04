@@ -38,7 +38,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       <div className="glass-strong glass-shimmer pointer-events-auto relative flex items-center rounded-2xl px-2 py-2 min-h-12 overflow-hidden">
         <button
           onClick={handleBack}
-          className="flex items-center justify-center w-9 h-9 rounded-full bg-cosmic-accent/10 hover:bg-cosmic-accent/20 transition-colors text-cosmic-accent shrink-0"
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-white/5 border border-white/15 backdrop-blur-sm shadow-[0_0_18px_rgba(139,92,246,0.35)] hover:bg-white/10 transition-colors text-white shrink-0"
           aria-label="Back"
         >
           <ArrowLeft size={18} />
