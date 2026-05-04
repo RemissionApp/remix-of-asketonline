@@ -53,11 +53,12 @@ export const useElevenLabsConversation = () => {
               ? 'Conversaciones recientes: '
               : 'Recent calls: ') +
           summaries
-            .map((s: any) => `[${new Date(s.called_at).toLocaleDateString()}] ${s.summary || ''}`)
+            .map((s: any) => `[${new Date(s.called_at).toLocaleDateString()}] ${(s.summary || '').slice(0, 300)}`)
             .join(' | ')
         : '';
 
-      return [intro, pactsLine, historyLine].filter(Boolean).join('\n');
+      // Hard cap total context to ~2000 chars to stay within token budget
+      return [intro, pactsLine, historyLine].filter(Boolean).join('\n').slice(0, 2000);
     } catch (e) {
       logger.error('Failed to build context', e);
       return null;
