@@ -69,13 +69,13 @@ export const createUniverseQuestionSlice: StateCreator<
     if (!user) return;
 
     try {
-      // Convert from app format to database format
+      // Insert without client-side id (DB generates uuid).
+      // The previous code used Date.now().toString() which is not a valid UUID
+      // and caused inserts to silently fail.
       const { error } = await supabase.from('universe_questions').insert({
-        id: question.id,
         user_id: user.id,
         question: question.question,
         answer: question.answer,
-        created_at: question.created_at,
       });
 
       if (error) throw error;

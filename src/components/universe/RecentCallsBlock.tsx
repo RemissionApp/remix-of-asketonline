@@ -56,7 +56,7 @@ export const RecentCallsBlock: React.FC = () => {
     lang === 'ru' ? ru : lang === 'es' ? es : en;
 
   return (
-    <section className="rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/20 backdrop-blur-md shadow-lg shadow-cosmic-accent/20 p-4">
+    <section className="rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/30 backdrop-blur-md shadow-lg shadow-cosmic-accent/30 p-4">
       <header className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo flex items-center justify-center shadow-[0_0_18px_rgba(139,92,246,0.45)]">
