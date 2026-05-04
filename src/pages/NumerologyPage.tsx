@@ -304,28 +304,6 @@ const NumerologyPage = () => {
     </div>
   );
 
-  if (!userProfile?.isPro) {
-    return (
-      <div className="min-h-screen flex flex-col bg-cosmic pb-20">
-        <StarField starCount={50} />
-
-        <PageHeader title="Нумерологический анализ" />
-
-        <div className="flex-1 flex items-center justify-center p-4 pt-20">
-          <Card className="max-w-md w-full bg-cosmic-dark/80 backdrop-blur-md border-cosmic-accent/20">
-            <ProFeatureOverlay
-              title="Нумерологический анализ"
-              message="Этот раздел доступен только пользователям PRO"
-            >
-              <div className="h-96"></div>
-            </ProFeatureOverlay>
-          </Card>
-        </div>
-        <BottomNavigation />
-      </div>
-    );
-  }
-
   return numerologyContent;
 };
 
