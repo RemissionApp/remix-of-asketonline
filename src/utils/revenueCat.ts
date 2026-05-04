@@ -60,6 +60,20 @@ export class RevenueCatService {
     }
   }
 
+  /**
+   * Отвязывает текущий appUserID. Безопасно вызывать на web/desktop —
+   * там SDK не сконфигурирован и ошибка просто проглатывается.
+   * Используется при удалении аккаунта / смене пользователя.
+   */
+  async logOut(): Promise<void> {
+    try {
+      if (!Capacitor.isNativePlatform()) return;
+      await (Purchases as any).logOut();
+    } catch (e) {
+      console.warn('RevenueCat logOut failed (non-fatal)', e);
+    }
+  }
+
   async getOfferings() {
     try {
       const offerings = await Purchases.getOfferings();
