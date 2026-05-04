@@ -6,6 +6,8 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppStore } from '@/store/useAppStore';
+import { RecentCallsBlock } from '@/components/universe/RecentCallsBlock';
+import { RecentQuestionsBlock } from '@/components/universe/RecentQuestionsBlock';
 
 const titles = { ru: 'Вселенная', en: 'Lyra', es: 'Lyra' };
 
@@ -64,6 +66,9 @@ const UniverseHubPage: React.FC = () => {
               </div>
             </div>
           </button>
+
+          <RecentCallsBlock />
+          <RecentQuestionsBlock />
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
           <BottomNavigation />

@@ -39,7 +39,7 @@ export const MainContent: React.FC<MainContentProps> = ({
 }) => {
   const { stats } = useUserProgress();
   return (
-    <main className="flex-1 container mx-auto px-3 py-4 pt-16 sm:px-4 sm:py-6 sm:pt-20 flex flex-col items-center gap-3 sm:gap-4">
+    <main className="flex-1 container mx-auto px-3 py-2 pt-10 sm:px-4 sm:py-3 sm:pt-12 flex flex-col items-center gap-2 sm:gap-3">
       {/* 1. User Greeting Section - First */}
       <UserGreetingSection />
 

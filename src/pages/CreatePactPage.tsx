@@ -11,15 +11,12 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
-import { useDailyLimits } from '@/hooks/useDailyLimits';
-import { UpgradePrompt } from '@/components/UpgradePrompt';
 
 const CreatePactPage: React.FC = () => {
   const { addPact, setActiveScreen, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const { generateAndPlaySpeech, stopSpeech } = useTextToSpeech();
-  const { limits } = useDailyLimits();
 
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
@@ -395,7 +392,6 @@ const CreatePactPage: React.FC = () => {
   };
 
   const showStandardLayout = step < 3;
-  const canCreatePact = !limits || limits.pacts.canUse;
 
   return (
     <MobileOptimizedInterface>
@@ -410,22 +406,7 @@ const CreatePactPage: React.FC = () => {
             />
 
             <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
-              {!canCreatePact ? (
-                <UpgradePrompt
-                  feature={
-                    language === 'ru'
-                      ? 'аскез'
-                      : language === 'es'
-                        ? 'ascetismos'
-                        : 'asceticisms'
-                  }
-                  currentUsage={
-                    limits ? `${limits.pacts.used}/${limits.pacts.limit}` : ''
-                  }
-                />
-              ) : (
-                renderStep()
-              )}
+              {renderStep()}
 
               {/* Progress + Next */}
               <div className="mt-2 px-1">
@@ -442,7 +423,7 @@ const CreatePactPage: React.FC = () => {
                   ))}
                 </div>
 
-                {step < 3 && canCreatePact && (
+                {step < 3 && (
                   <CosmicButton
                     onClick={handleNext}
                     className="w-full"

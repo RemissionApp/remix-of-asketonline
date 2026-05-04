@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Camera, Calendar, Compass, Flag, Flame, Trophy, Sparkles } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { ProfileSection } from './ui/ProfileSection';
@@ -7,6 +7,8 @@ import { ProfileStatCard } from './ui/ProfileStatCard';
 import { useProfileLang, RANK_LABELS, getRankProgress } from './i18n';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { EditFieldDialog, FieldKind } from './dialogs/EditFieldDialog';
+import { z } from 'zod';
 
 export const ProfileIdentityTab: React.FC = () => {
   const lang = useProfileLang();
@@ -47,6 +49,41 @@ export const ProfileIdentityTab: React.FC = () => {
     } catch (err: any) {
       toast.error(err?.message ?? 'Error');
     }
+  };
+
+  type EditField = 'name' | 'birthDate' | 'goal';
+  const [editing, setEditing] = useState<EditField | null>(null);
+
+  const initialFor = (f: EditField) => {
+    if (f === 'name') return userProfile?.name || '';
+    if (f === 'goal') return userProfile?.goal || '';
+    if (f === 'birthDate' && userProfile?.birthDate) {
+      const d = new Date(userProfile.birthDate);
+      return d.toISOString().split('T')[0];
+    }
+    return '';
+  };
+
+  const labelFor = (f: EditField) =>
+    f === 'name' ? t.name : f === 'birthDate' ? t.birth : t.goal;
+
+  const kindFor = (f: EditField): FieldKind =>
+    f === 'birthDate' ? 'date' : f === 'goal' ? 'textarea' : 'text';
+
+  const schemaFor = (f: EditField) =>
+    f === 'name'
+      ? z.string().trim().min(1, 'Required').max(60)
+      : f === 'goal'
+        ? z.string().trim().max(200)
+        : z.string().refine(v => !v || !isNaN(Date.parse(v)), 'Invalid date');
+
+  const handleSave = async (f: EditField, v: string) => {
+    const payload: any = {};
+    if (f === 'name') payload.name = v.trim();
+    if (f === 'goal') payload.goal = v.trim();
+    if (f === 'birthDate') payload.birthDate = v ? new Date(v) : null;
+    await updateUserProfile(payload);
+    toast.success('✓');
   };
 
   const initials = (userProfile?.name || user?.email || '?').slice(0, 1).toUpperCase();
@@ -109,10 +146,24 @@ export const ProfileIdentityTab: React.FC = () => {
 
       {/* Personal */}
       <ProfileSection title={t.info}>
-        <ProfileRow icon={Sparkles} iconColor="purple" label={t.name} value={userProfile?.name || t.notSet} rounded="top" />
-        <ProfileRow icon={Calendar} iconColor="blue"   label={t.birth} value={birthDateStr} rounded="middle" />
-        <ProfileRow icon={Flag}     iconColor="gold"   label={t.goal}  value={userProfile?.goal || t.notSet} rounded="bottom" />
+        <ProfileRow icon={Sparkles} iconColor="purple" label={t.name} value={userProfile?.name || t.notSet} rounded="top" onPress={() => setEditing('name')} />
+        <ProfileRow icon={Calendar} iconColor="blue"   label={t.birth} value={birthDateStr} rounded="middle" onPress={() => setEditing('birthDate')} />
+        <ProfileRow icon={Flag}     iconColor="gold"   label={t.goal}  value={userProfile?.goal || t.notSet} rounded="bottom" onPress={() => setEditing('goal')} />
       </ProfileSection>
+
+      {editing && (
+        <EditFieldDialog
+          open={!!editing}
+          onOpenChange={o => !o && setEditing(null)}
+          title={labelFor(editing)}
+          kind={kindFor(editing)}
+          initialValue={initialFor(editing)}
+          schema={schemaFor(editing) as any}
+          onSave={v => handleSave(editing, v)}
+          saveLabel={({ ru: 'Сохранить', en: 'Save', es: 'Guardar' } as any)[lang]}
+          cancelLabel={({ ru: 'Отмена', en: 'Cancel', es: 'Cancelar' } as any)[lang]}
+        />
+      )}
     </div>
   );
 };
