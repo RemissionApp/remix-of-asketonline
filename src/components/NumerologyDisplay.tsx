@@ -1,15 +1,10 @@
 import React from 'react';
 import { Calculator } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
-import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
-import { useTranslations } from '@/hooks/useTranslations';
 import { NumerologyContent } from '@/components/numerology/NumerologyContent';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 export const NumerologyDisplay: React.FC = () => {
-  const { userProfile, language, user } = useAppStore();
-  const { t } = useTranslations();
-  const { hasActiveSubscription } = useRevenueCat(user?.id);
+  const { userProfile, language } = useAppStore();
 
   // Only display if user has a birthdate
   if (!userProfile?.birthDate) {
@@ -77,68 +72,40 @@ export const NumerologyDisplay: React.FC = () => {
         : 'More details';
 
   // Create the numerology content component
-  const numerologyContent = (
-    <div className="glass-card mb-4 sm:mb-6 w-full">
-      <div className="p-3 sm:p-4">
-        <div className="flex items-center mb-2 sm:mb-3">
-          <div className="glass-icon-wrap !p-1.5 sm:!p-2 !mr-2 sm:!mr-3">
-            <Calculator size={18} className="text-cosmic-accent" />
-          </div>
-          <div>
+  return (
+    <div className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 shadow-lg shadow-cosmic-accent/10">
+      <div className="flex items-start gap-4">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+          <Calculator size={26} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="mb-3">
             <h3
-              className={`text-base sm:text-xl font-medium ${
+              className={`text-base sm:text-xl font-medium text-white ${
                 language === 'en' ? 'font-serif' : 'font-display'
               }`}
             >
               {numerologyText}
             </h3>
+            <p className="mt-0.5 text-xs text-cosmic-secondary">{description}</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
+            <NumerologyContent
+              lifePathNumber={lifePathNumber}
+              expressionNumber={expressionNumber}
+              personalityNumber={personalityNumber}
+              title={title}
+              description={description}
+              lifePathText={lifePathText}
+              expressionText={expressionText}
+              personalityText={personalityText}
+              moreDetailsText={moreDetailsText}
+            />
           </div>
         </div>
-        <NumerologyContent
-          lifePathNumber={lifePathNumber}
-          expressionNumber={expressionNumber}
-          personalityNumber={personalityNumber}
-          title={title}
-          description={description}
-          lifePathText={lifePathText}
-          expressionText={expressionText}
-          personalityText={personalityText}
-          moreDetailsText={moreDetailsText}
-        />
       </div>
     </div>
   );
-
-  // If user is not PRO, wrap with ProFeatureOverlay
-  if (!hasActiveSubscription) {
-    const proUnlockText =
-      language === 'ru'
-        ? 'Открой функции PRO'
-        : language === 'es'
-          ? 'Desbloquea funciones PRO'
-          : 'Unlock PRO functions';
-
-    return (
-      <ProFeatureOverlay
-        title={numerologyText}
-        message={
-          language === 'ru'
-            ? 'Разблокируй PRO чтобы получить полный доступ к нумерологии'
-            : language === 'es'
-              ? 'Desbloquea PRO para obtener acceso completo a la numerología'
-              : 'Unlock PRO to get full access to numerology'
-        }
-        className="mb-6 w-full"
-        navigateTo="/comparison"
-        showUnlockPrompt={true}
-        unlockText={proUnlockText}
-      >
-        {numerologyContent}
-      </ProFeatureOverlay>
-    );
-  }
-
-  return numerologyContent;
 };
 
 // Helper functions for numerology calculations
