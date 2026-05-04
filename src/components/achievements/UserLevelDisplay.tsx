@@ -105,19 +105,19 @@ export const UserLevelDisplay: React.FC<UserLevelDisplayProps> = ({
     : 100;
 
   return (
-    <div className={cn('cosmic-block backdrop-blur-sm border border-cosmic-accent/30 rounded-lg mb-6', className)}>
-      <div className="p-4 space-y-4">
+    <div className={cn('group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/20 via-cosmic-dark/60 to-cosmic-indigo/25 p-5 shadow-lg shadow-cosmic-accent/10', className)}>
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-cosmic-accent/20">
-              <Crown className={cn('w-6 h-6', getLevelColor(level))} />
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-cosmic-accent/80 to-cosmic-indigo/70 shadow-[0_0_30px_rgba(139,92,246,0.25)]">
+              <Crown className={cn('w-6 h-6 text-white', getLevelColor(level))} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className={cn('text-2xl font-bold', getLevelColor(level))}>
                   {level}
                 </span>
-                <span className="text-cosmic-silver text-sm">
+                <span className="text-cosmic-secondary text-sm">
                   {getText('level')}
                 </span>
               </div>
@@ -129,7 +129,7 @@ export const UserLevelDisplay: React.FC<UserLevelDisplayProps> = ({
 
           <Badge 
             variant="outline" 
-            className="bg-cosmic-accent/20 text-cosmic-accent border-cosmic-accent/30"
+            className="bg-white/5 text-white border-white/15 backdrop-blur-sm"
           >
             <Zap className="w-3 h-3 mr-1" />
             {totalEnergyEarned} {getText('points')}
