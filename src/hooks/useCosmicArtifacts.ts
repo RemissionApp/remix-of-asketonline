@@ -5,6 +5,7 @@ export const useCosmicArtifacts = () => ({
   loading: false,
   saveArtifact: async (_artifact: any) => null,
   removeArtifact: async (_id: string) => null,
+  addArtifact: async (_artifact: any) => null,
   refresh: async () => {},
 });
 
