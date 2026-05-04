@@ -6,7 +6,6 @@ import { Pact } from '@/types';
 import { ZodiacBadgeDisplay } from '@/components/ZodiacBadgeDisplay';
 import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
-import { MeditationBlock } from '@/components/MainPageComponents/MeditationBlock';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
@@ -88,11 +87,6 @@ export const MainContent: React.FC<MainContentProps> = ({
       {/* 7. Numerology */}
       <div className="w-full max-w-lg mx-auto">
         <NumerologyDisplay />
-      </div>
-
-      {/* 8. Meditations */}
-      <div className="w-full max-w-lg mx-auto">
-        <MeditationBlock />
       </div>
 
       {/* 9. Cosmic Missions */}
