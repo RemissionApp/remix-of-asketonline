@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { isAndroid } from '@/utils/platform';
 
 interface PageHeaderProps {
@@ -27,32 +26,33 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-40 bg-cosmic-dark/80 backdrop-blur-sm border-b border-cosmic-accent/20"
+      className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
       style={{
         paddingTop: isAndroid()
-          ? 'calc(env(safe-area-inset-top) + 1.5rem)'
-          : 'env(safe-area-inset-top)',
+          ? 'calc(env(safe-area-inset-top) + 0.6rem)'
+          : 'calc(env(safe-area-inset-top) + 0.4rem)',
+        paddingLeft: 'calc(env(safe-area-inset-left) + 0.75rem)',
+        paddingRight: 'calc(env(safe-area-inset-right) + 0.75rem)',
       }}
     >
-      <div className="flex items-center px-4 py-3 h-14">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="glass-strong glass-shimmer pointer-events-auto relative flex items-center rounded-2xl px-2 py-2 min-h-12 overflow-hidden">
+        <button
           onClick={handleBack}
-          className="text-cosmic-accent hover:bg-cosmic-accent/20 shrink-0"
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-cosmic-accent/10 hover:bg-cosmic-accent/20 transition-colors text-cosmic-accent shrink-0"
+          aria-label="Back"
         >
-          <ArrowLeft size={20} />
-        </Button>
+          <ArrowLeft size={18} />
+        </button>
 
-        <h1 className="text-lg font-serif text-white flex-1 text-center">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-base font-serif text-white font-medium truncate max-w-[55%]">
           {title}
         </h1>
 
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-2 shrink-0 ml-auto">
           <img
             src="/asket-logo.png"
             alt="Asceta Logo"
-            className="w-8 h-8 rounded-full object-cover"
+            className="w-7 h-7 rounded-full object-cover"
           />
           <span className="text-white font-serif text-sm">Asceta</span>
         </div>
