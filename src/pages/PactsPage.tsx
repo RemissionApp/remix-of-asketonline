@@ -242,13 +242,13 @@ const PactsPage: React.FC = () => {
         </Dialog>
 
         {breakPact && (
-        <BreakAscesisDialog
           <BreakAscesisDialog
             pact={breakPact}
             isOpen={!!breakPact}
             onClose={() => setBreakPact(null)}
-          onConfirm={handleBreak}
-        />
+            onConfirm={handleBreak}
+          />
+        )}
       </div>
     </MobileOptimizedInterface>
   );
