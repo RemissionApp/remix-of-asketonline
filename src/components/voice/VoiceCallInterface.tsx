@@ -9,12 +9,18 @@ import { SwipeGestureHandler } from './SwipeGestureHandler';
 import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppStore } from '@/store/useAppStore';
+import { useCallMinutes } from '@/hooks/useCallMinutes';
+import { useTranslations } from '@/hooks/useTranslations';
+import { useNavigate } from 'react-router-dom';
 
 export const VoiceCallInterface: React.FC = () => {
   const { language } = useAppStore();
   const { toast } = useToast();
+  const { t } = useTranslations();
+  const navigate = useNavigate();
   const [callDuration, setCallDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { minutesLeft, limitReached, addMinutes } = useCallMinutes();
 
   const {
     startConversation,
@@ -79,6 +85,9 @@ export const VoiceCallInterface: React.FC = () => {
   const handleEndCall = async () => {
     try {
       await endConversation();
+      if (callDuration > 0) {
+        await addMinutes(callDuration);
+      }
       setCallDuration(0);
     } catch (error) {
       console.error('Failed to end call:', error);
@@ -166,6 +175,15 @@ export const VoiceCallInterface: React.FC = () => {
           {/* Single action button */}
           <div className="flex justify-center pt-2">
             {!isConnected ? (
+              limitReached ? (
+                <Button
+                  onClick={() => navigate('/profile')}
+                  size="lg"
+                  className="rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo text-white px-6 py-6"
+                >
+                  {(t as any).lyra?.limitReachedCta || 'Limit reached — subscribe'}
+                </Button>
+              ) : (
               <Button
                 onClick={handleStartCall}
                 disabled={isLoading}
@@ -181,6 +199,7 @@ export const VoiceCallInterface: React.FC = () => {
                   <div className="absolute inset-0 rounded-full bg-green-400/30 animate-ping" />
                 )}
               </Button>
+              )
             ) : (
               <Button
                 onClick={handleEndCall}
@@ -191,6 +210,12 @@ export const VoiceCallInterface: React.FC = () => {
               </Button>
             )}
           </div>
+
+          {!isConnected && !limitReached && (
+            <p className="text-xs text-cosmic-secondary/90">
+              {((t as any).lyra?.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft))}
+            </p>
+          )}
 
           {!isConnected && (
             <p className="text-xs text-cosmic-secondary/80 leading-relaxed px-4">
