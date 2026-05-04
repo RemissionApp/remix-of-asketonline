@@ -1,6 +1,6 @@
 import { useConversation } from '@elevenlabs/react';
 import { useAppStore } from '@/store/useAppStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { createLogger } from '@/utils/logger';
 
@@ -13,11 +13,77 @@ const AGENTS = {
 
 export const useElevenLabsConversation = () => {
   const logger = createLogger('useElevenLabsConversation');
-  const { language } = useAppStore();
+  const { language, user, userProfile, pacts } = useAppStore();
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [lastAgentMessage, setLastAgentMessage] = useState<string | null>(null);
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null);
+  const callStartRef = useRef<number | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
+
+  const buildLyraContext = useCallback(async (): Promise<string | null> => {
+    if (!user?.id) return null;
+    try {
+      const { data: summaries } = await supabase
+        .from('call_summaries')
+        .select('summary, key_topics, emotional_tone, called_at')
+        .eq('user_id', user.id)
+        .order('called_at', { ascending: false })
+        .limit(5);
+
+      const activePacts = (pacts || []).filter((p: any) => p.status === 'active');
+      const name = userProfile?.name || '';
+
+      const intro =
+        language === 'ru'
+          ? `Контекст пользователя ${name}.`
+          : language === 'es'
+            ? `Contexto del usuario ${name}.`
+            : `User context for ${name}.`;
+
+      const pactsLine = activePacts.length
+        ? (language === 'ru' ? 'Активные пакты: ' : language === 'es' ? 'Votos activos: ' : 'Active vows: ') +
+          activePacts.map((p: any) => `${p.title} (${p.duration}d)`).join('; ')
+        : '';
+
+      const historyLine = summaries?.length
+        ? (language === 'ru'
+            ? 'Последние разговоры: '
+            : language === 'es'
+              ? 'Conversaciones recientes: '
+              : 'Recent calls: ') +
+          summaries
+            .map((s: any) => `[${new Date(s.called_at).toLocaleDateString()}] ${s.summary || ''}`)
+            .join(' | ')
+        : '';
+
+      return [intro, pactsLine, historyLine].filter(Boolean).join('\n');
+    } catch (e) {
+      logger.error('Failed to build context', e);
+      return null;
+    }
+  }, [user?.id, userProfile?.name, pacts, language]);
+
+  const saveCallSummary = useCallback(
+    async (durationSeconds: number) => {
+      if (!user?.id || durationSeconds < 20) return;
+      try {
+        const lastUser = lastUserMessage || '';
+        const lastAgent = lastAgentMessage || '';
+        const summary = `${lastUser ? 'User: ' + lastUser + '. ' : ''}${lastAgent ? 'Guide: ' + lastAgent : ''}`.slice(0, 500);
+        await supabase.from('call_summaries').insert({
+          user_id: user.id,
+          duration_seconds: durationSeconds,
+          summary: summary || null,
+          emotional_tone: null,
+          key_topics: [],
+        });
+      } catch (e) {
+        logger.error('Failed to save call summary', e);
+      }
+    },
+    [user?.id, lastAgentMessage, lastUserMessage]
+  );
 
   const conversation = useConversation({
     onConnect: () => {
@@ -25,11 +91,19 @@ export const useElevenLabsConversation = () => {
       setIsConnected(true);
       setLastAgentMessage(null);
       setLastUserMessage(null);
+      callStartRef.current = Date.now();
     },
     onDisconnect: () => {
       logger.info('ElevenLabs conversation disconnected');
       setIsConnected(false);
+      const start = callStartRef.current;
+      callStartRef.current = null;
+      const duration = start ? Math.round((Date.now() - start) / 1000) : 0;
+      if (duration >= 20) {
+        void saveCallSummary(duration);
+      }
       setConversationId(null);
+      conversationIdRef.current = null;
     },
     onMessage: (message: any) => {
       logger.debug('Received message', { type: message?.type ?? message?.source });
@@ -84,20 +158,33 @@ export const useElevenLabsConversation = () => {
         throw new Error(error?.message || 'Failed to get conversation token');
       }
 
-      // 3. Стартуем сессию через WebRTC с токеном
+      // 3. Build context for the agent
+      const context = await buildLyraContext();
+
+      // 4. Стартуем сессию через WebRTC с токеном
       await conversation.startSession({
         conversationToken: data.token,
         connectionType: 'webrtc',
-      });
+        ...(context
+          ? {
+              overrides: {
+                agent: {
+                  prompt: { prompt: context },
+                },
+              },
+            }
+          : {}),
+      } as any);
       const id = conversation.getId?.() ?? null;
       setConversationId(id);
+      conversationIdRef.current = id;
 
       return id;
     } catch (error) {
       logger.error('Error starting ElevenLabs conversation', error);
       throw error;
     }
-  }, [conversation, language]);
+  }, [conversation, language, buildLyraContext]);
 
   const endConversation = useCallback(async () => {
     try {

@@ -8,6 +8,7 @@ import { NumerologyDisplay } from '@/components/NumerologyDisplay';
 import { UniverseMessageBlock } from '@/components/universe/UniverseMessageBlock';
 import { AffirmationsBlock } from '@/components/MainPageComponents/AffirmationsBlock';
 import { UserGreetingSection } from '@/components/MainPageComponents/UserGreetingSection';
+import { CallHero } from '@/components/MainPageComponents/CallHero';
 import { CosmicMissionsEntryPoint } from '@/components/MainPageComponents/CosmicMissionsEntryPoint';
 import { ActiveMissionWidget } from '@/components/MainPageComponents/ActiveMissionWidget';
 import { UserLevelDisplay } from '@/components/achievements/UserLevelDisplay';
@@ -45,6 +46,9 @@ export const MainContent: React.FC<MainContentProps> = ({
     <main className="flex-1 container mx-auto px-3 py-4 pt-16 sm:px-4 sm:py-6 sm:pt-20 flex flex-col items-center gap-3 sm:gap-4">
       {/* 1. User Greeting Section - First */}
       <UserGreetingSection />
+
+      {/* 1.5 Hero call block */}
+      <CallHero />
 
       {/* 2. PactDisplay */}
       <div
