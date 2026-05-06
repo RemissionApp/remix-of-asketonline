@@ -95,6 +95,21 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
       const storedLanguage = localStorage.getItem('language');
       if (storedLanguage && ['ru', 'en', 'es'].includes(storedLanguage)) {
         set({ language: storedLanguage as any });
+      } else {
+        // Auto-detect language from device
+        const navLangs: string[] = (navigator.languages && navigator.languages.length
+          ? Array.from(navigator.languages)
+          : [navigator.language || 'en']);
+        let detected: 'ru' | 'en' | 'es' = 'en';
+        for (const l of navLangs) {
+          const code = (l || '').toLowerCase().split('-')[0];
+          if (code === 'ru' || code === 'en' || code === 'es') {
+            detected = code;
+            break;
+          }
+        }
+        set({ language: detected });
+        try { localStorage.setItem('language', detected); } catch {}
       }
 
       // Load sound settings
