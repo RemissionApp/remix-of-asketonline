@@ -31,10 +31,10 @@ const ProfilePage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField starCount={80} />
         <PageHeader title={title} />
-        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-4">
+        <div className="flex-1 relative z-10 px-3 pt-page sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-4">
           <ProfileTabs active={active} onChange={setActive} />
           <div className="pt-1">
             {active === 'identity' && <ProfileIdentityTab />}

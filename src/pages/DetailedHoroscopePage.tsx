@@ -133,7 +133,7 @@ const DetailedHoroscopePage: React.FC = () => {
         }
       />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 pt-20">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 pt-page">
         <div className="w-full max-w-lg">
           <DetailedHoroscopeContent
             horoscope={horoscope}

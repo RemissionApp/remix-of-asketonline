@@ -132,11 +132,11 @@ const NumerologyPage = () => {
 
   const numerologyContent = (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField starCount={80} />
         <PageHeader title={t.numerology.title} />
 
-        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-20 max-w-lg mx-auto w-full flex flex-col gap-4">
+        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-page max-w-lg mx-auto w-full flex flex-col gap-4">
           {/* Hero — User card */}
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md p-5 text-center">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-cosmic-gold/30 bg-cosmic-gold/10 px-3 py-1 text-[10px] uppercase tracking-wider text-cosmic-gold">

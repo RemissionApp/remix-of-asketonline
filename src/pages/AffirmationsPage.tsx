@@ -89,11 +89,11 @@ const AffirmationsPage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField starCount={100} />
         <PageHeader title={affirmationsTitle} />
 
-        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-20 max-w-lg mx-auto w-full flex flex-col gap-4">
+        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-page max-w-lg mx-auto w-full flex flex-col gap-4">
           {/* Intro */}
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md p-4 text-center">
             <p className="text-xs sm:text-sm text-cosmic-secondary leading-relaxed">

@@ -17,7 +17,7 @@ const CosmicMissionsPage: React.FC = () => {
 
       <PageHeader title={getPageTitle(language)} />
 
-      <main className="flex-1 container mx-auto px-4 py-6 pt-20">
+      <main className="flex-1 container mx-auto px-4 py-6 pt-page">
         {/* Enhanced Mission Interface */}
         <Tabs defaultValue="recommended" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 bg-cosmic-accent/10 border border-cosmic-accent/20">

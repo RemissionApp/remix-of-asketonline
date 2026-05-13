@@ -395,7 +395,7 @@ const CreatePactPage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField starCount={120} />
 
         {showStandardLayout && (
@@ -405,7 +405,7 @@ const CreatePactPage: React.FC = () => {
               onBack={handleBack}
             />
 
-            <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+            <div className="flex-1 relative z-10 px-3 pt-page sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
               {renderStep()}
 
               {/* Progress + Next */}
@@ -438,7 +438,7 @@ const CreatePactPage: React.FC = () => {
         )}
 
         {!showStandardLayout && (
-          <div className="relative z-10 flex-1 flex flex-col p-4 pt-20">
+          <div className="relative z-10 flex-1 flex flex-col p-4 pt-page">
             {renderStep()}
           </div>
         )}

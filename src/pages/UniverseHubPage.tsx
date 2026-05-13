@@ -9,20 +9,20 @@ import { useAppStore } from '@/store/useAppStore';
 import { RecentCallsBlock } from '@/components/universe/RecentCallsBlock';
 import { RecentQuestionsBlock } from '@/components/universe/RecentQuestionsBlock';
 
-const titles = { ru: 'Лира', en: 'Lyra', es: 'Lyra' };
+const titles = { ru: 'Вселенная', en: 'Lyra', es: 'Lyra' };
 
 const UniverseHubPage: React.FC = () => {
   const navigate = useNavigate();
   const { language } = useAppStore();
   const lang = (language as keyof typeof titles) ?? 'ru';
 
-  const callTitle = lang === 'ru' ? 'Позвонить Лире' : lang === 'es' ? 'Llamar a Lyra' : 'Call Lyra';
+  const callTitle = lang === 'ru' ? 'Позвонить Вселенной' : lang === 'es' ? 'Llamar a Lyra' : 'Call Lyra';
   const callSub =
-    lang === 'ru' ? 'Лира всегда рядом и готова слушать'
+    lang === 'ru' ? 'Вселенная всегда рядом и готова слушать'
       : lang === 'es' ? 'Lyra siempre te escucha'
       : 'Lyra is always here for you';
   const askTitle =
-    lang === 'ru' ? 'Задать вопрос Лире'
+    lang === 'ru' ? 'Задать вопрос Вселенной'
       : lang === 'es' ? 'Hacer una pregunta a Lyra'
       : 'Ask Lyra a question';
   const askSub =
@@ -32,10 +32,10 @@ const UniverseHubPage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField />
         <PageHeader title={titles[lang] ?? titles.ru} />
-        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+        <div className="flex-1 relative z-10 px-3 pt-page sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
           <button
             onClick={() => navigate('/universe-call')}
             className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/30 p-5 text-left shadow-lg shadow-cosmic-accent/30 transition-transform active:scale-[0.99]"

@@ -51,7 +51,7 @@ const AchievementsPage: React.FC = () => {
       {/* Cosmic background */}
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-cosmic-dark via-cosmic-accent/5 to-cosmic-dark opacity-30" />
 
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-20 py-8 max-w-md mx-auto w-full space-y-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-start px-4 pt-page py-8 max-w-md mx-auto w-full space-y-6">
         {/* User Level Display */}
         <UserLevelDisplay
           level={stats.level}

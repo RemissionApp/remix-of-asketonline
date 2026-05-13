@@ -48,11 +48,11 @@ const UniversePage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField starCount={120} />
         <PageHeader title={tr('Вопрос Вселенной', 'Ask the Universe', 'Pregunta al Universo')} />
 
-        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+        <div className="flex-1 relative z-10 px-3 pt-page sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
           {currentAnswer ? (
             <UniverseAnswer
               question={currentAnswer.question}
