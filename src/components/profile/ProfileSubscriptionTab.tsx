@@ -51,11 +51,11 @@ export const ProfileSubscriptionTab: React.FC = () => {
   const minutesPercent = Math.min(100, (minutesUsed / Math.max(1, minutesLimit)) * 100);
 
   const statusBadge = isPro ? (
-    <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-cosmic-gold text-cosmic-dark font-medium">{t.statusActive}</span>
+    <span className="text-[11px] uppercase tracking-wider px-2 py-1 rounded-full bg-cosmic-gold text-cosmic-dark font-medium">{t.statusActive}</span>
   ) : isTrialActive ? (
-    <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-cosmic-accent/30 text-cosmic-accent border border-cosmic-accent/40">{t.statusTrial}</span>
+    <span className="text-[11px] uppercase tracking-wider px-2 py-1 rounded-full bg-cosmic-accent/30 text-cosmic-accent border border-cosmic-accent/40">{t.statusTrial}</span>
   ) : (
-    <span className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-white/10 text-cosmic-secondary border border-white/15">{t.statusFree}</span>
+    <span className="text-[11px] uppercase tracking-wider px-2 py-1 rounded-full bg-white/10 text-cosmic-secondary border border-white/15">{t.statusFree}</span>
   );
 
   return (
@@ -68,7 +68,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
             </div>
             <div>
               <div className={`text-lg text-white ${lang === 'en' ? 'font-serif' : 'font-serif'}`}>{t.title}</div>
-              <div className="text-[11px] text-cosmic-secondary mt-0.5">
+              <div className="text-[12px] text-cosmic-secondary mt-0.5">
                 {isTrialActive && !isPro ? t.trialLeft(daysLeft, hoursLeft) : isPro ? '' : '—'}
               </div>
             </div>
@@ -103,7 +103,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
 
       <ProfileSection title={t.minutesSection}>
         <div className="bg-cosmic-dark/40 border border-cosmic-accent/15 rounded-2xl p-4">
-          <div className="flex items-center justify-between text-[11px] text-cosmic-secondary">
+          <div className="flex items-center justify-between text-[12px] text-cosmic-secondary">
             <span>{t.minutesUsedLine}: <span className="text-white">{minutesUsed.toFixed(1)} / {minutesLimit}</span></span>
             <span>{minutesPercent.toFixed(0)}%</span>
           </div>
