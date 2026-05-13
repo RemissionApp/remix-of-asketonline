@@ -156,7 +156,20 @@ export const useElevenLabsConversation = () => {
       );
 
       if (error || !data?.token) {
-        throw new Error(error?.message || 'Failed to get conversation token');
+        // FunctionsHttpError carries response status in context
+        const ctx: any = (error as any)?.context;
+        const status = ctx?.status ?? data?.status;
+        const errCode = data?.error || (error as any)?.message;
+        if (status === 429 || errCode === 'monthly_minutes_exceeded') {
+          throw new Error('MINUTES_LIMIT_REACHED');
+        }
+        if (status === 401) {
+          throw new Error('AUTH_REQUIRED');
+        }
+        if (status === 502 || /agent/i.test(String(errCode))) {
+          throw new Error('AGENT_UNAVAILABLE');
+        }
+        throw new Error(errCode || 'TOKEN_FETCH_FAILED');
       }
 
       // 3. Build context for the agent
