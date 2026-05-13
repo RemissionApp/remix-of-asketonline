@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Flame, Globe2, Hash, Phone, Trophy, Sparkles, BookOpen, Grid3X3 } from 'lucide-react';
+import { Star, Flame, Mountain, Wind, Droplet, Globe2, Sun, Moon, Hash, Phone, Trophy, Sparkles, BookOpen, Grid3X3, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSection } from './ui/ProfileSection';
@@ -9,6 +9,33 @@ import { useProfileLang } from './i18n';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { calculateLifePathNumber, calculatePersonalityNumber, calculateDestinyMatrix } from '@/utils/numerologyUtils';
 import { useCallMinutes } from '@/hooks/useCallMinutes';
+import { translateElement, translateRuler } from '@/utils/zodiacTranslations';
+
+const elementIcon = (el?: string): LucideIcon => {
+  switch (el) {
+    case 'Fire': return Flame;
+    case 'Earth': return Mountain;
+    case 'Air': return Wind;
+    case 'Water': return Droplet;
+    default: return Flame;
+  }
+};
+const elementIconColor = (el?: string): 'red' | 'green' | 'blue' | 'purple' => {
+  switch (el) {
+    case 'Fire': return 'red';
+    case 'Earth': return 'green';
+    case 'Air': return 'blue';
+    case 'Water': return 'blue';
+    default: return 'red';
+  }
+};
+const rulerIcon = (ruler?: string): LucideIcon => {
+  if (!ruler) return Globe2;
+  const first = ruler.split(',')[0].trim();
+  if (first === 'Sun') return Sun;
+  if (first === 'Moon') return Moon;
+  return Globe2;
+};
 
 export const ProfileSpiritualTab: React.FC = () => {
   const lang = useProfileLang();
@@ -41,6 +68,15 @@ export const ProfileSpiritualTab: React.FC = () => {
   const signData = sign ? zodiacData[sign] : null;
   const signName = signData ? `${signData.symbol} ${signData.name[lang]}` : t.notSet;
 
+  const elementValue = signData
+    ? translateElement(signData.element, lang)
+    : t.notSet;
+  const rulerValue = signData
+    ? signData.ruler.split(',').map(r => translateRuler(r.trim(), lang)).join(', ')
+    : t.notSet;
+  const ElIcon = elementIcon(signData?.element);
+  const RulerIcon = rulerIcon(signData?.ruler);
+
   const birthStr = userProfile?.birthDate ? String(userProfile.birthDate) : null;
   const lifePath = birthStr ? calculateLifePathNumber(birthStr) : null;
   const personality = userProfile?.name ? calculatePersonalityNumber(userProfile.name) : null;
@@ -49,9 +85,9 @@ export const ProfileSpiritualTab: React.FC = () => {
   return (
     <div className="flex flex-col gap-5">
       <ProfileSection title={t.astro}>
-        <ProfileRow icon={Star}    iconColor="gold"   label={t.sign}    value={signName} rounded="top" />
-        <ProfileRow icon={Flame}   iconColor="red"    label={t.element} value={signData?.element ?? t.notSet} rounded="middle" />
-        <ProfileRow icon={Globe2}  iconColor="blue"   label={t.ruler}   value={signData?.ruler ?? t.notSet} rounded="bottom" />
+        <ProfileRow icon={Star}     iconColor="gold"                                  label={t.sign}    value={signName}   rounded="top" />
+        <ProfileRow icon={ElIcon}   iconColor={elementIconColor(signData?.element)}  label={t.element} value={elementValue} rounded="middle" />
+        <ProfileRow icon={RulerIcon} iconColor="blue"                                 label={t.ruler}   value={rulerValue}   rounded="bottom" />
       </ProfileSection>
 
       <ProfileSection title={t.numerology}>
