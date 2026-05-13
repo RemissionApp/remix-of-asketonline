@@ -17,6 +17,16 @@
   .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
+/* Page content offset that clears the fixed PageHeader + iOS safe area */
+.pt-page {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+}
+
+/* Page bottom offset that clears the fixed BottomNavigation + iOS home bar */
+.pb-page {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+}
+
 /* ── Mobile-first global resets (Capacitor / iOS / Android) ── */
 *,
 *::before,
