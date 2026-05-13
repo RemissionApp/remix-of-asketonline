@@ -71,7 +71,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 pt-2 pb-20 z-30 bg-cosmic-dark/80 backdrop-blur-md border-t border-cosmic-accent/10">
+    <div className="fixed bottom-0 left-0 right-0 p-4 pt-2 pb-page z-30 bg-cosmic-dark/80 backdrop-blur-md border-t border-cosmic-accent/10">
       <div className="flex items-end max-w-2xl mx-auto">
         <div className="flex-1 mx-2 relative">
           <Textarea

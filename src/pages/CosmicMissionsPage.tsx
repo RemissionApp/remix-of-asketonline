@@ -12,7 +12,7 @@ const CosmicMissionsPage: React.FC = () => {
   const { language, userProfile } = useAppStore();
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative pb-page">
       <StarField starCount={100} />
 
       <PageHeader title={getPageTitle(language)} />
