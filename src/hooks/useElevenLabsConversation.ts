@@ -189,10 +189,9 @@ export const useElevenLabsConversation = () => {
 
       // 3. Получаем signed URL на backend и стартуем WebSocket-сессию.
       // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint.
-      const { data, error } = await supabase.functions.invoke<SignedUrlResponse>(
-        'elevenlabs-signed-url',
-        { body: { agentId } }
-      );
+      const { data, error } = (await supabase.functions.invoke('elevenlabs-signed-url', {
+        body: { agentId },
+      })) as { data: SignedUrlResponse | null; error: any };
 
       if (error || !data?.signedUrl) {
         logger.error('Failed to get ElevenLabs signed URL', {
