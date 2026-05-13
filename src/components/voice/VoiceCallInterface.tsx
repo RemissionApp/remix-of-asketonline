@@ -113,7 +113,7 @@ export const VoiceCallInterface: React.FC = () => {
               ? 'Голос Вселенной временно недоступен.'
               : language === 'es'
                 ? 'La voz no está disponible.'
-                : 'The Universe is temporarily unreachable.');
+                : 'Lyra is temporarily unreachable.');
           break;
         case 'AUTH_REQUIRED':
           errorMessage =
@@ -131,7 +131,7 @@ export const VoiceCallInterface: React.FC = () => {
               ? 'Не удалось соединиться с Вселенной.'
               : language === 'es'
                 ? 'No se pudo conectar con el Universo.'
-                : 'Failed to connect to the Universe.');
+                : 'Failed to connect to Lyra.');
       }
 
       if ('vibrate' in navigator) {
@@ -198,7 +198,8 @@ export const VoiceCallInterface: React.FC = () => {
                 onClick={handleStartCall}
                 disabled={isLoading}
                 size="lg"
-                className="w-28 h-28 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 border-2 border-fuchsia-300/50 shadow-[0_0_50px_rgba(168,85,247,0.7),0_0_120px_rgba(139,92,246,0.4)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
+                data-speaking={isSpeaking ? 'true' : 'false'}
+                className="w-28 h-28 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 border-2 border-fuchsia-300/50 shadow-[0_0_50px_rgba(168,85,247,0.7),0_0_120px_rgba(139,92,246,0.4)] data-[speaking=true]:shadow-[0_0_90px_rgba(217,70,239,0.95),0_0_180px_rgba(168,85,247,0.55)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-visible"
               >
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
@@ -207,9 +208,12 @@ export const VoiceCallInterface: React.FC = () => {
                 )}
                 {!isLoading && (
                   <>
-                    <div className="absolute inset-0 rounded-full bg-fuchsia-400/25 animate-ping" />
-                    <div className="absolute -inset-2 rounded-full border border-violet-300/40 animate-ping [animation-duration:2.4s]" />
-                    <div className="absolute -inset-4 rounded-full border border-fuchsia-300/20 animate-ping [animation-duration:3.2s]" />
+                    <div className={`absolute inset-0 rounded-full bg-fuchsia-400/25 animate-ping ${isSpeaking ? '[animation-duration:1.1s]' : ''}`} />
+                    <div className={`absolute -inset-2 rounded-full border border-violet-300/40 animate-ping ${isSpeaking ? '[animation-duration:1.4s]' : '[animation-duration:2.4s]'}`} />
+                    <div className={`absolute -inset-4 rounded-full border border-fuchsia-300/20 animate-ping ${isSpeaking ? '[animation-duration:1.8s]' : '[animation-duration:3.2s]'}`} />
+                    {isSpeaking && (
+                      <div className="absolute -inset-8 rounded-full border border-fuchsia-200/15 animate-ping [animation-duration:2.4s]" />
+                    )}
                   </>
                 )}
               </Button>
