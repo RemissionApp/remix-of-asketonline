@@ -130,7 +130,7 @@ export const ProfileIdentityTab: React.FC = () => {
             />
           </div>
           {rankInfo.pointsToNext > 0 && (
-            <div className="text-[10px] text-cosmic-secondary mt-1.5 text-right">
+            <div className="text-[11px] text-cosmic-secondary mt-1.5 text-right">
               {t.pointsLeft(rankInfo.pointsToNext)}
             </div>
           )}
