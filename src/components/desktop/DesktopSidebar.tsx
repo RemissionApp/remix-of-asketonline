@@ -44,10 +44,21 @@ export const DesktopSidebar: React.FC = () => {
         ))}
         <NavLink
           to="/lyra/call"
-          className="mt-4 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium text-sm hover:from-emerald-400 hover:to-emerald-500 transition-colors"
+          className="group relative mt-4 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-white font-medium text-sm overflow-visible
+                     bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-700
+                     hover:from-violet-500 hover:via-fuchsia-500 hover:to-indigo-600
+                     border border-fuchsia-300/40
+                     shadow-[0_0_25px_rgba(168,85,247,0.55),0_0_60px_rgba(139,92,246,0.30)]
+                     transition-all duration-300"
         >
-          <Phone size={16} />
-          <span>{tr(language, 'Позвонить', 'Call', 'Llamar')}</span>
+          {/* Outer mystic glow */}
+          <span className="pointer-events-none absolute -inset-1 rounded-xl bg-fuchsia-400/15 blur-md animate-pulse" />
+          {/* Soft pulsing ring */}
+          <span className="pointer-events-none absolute inset-0 rounded-xl border border-fuchsia-300/40 animate-ping [animation-duration:2.6s]" />
+          <Phone size={16} className="relative z-10" />
+          <span className="relative z-10 font-serif tracking-wide">
+            {tr(language, 'Позвонить Вселенной', 'Call Lyra', 'Llamar a Lyra')}
+          </span>
         </NavLink>
         {isAdmin && (
           <NavLink
