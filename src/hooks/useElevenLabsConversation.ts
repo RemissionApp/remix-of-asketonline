@@ -227,47 +227,89 @@ export const useElevenLabsConversation = () => {
     const startedAt = performance.now();
     try {
       const agentId = AGENTS[language as keyof typeof AGENTS] || AGENTS.en;
+      const platform = getRuntimePlatform();
 
       logger.info('Starting ElevenLabs conversation', {
         agentId,
         language,
         connectionType: 'websocket',
+        platform,
+        hasMediaDevices: Boolean(navigator.mediaDevices?.getUserMedia),
       });
 
-      // 1. Запрашиваем доступ к микрофону до старта сессии
+      if (!navigator.mediaDevices?.getUserMedia) {
+        logger.error('Microphone API is unavailable', undefined, { platform });
+        throw new Error('MIC_PERMISSION_DENIED');
+      }
+
+      // 1. Запрашиваем доступ к микрофону до старта сессии и сразу освобождаем preflight stream.
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        logger.info('Microphone permission granted', {
+          platform,
+          elapsedMs: Math.round(performance.now() - startedAt),
+        });
       } catch (micErr) {
-        logger.error('Microphone permission denied', micErr);
+        logger.error('Microphone permission denied or unavailable', micErr, { platform });
         throw new Error('MIC_PERMISSION_DENIED');
       }
 
       // 2. Build context for the agent (best-effort)
       const context = await buildLyraContext();
+      pendingContextRef.current = context;
 
       // 3. Стартуем публичную WebSocket-сессию напрямую через agentId.
       // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint и не требует convai_write API key.
       logger.info('Starting public ElevenLabs WebSocket session', {
         agentId,
+        platform,
+        contextLength: context?.length ?? 0,
         elapsedMs: Math.round(performance.now() - startedAt),
       });
 
-      await conversation.startSession({
-        agentId,
-        connectionType: 'websocket',
-        ...(user?.id ? { userId: user.id } : {}),
-        ...(context
-          ? {
-              overrides: {
-                agent: {
-                  prompt: { prompt: context },
-                },
-              },
-            }
-          : {}),
-      } as any);
+      await new Promise<void>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          if (pendingStartRef.current?.agentId === agentId) {
+            pendingStartRef.current = null;
+            pendingContextRef.current = null;
+            logger.error('ElevenLabs WebSocket connection timed out', undefined, {
+              agentId,
+              platform,
+              timeoutMs: CONNECTION_TIMEOUT_MS,
+            });
+            try {
+              conversation.endSession();
+            } catch (_) {}
+            reject(new Error('AGENT_UNAVAILABLE'));
+          }
+        }, CONNECTION_TIMEOUT_MS);
 
-      logger.info('ElevenLabs WebSocket startSession completed', {
+        pendingStartRef.current = {
+          agentId,
+          startedAt,
+          timeoutId,
+          resolve,
+          reject,
+        };
+
+        try {
+          conversation.startSession({
+            agentId,
+            connectionType: 'websocket',
+            ...(user?.id ? { userId: user.id } : {}),
+          } as any);
+        } catch (startError) {
+          clearTimeout(timeoutId);
+          pendingStartRef.current = null;
+          pendingContextRef.current = null;
+          reject(toError(startError, 'AGENT_UNAVAILABLE'));
+        }
+      });
+
+      logger.info('ElevenLabs WebSocket connected', {
+        agentId,
+        platform,
         elapsedMs: Math.round(performance.now() - startedAt),
       });
 
