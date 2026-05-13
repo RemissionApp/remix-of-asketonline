@@ -143,11 +143,11 @@ const MainPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-32">
+    <div className="min-h-screen flex flex-col relative pb-32 lg:pb-12">
       <StarField starCount={100} />
 
       {/* Fixed TopBar at the top */}
-      <div className="fixed top-0 left-0 right-0 z-[100]">
+      <div className="fixed top-0 left-0 right-0 z-[100] lg:hidden">
         <TopBar />
       </div>
 
@@ -156,7 +156,7 @@ const MainPage: React.FC = () => {
 
       {/* Main content */}
       <div>
-        <div className="pt-16">
+        <div className="pt-16 lg:pt-0">
           <TrialBanner />
         </div>
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-6 lg:items-start lg:max-w-6xl lg:mx-auto lg:px-4">
@@ -183,7 +183,9 @@ const MainPage: React.FC = () => {
       <MissionReminder />
 
       {/* Bottom navigation */}
-      <BottomNavigation />
+      <div className="lg:hidden">
+        <BottomNavigation />
+      </div>
 
       {/* Pact completion dialog */}
       {currentCompletedPact && (

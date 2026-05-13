@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign } from '@/utils/zodiac';
 import { supabase } from '@/lib/supabase';
@@ -21,6 +21,7 @@ export const useBriefHoroscope = () => {
   const { userProfile, language, user } = useAppStore();
   const { toast } = useToast();
   const typingSpeedRef = useRef(30); // milliseconds per character
+  const lastFetchedDateRef = useRef<string | null>(null);
 
   // Typing effect
   useEffect(() => {
@@ -45,8 +46,8 @@ export const useBriefHoroscope = () => {
     }
   }, [horoscope]);
 
-  useEffect(() => {
-    const fetchHoroscope = async () => {
+  const fetchHoroscope = useCallback(
+    async (force = false) => {
       try {
         setLoading(true);
 
@@ -74,11 +75,13 @@ export const useBriefHoroscope = () => {
 
         // Use cached horoscope if it exists and is from today
         if (
+          !force &&
           cachedHoroscopeData &&
           cachedHoroscopeDate &&
           isHoroscopeFromToday(cachedHoroscopeDate)
         ) {
           setHoroscope(JSON.parse(cachedHoroscopeData));
+          lastFetchedDateRef.current = today;
           setLoading(false);
           return;
         }
@@ -113,14 +116,18 @@ export const useBriefHoroscope = () => {
           JSON.stringify(briefHoroscope)
         );
         localStorage.setItem(cachedHoroscopeDateKey, today);
+        lastFetchedDateRef.current = today;
       } catch (error) {
         console.error('Error fetching horoscope:', error);
         setHoroscope({ description: getDefaultMessage(language) });
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [userProfile?.birthDate, language, user]
+  );
 
+  useEffect(() => {
     // Only fetch horoscope when user is logged in and we have their profile
     if (user && userProfile) {
       fetchHoroscope();
@@ -129,7 +136,28 @@ export const useBriefHoroscope = () => {
       setHoroscope({ description: getDefaultMessage(language) });
       setLoading(false);
     }
-  }, [userProfile?.birthDate, language, user, userProfile, toast]);
+  }, [userProfile?.birthDate, language, user, userProfile, fetchHoroscope]);
+
+  // Auto-refresh once per day: when tab becomes visible or window focuses,
+  // if cached date != today → refetch.
+  useEffect(() => {
+    const checkAndRefresh = () => {
+      if (!user || !userProfile?.birthDate) return;
+      const today = getTodayDateString();
+      if (lastFetchedDateRef.current && lastFetchedDateRef.current !== today) {
+        fetchHoroscope(true);
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') checkAndRefresh();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', checkAndRefresh);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', checkAndRefresh);
+    };
+  }, [user, userProfile?.birthDate, fetchHoroscope]);
 
   return {
     horoscope,

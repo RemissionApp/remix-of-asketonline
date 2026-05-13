@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Flame, Mountain, Wind, Droplet, Globe2, Sun, Moon, Sparkles, Hash, type LucideIcon } from 'lucide-react';
+import { Star, Flame, Mountain, Wind, Droplet, Globe2, Sun, Moon, Sparkles, Hash, BookmarkPlus, BookmarkCheck, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { translateElement, translateRuler } from '@/utils/zodiacTranslations';
@@ -10,6 +10,8 @@ import {
   calculateDestinyMatrix,
 } from '@/utils/numerologyUtils';
 import { useBriefHoroscope } from '@/hooks/useBriefHoroscope';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 type Lang = 'ru' | 'en' | 'es';
 
@@ -28,6 +30,11 @@ const T = {
                   en: 'Add your birth date to unlock',
                   es: 'Añade tu fecha de nacimiento para desbloquear' },
   goProfile:    { ru: 'Перейти в профиль', en: 'Open profile', es: 'Ir al perfil' },
+  saveBtn:      { ru: 'Сохранить в Книгу Ответов', en: 'Save to Book of Answers', es: 'Guardar en el Libro de Respuestas' },
+  savedBtn:     { ru: 'Сохранено', en: 'Saved', es: 'Guardado' },
+  savedToast:   { ru: 'Гороскоп сохранён в Книгу Ответов', en: 'Horoscope saved to Book of Answers', es: 'Horóscopo guardado en el Libro de Respuestas' },
+  saveError:    { ru: 'Не удалось сохранить', en: 'Failed to save', es: 'No se pudo guardar' },
+  horoscopeFor: { ru: 'Гороскоп на', en: 'Horoscope for', es: 'Horóscopo del' },
 } as const;
 
 const elementIcon = (el?: string): LucideIcon => {
@@ -93,7 +100,7 @@ const NoBirthCTA: React.FC<{ lang: Lang }> = ({ lang }) => (
 );
 
 export const DesktopMainExtras: React.FC = () => {
-  const { userProfile, language } = useAppStore();
+  const { userProfile, language, user } = useAppStore();
   const lang = (['ru', 'en', 'es'].includes(language) ? language : 'en') as Lang;
 
   const birthDate = userProfile?.birthDate ? new Date(userProfile.birthDate) : null;
@@ -109,6 +116,40 @@ export const DesktopMainExtras: React.FC = () => {
 
   const ElIcon = elementIcon(signData?.element);
   const RulerIcon = rulerIcon(signData?.ruler);
+
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const savedKey = sign ? `horoscope_saved_${sign}_${todayKey}` : null;
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (savedKey) setSaved(localStorage.getItem(savedKey) === '1');
+  }, [savedKey]);
+
+  const handleSave = async () => {
+    if (!user || !horoscope?.description || !signData || !savedKey || saving || saved) return;
+    setSaving(true);
+    try {
+      const dateLabel = new Date().toLocaleDateString(
+        lang === 'ru' ? 'ru-RU' : lang === 'es' ? 'es-ES' : 'en-US'
+      );
+      const signLabel = signData.name[lang];
+      const { error } = await supabase.from('universe_questions').insert({
+        user_id: user.id,
+        question: `${T.horoscopeFor[lang]} ${dateLabel} (${signLabel})`,
+        answer: horoscope.description,
+      });
+      if (error) throw error;
+      localStorage.setItem(savedKey, '1');
+      setSaved(true);
+      toast.success(T.savedToast[lang]);
+    } catch (e) {
+      console.error('Save horoscope error', e);
+      toast.error(T.saveError[lang]);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <aside className="hidden lg:flex flex-col gap-4 w-full">
@@ -149,10 +190,22 @@ export const DesktopMainExtras: React.FC = () => {
             <div className="h-3 bg-white/10 rounded w-3/6" />
           </div>
         ) : (
-          <p className="text-[14px] leading-relaxed text-white/90 whitespace-pre-line">
-            {displayedText || horoscope?.description || ''}
-            {isTyping && <span className="ml-0.5 inline-block w-[2px] h-4 bg-cosmic-accent align-middle animate-pulse" />}
-          </p>
+          <>
+            <p className="text-[14px] leading-relaxed text-white/90 whitespace-pre-line">
+              {displayedText || horoscope?.description || ''}
+              {isTyping && <span className="ml-0.5 inline-block w-[2px] h-4 bg-cosmic-accent align-middle animate-pulse" />}
+            </p>
+            {user && horoscope?.description && signData && (
+              <button
+                onClick={handleSave}
+                disabled={saved || saving || isTyping}
+                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm transition-colors border disabled:opacity-70 disabled:cursor-not-allowed bg-cosmic-accent/15 hover:bg-cosmic-accent/25 border-cosmic-accent/40 text-white"
+              >
+                {saved ? <BookmarkCheck size={16} /> : <BookmarkPlus size={16} />}
+                {saved ? T.savedBtn[lang] : T.saveBtn[lang]}
+              </button>
+            )}
+          </>
         )}
       </Card>
     </aside>
