@@ -17,6 +17,7 @@ import { useUserProgress } from '@/hooks/useUserProgress';
 import { DailyUsageStats } from '@/components/DailyUsageStats';
 import { PactCompletionDialog } from '@/components/PactCompletionDialog';
 import { usePactCompletion } from '@/hooks/usePactCompletion';
+import { DesktopMainExtras } from '@/components/desktop/DesktopMainExtras';
 
 const MainPage: React.FC = () => {
   const {
@@ -158,19 +159,24 @@ const MainPage: React.FC = () => {
         <div className="pt-16">
           <TrialBanner />
         </div>
-        <MainContent
-          activePacts={activePacts}
-          allPacts={allPacts}
-          currentPactIndex={currentPactIndex}
-          currentPact={currentPact}
-          dailyQuote={dailyQuote}
-          isLoading={isLoading}
-          showEnergyEffect={showEnergyEffect}
-          handlePrevPact={handlePrevPact}
-          handleNextPact={handleNextPact}
-          getAscesisPrefix={getAscesisPrefix}
-          formatRejection={formatRejection}
-        />
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-6 lg:items-start lg:max-w-6xl lg:mx-auto lg:px-4">
+          <MainContent
+            activePacts={activePacts}
+            allPacts={allPacts}
+            currentPactIndex={currentPactIndex}
+            currentPact={currentPact}
+            dailyQuote={dailyQuote}
+            isLoading={isLoading}
+            showEnergyEffect={showEnergyEffect}
+            handlePrevPact={handlePrevPact}
+            handleNextPact={handleNextPact}
+            getAscesisPrefix={getAscesisPrefix}
+            formatRejection={formatRejection}
+          />
+          <div className="lg:sticky lg:top-20 lg:pt-10">
+            <DesktopMainExtras />
+          </div>
+        </div>
       </div>
 
       {/* Mission Reminder */}
