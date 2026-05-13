@@ -16,6 +16,7 @@ const LOG_LEVELS: LogLevel = {
 
 const isDevelopment = import.meta.env.DEV;
 const currentLogLevel = isDevelopment ? LOG_LEVELS.DEBUG : LOG_LEVELS.NONE;
+const alwaysLogContexts = new Set(['useElevenLabsConversation']);
 
 class Logger {
   private context?: string;
@@ -30,9 +31,13 @@ class Logger {
     return `[${timestamp}] ${ctx} [${level}] ${message}`;
   }
 
+  private shouldLog(level: keyof Omit<LogLevel, 'NONE'>): boolean {
+    return isDevelopment || alwaysLogContexts.has(this.context || '') || currentLogLevel >= LOG_LEVELS[level];
+  }
+
   error(message: string, error?: Error | unknown, data?: any) {
     // В production логируем только критические ошибки  
-    if (isDevelopment || currentLogLevel >= LOG_LEVELS.ERROR) {
+    if (this.shouldLog('ERROR')) {
       console.error(this.formatMessage('ERROR', message), error, data);
     }
 
@@ -43,19 +48,19 @@ class Logger {
   }
 
   warn(message: string, data?: any) {
-    if (isDevelopment && currentLogLevel >= LOG_LEVELS.WARN) {
+    if (this.shouldLog('WARN')) {
       console.warn(this.formatMessage('WARN', message), data);
     }
   }
 
   info(message: string, data?: any) {
-    if (isDevelopment && currentLogLevel >= LOG_LEVELS.INFO) {
+    if (this.shouldLog('INFO')) {
       console.info(this.formatMessage('INFO', message), data);
     }
   }
 
   debug(message: string, data?: any) {
-    if (isDevelopment && currentLogLevel >= LOG_LEVELS.DEBUG) {
+    if (this.shouldLog('DEBUG')) {
       console.debug(this.formatMessage('DEBUG', message), data);
     }
   }
