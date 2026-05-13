@@ -29,7 +29,7 @@ export const BottomNavigation = memo(() => {
     {
       path: '/universe-hub',
       icon: <Sparkles size={20} />,
-      label: tr('Лира', 'Lyra', 'Lyra'),
+      label: tr('Вселенная', 'Lyra', 'Lyra'),
     },
     ...(hasPacts
       ? [

@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, PhoneOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { WaveVisualization } from './WaveVisualization';
-import { UniverseAvatar } from './UniverseAvatar';
-import { CallStatus } from './CallStatus';
-import { UniverseCaptions } from './UniverseCaptions';
 import { SwipeGestureHandler } from './SwipeGestureHandler';
 import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
@@ -27,9 +23,6 @@ export const VoiceCallInterface: React.FC = () => {
     startConversation,
     endConversation,
     isConnected,
-    isSpeaking,
-    lastAgentMessage,
-    lastUserMessage,
   } = useElevenLabsConversation();
 
   // Tick call duration; auto-hangup at minute boundary if limit reached
@@ -174,66 +167,15 @@ export const VoiceCallInterface: React.FC = () => {
   };
 
   const getTitle = () => lyra.callTitle || lyra.callScreen || "Lyra's Call";
-  const getSubtitle = () => lyra.callSubtitleShort || 'Connect with cosmic wisdom';
-  const getTipText = () =>
-    lyra.callTip ||
-    'Press the call button to connect with Lyra and the cosmic wisdom of the Universe';
 
   return (
     <SwipeGestureHandler>
       <div className="w-full max-w-sm mx-auto px-4">
-        <div
-          className={`relative overflow-hidden rounded-[2rem] border p-6 text-center space-y-5 backdrop-blur-xl transition-colors duration-700 ${
-            isConnected
-              ? 'border-green-400/30 bg-gradient-to-b from-cosmic-dark/70 via-cosmic-indigo/30 to-cosmic-dark/70 shadow-[0_0_60px_-10px_rgba(74,222,128,0.35)]'
-              : 'border-white/10 bg-gradient-to-b from-cosmic-dark/60 via-cosmic-indigo/20 to-cosmic-dark/60 shadow-[0_20px_60px_-20px_rgba(139,92,246,0.4)]'
-          }`}
-        >
-          {/* Inner cosmic glow */}
-          <div className="pointer-events-none absolute inset-0 rounded-[2rem]">
-            <div
-              className={`absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl transition-colors duration-700 ${
-                isConnected ? 'bg-green-400/20' : 'bg-cosmic-accent/20'
-              }`}
-            />
-            <div className="absolute inset-0 opacity-40 [background:radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.08),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.06),transparent_45%)]" />
-          </div>
-
-          <div className="relative z-10 space-y-5">
+        <div className="flex flex-col items-center justify-center gap-6 py-10 text-center">
           {/* Title */}
-          <div className="text-center">
-            <h1 className="text-xl sm:text-2xl font-serif text-white mb-1">
-              {getTitle()}
-            </h1>
-            <p className="text-cosmic-secondary text-xs">{getSubtitle()}</p>
-          </div>
-
-          {/* Universe Avatar */}
-          <div className="flex justify-center pt-2">
-            <UniverseAvatar isActive={isConnected} isSpeaking={isSpeaking} />
-          </div>
-
-          {/* Status */}
-          <CallStatus
-            isConnected={isConnected}
-            isConnecting={isLoading}
-            duration={formatDuration(callDuration)}
-          />
-
-          {/* Wave when speaking */}
-          {isConnected && (
-            <div className={`flex justify-center transition-opacity duration-300 ${isSpeaking ? 'opacity-100' : 'opacity-30'}`}>
-              <WaveVisualization isActive={true} intensity={isSpeaking ? 0.8 : 0.3} />
-            </div>
-          )}
-
-          {/* Live captions */}
-          <UniverseCaptions
-            agentMessage={lastAgentMessage}
-            userMessage={lastUserMessage}
-            isSpeaking={isSpeaking}
-            isConnected={isConnected}
-          />
+          <h1 className="text-2xl font-serif text-white">
+            {getTitle()}
+          </h1>
 
           {/* Single action button */}
           <div className="flex justify-center pt-2">
@@ -251,12 +193,12 @@ export const VoiceCallInterface: React.FC = () => {
                 onClick={handleStartCall}
                 disabled={isLoading}
                 size="lg"
-                className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-2 border-green-300/60 shadow-[0_0_40px_rgba(74,222,128,0.55)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
+                className="w-28 h-28 rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-2 border-green-300/60 shadow-[0_0_40px_rgba(74,222,128,0.55)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
               >
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
                 ) : (
-                  <Phone className="w-10 h-10" />
+                  <Phone className="w-12 h-12" />
                 )}
                 {!isLoading && (
                   <>
@@ -270,25 +212,24 @@ export const VoiceCallInterface: React.FC = () => {
               <Button
                 onClick={handleEndCall}
                 size="lg"
-                className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 border-2 border-red-300/60 shadow-[0_0_40px_rgba(244,63,94,0.55)] transition-all duration-300 hover:scale-105 active:scale-95"
+                className="w-28 h-28 rounded-full bg-gradient-to-br from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 border-2 border-red-300/60 shadow-[0_0_40px_rgba(244,63,94,0.55)] transition-all duration-300 hover:scale-105 active:scale-95"
               >
-                <PhoneOff className="w-10 h-10" />
+                <PhoneOff className="w-12 h-12" />
               </Button>
             )}
           </div>
+
+          {isConnected && (
+            <p className="text-sm text-cosmic-secondary/90 tabular-nums">
+              {formatDuration(callDuration)}
+            </p>
+          )}
 
           {!isConnected && !limitReached && (
             <p className="text-xs text-cosmic-secondary/90">
               {((t as any).lyra?.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft))}
             </p>
           )}
-
-          {!isConnected && (
-            <p className="text-xs text-cosmic-secondary/80 leading-relaxed px-4">
-              ✨ {getTipText()}
-            </p>
-          )}
-          </div>
         </div>
       </div>
     </SwipeGestureHandler>
