@@ -63,8 +63,8 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
     soundEnabled: true,
     soundVolume: 0.8,
 
-    // Ambient cosmic drone for call screen
-    ambientEnabled: true,
+    // Ambient cosmic drone for call screen (disabled by default — user found it distracting)
+    ambientEnabled: false,
     ambientVolume: 0.45,
 
     setAmbientEnabled: enabled => {
@@ -142,10 +142,20 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
         }
       }
 
-      // Ambient drone settings
-      const ambEnabled = localStorage.getItem('ambientEnabled');
+      // Ambient drone: forcibly disabled by default; respect user's later opt-in only
+      // (one-time reset to clear any previously persisted "true" value)
+      const ambReset = localStorage.getItem('ambientResetV2');
+      if (!ambReset) {
+        try {
+          localStorage.setItem('ambientEnabled', 'false');
+          localStorage.setItem('ambientResetV2', '1');
+        } catch {}
+        set({ ambientEnabled: false });
+      } else {
+        const ambEnabled = localStorage.getItem('ambientEnabled');
+        if (ambEnabled !== null) set({ ambientEnabled: ambEnabled === 'true' });
+      }
       const ambVolume = localStorage.getItem('ambientVolume');
-      if (ambEnabled !== null) set({ ambientEnabled: ambEnabled === 'true' });
       if (ambVolume !== null) {
         const v = parseFloat(ambVolume);
         if (!isNaN(v) && v >= 0 && v <= 1) set({ ambientVolume: v });
