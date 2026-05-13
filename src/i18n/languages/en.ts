@@ -659,5 +659,10 @@ export const enTranslations: Translations = {
     minutesLeft: '{{count}} min remaining this month',
     limitReachedCta: 'Monthly limit reached — upgrade to continue',
     hearFromGuide: 'Hear from Lyra',
+    errorMicDenied: 'Please allow microphone access to talk to the Universe.',
+    errorAgentUnavailable: 'The Universe is temporarily unreachable. Please try again shortly.',
+    errorLimit: "You've used all your minutes this month. Subscribe to keep talking.",
+    errorAuth: 'Please sign in to start a call.',
+    errorNetwork: 'No connection. Check your internet and try again.',
   },
 };

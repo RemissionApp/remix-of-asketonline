@@ -658,5 +658,10 @@ export const esTranslations: Translations = {
     minutesLeft: 'Tienes {{count}} minutos este mes',
     limitReachedCta: 'Límite alcanzado — suscríbete para continuar',
     hearFromGuide: 'Escuchar de Lyra',
+    errorMicDenied: 'Permite el acceso al micrófono para hablar con el Universo.',
+    errorAgentUnavailable: 'La voz del Universo no está disponible. Inténtalo en un momento.',
+    errorLimit: 'Has usado todos tus minutos este mes. Suscríbete para continuar.',
+    errorAuth: 'Inicia sesión para llamar.',
+    errorNetwork: 'Sin conexión. Comprueba tu internet e inténtalo de nuevo.',
   },
 };
