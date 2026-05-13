@@ -1,6 +1,7 @@
 import { useConversation } from '@elevenlabs/react';
+import { Capacitor } from '@capacitor/core';
 import { useAppStore } from '@/store/useAppStore';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { createLogger } from '@/utils/logger';
 
@@ -11,8 +12,64 @@ const AGENTS = {
   es: 'agent_01jzhxwswhfas9ss9ae74n16v0',
 };
 
+const CONNECTION_TIMEOUT_MS = 15000;
+
+type PendingStart = {
+  agentId: string;
+  startedAt: number;
+  timeoutId: ReturnType<typeof setTimeout>;
+  resolve: () => void;
+  reject: (error: Error) => void;
+};
+
+type PactLike = { status?: string; title?: string; duration?: number | string };
+type SummaryLike = { summary?: string | null; called_at?: string | null };
+type ConversationConnectProps = { conversationId?: string };
+type DisconnectDetails = {
+  reason?: string;
+  message?: string;
+  code?: string | number;
+  closeCode?: number;
+  closeReason?: string;
+  context?: unknown;
+};
+type ElevenLabsMessage = {
+  type?: string;
+  source?: string;
+  message?: string;
+  agent_response_event?: { agent_response?: string };
+  agent_response_correction_event?: { corrected_agent_response?: string };
+  user_transcription_event?: { user_transcript?: string };
+};
+type ElevenLabsErrorDetails = {
+  code?: string | number;
+  reason?: string;
+  name?: string;
+  closeCode?: number;
+  closeReason?: string;
+  context?: unknown;
+};
+
+const getCloseContext = (context: unknown) =>
+  context && typeof context === 'object'
+    ? (context as { code?: number; reason?: string })
+    : undefined;
+
+const getRuntimePlatform = () => {
+  if (Capacitor.isNativePlatform()) return Capacitor.getPlatform();
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) return 'ios-webview';
+  if (/Android/.test(navigator.userAgent)) return 'android-webview';
+  return 'web';
+};
+
+const toError = (value: unknown, fallback: string) => {
+  if (value instanceof Error) return value;
+  if (typeof value === 'string' && value.trim()) return new Error(value);
+  return new Error(fallback);
+};
+
 export const useElevenLabsConversation = () => {
-  const logger = createLogger('useElevenLabsConversation');
+  const logger = useMemo(() => createLogger('useElevenLabsConversation'), []);
   const { language, user, userProfile, pacts } = useAppStore();
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -20,6 +77,8 @@ export const useElevenLabsConversation = () => {
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null);
   const callStartRef = useRef<number | null>(null);
   const conversationIdRef = useRef<string | null>(null);
+  const pendingStartRef = useRef<PendingStart | null>(null);
+  const pendingContextRef = useRef<string | null>(null);
 
   const buildLyraContext = useCallback(async (): Promise<string | null> => {
     if (!user?.id) return null;
@@ -31,7 +90,7 @@ export const useElevenLabsConversation = () => {
         .order('called_at', { ascending: false })
         .limit(5);
 
-      const activePacts = (pacts || []).filter((p: any) => p.status === 'active');
+      const activePacts = ((pacts || []) as PactLike[]).filter(p => p.status === 'active');
       const name = userProfile?.name || '';
 
       const intro =
@@ -43,7 +102,7 @@ export const useElevenLabsConversation = () => {
 
       const pactsLine = activePacts.length
         ? (language === 'ru' ? 'Активные пакты: ' : language === 'es' ? 'Votos activos: ' : 'Active vows: ') +
-          activePacts.map((p: any) => `${p.title} (${p.duration}d)`).join('; ')
+          activePacts.map(p => `${p.title} (${p.duration}d)`).join('; ')
         : '';
 
       const historyLine = summaries?.length
@@ -53,7 +112,7 @@ export const useElevenLabsConversation = () => {
               ? 'Conversaciones recientes: '
               : 'Recent calls: ') +
           summaries
-            .map((s: any) => `[${new Date(s.called_at).toLocaleDateString()}] ${(s.summary || '').slice(0, 300)}`)
+            .map((s: SummaryLike) => `[${new Date(s.called_at || Date.now()).toLocaleDateString()}] ${(s.summary || '').slice(0, 300)}`)
             .join(' | ')
         : '';
 
@@ -63,7 +122,7 @@ export const useElevenLabsConversation = () => {
       logger.error('Failed to build context', e);
       return null;
     }
-  }, [user?.id, userProfile?.name, pacts, language]);
+  }, [user?.id, userProfile?.name, pacts, language, logger]);
 
   const saveCallSummary = useCallback(
     async (durationSeconds: number) => {
@@ -83,12 +142,24 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to save call summary', e);
       }
     },
-    [user?.id, lastAgentMessage, lastUserMessage]
+    [user?.id, lastAgentMessage, lastUserMessage, logger]
   );
 
   const conversation = useConversation({
-    onConnect: (props?: any) => {
-      logger.info('ElevenLabs conversation connected');
+    onConnect: (props?: ConversationConnectProps) => {
+      const pendingStart = pendingStartRef.current;
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.resolve();
+        pendingStartRef.current = null;
+      }
+
+      logger.info('ElevenLabs conversation connected', {
+        conversationId: props?.conversationId,
+        agentId: pendingStart?.agentId,
+        platform: getRuntimePlatform(),
+        elapsedMs: pendingStart ? Math.round(performance.now() - pendingStart.startedAt) : undefined,
+      });
       setIsConnected(true);
       setLastAgentMessage(null);
       setLastUserMessage(null);
@@ -98,14 +169,35 @@ export const useElevenLabsConversation = () => {
         setConversationId(id);
         conversationIdRef.current = id;
       }
+
+      if (pendingContextRef.current) {
+        try {
+          conversation.sendContextualUpdate(pendingContextRef.current, { contextId: 'asceta-user-context' });
+          logger.info('Sent ElevenLabs contextual update', {
+            contextLength: pendingContextRef.current.length,
+          });
+        } catch (e) {
+          logger.warn('Failed to send contextual update after connect', e);
+        } finally {
+          pendingContextRef.current = null;
+        }
+      }
     },
-    onDisconnect: (details?: any) => {
+    onDisconnect: (details?: DisconnectDetails) => {
+      const pendingStart = pendingStartRef.current;
+      const closeContext = getCloseContext(details?.context);
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.reject(new Error('AGENT_UNAVAILABLE'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       logger.info('ElevenLabs conversation disconnected', {
         reason: details?.reason,
         message: details?.message,
         code: details?.code,
-        closeCode: details?.closeCode ?? details?.context?.code,
-        closeReason: details?.closeReason ?? details?.context?.reason,
+        closeCode: details?.closeCode ?? closeContext?.code,
+        closeReason: details?.closeReason ?? closeContext?.reason,
         context: details?.context,
       });
       setIsConnected(false);
@@ -118,7 +210,7 @@ export const useElevenLabsConversation = () => {
       setConversationId(null);
       conversationIdRef.current = null;
     },
-    onMessage: (message: any) => {
+    onMessage: (message: ElevenLabsMessage) => {
       logger.debug('Received message', { type: message?.type ?? message?.source });
       try {
         // New SDK shape with explicit event types
@@ -144,15 +236,24 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to parse onMessage', e);
       }
     },
-    onError: (message: any, error?: any) => {
+    onError: (message: string | ElevenLabsMessage, error?: unknown) => {
+      const pendingStart = pendingStartRef.current;
+      const errorDetails = error && typeof error === 'object' ? (error as ElevenLabsErrorDetails) : undefined;
+      const closeContext = getCloseContext(errorDetails?.context);
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.reject(toError(error ?? message, 'AGENT_UNAVAILABLE'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       logger.error('ElevenLabs conversation error', {
-        message: typeof message === 'string' ? message : message?.message,
+        message: typeof message === 'string' ? message : message.message,
         rawMessage: message,
-        code: error?.code,
-        reason: error?.reason,
-        name: error?.name,
-        closeCode: error?.closeCode ?? error?.context?.code,
-        closeReason: error?.closeReason ?? error?.context?.reason,
+        code: errorDetails?.code,
+        reason: errorDetails?.reason,
+        name: errorDetails?.name,
+        closeCode: errorDetails?.closeCode ?? closeContext?.code,
+        closeReason: errorDetails?.closeReason ?? closeContext?.reason,
         error,
       });
     },
@@ -162,47 +263,91 @@ export const useElevenLabsConversation = () => {
     const startedAt = performance.now();
     try {
       const agentId = AGENTS[language as keyof typeof AGENTS] || AGENTS.en;
+      const platform = getRuntimePlatform();
 
       logger.info('Starting ElevenLabs conversation', {
         agentId,
         language,
         connectionType: 'websocket',
+        platform,
+        hasMediaDevices: Boolean(navigator.mediaDevices?.getUserMedia),
       });
 
-      // 1. Запрашиваем доступ к микрофону до старта сессии
+      if (!navigator.mediaDevices?.getUserMedia) {
+        logger.error('Microphone API is unavailable', undefined, { platform });
+        throw new Error('MIC_PERMISSION_DENIED');
+      }
+
+      // 1. Запрашиваем доступ к микрофону до старта сессии и сразу освобождаем preflight stream.
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        logger.info('Microphone permission granted', {
+          platform,
+          elapsedMs: Math.round(performance.now() - startedAt),
+        });
       } catch (micErr) {
-        logger.error('Microphone permission denied', micErr);
+        logger.error('Microphone permission denied or unavailable', micErr, { platform });
         throw new Error('MIC_PERMISSION_DENIED');
       }
 
       // 2. Build context for the agent (best-effort)
       const context = await buildLyraContext();
+      pendingContextRef.current = context;
 
       // 3. Стартуем публичную WebSocket-сессию напрямую через agentId.
       // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint и не требует convai_write API key.
       logger.info('Starting public ElevenLabs WebSocket session', {
         agentId,
+        platform,
+        contextLength: context?.length ?? 0,
         elapsedMs: Math.round(performance.now() - startedAt),
       });
 
-      await conversation.startSession({
-        agentId,
-        connectionType: 'websocket',
-        ...(user?.id ? { userId: user.id } : {}),
-        ...(context
-          ? {
-              overrides: {
-                agent: {
-                  prompt: { prompt: context },
-                },
-              },
+      await new Promise<void>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          if (pendingStartRef.current?.agentId === agentId) {
+            pendingStartRef.current = null;
+            pendingContextRef.current = null;
+            logger.error('ElevenLabs WebSocket connection timed out', undefined, {
+              agentId,
+              platform,
+              timeoutMs: CONNECTION_TIMEOUT_MS,
+            });
+            try {
+              conversation.endSession();
+            } catch (endError) {
+              logger.warn('Failed to end timed-out ElevenLabs session', endError);
             }
-          : {}),
-      } as any);
+            reject(new Error('AGENT_UNAVAILABLE'));
+          }
+        }, CONNECTION_TIMEOUT_MS);
 
-      logger.info('ElevenLabs WebSocket startSession completed', {
+        pendingStartRef.current = {
+          agentId,
+          startedAt,
+          timeoutId,
+          resolve,
+          reject,
+        };
+
+        try {
+          conversation.startSession({
+            agentId,
+            connectionType: 'websocket',
+            ...(user?.id ? { userId: user.id } : {}),
+          });
+        } catch (startError) {
+          clearTimeout(timeoutId);
+          pendingStartRef.current = null;
+          pendingContextRef.current = null;
+          reject(toError(startError, 'AGENT_UNAVAILABLE'));
+        }
+      });
+
+      logger.info('ElevenLabs WebSocket connected', {
+        agentId,
+        platform,
         elapsedMs: Math.round(performance.now() - startedAt),
       });
 
@@ -211,15 +356,32 @@ export const useElevenLabsConversation = () => {
       logger.error('Error starting ElevenLabs conversation', error);
       throw error;
     }
-  }, [conversation, language, buildLyraContext, user?.id]);
+  }, [conversation, language, buildLyraContext, user?.id, logger]);
 
   const endConversation = useCallback(async () => {
     try {
+      if (pendingStartRef.current) {
+        clearTimeout(pendingStartRef.current.timeoutId);
+        pendingStartRef.current.reject(new Error('CALL_CANCELLED'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       await conversation.endSession();
     } catch (error) {
       logger.error('Error ending conversation', error);
     }
-  }, [conversation]);
+  }, [conversation, logger]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingStartRef.current) {
+        clearTimeout(pendingStartRef.current.timeoutId);
+        pendingStartRef.current.reject(new Error('CALL_CANCELLED'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
+    };
+  }, []);
 
   const setVolume = useCallback(
     async (volume: number) => {
@@ -231,7 +393,7 @@ export const useElevenLabsConversation = () => {
         logger.error('Error setting volume', error);
       }
     },
-    [conversation]
+    [conversation, logger]
   );
 
   return {
