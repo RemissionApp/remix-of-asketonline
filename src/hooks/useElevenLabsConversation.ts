@@ -1,4 +1,5 @@
 import { useConversation } from '@elevenlabs/react';
+import { Capacitor } from '@capacitor/core';
 import { useAppStore } from '@/store/useAppStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -22,8 +23,7 @@ type PendingStart = {
 };
 
 const getRuntimePlatform = () => {
-  const capacitor = (window as any)?.Capacitor;
-  if (capacitor?.getPlatform) return capacitor.getPlatform();
+  if (Capacitor.isNativePlatform()) return Capacitor.getPlatform();
   if (/iPad|iPhone|iPod/.test(navigator.userAgent)) return 'ios-webview';
   if (/Android/.test(navigator.userAgent)) return 'android-webview';
   return 'web';
