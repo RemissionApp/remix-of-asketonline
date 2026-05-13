@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Phone, PhoneOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SwipeGestureHandler } from './SwipeGestureHandler';
+import { UniverseAvatar } from './UniverseAvatar';
 import { useElevenLabsConversation } from '@/hooks/useElevenLabsConversation';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppStore } from '@/store/useAppStore';
@@ -23,6 +24,7 @@ export const VoiceCallInterface: React.FC = () => {
     startConversation,
     endConversation,
     isConnected,
+    isSpeaking,
   } = useElevenLabsConversation();
 
   // Tick call duration; auto-hangup at minute boundary if limit reached
@@ -177,6 +179,9 @@ export const VoiceCallInterface: React.FC = () => {
             {getTitle()}
           </h1>
 
+          {/* Universe avatar — closed eyes idle, glowing green eyes when active */}
+          <UniverseAvatar isActive={isConnected} isSpeaking={isSpeaking} />
+
           {/* Single action button */}
           <div className="flex justify-center pt-2">
             {!isConnected ? (
@@ -193,7 +198,7 @@ export const VoiceCallInterface: React.FC = () => {
                 onClick={handleStartCall}
                 disabled={isLoading}
                 size="lg"
-                className="w-28 h-28 rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-2 border-green-300/60 shadow-[0_0_40px_rgba(74,222,128,0.55)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
+                className="w-28 h-28 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 border-2 border-fuchsia-300/50 shadow-[0_0_50px_rgba(168,85,247,0.7),0_0_120px_rgba(139,92,246,0.4)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
               >
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
@@ -202,8 +207,9 @@ export const VoiceCallInterface: React.FC = () => {
                 )}
                 {!isLoading && (
                   <>
-                    <div className="absolute inset-0 rounded-full bg-green-400/30 animate-ping" />
-                    <div className="absolute -inset-2 rounded-full border border-green-300/40 animate-ping [animation-duration:2.4s]" />
+                    <div className="absolute inset-0 rounded-full bg-fuchsia-400/25 animate-ping" />
+                    <div className="absolute -inset-2 rounded-full border border-violet-300/40 animate-ping [animation-duration:2.4s]" />
+                    <div className="absolute -inset-4 rounded-full border border-fuchsia-300/20 animate-ping [animation-duration:3.2s]" />
                   </>
                 )}
               </Button>
