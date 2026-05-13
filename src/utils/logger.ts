@@ -32,7 +32,11 @@ class Logger {
   }
 
   private shouldLog(level: keyof Omit<LogLevel, 'NONE'>): boolean {
-    return isDevelopment || alwaysLogContexts.has(this.context || '') || currentLogLevel >= LOG_LEVELS[level];
+    return (
+      isDevelopment ||
+      (level !== 'DEBUG' && alwaysLogContexts.has(this.context || '')) ||
+      currentLogLevel >= LOG_LEVELS[level]
+    );
   }
 
   error(message: string, error?: Error | unknown, data?: any) {
