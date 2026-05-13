@@ -382,5 +382,11 @@ export interface Translations {
     errorLimit?: string;
     errorAuth?: string;
     errorNetwork?: string;
+    callSubtitleShort?: string;
+    callTitle?: string;
+    callButtonShort?: string;
+    online?: string;
+    callTip?: string;
+    connectionErrorTitle?: string;
   };
 }
