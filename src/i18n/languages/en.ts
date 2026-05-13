@@ -432,6 +432,7 @@ export const enTranslations: Translations = {
     back: 'Back',
     next: 'Next',
     submit: 'Submit',
+    loading: 'Loading...',
   },
 
   legal: enLegalTranslations,

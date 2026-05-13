@@ -433,6 +433,7 @@ export const esTranslations: Translations = {
     back: 'Atrás',
     next: 'Siguiente',
     submit: 'Enviar',
+    loading: 'Cargando...',
   },
   legal: esLegalTranslations,
   affirmations: {
