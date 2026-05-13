@@ -29,15 +29,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims?.sub) {
+    const { data: claimsData, error: claimsErr } = await userClient.auth.getUser(token);
+    if (claimsErr || !claimsData?.user?.id) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const userId = claimsData.claims.sub as string;
-    const email = (claimsData.claims as any).email as string | undefined;
+    const userId = claimsData.user.id as string;
+    const email = claimsData.user.email as string | undefined;
 
     const body = await req.json().catch(() => ({}));
     const password = typeof body?.password === 'string' ? body.password : '';
