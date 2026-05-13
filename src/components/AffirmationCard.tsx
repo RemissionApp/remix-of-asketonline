@@ -45,7 +45,7 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
   const { generateAndPlaySpeech, stopSpeech, isGenerating, isPlaying } = useTextToSpeech();
   const { t } = useTranslations();
   const hearLabel = (t as any).lyra?.hearFromGuide ||
-    (language === 'ru' ? 'Услышать от Вселенной' : language === 'es' ? 'Escuchar de Lyra' : 'Hear from Lyra');
+    (language === 'ru' ? 'Услышать от Лиры' : language === 'es' ? 'Escuchar de Lyra' : 'Hear from Lyra');
 
   const handleHear = () => {
     if (isPlaying || isGenerating) {
