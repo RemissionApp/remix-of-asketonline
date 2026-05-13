@@ -185,6 +185,7 @@ export const useElevenLabsConversation = () => {
     },
     onDisconnect: (details?: DisconnectDetails) => {
       const pendingStart = pendingStartRef.current;
+      const closeContext = getCloseContext(details?.context);
       if (pendingStart) {
         clearTimeout(pendingStart.timeoutId);
         pendingStart.reject(new Error('AGENT_UNAVAILABLE'));
@@ -195,8 +196,8 @@ export const useElevenLabsConversation = () => {
         reason: details?.reason,
         message: details?.message,
         code: details?.code,
-        closeCode: details?.closeCode ?? details?.context?.code,
-        closeReason: details?.closeReason ?? details?.context?.reason,
+        closeCode: details?.closeCode ?? closeContext?.code,
+        closeReason: details?.closeReason ?? closeContext?.reason,
         context: details?.context,
       });
       setIsConnected(false);
@@ -235,8 +236,10 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to parse onMessage', e);
       }
     },
-    onError: (message: string | ElevenLabsMessage, error?: ElevenLabsErrorDetails) => {
+    onError: (message: string | ElevenLabsMessage, error?: unknown) => {
       const pendingStart = pendingStartRef.current;
+      const errorDetails = error && typeof error === 'object' ? (error as ElevenLabsErrorDetails) : undefined;
+      const closeContext = getCloseContext(errorDetails?.context);
       if (pendingStart) {
         clearTimeout(pendingStart.timeoutId);
         pendingStart.reject(toError(error ?? message, 'AGENT_UNAVAILABLE'));
@@ -246,11 +249,11 @@ export const useElevenLabsConversation = () => {
       logger.error('ElevenLabs conversation error', {
         message: typeof message === 'string' ? message : message.message,
         rawMessage: message,
-        code: error?.code,
-        reason: error?.reason,
-        name: error?.name,
-        closeCode: error?.closeCode ?? error?.context?.code,
-        closeReason: error?.closeReason ?? error?.context?.reason,
+        code: errorDetails?.code,
+        reason: errorDetails?.reason,
+        name: errorDetails?.name,
+        closeCode: errorDetails?.closeCode ?? closeContext?.code,
+        closeReason: errorDetails?.closeReason ?? closeContext?.reason,
         error,
       });
     },
