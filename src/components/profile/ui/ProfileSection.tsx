@@ -10,7 +10,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({ title, children,
   return (
     <section className={`w-full ${className}`}>
       {title && (
-        <h2 className="text-[10px] uppercase tracking-[0.18em] text-cosmic-secondary mb-2 px-1">
+        <h2 className="text-[11px] uppercase tracking-[0.18em] text-cosmic-secondary/90 mb-2 px-1">
           {title}
         </h2>
       )}
