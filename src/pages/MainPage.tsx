@@ -173,7 +173,7 @@ const MainPage: React.FC = () => {
             getAscesisPrefix={getAscesisPrefix}
             formatRejection={formatRejection}
           />
-          <div className="lg:sticky lg:top-20 lg:pt-10">
+          <div className="lg:pt-10">
             <DesktopMainExtras />
           </div>
         </div>
