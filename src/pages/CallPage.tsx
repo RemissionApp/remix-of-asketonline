@@ -6,10 +6,13 @@ import { VoiceCallInterface } from '@/components/voice/VoiceCallInterface';
 import { StarField } from '@/components/StarField';
 import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useAmbientDrone } from '@/hooks/useAmbientDrone';
 
 const CallPage: React.FC = () => {
   const { t } = useTranslations();
   const navigate = useNavigate();
+  // Mystical cosmic drone while user is on the call screen
+  useAmbientDrone(true);
 
   return (
     <MobileOptimizedInterface>

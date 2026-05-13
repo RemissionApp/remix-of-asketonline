@@ -10,6 +10,7 @@ import { LanguageSelector } from '@/components/ProfilePage/LanguageSelector';
 import { LegalDocuments } from '@/components/ProfilePage/LegalDocuments';
 import { DeveloperSwitch } from '@/components/DeveloperSwitch';
 import { PushNotificationManager } from '@/components/notifications/PushNotificationManager';
+import { AmbientSoundSection } from '@/components/settings/AmbientSoundSection';
 
 const AccountSettingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -65,6 +66,9 @@ const AccountSettingsPage: React.FC = () => {
               </h2>
               <PushNotificationManager />
             </div>
+
+            {/* Cosmic ambient atmosphere */}
+            <AmbientSoundSection />
 
             {/* Developer Mode */}
             <div>
