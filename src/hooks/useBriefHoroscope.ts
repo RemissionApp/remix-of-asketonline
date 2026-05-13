@@ -23,27 +23,27 @@ export const useBriefHoroscope = () => {
   const typingSpeedRef = useRef(30); // milliseconds per character
   const lastFetchedDateRef = useRef<string | null>(null);
 
-  // Typing effect
+  // Typing effect — restarts cleanly whenever horoscope changes.
   useEffect(() => {
-    if (horoscope && !isTyping) {
-      setIsTyping(true);
-      setDisplayedText('');
-
-      const text = horoscope.description;
-      let index = 0;
-
-      const typingInterval = setInterval(() => {
-        if (index < text.length) {
-          setDisplayedText(prev => prev + text.charAt(index));
-          index++;
-        } else {
-          clearInterval(typingInterval);
-          setIsTyping(false);
-        }
-      }, typingSpeedRef.current);
-
-      return () => clearInterval(typingInterval);
+    const text = horoscope?.description ?? '';
+    setDisplayedText('');
+    if (!text) {
+      setIsTyping(false);
+      return;
     }
+    setIsTyping(true);
+    let index = 0;
+    const typingInterval = setInterval(() => {
+      index++;
+      setDisplayedText(text.slice(0, index));
+      if (index >= text.length) {
+        clearInterval(typingInterval);
+        setIsTyping(false);
+      }
+    }, typingSpeedRef.current);
+    return () => {
+      clearInterval(typingInterval);
+    };
   }, [horoscope]);
 
   const fetchHoroscope = useCallback(
@@ -106,9 +106,11 @@ export const useBriefHoroscope = () => {
           throw new Error('Invalid response from fetch-horoscope function');
         }
 
-        // Set the horoscope with just the description
+        // Set the horoscope with just the description — only update if changed
         const briefHoroscope = { description: data.data.description };
-        setHoroscope(briefHoroscope);
+        setHoroscope(prev =>
+          prev?.description === briefHoroscope.description ? prev : briefHoroscope
+        );
 
         // Cache the horoscope with today's date
         localStorage.setItem(
@@ -119,24 +121,30 @@ export const useBriefHoroscope = () => {
         lastFetchedDateRef.current = today;
       } catch (error) {
         console.error('Error fetching horoscope:', error);
-        setHoroscope({ description: getDefaultMessage(language) });
+        const fallback = getDefaultMessage(language);
+        setHoroscope(prev =>
+          prev?.description === fallback ? prev : { description: fallback }
+        );
       } finally {
         setLoading(false);
       }
     },
-    [userProfile?.birthDate, language, user]
+    [userProfile?.birthDate, language]
   );
 
   useEffect(() => {
     // Only fetch horoscope when user is logged in and we have their profile
-    if (user && userProfile) {
+    if (user && userProfile?.birthDate) {
       fetchHoroscope();
     } else {
-      // If not logged in, show default message
-      setHoroscope({ description: getDefaultMessage(language) });
+      const fallback = getDefaultMessage(language);
+      setHoroscope(prev =>
+        prev?.description === fallback ? prev : { description: fallback }
+      );
       setLoading(false);
     }
-  }, [userProfile?.birthDate, language, user, userProfile, fetchHoroscope]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, userProfile?.birthDate, language]);
 
   // Auto-refresh once per day: when tab becomes visible or window focuses,
   // if cached date != today → refetch.
