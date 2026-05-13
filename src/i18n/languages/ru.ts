@@ -202,6 +202,12 @@ export const ruTranslations: Translations = {
       enter: 'Войти',
       startJourney: 'Начать путь',
     },
+    stepLabel: 'Шаг',
+    stepCounter: 'Шаг {{current}} из {{total}}',
+    stepAriaLabel: 'Шаг {{n}}',
+    freeAfterSignup: 'Доступно сразу после регистрации',
+    proWithSubscription: 'Открывается по подписке Pro',
+    completeFailed: 'Не удалось завершить онбординг',
   },
   universe: {
     title: 'Вселенная',
