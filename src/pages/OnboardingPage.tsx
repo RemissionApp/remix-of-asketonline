@@ -65,8 +65,8 @@ const OnboardingPage: React.FC = () => {
     } catch (err: any) {
       console.error('Failed to complete onboarding', err);
       toast({
-        title: 'Ошибка',
-        description: err?.message || 'Не удалось завершить онбординг',
+        title: (t as any).auth?.error || 'Error',
+        description: err?.message || (t.onboarding as any).completeFailed || 'Failed to complete onboarding',
         variant: 'destructive',
       });
     } finally {
@@ -109,7 +109,9 @@ const OnboardingPage: React.FC = () => {
         <div className="flex-1 max-w-md">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs uppercase tracking-widest text-cosmic-secondary/70">
-              Шаг 2 из 2 · {step + 1}/{totalSteps}
+              {((t.onboarding as any).stepCounter || 'Step {{current}} of {{total}}')
+                .replace('{{current}}', String(step + 1))
+                .replace('{{total}}', String(totalSteps))}
             </span>
           </div>
           <div className="h-1 w-full rounded-full bg-cosmic-accent/15 overflow-hidden">
@@ -181,8 +183,8 @@ const OnboardingPage: React.FC = () => {
               </h1>
               <p className="text-sm text-cosmic-secondary/80">
                 {step === 1
-                  ? 'Доступно сразу после регистрации'
-                  : 'Открывается по подписке Pro'}
+                  ? (t.onboarding as any).freeAfterSignup || 'Available right after sign up'
+                  : (t.onboarding as any).proWithSubscription || 'Unlocked with Pro subscription'}
               </p>
             </div>
 
@@ -211,7 +213,7 @@ const OnboardingPage: React.FC = () => {
                   key={i}
                   type="button"
                   onClick={() => i <= step && setStep(i)}
-                  aria-label={`Шаг ${i + 1}`}
+                  aria-label={((t.onboarding as any).stepAriaLabel || 'Step {{n}}').replace('{{n}}', String(i + 1))}
                   className={`h-1.5 rounded-full transition-all ${
                     i === step
                       ? 'w-8 bg-cosmic-accent'
