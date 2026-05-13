@@ -8,15 +8,33 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     iosScheme: 'app.lovable.5484cc75896e42e9a5fffef3bd09c812',
   },
+  ios: {
+    contentInset: 'automatic',
+    backgroundColor: '#0d0d12',
+    scrollEnabled: false,
+    limitsNavigationsToAppBoundDomains: true,
+  },
+  android: {
+    backgroundColor: '#0d0d12',
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
+  },
   plugins: {
     StatusBar: {
       style: 'dark',
-      backgroundColor: 'rgba(10, 10, 15, 0.8)',
-      overlaysWebView: false,
+      backgroundColor: '#00000000',
+      overlaysWebView: true,
     },
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: '#0A0A0F',
+      backgroundColor: '#0d0d12',
+      showSpinner: false,
+      iosSpinnerStyle: 'small',
+      spinnerColor: '#c9a96e',
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true,
     },
   },
 };
