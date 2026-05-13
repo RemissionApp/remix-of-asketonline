@@ -133,6 +133,12 @@ export interface AppState {
   loadSoundSettings: () => void;
   initializeSettings: () => void;
 
+  // Ambient drone (cosmic atmosphere on call screen)
+  ambientEnabled: boolean;
+  ambientVolume: number;
+  setAmbientEnabled: (enabled: boolean) => void;
+  setAmbientVolume: (volume: number) => void;
+
   // Account deletion
   deleteAccount: (password: string) => Promise<void>;
   
