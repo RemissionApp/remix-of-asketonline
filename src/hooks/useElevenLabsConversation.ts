@@ -316,7 +316,9 @@ export const useElevenLabsConversation = () => {
             });
             try {
               conversation.endSession();
-            } catch (_) {}
+            } catch (endError) {
+              logger.warn('Failed to end timed-out ElevenLabs session', endError);
+            }
             reject(new Error('AGENT_UNAVAILABLE'));
           }
         }, CONNECTION_TIMEOUT_MS);
@@ -334,7 +336,7 @@ export const useElevenLabsConversation = () => {
             agentId,
             connectionType: 'websocket',
             ...(user?.id ? { userId: user.id } : {}),
-          } as any);
+          });
         } catch (startError) {
           clearTimeout(timeoutId);
           pendingStartRef.current = null;
