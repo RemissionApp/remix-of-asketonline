@@ -99,8 +99,12 @@ export const useElevenLabsConversation = () => {
         conversationIdRef.current = id;
       }
     },
-    onDisconnect: () => {
-      logger.info('ElevenLabs conversation disconnected');
+    onDisconnect: (details?: any) => {
+      logger.info('ElevenLabs conversation disconnected', {
+        reason: details?.reason,
+        code: details?.code,
+        context: details?.context,
+      });
       setIsConnected(false);
       const start = callStartRef.current;
       callStartRef.current = null;
@@ -138,7 +142,13 @@ export const useElevenLabsConversation = () => {
       }
     },
     onError: (message: any, error?: any) => {
-      logger.error('ElevenLabs conversation error', { message, error });
+      logger.error('ElevenLabs conversation error', {
+        message,
+        code: error?.code,
+        reason: error?.reason,
+        name: error?.name,
+        error,
+      });
     },
   });
 
