@@ -430,6 +430,7 @@ export const ruTranslations: Translations = {
     back: 'Назад',
     next: 'Далее',
     submit: 'Отправить',
+    loading: 'Загрузка...',
   },
   deleteAccount: {
     title: 'Удаление аккаунта',
