@@ -11,13 +11,6 @@ const AGENTS = {
   es: 'agent_01jzhxwswhfas9ss9ae74n16v0',
 };
 
-type SignedUrlResponse = {
-  signedUrl?: string;
-  error?: string;
-  code?: string;
-  details?: unknown;
-};
-
 export const useElevenLabsConversation = () => {
   const logger = createLogger('useElevenLabsConversation');
   const { language, user, userProfile, pacts } = useAppStore();
@@ -187,35 +180,15 @@ export const useElevenLabsConversation = () => {
       // 2. Build context for the agent (best-effort)
       const context = await buildLyraContext();
 
-      // 3. Получаем signed URL на backend и стартуем WebSocket-сессию.
-      // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint.
-      const { data, error } = (await supabase.functions.invoke('elevenlabs-signed-url', {
-        body: { agentId },
-      })) as { data: SignedUrlResponse | null; error: any };
-
-      const canUseSignedUrl = !error && Boolean(data?.signedUrl);
-
-      if (!canUseSignedUrl) {
-        logger.error('Failed to get ElevenLabs signed URL', {
-          error,
-          data,
-          agentId,
-        });
-        logger.info('Falling back to public ElevenLabs WebSocket session', {
-          agentId,
-          reason: data?.code || error?.message || 'signed_url_unavailable',
-        });
-      }
-
-      if (canUseSignedUrl) {
-        logger.info('Received ElevenLabs signed URL', {
-          agentId,
-          elapsedMs: Math.round(performance.now() - startedAt),
-        });
-      }
+      // 3. Стартуем публичную WebSocket-сессию напрямую через agentId.
+      // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint и не требует convai_write API key.
+      logger.info('Starting public ElevenLabs WebSocket session', {
+        agentId,
+        elapsedMs: Math.round(performance.now() - startedAt),
+      });
 
       await conversation.startSession({
-        ...(canUseSignedUrl ? { signedUrl: data!.signedUrl } : { agentId }),
+        agentId,
         connectionType: 'websocket',
         ...(user?.id ? { userId: user.id } : {}),
         ...(context
