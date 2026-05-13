@@ -322,11 +322,28 @@ export const useElevenLabsConversation = () => {
 
   const endConversation = useCallback(async () => {
     try {
+      if (pendingStartRef.current) {
+        clearTimeout(pendingStartRef.current.timeoutId);
+        pendingStartRef.current.reject(new Error('CALL_CANCELLED'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       await conversation.endSession();
     } catch (error) {
       logger.error('Error ending conversation', error);
     }
   }, [conversation]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingStartRef.current) {
+        clearTimeout(pendingStartRef.current.timeoutId);
+        pendingStartRef.current.reject(new Error('CALL_CANCELLED'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
+    };
+  }, []);
 
   const setVolume = useCallback(
     async (volume: number) => {
