@@ -193,22 +193,29 @@ export const useElevenLabsConversation = () => {
         body: { agentId },
       })) as { data: SignedUrlResponse | null; error: any };
 
-      if (error || !data?.signedUrl) {
+      const canUseSignedUrl = !error && Boolean(data?.signedUrl);
+
+      if (!canUseSignedUrl) {
         logger.error('Failed to get ElevenLabs signed URL', {
           error,
           data,
           agentId,
         });
-        throw new Error(data?.code || 'AGENT_UNAVAILABLE');
+        logger.info('Falling back to public ElevenLabs WebSocket session', {
+          agentId,
+          reason: data?.code || error?.message || 'signed_url_unavailable',
+        });
       }
 
-      logger.info('Received ElevenLabs signed URL', {
-        agentId,
-        elapsedMs: Math.round(performance.now() - startedAt),
-      });
+      if (canUseSignedUrl) {
+        logger.info('Received ElevenLabs signed URL', {
+          agentId,
+          elapsedMs: Math.round(performance.now() - startedAt),
+        });
+      }
 
       await conversation.startSession({
-        signedUrl: data.signedUrl,
+        ...(canUseSignedUrl ? { signedUrl: data!.signedUrl } : { agentId }),
         connectionType: 'websocket',
         ...(user?.id ? { userId: user.id } : {}),
         ...(context
