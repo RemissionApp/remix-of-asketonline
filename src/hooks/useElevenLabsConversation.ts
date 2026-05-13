@@ -87,12 +87,17 @@ export const useElevenLabsConversation = () => {
   );
 
   const conversation = useConversation({
-    onConnect: () => {
+    onConnect: (props?: any) => {
       logger.info('ElevenLabs conversation connected');
       setIsConnected(true);
       setLastAgentMessage(null);
       setLastUserMessage(null);
       callStartRef.current = Date.now();
+      const id = props?.conversationId ?? null;
+      if (id) {
+        setConversationId(id);
+        conversationIdRef.current = id;
+      }
     },
     onDisconnect: () => {
       logger.info('ElevenLabs conversation disconnected');
@@ -132,8 +137,8 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to parse onMessage', e);
       }
     },
-    onError: error => {
-      logger.error('ElevenLabs conversation error', error);
+    onError: (message: any, error?: any) => {
+      logger.error('ElevenLabs conversation error', { message, error });
     },
   });
 
@@ -149,36 +154,16 @@ export const useElevenLabsConversation = () => {
         throw new Error('MIC_PERMISSION_DENIED');
       }
 
-      // 2. Получаем conversation token для WebRTC
-      const { data, error } = await supabase.functions.invoke(
-        'elevenlabs-conversation-token',
-        { body: { agentId } }
-      );
-
-      if (error || !data?.token) {
-        // FunctionsHttpError carries response status in context
-        const ctx: any = (error as any)?.context;
-        const status = ctx?.status ?? data?.status;
-        const errCode = data?.error || (error as any)?.message;
-        if (status === 429 || errCode === 'monthly_minutes_exceeded') {
-          throw new Error('MINUTES_LIMIT_REACHED');
-        }
-        if (status === 401) {
-          throw new Error('AUTH_REQUIRED');
-        }
-        if (status === 502 || /agent/i.test(String(errCode))) {
-          throw new Error('AGENT_UNAVAILABLE');
-        }
-        throw new Error(errCode || 'TOKEN_FETCH_FAILED');
-      }
-
-      // 3. Build context for the agent
+      // 2. Build context for the agent (best-effort)
       const context = await buildLyraContext();
 
-      // 4. Стартуем сессию через WebRTC с токеном
-      await conversation.startSession({
-        conversationToken: data.token,
+      // 3. Стартуем сессию напрямую через agentId (публичные агенты, WebRTC).
+      // SDK сам получает токен — это устойчивее, чем наш backend-маршрут,
+      // и совпадает с официальной документацией ElevenLabs.
+      conversation.startSession({
+        agentId,
         connectionType: 'webrtc',
+        ...(user?.id ? { userId: user.id } : {}),
         ...(context
           ? {
               overrides: {
@@ -189,16 +174,13 @@ export const useElevenLabsConversation = () => {
             }
           : {}),
       } as any);
-      const id = conversation.getId?.() ?? null;
-      setConversationId(id);
-      conversationIdRef.current = id;
 
-      return id;
+      return null;
     } catch (error) {
       logger.error('Error starting ElevenLabs conversation', error);
       throw error;
     }
-  }, [conversation, language, buildLyraContext]);
+  }, [conversation, language, buildLyraContext, user?.id]);
 
   const endConversation = useCallback(async () => {
     try {
