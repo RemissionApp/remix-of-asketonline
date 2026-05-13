@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import { useBackButton } from '@/hooks/useBackButton';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublicRoute } from '@/components/auth/PublicRoute';
+import { ResponsiveShell } from '@/components/desktop/DesktopShell';
+import { RequireAdmin } from '@/components/admin/RequireAdmin';
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 
 import WelcomePage from '@/pages/WelcomePage';
 import LanguagePage from '@/pages/LanguagePage';
@@ -35,6 +38,7 @@ const CallPage = lazy(() => import('@/pages/CallPage'));
 const NumerologyPage = lazy(() => import('@/pages/NumerologyPage'));
 const CosmosPage = lazy(() => import('@/pages/CosmosPage'));
 const UniverseHubPage = lazy(() => import('@/pages/UniverseHubPage'));
+const AdminPage = lazy(() => import('@/pages/AdminPage'));
 
 const RouteFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-cosmic-dark">
@@ -47,8 +51,9 @@ export const AppRouter: React.FC = () => {
   useBackButton();
 
   return (
-    <>
+    <AnalyticsProvider>
       <Suspense fallback={<RouteFallback />}>
+      <ResponsiveShell>
       <Routes>
         {/* Public routes - accessible to unauthenticated users */}
         <Route path="/" element={<PublicRoute><WelcomePage /></PublicRoute>} />
@@ -79,6 +84,9 @@ export const AppRouter: React.FC = () => {
         <Route path="/achievements" element={<ProtectedRoute requireProfile requireOnboarding><AchievementsPage /></ProtectedRoute>} />
         <Route path="/delete-account" element={<ProtectedRoute requireProfile requireOnboarding><DeleteAccountPage /></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute requireProfile requireOnboarding><AccountSettingsPage /></ProtectedRoute>} />
+
+        {/* Admin (role-protected) */}
+        <Route path="/admin" element={<ProtectedRoute><RequireAdmin><AdminPage /></RequireAdmin></ProtectedRoute>} />
         
         {/* Public legal pages */}
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -90,7 +98,8 @@ export const AppRouter: React.FC = () => {
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </ResponsiveShell>
       </Suspense>
-    </>
+    </AnalyticsProvider>
   );
 };
