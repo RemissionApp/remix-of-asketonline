@@ -114,13 +114,13 @@ export const ProfileIdentityTab: React.FC = () => {
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatar} />
         <div>
           <div className="font-serif text-lg text-white">{userProfile?.name || t.notSet}</div>
-          <div className="text-[11px] text-cosmic-secondary">{user?.email}</div>
+          <div className="text-[12px] text-cosmic-secondary">{user?.email}</div>
         </div>
 
         {/* Rank progress */}
         <div className="w-full bg-cosmic-dark/40 border border-cosmic-accent/15 backdrop-blur-sm rounded-2xl p-4 mt-1">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] uppercase tracking-wider text-cosmic-secondary">{t.rank}</span>
+            <span className="text-[11px] uppercase tracking-wider text-cosmic-secondary">{t.rank}</span>
             <span className="font-serif text-sm text-cosmic-gold">{rankLabel}</span>
           </div>
           <div className="h-1.5 bg-cosmic-deep-blue/40 rounded-full overflow-hidden">
@@ -130,7 +130,7 @@ export const ProfileIdentityTab: React.FC = () => {
             />
           </div>
           {rankInfo.pointsToNext > 0 && (
-            <div className="text-[10px] text-cosmic-secondary mt-1.5 text-right">
+            <div className="text-[11px] text-cosmic-secondary mt-1.5 text-right">
               {t.pointsLeft(rankInfo.pointsToNext)}
             </div>
           )}

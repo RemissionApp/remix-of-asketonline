@@ -120,7 +120,7 @@ const DetailedHoroscopePage: React.FC = () => {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16 bg-gradient-to-b from-cosmic-dark to-[#1a0b2e]">
+    <div className="min-h-screen flex flex-col relative pb-page bg-gradient-to-b from-cosmic-dark to-[#1a0b2e]">
       <StarField starCount={200} />
 
       <PageHeader

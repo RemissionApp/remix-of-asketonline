@@ -58,30 +58,30 @@ export const ProfileRow: React.FC<ProfileRowProps> = ({
     <Wrapper
       type={onPress ? 'button' : undefined}
       onClick={onPress}
-      className={`w-full text-left flex items-center gap-3 bg-cosmic-dark/40 border border-cosmic-accent/15 backdrop-blur-sm p-4 ${radius} ${onPress ? 'transition-transform active:scale-[0.99] hover:bg-cosmic-dark/55' : ''}`}
+      className={`w-full text-left flex items-center gap-3 bg-cosmic-dark/40 border border-cosmic-accent/15 backdrop-blur-sm px-4 py-3.5 min-h-[56px] ${radius} ${onPress ? 'transition-transform active:scale-[0.99] hover:bg-cosmic-dark/55' : ''}`}
     >
-      <div className={`shrink-0 flex items-center justify-center w-9 h-9 rounded-xl ${c.bg} ring-1 ${c.ring}`}>
-        <Icon size={16} className={c.text} />
+      <div className={`shrink-0 flex items-center justify-center w-10 h-10 rounded-xl ${c.bg} ring-1 ${c.ring}`}>
+        <Icon size={18} className={c.text} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-sm text-white truncate">{label}</div>
+        <div className="text-[14px] leading-tight text-white truncate">{label}</div>
         {sublabel && (
-          <div className="text-[11px] text-cosmic-secondary mt-0.5 truncate">{sublabel}</div>
+          <div className="text-[12px] leading-snug text-cosmic-secondary mt-0.5 truncate">{sublabel}</div>
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {badge && (
-          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${badgeColorMap[badge.color ?? 'gold']}`}>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap ${badgeColorMap[badge.color ?? 'gold']}`}>
             {badge.text}
           </span>
         )}
         {value && !toggle && (
-          <span className="text-[11px] text-cosmic-secondary text-right max-w-[40vw] truncate">{value}</span>
+          <span className="text-[12px] text-cosmic-secondary text-right max-w-[45vw] truncate">{value}</span>
         )}
         {toggle && (
           <Switch checked={toggle.value} onCheckedChange={toggle.onChange} />
         )}
-        {onPress && !toggle && <ChevronRight size={14} className="text-cosmic-secondary" />}
+        {onPress && !toggle && <ChevronRight size={16} className="text-cosmic-secondary/70" />}
       </div>
     </Wrapper>
   );

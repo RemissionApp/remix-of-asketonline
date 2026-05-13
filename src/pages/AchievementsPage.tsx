@@ -24,7 +24,7 @@ const AchievementsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pb-16">
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pb-page">
         <StarField starCount={150} />
         <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
           <div className="flex flex-col items-center gap-3">
@@ -43,7 +43,7 @@ const AchievementsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-16">
+    <div className="min-h-screen flex flex-col relative pb-page">
       <StarField starCount={100} />
 
       <PageHeader title={getPageTitle()} />
