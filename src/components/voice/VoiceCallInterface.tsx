@@ -88,12 +88,56 @@ export const VoiceCallInterface: React.FC = () => {
     } catch (error) {
       console.error('Failed to start call:', error);
 
-      const errorMessage =
-        language === 'ru'
-          ? 'Не удалось соединиться с Вселенной'
-          : language === 'es'
-            ? 'No se pudo conectar con el Universo'
-            : 'Failed to connect to the Universe';
+      const lyra: any = (t as any).lyra || {};
+      const code = error instanceof Error ? error.message : '';
+      let errorMessage: string;
+      switch (code) {
+        case 'MIC_PERMISSION_DENIED':
+          errorMessage =
+            lyra.errorMicDenied ||
+            (language === 'ru'
+              ? 'Разрешите доступ к микрофону.'
+              : language === 'es'
+                ? 'Permite el acceso al micrófono.'
+                : 'Please allow microphone access.');
+          break;
+        case 'MINUTES_LIMIT_REACHED':
+          errorMessage =
+            lyra.errorLimit ||
+            (language === 'ru'
+              ? 'Месячный лимит исчерпан.'
+              : language === 'es'
+                ? 'Límite mensual alcanzado.'
+                : 'Monthly limit reached.');
+          await refreshMinutes();
+          break;
+        case 'AGENT_UNAVAILABLE':
+          errorMessage =
+            lyra.errorAgentUnavailable ||
+            (language === 'ru'
+              ? 'Голос Вселенной временно недоступен.'
+              : language === 'es'
+                ? 'La voz no está disponible.'
+                : 'The Universe is temporarily unreachable.');
+          break;
+        case 'AUTH_REQUIRED':
+          errorMessage =
+            lyra.errorAuth ||
+            (language === 'ru'
+              ? 'Войдите в аккаунт, чтобы позвонить.'
+              : language === 'es'
+                ? 'Inicia sesión para llamar.'
+                : 'Please sign in to start a call.');
+          break;
+        default:
+          errorMessage =
+            lyra.errorNetwork ||
+            (language === 'ru'
+              ? 'Не удалось соединиться с Вселенной.'
+              : language === 'es'
+                ? 'No se pudo conectar con el Universo.'
+                : 'Failed to connect to the Universe.');
+      }
 
       if ('vibrate' in navigator) {
         navigator.vibrate([200, 100, 200]);
