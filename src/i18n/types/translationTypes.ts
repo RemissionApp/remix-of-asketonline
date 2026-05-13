@@ -377,5 +377,10 @@ export interface Translations {
     minutesLeft: string; // contains {{count}}
     limitReachedCta: string;
     hearFromGuide: string;
+    errorMicDenied?: string;
+    errorAgentUnavailable?: string;
+    errorLimit?: string;
+    errorAuth?: string;
+    errorNetwork?: string;
   };
 }

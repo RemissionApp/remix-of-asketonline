@@ -88,12 +88,56 @@ export const VoiceCallInterface: React.FC = () => {
     } catch (error) {
       console.error('Failed to start call:', error);
 
-      const errorMessage =
-        language === 'ru'
-          ? 'Не удалось соединиться с Вселенной'
-          : language === 'es'
-            ? 'No se pudo conectar con el Universo'
-            : 'Failed to connect to the Universe';
+      const lyra: any = (t as any).lyra || {};
+      const code = error instanceof Error ? error.message : '';
+      let errorMessage: string;
+      switch (code) {
+        case 'MIC_PERMISSION_DENIED':
+          errorMessage =
+            lyra.errorMicDenied ||
+            (language === 'ru'
+              ? 'Разрешите доступ к микрофону.'
+              : language === 'es'
+                ? 'Permite el acceso al micrófono.'
+                : 'Please allow microphone access.');
+          break;
+        case 'MINUTES_LIMIT_REACHED':
+          errorMessage =
+            lyra.errorLimit ||
+            (language === 'ru'
+              ? 'Месячный лимит исчерпан.'
+              : language === 'es'
+                ? 'Límite mensual alcanzado.'
+                : 'Monthly limit reached.');
+          await refreshMinutes();
+          break;
+        case 'AGENT_UNAVAILABLE':
+          errorMessage =
+            lyra.errorAgentUnavailable ||
+            (language === 'ru'
+              ? 'Голос Вселенной временно недоступен.'
+              : language === 'es'
+                ? 'La voz no está disponible.'
+                : 'The Universe is temporarily unreachable.');
+          break;
+        case 'AUTH_REQUIRED':
+          errorMessage =
+            lyra.errorAuth ||
+            (language === 'ru'
+              ? 'Войдите в аккаунт, чтобы позвонить.'
+              : language === 'es'
+                ? 'Inicia sesión para llamar.'
+                : 'Please sign in to start a call.');
+          break;
+        default:
+          errorMessage =
+            lyra.errorNetwork ||
+            (language === 'ru'
+              ? 'Не удалось соединиться с Вселенной.'
+              : language === 'es'
+                ? 'No se pudo conectar con el Universo.'
+                : 'Failed to connect to the Universe.');
+      }
 
       if ('vibrate' in navigator) {
         navigator.vibrate([200, 100, 200]);
@@ -170,7 +214,24 @@ export const VoiceCallInterface: React.FC = () => {
   return (
     <SwipeGestureHandler>
       <div className="w-full max-w-sm mx-auto px-4">
-        <div className="bg-transparent p-4 text-center space-y-5">
+        <div
+          className={`relative overflow-hidden rounded-[2rem] border p-6 text-center space-y-5 backdrop-blur-xl transition-colors duration-700 ${
+            isConnected
+              ? 'border-green-400/30 bg-gradient-to-b from-cosmic-dark/70 via-cosmic-indigo/30 to-cosmic-dark/70 shadow-[0_0_60px_-10px_rgba(74,222,128,0.35)]'
+              : 'border-white/10 bg-gradient-to-b from-cosmic-dark/60 via-cosmic-indigo/20 to-cosmic-dark/60 shadow-[0_20px_60px_-20px_rgba(139,92,246,0.4)]'
+          }`}
+        >
+          {/* Inner cosmic glow */}
+          <div className="pointer-events-none absolute inset-0 rounded-[2rem]">
+            <div
+              className={`absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl transition-colors duration-700 ${
+                isConnected ? 'bg-green-400/20' : 'bg-cosmic-accent/20'
+              }`}
+            />
+            <div className="absolute inset-0 opacity-40 [background:radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.08),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.06),transparent_45%)]" />
+          </div>
+
+          <div className="relative z-10 space-y-5">
           {/* Title */}
           <div className="text-center">
             <h1 className="text-xl sm:text-2xl font-serif text-white mb-1">
@@ -222,7 +283,7 @@ export const VoiceCallInterface: React.FC = () => {
                 onClick={handleStartCall}
                 disabled={isLoading}
                 size="lg"
-                className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
+                className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-2 border-green-300/60 shadow-[0_0_40px_rgba(74,222,128,0.55)] transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 relative overflow-hidden"
               >
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
@@ -230,7 +291,10 @@ export const VoiceCallInterface: React.FC = () => {
                   <Phone className="w-10 h-10" />
                 )}
                 {!isLoading && (
-                  <div className="absolute inset-0 rounded-full bg-green-400/30 animate-ping" />
+                  <>
+                    <div className="absolute inset-0 rounded-full bg-green-400/30 animate-ping" />
+                    <div className="absolute -inset-2 rounded-full border border-green-300/40 animate-ping [animation-duration:2.4s]" />
+                  </>
                 )}
               </Button>
               )
@@ -238,7 +302,7 @@ export const VoiceCallInterface: React.FC = () => {
               <Button
                 onClick={handleEndCall}
                 size="lg"
-                className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 border-2 border-red-400/50 shadow-lg shadow-red-500/30 transition-all duration-300 hover:scale-105 active:scale-95"
+                className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 border-2 border-red-300/60 shadow-[0_0_40px_rgba(244,63,94,0.55)] transition-all duration-300 hover:scale-105 active:scale-95"
               >
                 <PhoneOff className="w-10 h-10" />
               </Button>
@@ -256,6 +320,7 @@ export const VoiceCallInterface: React.FC = () => {
               ✨ {getTipText()}
             </p>
           )}
+          </div>
         </div>
       </div>
     </SwipeGestureHandler>
