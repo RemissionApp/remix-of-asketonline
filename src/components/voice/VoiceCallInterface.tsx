@@ -220,13 +220,13 @@ export const VoiceCallInterface: React.FC = () => {
           </div>
 
           {isConnected && (
-            <p className="text-sm text-cosmic-secondary/90 tabular-nums">
+            <p className="font-serif text-4xl sm:text-5xl text-white/90 tabular-nums tracking-widest text-center min-w-[7ch]">
               {formatDuration(callDuration)}
             </p>
           )}
 
           {!isConnected && !limitReached && (
-            <p className="text-xs text-cosmic-secondary/90">
+            <p className="text-[13px] text-cosmic-secondary/90 text-center">
               {((t as any).lyra?.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft))}
             </p>
           )}
