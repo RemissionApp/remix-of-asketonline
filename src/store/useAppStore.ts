@@ -63,8 +63,8 @@ export const useAppStore = create<AppState & OnboardingSlice>()(
     soundEnabled: true,
     soundVolume: 0.8,
 
-    // Ambient cosmic drone for call screen
-    ambientEnabled: true,
+    // Ambient cosmic drone for call screen (disabled by default — user found it distracting)
+    ambientEnabled: false,
     ambientVolume: 0.45,
 
     setAmbientEnabled: enabled => {
