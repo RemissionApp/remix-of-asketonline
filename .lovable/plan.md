@@ -1,52 +1,38 @@
-## 1. Профиль — правильная иконка стихии и локализация
+## План
 
-**Файл:** `src/components/profile/ProfileSpiritualTab.tsx` (+ хелпер).
+### 1. Кнопка «Сохранить в Книгу Ответов» в блоке гороскопа
 
-- Добавить маппинг стихии → иконка Lucide:
-  - Fire → `Flame`, Earth → `Mountain`, Air → `Wind`, Water → `Droplet`.
-  Сейчас для всех стихий жёстко используется `Flame` — заменить на динамический выбор.
-- Добавить локализацию `element` и `ruler` (сейчас `zodiacData[sign].element/ruler` всегда английские: `Air`, `Venus` и т. п.).
-  Создать `src/utils/zodiacTranslations.ts` (или дополнить существующий) карты:
-  - Стихии: `Fire/Earth/Air/Water` → ru `Огонь/Земля/Воздух/Вода`, es `Fuego/Tierra/Aire/Agua`.
-  - Планеты: `Mars/Venus/Mercury/Moon/Sun/Pluto/Jupiter/Saturn/Uranus/Neptune` → ru `Марс/Венера/Меркурий/Луна/Солнце/Плутон/Юпитер/Сатурн/Уран/Нептун`, es аналогично. Поддержать составные значения `"Pluto, Mars"` через split/translate/join.
-- Иконка управителя: Sun → `Sun`, Moon → `Moon`, остальные → `Globe2` (как сейчас).
+В `DesktopMainExtras.tsx` (карточка «Гороскоп на сегодня») и в `useBriefHoroscope` (на мобильном — где гороскоп показывается через `QuoteDisplay`/`UniverseMessageBlock`) добавлю кнопку «Сохранить в Книгу Ответов».
 
-## 2. Десктопный главный экран — новые блоки
+При нажатии:
+- INSERT в таблицу `universe_questions`: `question = "Гороскоп на DD.MM.YYYY ({знак})"`, `answer = текст гороскопа`.
+- Toast подтверждения (ru/en/es).
+- Кнопка становится «Сохранено ✓» и блокируется, чтобы не сохранять дубль за тот же день (флаг в localStorage `horoscope_saved_{sign}_{YYYY-MM-DD}`).
+- Сохранённые записи появятся в существующем блоке «Недавние вопросы Вселенной» (`RecentQuestionsBlock`).
 
-**Файл:** `src/pages/MainPage.tsx` + новый `src/components/desktop/DesktopMainExtras.tsx`.
+### 2. Автообновление гороскопа раз в сутки + при открытии главной
 
-На десктопе (`useIsDesktop()`) рендерим компоновку в две колонки внутри уже существующего `DesktopShell`:
+В `useBriefHoroscope`:
+- Сейчас уже есть кэш по дню через `localStorage`. Добавлю проверку при монтировании: если дата кэша `< сегодня`, кэш сбрасывается и инициируется новая загрузка с edge-функции `fetch-horoscope`.
+- Добавлю слушатель `visibilitychange` и `focus`: если пользователь возвращается в приложение и кэш устарел — перезапросить.
+- В `MainPage` уже автоматически рендерится `DesktopMainExtras` → хук срабатывает при открытии. Этого достаточно для «обновления при открытии главного экрана».
 
-```text
-+----------------------------------------+----------------------+
-| Существующий MainContent (как есть)    | Astrology card       |
-|  (приветствие, аскезы, CallHero, ...)  | Numerology card      |
-|                                        | Daily horoscope card |
-+----------------------------------------+----------------------+
-```
+### 3. Фикс прокрутки на десктопе на `/main`
 
-Реализация:
-- В `MainPage.tsx` обернуть текущий `<MainContent .../>` в grid `lg:grid-cols-[minmax(0,1fr)_360px] gap-6`. Правая колонка — `<DesktopMainExtras />`, видна только на `lg:` (`hidden lg:flex flex-col gap-4`).
-- Мобильную верстку не трогаем (правая колонка скрыта).
+Проблема: `DesktopShell` оборачивает `MainPage`, а сама `MainPage` рендерит fixed `TopBar` (z-100) и `BottomNavigation`, которые перекрывают контент в десктопной разметке. Плюс `pb-32` рассчитан на мобильный bottom-nav.
 
-`DesktopMainExtras.tsx` содержит три «стеклянных» блока в едином стиле с профилем (`bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-5`):
+Решение:
+- В `MainPage` скрывать `TopBar` и `BottomNavigation` на `lg:` (через `className="lg:hidden"` обёртку), потому что десктопная навигация уже в `DesktopSidebar`.
+- Контейнер сетки: убрать `pt-16` на `lg`, заменить `pb-32` на `lg:pb-12`, чтобы низ страницы не обрезался.
+- Внутренний `<main>` в `MainContent.tsx` имеет `pt-10` — это ок, но проверю что `DesktopShell` `<main>` с `overflow-y-auto` корректно скроллит весь контент включая sticky правую колонку.
 
-1. **Astrology** — знак (символ + имя), стихия (с правильной иконкой), управитель. Источник данных: `userProfile.birthDate` + `zodiacData` + новые переводы (п.1).
-2. **Numerology** — Число жизни, Число судьбы, Личность, Год. Логика взята из `ProfileSpiritualTab` (`calculateLifePathNumber`, `calculateDestinyMatrix`, `calculatePersonalityNumber`). Компактная сетка 2×2 с крупными цифрами и подписями.
-3. **Daily horoscope** — автоматически подгружается через `useBriefHoroscope()` (он сам кеширует на день в `localStorage`). Заголовок «Гороскоп на сегодня / Today's horoscope / Horóscopo de hoy», под ним `displayedText` с курсором (или статичный текст, если уже не печатается). Skeleton, пока `loading`.
+### Технические детали
 
-Если у пользователя не задана дата рождения — Astrology/Numerology показывают мягкий CTA «Укажите дату рождения» с переходом в `/profile`. Daily horoscope в этом случае возвращает дефолтное сообщение из `useBriefHoroscope` (поведение уже есть).
+- Новых таблиц/миграций не нужно — используется существующая `universe_questions` с RLS `auth.uid() = user_id`.
+- Файлы:
+  - `src/components/desktop/DesktopMainExtras.tsx` — кнопка сохранения в карточке гороскопа.
+  - `src/hooks/useBriefHoroscope.ts` — авто-обновление по visibilitychange/focus, проверка устаревания кэша.
+  - `src/components/universe/UniverseMessageBlock.tsx` (мобильный) — добавить ту же кнопку, чтобы фича была и на телефоне.
+  - `src/pages/MainPage.tsx` — `lg:hidden` для TopBar/BottomNavigation, корректные паддинги для desktop.
 
-## 3. Стиль и локализация
-
-- Все цвета/радиусы — через существующий glass-стиль (никаких новых токенов).
-- Тексты — через `useTranslations()`/локальный inline-словарь как в `ProfileSpiritualTab` (ru/en/es). Никаких смешанных языков (русский интерфейс ⇒ русские стихии/планеты, английский ⇒ английские).
-
-## Файлы
-
-- new: `src/utils/zodiacTranslations.ts` (карты стихий/планет ru/en/es + helper `translateRuler`).
-- edit: `src/components/profile/ProfileSpiritualTab.tsx` — динамическая иконка стихии, перевод значений.
-- new: `src/components/desktop/DesktopMainExtras.tsx` — три desktop-блока.
-- edit: `src/pages/MainPage.tsx` — двухколоночный layout на `lg:`.
-
-Мобильная версия и любые другие страницы — без изменений.
+Локализация ru/en/es для всех новых строк («Сохранить в Книгу Ответов» / «Save to Book of Answers» / «Guardar en el Libro de Respuestas», «Сохранено» / «Saved» / «Guardado»).
