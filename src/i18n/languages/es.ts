@@ -203,6 +203,12 @@ export const esTranslations: Translations = {
       enter: 'Entrar',
       startJourney: 'Iniciar Camino',
     },
+    stepLabel: 'Paso',
+    stepCounter: 'Paso {{current}} de {{total}}',
+    stepAriaLabel: 'Paso {{n}}',
+    freeAfterSignup: 'Disponible justo después del registro',
+    proWithSubscription: 'Se desbloquea con la suscripción Pro',
+    completeFailed: 'No se pudo completar la presentación',
   },
   universe: {
     title: 'Universo',
