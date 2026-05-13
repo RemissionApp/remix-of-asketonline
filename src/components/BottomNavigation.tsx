@@ -54,7 +54,7 @@ export const BottomNavigation = memo(() => {
 
   return (
     <div
-      className="fixed left-0 right-0 z-[100] w-full pointer-events-none"
+      className="fixed left-0 right-0 z-[100] w-full pointer-events-none lg:hidden"
       style={{
         bottom: isAndroid()
           ? 'calc(env(safe-area-inset-bottom) + 1rem)'

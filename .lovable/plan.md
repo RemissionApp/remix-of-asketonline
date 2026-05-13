@@ -1,95 +1,178 @@
-## План работ
+## План: десктопная версия + админ-панель с аналитикой
 
-Меняем только разметку, стили и тексты переводов. Логику, роуты, Supabase и хуки не трогаем.
-
----
-
-### Часть 1. Откат «Лиры» в русском (EN и ES не трогаем)
-
-В `src/i18n/languages/ru.ts` блок `lyra: { ... }` переписываем под «Вселенную»:
-
-- `voiceGuide: 'Вселенная'`
-- `callButton: 'Позвонить Вселенной'`
-- `callScreen: 'Звонок Вселенной'`
-- `callTitle: 'Звонок Вселенной'`
-- `callButtonShort: 'Позвонить Вселенной'`
-- `callHistory: 'Разговоры со Вселенной'`
-- `callSubtitle: 'Вселенная всегда рядом и готова слушать'`
-- `callTip: 'Нажмите на кнопку звонка, чтобы соединиться со Вселенной…'`
-- `hearFromGuide: 'Услышать от Вселенной'`
-- `errorMicDenied`, `errorAgentUnavailable` — заменить «Лира/Лире/Лирой» → «Вселенная/Вселенной».
-
-В `src/i18n/languages/ru.ts` (раздел `universeChat`): `chatTitle`, `chatProTitle`, `chatProMessage` уже на «Вселенной» — проверим и оставим.
-
-EN (`en.ts`) и ES (`es.ts`) не меняем — там остаётся `Lyra`.
-
-Ключ объекта `lyra` в коде остаётся (это технический namespace), меняется только видимый текст для русского.
+Мобильную вёрстку не трогаем. Вся новая работа активируется от `lg:` (≥1024px) и выше — на телефоне визуально ничего не меняется.
 
 ---
 
-### Часть 2. Упрощение экрана звонка (мобильная версия)
+### Часть A. Десктопный layout (≥ lg, 1024px+)
 
-Файл: `src/components/voice/VoiceCallInterface.tsx`.
+**Архитектура.** Создаём один контейнер `DesktopShell` (`src/components/desktop/DesktopShell.tsx`), который применяется только на десктопе через медиа-условие. На мобилке возвращает `children` без обёртки — это гарантирует нулевое влияние на мобайл.
 
-Убираем с экрана:
-- `<WaveVisualization />` (диаграмма голоса);
-- `<UniverseAvatar />` визуальная индикация «как звучит»;
-- `<CallStatus />` («Ready to connect / Готов к соединению / Connecting…»);
-- `<UniverseCaptions />` (живые субтитры) — на мобиле тоже скрываем;
-- подпись `getSubtitle()` под заголовком;
-- длинный tip-текст `getTipText()`.
+```
+┌──────────────────────────────────────────────────────────┐
+│ Sidebar (260px, sticky)  │  Main content (max-w-5xl)     │
+│ ─ Лого Asceta           │  ┌───────────────────────────┐ │
+│ ─ Главная               │  │ TopBar (десктопный)        │ │
+│ ─ Вселенная             │  │  поиск · энергия · аватар  │ │
+│ ─ Аскезы                │  └───────────────────────────┘ │
+│ ─ Космос                │                                │
+│ ─ Профиль               │  Контент страницы              │
+│ ─ ─ ─ ─ ─ ─ ─ ─ ─       │  (сетка вместо одной колонки)  │
+│ Pro статус · подписка   │                                │
+└──────────────────────────────────────────────────────────┘
+```
 
-Оставляем:
-- заголовок (`Звонок Вселенной` / `Lyra's Call` / `Llamada de Lyra`);
-- одну круглую кнопку звонка (старт/стоп) с пульсацией;
-- маленькую строку «Осталось N мин» под кнопкой;
-- таймер длительности при активном звонке (компактный, под кнопкой).
+- Прозрачный glass-стиль сохраняем (`backdrop-blur-xl`, `bg-white/5`, `border-white/10`).
+- Sidebar — не shadcn-sidebar, а кастомный, чтобы не ломать дизайн-токены.
+- BottomNavigation скрывается на `lg:` (`lg:hidden`), вместо неё — sidebar.
+- PageHeader скрывается на `lg:`, его роль выполняет десктопный TopBar внутри shell.
 
-Контейнер карточки делаем компактнее под мобильный экран: убираем тяжёлые тени и градиенты, фиксируем минимальные отступы, центрируем кнопку по вертикали в доступной высоте `var(--content-height)`.
+**Страницы под десктоп (только публичные/ключевые):**
+1. **Лендинг** (`/` / `WelcomePage`) — hero слева + визуал справа в две колонки, фичи в bento-сетке 3×2.
+2. **LoginPage** — двухколоночный split: форма слева (max-w-md), маркетинг-визуал справа.
+3. **MainPage** — три колонки: слева sidebar, центр (кнопка звонка + пакты), справа боковая колонка (совет дня, прогресс, ранг).
+4. **ProfilePage** — sidebar-табы слева вертикально (а не горизонтальный скролл), контент таба справа в 2 колонках где уместно (Identity: личное + статистика рядом).
+5. **CallPage** — оставляем фуллскрин, но кнопка звонка центрирована, по бокам пустое пространство, таймер крупнее.
+6. **UniverseHubPage** — две колонки: слева кнопки звонка/чата, справа список последних звонков + вопросов.
+7. **CosmosPage** — bento-сетка 2×2: зодиак, нумерология, аффирмации, миссии.
+8. **PactsPage** — список пактов в две колонки.
 
-Импорты `WaveVisualization`, `UniverseAvatar`, `CallStatus`, `UniverseCaptions` из файла удаляем (сами компоненты не удаляем — могут использоваться где-то ещё; проверю `rg` и удалю только если нигде больше не используются).
+**Файлы новые:**
+- `src/components/desktop/DesktopShell.tsx`
+- `src/components/desktop/DesktopSidebar.tsx`
+- `src/components/desktop/DesktopTopBar.tsx`
+- `src/hooks/useIsDesktop.ts` (`window.matchMedia('(min-width: 1024px)')`)
 
----
-
-### Часть 3. Мобильная адаптация (по шагам из ТЗ)
-
-Выполняем шаги 1–13 из присланной спецификации, с правками под существующий проект:
-
-1. **`capacitor.config.ts`** — обновить `ios`, `android`, `plugins` (SplashScreen, StatusBar, Keyboard) согласно ТЗ. Сохранить существующий `appId` и `server.url`.
-2. **`src/index.css`** — добавить базовый сброс, safe-area переменные (`--sat`, `--sab`, `--topbar-height`, `--bottomnav-height`, `--content-height`), утилиты `.pt-safe/.pb-safe/.scroll-view`, скрытие скроллбара, `min-height: 44px` для интерактивных элементов, `font-size: max(16px,1rem)` для инпутов. Существующие токены дизайн-системы сохраняем.
-3. **`tailwind.config.ts`** — добавить брейкпоинты `xs/sm/md`, safe-area `spacing`, `height.screen-safe/content`, шкалу `fontSize` (`micro/tiny/small/base/medium/large/title/hero`), плагин с утилитами `pb-safe/pt-safe/mb-safe/scrollbar-none`. Не ломаем уже используемые классы.
-4. **`src/components/AppLayout.tsx`** — создать общий контейнер (`fixed inset-0 flex flex-col`), TopBar + scrollable main с `pb-[calc(64px+env(safe-area-inset-bottom))]` + BottomNavigation. Прим. в `App.tsx` для всех табовых страниц.
-5. **TopBar** — обновить существующий компонент шапки (найду через `rg`): `pt-[calc(env(safe-area-inset-top)+8px)]`, h=56+safe, glass-фон.
-6. **`BottomNavigation.tsx`** — `fixed bottom-0`, `pb-[calc(env(safe-area-inset-bottom)+8px)]`, иконки 21px, лейблы `text-[10px]`, активный индикатор, `min-h-[44px]`.
-7. **Карточки** — единый шаблон (`rounded-2xl bg-white/7 backdrop-blur-xl border border-white/10 active:scale-[0.98] min-h-[76px]`) применить к карточкам разделов на главной, в «Космосе», «Вселенной».
-8. **Главный экран `MainPage.tsx`** — структура «приветствие → hero-кнопка звонка → пакты/CTA → совет дня», адаптивная типографика.
-9. **Типографика** — заменить `text-xs/sm/base/lg/xl/2xl/3xl` в ключевых компонентах на `text-tiny/small/base/medium/large/title/hero`. Запрещаем размеры < 11px (кроме лейблов BottomNavigation 10px).
-10. **`useKeyboardAware`** — создать хук на `@capacitor/keyboard` (плагин уже есть в зависимостях — проверю; иначе добавлю). Подключить в `LoginPage`, `OnboardingPage`, `CreatePactPage`, `UniverseChatPage`.
-11. **`CallPage.tsx`** — полноэкранный layout без BottomNavigation: header с кнопкой назад/X, центрированная упрощённая VoiceCallInterface (см. часть 2), кнопка завершения снизу с `pb-safe`.
-12. **Fullscreen-страницы** (DetailedHoroscopePage, FullHoroscopePage, CreatePactPage, CallPage и др.) — обернуть в `FullScreenLayout` без BottomNavigation, добавить safe-area.
-13. **Финальная проверка** — пройти чек-лист (горизонтальный скролл, safe-area на iPhone SE/14/Pro Max, Android, перекрытие нижней навигации, клавиатура).
-
----
-
-### Технические детали
-
-- Существующая дизайн-токены в `index.css` (HSL-переменные, `--cosmic-*`) сохраняем; новое добавляем рядом.
-- Tailwind: `screens` переопределяем (xs=375, sm=390, md=430, lg=768, xl=1024) — это может сместить текущие брейкпоинты `sm:`/`md:`. Пройдусь `rg` по `sm:`/`md:`/`lg:` и поправлю критичные места (в основном это уже мобильные классы, последствия минимальны).
-- `BottomNavigation` уже существует — переписываем его JSX/классы под новую сетку, поведение и пункты меню оставляем как есть.
-- Удалённые с экрана звонка компоненты (`WaveVisualization`, `UniverseAvatar`, `CallStatus`, `UniverseCaptions`) оставляем в `src/components/voice/` как файлы — на случай возврата.
-- Никаких изменений в `src/integrations/supabase/*`, edge functions, `useElevenLabsConversation`, store, роутах.
+**Файлы меняются (только добавляются `lg:`-классы и условные ветки):**
+- `src/App.tsx` или `src/components/AppRouter.tsx` — оборачиваем Routes в `<DesktopShell>` для перечисленных выше страниц.
+- 8 страниц выше — добавляем `lg:grid lg:grid-cols-…` контейнеры. Существующие мобильные классы остаются.
+- `BottomNavigation` — `lg:hidden`.
+- `PageHeader` — `lg:hidden`.
 
 ---
 
-### Порядок выполнения
+### Часть B. Админ-панель и аналитика (защищённая)
 
-1. Откат RU-переводов `lyra.*`.
-2. Упрощение `VoiceCallInterface.tsx`.
-3. CSS reset + safe-area (`index.css`).
-4. `tailwind.config.ts` (брейкпоинты, шрифты, плагин).
-5. `capacitor.config.ts`.
-6. `AppLayout` + TopBar + BottomNavigation.
-7. `MainPage`, карточки на главной/Космос/Вселенная, типографика.
-8. `useKeyboardAware` + интеграция в формы.
-9. `CallPage` + остальные fullscreen-экраны.
-10. Прогон по чек-листу через preview на 375/390/430.
+**B.1. Роли (миграция).**
+
+```sql
+create type public.app_role as enum ('admin', 'user');
+
+create table public.user_roles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role public.app_role not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, role)
+);
+alter table public.user_roles enable row level security;
+
+create or replace function public.has_role(_user_id uuid, _role public.app_role)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists(select 1 from public.user_roles where user_id=_user_id and role=_role)
+$$;
+
+create policy "Users can view own roles" on public.user_roles
+  for select using (auth.uid() = user_id);
+create policy "Admins can view all roles" on public.user_roles
+  for select using (public.has_role(auth.uid(), 'admin'));
+```
+
+После миграции выдаю **тебе** роль admin одним INSERT (нужно: твой user_id из `profiles`). Просто скажи, какой email — найду.
+
+**B.2. Таблицы аналитики.**
+
+```sql
+create table public.page_views (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  session_id text not null,
+  path text not null,
+  referrer text,
+  language text,
+  platform text,                  -- 'web' | 'ios' | 'android'
+  duration_ms integer,            -- time on page (отправляется при unmount)
+  created_at timestamptz not null default now()
+);
+create index page_views_user_idx on public.page_views(user_id, created_at desc);
+create index page_views_path_idx on public.page_views(path, created_at desc);
+
+create table public.user_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  session_id text not null,
+  event_name text not null,       -- 'call_started','call_ended','pact_created','chat_message','pro_purchased' и т.п.
+  properties jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index user_events_user_idx on public.user_events(user_id, created_at desc);
+create index user_events_name_idx on public.user_events(event_name, created_at desc);
+```
+
+RLS: пользователи могут только INSERT (для трекинга). Только admin может SELECT.
+
+**B.3. Frontend-трекер.**
+
+- `src/hooks/useAnalytics.ts` — `track(event, props)`, `trackPageView(path)`, генерирует `session_id` (sessionStorage) при первом вызове. Батчит вставки по 5 событий или раз в 5с (debounce), чтобы не спамить.
+- `src/components/analytics/AnalyticsProvider.tsx` — слушает `useLocation`, на каждое изменение пути логит page_view с durations предыдущего.
+- В ключевые места добавляю `track()`:
+  - `useElevenLabsConversation`: `call_started`, `call_ended` (с длительностью)
+  - `UniverseChatPage`: `chat_message_sent`
+  - `CreatePactPage`: `pact_created`
+  - `LoginPage`: `signup_completed`, `login_completed`
+  - `OnboardingPage`: `onboarding_step` (с номером шага)
+  - `ProfileSubscriptionTab`: `pro_purchased` (когда status переходит в active)
+
+**B.4. Админ-страница `/admin`.**
+
+Защищена роутом-гардом `<RequireAdmin>` — проверяет `has_role(auth.uid(), 'admin')` через `supabase.rpc`. Если не admin — редирект на `/main`. Никаких хардкод-кред в коде.
+
+UI вкладок (sidebar slim):
+1. **Обзор** — KPI-карточки: всего пользователей, активные за 24ч/7д/30д, подписчики Pro, конверсия trial→pro, средний чек минут звонков. Графики: новые регистрации по дням (line chart, recharts), активность по часам (bar).
+2. **Пользователи** — таблица: email, имя, дата регистрации, последний вход, страна по IP (опц.), статус подписки, дней в приложении, аскез, минут звонков. Фильтр по языку, по статусу подписки, по дате. Клик → подробный профиль пользователя.
+3. **Страницы** — топ страниц по просмотрам, среднее время на странице (по `duration_ms`), bounce rate (приближённо: сессии с 1 page_view).
+4. **Действия (события)** — топ событий за период, разбивка по дням, фильтр по `event_name`.
+5. **Воронки** — преднастроенные:
+   - регистрация → завершён онбординг → первый звонок
+   - регистрация → создан первый пакт → завершён первый день
+   - открыт экран Pro → начал оплату → подписался
+   Плюс конструктор: выбрать 2-4 события из списка.
+6. **Сегменты** — фильтры пользователей по комбинации (язык, подписка, кол-во звонков, дней в приложении). Сохранение пресетов в localStorage.
+
+Все запросы — через **edge function `admin-analytics`** (single endpoint, разные `action`-параметры), которая внутри проверяет `has_role(auth.uid(),'admin')` и выполняет агрегации. Это безопаснее, чем гонять heavy SQL с клиента, и держит всю логику в одном месте.
+
+**Файлы новые:**
+- `src/pages/AdminPage.tsx` (роут `/admin`, lazy)
+- `src/components/admin/RequireAdmin.tsx`
+- `src/components/admin/AdminSidebar.tsx`
+- `src/components/admin/sections/Overview.tsx`
+- `src/components/admin/sections/Users.tsx`
+- `src/components/admin/sections/Pages.tsx`
+- `src/components/admin/sections/Events.tsx`
+- `src/components/admin/sections/Funnels.tsx`
+- `src/components/admin/sections/Segments.tsx`
+- `src/components/admin/charts/*` (LineChart, BarChart, KpiCard на recharts — уже есть в зависимостях)
+- `supabase/functions/admin-analytics/index.ts`
+- `src/hooks/useAnalytics.ts`
+- `src/components/analytics/AnalyticsProvider.tsx`
+
+**В существующий код вносится:**
+- `App.tsx`/`AppRouter.tsx` — добавить роут `/admin`, обернуть в `RequireAdmin`. Вставить `<AnalyticsProvider>` под `BrowserRouter`.
+- 5-7 мест в коде (звонки, пакты, чат, логин, онбординг, Pro) — `track('event_name', {...})` без изменения логики.
+
+---
+
+### Что будет в этой ветке работ
+
+1. Миграция: `app_role`, `user_roles`, `has_role`, `page_views`, `user_events` + RLS.
+2. Edge function `admin-analytics` (агрегации, проверка роли).
+3. Frontend-трекер + провайдер + 6 точек инструментирования.
+4. Десктопный shell + sidebar/topbar + 8 страниц с двух/трёхколоночной адаптацией под `lg:`.
+5. Админ-страница `/admin` с 6 вкладками и graceful-empty-states пока данных мало.
+6. После миграции: попрошу твой email/user_id и одним INSERT назначу роль admin.
+
+### Чего не будет
+
+- Хардкода `Admin/admin` в коде (не пройдёт ревью App Store, и любой увидит в bundle).
+- Изменений мобильной вёрстки — все новые классы префиксованы `lg:`.
+- Изменений бизнес-логики, схем существующих таблиц, ElevenLabs-хуков, RLS существующих таблиц.
