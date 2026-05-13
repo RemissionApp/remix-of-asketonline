@@ -57,12 +57,12 @@ const rulerIcon = (ruler?: string): LucideIcon => {
 const Card: React.FC<{ title: string; icon: LucideIcon; children: React.ReactNode }> = ({
   title, icon: Icon, children,
 }) => (
-  <section className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-5 shadow-[0_8px_32px_-12px_rgba(124,58,237,0.35)]">
-    <header className="flex items-center gap-2 mb-4">
+  <section className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-5 shadow-[0_8px_32px_-12px_rgba(124,58,237,0.35)] overflow-visible min-w-0">
+    <header className="flex items-center gap-2 mb-4 min-w-0">
       <div className="w-8 h-8 rounded-lg bg-cosmic-accent/15 ring-1 ring-cosmic-accent/30 flex items-center justify-center">
         <Icon size={16} className="text-cosmic-accent" />
       </div>
-      <h3 className="text-sm uppercase tracking-[0.18em] text-cosmic-secondary font-medium">{title}</h3>
+      <h3 className="text-sm uppercase tracking-[0.18em] text-cosmic-secondary font-medium break-words min-w-0">{title}</h3>
     </header>
     {children}
   </section>
@@ -152,7 +152,7 @@ export const DesktopMainExtras: React.FC = () => {
   };
 
   return (
-    <aside className="hidden lg:flex flex-col gap-4 w-full">
+    <aside className="hidden lg:flex flex-col gap-4 w-full min-w-0">
       {/* Astrology */}
       <Card title={T.astrology[lang]} icon={Star}>
         {signData ? (
@@ -191,7 +191,7 @@ export const DesktopMainExtras: React.FC = () => {
           </div>
         ) : (
           <>
-            <p className="text-[14px] leading-relaxed text-white/90 whitespace-pre-line">
+            <p className="text-[14px] leading-relaxed text-white/90 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
               {displayedText || horoscope?.description || ''}
               {isTyping && <span className="ml-0.5 inline-block w-[2px] h-4 bg-cosmic-accent align-middle animate-pulse" />}
             </p>
@@ -199,10 +199,10 @@ export const DesktopMainExtras: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={saved || saving || isTyping}
-                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm transition-colors border disabled:opacity-70 disabled:cursor-not-allowed bg-cosmic-accent/15 hover:bg-cosmic-accent/25 border-cosmic-accent/40 text-white"
+                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm leading-snug text-center transition-colors border disabled:opacity-70 disabled:cursor-not-allowed bg-cosmic-accent/15 hover:bg-cosmic-accent/25 border-cosmic-accent/40 text-white whitespace-normal break-words"
               >
-                {saved ? <BookmarkCheck size={16} /> : <BookmarkPlus size={16} />}
-                {saved ? T.savedBtn[lang] : T.saveBtn[lang]}
+                {saved ? <BookmarkCheck size={16} className="shrink-0" /> : <BookmarkPlus size={16} className="shrink-0" />}
+                <span className="min-w-0">{saved ? T.savedBtn[lang] : T.saveBtn[lang]}</span>
               </button>
             )}
           </>
