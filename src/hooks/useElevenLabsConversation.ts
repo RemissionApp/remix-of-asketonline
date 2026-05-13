@@ -11,6 +11,30 @@ const AGENTS = {
   es: 'agent_01jzhxwswhfas9ss9ae74n16v0',
 };
 
+const CONNECTION_TIMEOUT_MS = 15000;
+
+type PendingStart = {
+  agentId: string;
+  startedAt: number;
+  timeoutId: ReturnType<typeof setTimeout>;
+  resolve: () => void;
+  reject: (error: Error) => void;
+};
+
+const getRuntimePlatform = () => {
+  const capacitor = (window as any)?.Capacitor;
+  if (capacitor?.getPlatform) return capacitor.getPlatform();
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) return 'ios-webview';
+  if (/Android/.test(navigator.userAgent)) return 'android-webview';
+  return 'web';
+};
+
+const toError = (value: unknown, fallback: string) => {
+  if (value instanceof Error) return value;
+  if (typeof value === 'string' && value.trim()) return new Error(value);
+  return new Error(fallback);
+};
+
 export const useElevenLabsConversation = () => {
   const logger = createLogger('useElevenLabsConversation');
   const { language, user, userProfile, pacts } = useAppStore();
@@ -20,6 +44,8 @@ export const useElevenLabsConversation = () => {
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null);
   const callStartRef = useRef<number | null>(null);
   const conversationIdRef = useRef<string | null>(null);
+  const pendingStartRef = useRef<PendingStart | null>(null);
+  const pendingContextRef = useRef<string | null>(null);
 
   const buildLyraContext = useCallback(async (): Promise<string | null> => {
     if (!user?.id) return null;
