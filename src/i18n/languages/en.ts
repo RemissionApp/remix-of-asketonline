@@ -202,6 +202,12 @@ export const enTranslations: Translations = {
       enter: 'Enter',
       startJourney: 'Start Journey',
     },
+    stepLabel: 'Step',
+    stepCounter: 'Step {{current}} of {{total}}',
+    stepAriaLabel: 'Step {{n}}',
+    freeAfterSignup: 'Available right after sign up',
+    proWithSubscription: 'Unlocked with Pro subscription',
+    completeFailed: 'Failed to complete onboarding',
   },
 
   universe: {
