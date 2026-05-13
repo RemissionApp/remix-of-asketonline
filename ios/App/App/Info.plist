@@ -47,5 +47,7 @@
 	<false/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone so you can talk to the Universe during voice calls.</string>
 </dict>
 </plist>

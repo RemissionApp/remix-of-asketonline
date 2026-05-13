@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import universeAvatarClosed from '@/assets/universe-avatar-call.jpg';
-import universeAvatarOpen from '@/assets/universe-avatar-call-open.jpg';
+import universeAvatarClosed from '@/assets/cosmic-woman-closed.jpg';
+import universeAvatarOpen from '@/assets/cosmic-woman-open.jpg';
 
 interface UniverseAvatarProps {
   isActive: boolean;
@@ -31,7 +31,7 @@ export const UniverseAvatar: React.FC<UniverseAvatarProps> = ({
   }, [isActive]);
 
   return (
-    <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto">
+    <div className="relative w-56 h-56 sm:w-64 sm:h-64 mx-auto">
       <style>{`
         @keyframes eye-shimmer {
           0%, 100% {
