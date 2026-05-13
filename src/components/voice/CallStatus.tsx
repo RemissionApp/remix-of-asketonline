@@ -9,7 +9,7 @@ interface CallStatusProps {
 
 const labels = {
   ru: { idle: 'Готов к соединению', connecting: 'Соединение со Вселенной…', live: 'На связи' },
-  en: { idle: 'Ready to connect', connecting: 'Connecting to the Universe…', live: 'Connected' },
+  en: { idle: 'Ready to connect', connecting: 'Connecting to Lyra…', live: 'Connected' },
   es: { idle: 'Listo para conectar', connecting: 'Conectando con el Universo…', live: 'En línea' },
 };
 

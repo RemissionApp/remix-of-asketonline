@@ -10,7 +10,7 @@ interface UniverseCaptionsProps {
 
 const placeholders = {
   ru: 'Вселенная слушает вас…',
-  en: 'The Universe is listening…',
+  en: 'Lyra is listening…',
   es: 'El Universo te escucha…',
 };
 
