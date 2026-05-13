@@ -31,7 +31,7 @@ type DisconnectDetails = {
   code?: string | number;
   closeCode?: number;
   closeReason?: string;
-  context?: { code?: number; reason?: string };
+  context?: unknown;
 };
 type ElevenLabsMessage = {
   type?: string;
@@ -47,8 +47,13 @@ type ElevenLabsErrorDetails = {
   name?: string;
   closeCode?: number;
   closeReason?: string;
-  context?: { code?: number; reason?: string };
+  context?: unknown;
 };
+
+const getCloseContext = (context: unknown) =>
+  context && typeof context === 'object'
+    ? (context as { code?: number; reason?: string })
+    : undefined;
 
 const getRuntimePlatform = () => {
   if (Capacitor.isNativePlatform()) return Capacitor.getPlatform();
