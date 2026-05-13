@@ -9,20 +9,20 @@ import { useAppStore } from '@/store/useAppStore';
 import { RecentCallsBlock } from '@/components/universe/RecentCallsBlock';
 import { RecentQuestionsBlock } from '@/components/universe/RecentQuestionsBlock';
 
-const titles = { ru: 'Лира', en: 'Lyra', es: 'Lyra' };
+const titles = { ru: 'Вселенная', en: 'Lyra', es: 'Lyra' };
 
 const UniverseHubPage: React.FC = () => {
   const navigate = useNavigate();
   const { language } = useAppStore();
   const lang = (language as keyof typeof titles) ?? 'ru';
 
-  const callTitle = lang === 'ru' ? 'Позвонить Лире' : lang === 'es' ? 'Llamar a Lyra' : 'Call Lyra';
+  const callTitle = lang === 'ru' ? 'Позвонить Вселенной' : lang === 'es' ? 'Llamar a Lyra' : 'Call Lyra';
   const callSub =
-    lang === 'ru' ? 'Лира всегда рядом и готова слушать'
+    lang === 'ru' ? 'Вселенная всегда рядом и готова слушать'
       : lang === 'es' ? 'Lyra siempre te escucha'
       : 'Lyra is always here for you';
   const askTitle =
-    lang === 'ru' ? 'Задать вопрос Лире'
+    lang === 'ru' ? 'Задать вопрос Вселенной'
       : lang === 'es' ? 'Hacer una pregunta a Lyra'
       : 'Ask Lyra a question';
   const askSub =
