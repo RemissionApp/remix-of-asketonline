@@ -25,11 +25,11 @@ export const WaveVisualization: React.FC<WaveVisualizationProps> = ({
   }, [isActive, intensity]);
 
   return (
-    <div className="flex items-center justify-center gap-1 h-16 px-4">
+    <div className="relative flex items-center justify-center gap-1 h-16 px-4">
       {waveData.map((height, index) => (
         <div
           key={index}
-          className="bg-gradient-to-t from-cosmic-accent to-cosmic-accent/50 rounded-full transition-all duration-100 ease-out"
+          className="bg-gradient-to-t from-emerald-400 via-cosmic-accent to-cosmic-accent/40 rounded-full transition-all duration-100 ease-out"
           style={{
             width: '3px',
             height: `${Math.max(height * 50, 4)}px`,
@@ -42,7 +42,7 @@ export const WaveVisualization: React.FC<WaveVisualizationProps> = ({
       {/* Glow effect */}
       <div
         className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-          isActive ? `bg-cosmic-accent/20 blur-xl opacity-50` : 'opacity-0'
+          isActive ? `bg-emerald-500/20 blur-xl opacity-60` : 'opacity-0'
         }`}
         style={{
           transform: 'scale(1.5)',
