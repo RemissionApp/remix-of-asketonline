@@ -85,7 +85,7 @@ export const useElevenLabsConversation = () => {
         .order('called_at', { ascending: false })
         .limit(5);
 
-      const activePacts = (pacts || []).filter((p: any) => p.status === 'active');
+      const activePacts = ((pacts || []) as PactLike[]).filter(p => p.status === 'active');
       const name = userProfile?.name || '';
 
       const intro =
@@ -97,7 +97,7 @@ export const useElevenLabsConversation = () => {
 
       const pactsLine = activePacts.length
         ? (language === 'ru' ? 'Активные пакты: ' : language === 'es' ? 'Votos activos: ' : 'Active vows: ') +
-          activePacts.map((p: any) => `${p.title} (${p.duration}d)`).join('; ')
+          activePacts.map(p => `${p.title} (${p.duration}d)`).join('; ')
         : '';
 
       const historyLine = summaries?.length
@@ -107,7 +107,7 @@ export const useElevenLabsConversation = () => {
               ? 'Conversaciones recientes: '
               : 'Recent calls: ') +
           summaries
-            .map((s: any) => `[${new Date(s.called_at).toLocaleDateString()}] ${(s.summary || '').slice(0, 300)}`)
+            .map((s: SummaryLike) => `[${new Date(s.called_at || Date.now()).toLocaleDateString()}] ${(s.summary || '').slice(0, 300)}`)
             .join(' | ')
         : '';
 
@@ -117,7 +117,7 @@ export const useElevenLabsConversation = () => {
       logger.error('Failed to build context', e);
       return null;
     }
-  }, [user?.id, userProfile?.name, pacts, language]);
+  }, [user?.id, userProfile?.name, pacts, language, logger]);
 
   const saveCallSummary = useCallback(
     async (durationSeconds: number) => {
@@ -137,11 +137,11 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to save call summary', e);
       }
     },
-    [user?.id, lastAgentMessage, lastUserMessage]
+    [user?.id, lastAgentMessage, lastUserMessage, logger]
   );
 
   const conversation = useConversation({
-    onConnect: (props?: any) => {
+    onConnect: (props?: ConversationConnectProps) => {
       const pendingStart = pendingStartRef.current;
       if (pendingStart) {
         clearTimeout(pendingStart.timeoutId);
@@ -178,7 +178,7 @@ export const useElevenLabsConversation = () => {
         }
       }
     },
-    onDisconnect: (details?: any) => {
+    onDisconnect: (details?: DisconnectDetails) => {
       const pendingStart = pendingStartRef.current;
       if (pendingStart) {
         clearTimeout(pendingStart.timeoutId);
@@ -204,7 +204,7 @@ export const useElevenLabsConversation = () => {
       setConversationId(null);
       conversationIdRef.current = null;
     },
-    onMessage: (message: any) => {
+    onMessage: (message: ElevenLabsMessage) => {
       logger.debug('Received message', { type: message?.type ?? message?.source });
       try {
         // New SDK shape with explicit event types
@@ -230,7 +230,7 @@ export const useElevenLabsConversation = () => {
         logger.error('Failed to parse onMessage', e);
       }
     },
-    onError: (message: any, error?: any) => {
+    onError: (message: string | ElevenLabsMessage, error?: ElevenLabsErrorDetails) => {
       const pendingStart = pendingStartRef.current;
       if (pendingStart) {
         clearTimeout(pendingStart.timeoutId);
@@ -239,7 +239,7 @@ export const useElevenLabsConversation = () => {
       }
       pendingContextRef.current = null;
       logger.error('ElevenLabs conversation error', {
-        message: typeof message === 'string' ? message : message?.message,
+        message: typeof message === 'string' ? message : message.message,
         rawMessage: message,
         code: error?.code,
         reason: error?.reason,
