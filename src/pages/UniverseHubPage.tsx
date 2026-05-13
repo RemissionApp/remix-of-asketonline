@@ -32,10 +32,10 @@ const UniverseHubPage: React.FC = () => {
 
   return (
     <MobileOptimizedInterface>
-      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-24">
+      <div className="min-h-screen flex flex-col relative overflow-x-hidden pb-page">
         <StarField />
         <PageHeader title={titles[lang] ?? titles.ru} />
-        <div className="flex-1 relative z-10 px-3 pt-20 sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
+        <div className="flex-1 relative z-10 px-3 pt-page sm:px-4 max-w-lg mx-auto w-full flex flex-col gap-3 sm:gap-4">
           <button
             onClick={() => navigate('/universe-call')}
             className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-cosmic-accent/25 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/30 p-5 text-left shadow-lg shadow-cosmic-accent/30 transition-transform active:scale-[0.99]"

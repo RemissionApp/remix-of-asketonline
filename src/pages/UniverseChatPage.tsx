@@ -151,12 +151,12 @@ const UniverseChatPage = () => {
   // Wrap content with PRO check
   return (
     <UniverseChatProWrapper isPro={userProfile?.isPro || false}>
-      <div className="min-h-screen flex flex-col bg-cosmic pb-20">
+      <div className="min-h-screen flex flex-col bg-cosmic pb-page">
         <StarField starCount={100} />
 
         <PageHeader title={t.universe?.chatTitle || 'Chat with Lyra'} />
 
-        <div className="w-full max-w-2xl mx-auto pt-20">
+        <div className="w-full max-w-2xl mx-auto pt-page">
           <div className="px-4 mb-24">
             <ChatTabContent
               isLoadingChat={isLoadingChat}

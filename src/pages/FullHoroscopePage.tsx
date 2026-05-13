@@ -43,7 +43,7 @@ export default function FullHoroscopePage() {
 
   return (
     <div
-      className="min-h-screen text-white relative pb-20"
+      className="min-h-screen text-white relative pb-page"
       style={{
         backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.3)), url(https://aewfggzscyjxpuciqtti.supabase.co/storage/v1/object/public/pics//Horoscope.png)`,
         backgroundSize: 'cover',
@@ -65,7 +65,7 @@ export default function FullHoroscopePage() {
         }
       />
 
-      <div className="max-w-lg mx-auto relative z-10 pt-20 px-3 sm:px-4 pb-24 flex flex-col gap-3 sm:gap-4">
+      <div className="max-w-lg mx-auto relative z-10 pt-page px-3 sm:px-4 pb-page flex flex-col gap-3 sm:gap-4">
         {!zodiacSign && <SetBirthDateCard uiText={uiText} />}
 
         {error && (
