@@ -79,6 +79,19 @@ export const esTranslations: Translations = {
     enterEmailForReset: 'Por favor ingresa el email para recuperar contraseña',
     // Default user names
     defaultUserName: 'Buscador',
+    // LoginPage extras
+    enterEmailAndPassword: 'Por favor introduce tu email y contraseña',
+    weakPasswordTitle: 'Contraseña débil',
+    weakPasswordDescription: 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un dígito',
+    passwordsDontMatchTitle: 'Las contraseñas no coinciden',
+    passwordsDontMatchDescription: 'Introduce la misma contraseña en ambos campos',
+    passwordsDontMatchHint: 'Las contraseñas no coinciden',
+    repeatPassword: 'Repite la contraseña',
+    enter6DigitCode: 'Introduce el código de 6 dígitos',
+    enter6DigitCodeFromEmail: 'Introduce el código de 6 dígitos del email',
+    signingUp: 'Registrando...',
+    continueWithGoogle: 'Continuar con Google',
+    continueWithApple: 'Continuar con Apple',
   },
   main: {
     title: 'Principal',

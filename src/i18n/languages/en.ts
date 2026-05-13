@@ -78,6 +78,19 @@ export const enTranslations: Translations = {
     enterEmailForReset: 'Please enter email for password recovery',
     // Default user names
     defaultUserName: 'Seeker',
+    // LoginPage extras
+    enterEmailAndPassword: 'Please enter your email and password',
+    weakPasswordTitle: 'Weak password',
+    weakPasswordDescription: 'Password must be at least 8 characters and include an uppercase letter and a digit',
+    passwordsDontMatchTitle: "Passwords don't match",
+    passwordsDontMatchDescription: 'Enter the same password in both fields',
+    passwordsDontMatchHint: "Passwords don't match",
+    repeatPassword: 'Repeat password',
+    enter6DigitCode: 'Enter the 6-digit code',
+    enter6DigitCodeFromEmail: 'Enter the 6-digit code from the email',
+    signingUp: 'Signing up...',
+    continueWithGoogle: 'Continue with Google',
+    continueWithApple: 'Continue with Apple',
   },
   main: {
     title: 'Main',

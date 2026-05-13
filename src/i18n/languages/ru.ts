@@ -78,6 +78,19 @@ export const ruTranslations: Translations = {
     enterEmailForReset: 'Пожалуйста, введите email для восстановления пароля',
     // Default user names
     defaultUserName: 'Искатель',
+    // LoginPage extras
+    enterEmailAndPassword: 'Пожалуйста, введите email и пароль',
+    weakPasswordTitle: 'Слабый пароль',
+    weakPasswordDescription: 'Пароль должен содержать минимум 8 символов, заглавную букву и цифру',
+    passwordsDontMatchTitle: 'Пароли не совпадают',
+    passwordsDontMatchDescription: 'Введите одинаковый пароль в оба поля',
+    passwordsDontMatchHint: 'Пароли не совпадают',
+    repeatPassword: 'Повторите пароль',
+    enter6DigitCode: 'Введите 6-значный код',
+    enter6DigitCodeFromEmail: 'Введите 6-значный код из письма',
+    signingUp: 'Регистрация...',
+    continueWithGoogle: 'Продолжить с Google',
+    continueWithApple: 'Продолжить с Apple',
   },
   main: {
     title: 'Главная',
