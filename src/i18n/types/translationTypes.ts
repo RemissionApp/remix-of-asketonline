@@ -227,6 +227,7 @@ export interface CommonTranslations {
   back: string;
   next: string;
   submit: string;
+  loading?: string;
 }
 
 export interface MeditationTranslations {
