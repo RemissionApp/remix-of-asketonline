@@ -23,11 +23,13 @@ export const CallHero: React.FC = () => {
   return (
     <button
       onClick={() => navigate('/universe-call')}
-      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-indigo/40 via-cosmic-dark/60 to-cosmic-accent/30 p-5 text-left shadow-lg shadow-cosmic-accent/20 transition-transform active:scale-[0.99]"
+      className="group relative w-full max-w-lg mx-auto overflow-hidden rounded-3xl border border-fuchsia-300/20 bg-gradient-to-br from-violet-900/50 via-cosmic-dark/70 to-fuchsia-900/40 p-5 text-left shadow-[0_0_40px_rgba(139,92,246,0.35)] backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
-      <div className="flex items-center gap-4">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cosmic-accent to-cosmic-indigo shadow-[0_0_30px_rgba(139,92,246,0.6)]">
-          <span className="absolute inset-0 rounded-full bg-cosmic-accent/40 animate-ping" />
+      <div className="pointer-events-none absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_20%_30%,rgba(168,85,247,0.25),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(236,72,153,0.18),transparent_60%)]" />
+      <div className="relative flex items-center gap-4">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 shadow-[0_0_30px_rgba(168,85,247,0.7),0_0_70px_rgba(139,92,246,0.4)] border border-fuchsia-300/40">
+          <span className="absolute inset-0 rounded-full bg-fuchsia-400/30 animate-ping" />
+          <span className="absolute -inset-2 rounded-full border border-violet-300/30 animate-ping [animation-duration:2.6s]" />
           <Phone className="relative h-7 w-7 text-white" />
         </div>
         <div className="flex-1 text-center">
