@@ -159,7 +159,7 @@ const MainPage: React.FC = () => {
         <div className="pt-16 lg:pt-0">
           <TrialBanner />
         </div>
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-6 lg:items-start lg:max-w-6xl lg:mx-auto lg:px-4">
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:gap-6 lg:items-start lg:max-w-6xl lg:mx-auto lg:px-4">
           <MainContent
             activePacts={activePacts}
             allPacts={allPacts}
@@ -173,7 +173,7 @@ const MainPage: React.FC = () => {
             getAscesisPrefix={getAscesisPrefix}
             formatRejection={formatRejection}
           />
-          <div className="lg:pt-10">
+          <div className="lg:pt-10 lg:min-w-0">
             <DesktopMainExtras />
           </div>
         </div>
