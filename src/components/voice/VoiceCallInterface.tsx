@@ -23,7 +23,6 @@ export const VoiceCallInterface: React.FC = () => {
     startConversation,
     endConversation,
     isConnected,
-    isSpeaking,
   } = useElevenLabsConversation();
 
   // Tick call duration; auto-hangup at minute boundary if limit reached
