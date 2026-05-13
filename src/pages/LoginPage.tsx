@@ -63,7 +63,7 @@ const LoginPage: React.FC = () => {
     if (!email || !password) {
       toast({
         title: t.auth.error,
-        description: 'Пожалуйста, введите email и пароль',
+        description: t.auth.enterEmailAndPassword,
         variant: 'destructive',
       });
       return;
@@ -80,8 +80,8 @@ const LoginPage: React.FC = () => {
 
     if (!email || !password) {
       toast({
-        title: 'Ошибка',
-        description: 'Пожалуйста, введите email и пароль',
+        title: t.auth.error,
+        description: t.auth.enterEmailAndPassword,
         variant: 'destructive',
       });
       return;
@@ -89,9 +89,8 @@ const LoginPage: React.FC = () => {
 
     if (!isPasswordStrongEnough(password)) {
       toast({
-        title: 'Слабый пароль',
-        description:
-          'Пароль должен содержать минимум 8 символов, заглавную букву и цифру',
+        title: t.auth.weakPasswordTitle,
+        description: t.auth.weakPasswordDescription,
         variant: 'destructive',
       });
       return;
@@ -99,8 +98,8 @@ const LoginPage: React.FC = () => {
 
     if (password !== confirmPassword) {
       toast({
-        title: 'Пароли не совпадают',
-        description: 'Введите одинаковый пароль в оба поля',
+        title: t.auth.passwordsDontMatchTitle,
+        description: t.auth.passwordsDontMatchDescription,
         variant: 'destructive',
       });
       return;
@@ -119,8 +118,8 @@ const LoginPage: React.FC = () => {
     
     if (!otpCode || otpCode.length !== 6) {
       toast({
-        title: "Ошибка",
-        description: "Введите 6-значный код",
+        title: t.auth.error,
+        description: t.auth.enter6DigitCode,
         variant: "destructive",
       });
       return;
@@ -159,7 +158,7 @@ const LoginPage: React.FC = () => {
     if (!email) {
       toast({
         title: t.auth.resetPasswordError,
-        description: 'Пожалуйста, введите email для восстановления пароля',
+        description: t.auth.enterEmailForReset,
         variant: 'destructive',
       });
       return;
@@ -292,7 +291,7 @@ const LoginPage: React.FC = () => {
                     </InputOTP>
                   </div>
                   <p className="text-center text-sm text-cosmic-secondary">
-                    Введите 6-значный код из письма
+                    {t.auth.enter6DigitCodeFromEmail}
                   </p>
                 </div>
                 
@@ -325,7 +324,7 @@ const LoginPage: React.FC = () => {
                     }}
                     className="text-sm text-cosmic-secondary hover:text-white block w-full"
                   >
-                    ← Назад к регистрации
+                    {t.auth.backToSignup}
                   </Button>
                 </div>
               </form>
@@ -334,18 +333,16 @@ const LoginPage: React.FC = () => {
         ) : emailSent ? (
           <Card className="backdrop-blur-sm bg-cosmic-dark/10 border-cosmic-accent/30 shadow-lg">
             <CardContent className="pt-6 text-center">
-              <h2 className="text-xl text-white mb-4">Проверьте вашу почту</h2>
+              <h2 className="text-xl text-white mb-4">{t.auth.checkYourEmail}</h2>
               <p className="text-cosmic-secondary mb-6">
-                На ваш email отправлено письмо с подтверждением. Пожалуйста,
-                проверьте почту и перейдите по ссылке в письме для активации
-                аккаунта.
+                {t.auth.emailConfirmationSent}
               </p>
               <Button
                 variant="outline"
                 className="border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10"
                 onClick={() => setEmailSent(false)}
               >
-                Вернуться к форме входа
+                {t.auth.returnToLogin}
               </Button>
             </CardContent>
           </Card>
@@ -428,7 +425,7 @@ const LoginPage: React.FC = () => {
                         disabled={loading}
                       >
                         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {loading ? 'Выполняется вход...' : t.auth.signInButton}
+                        {loading ? t.auth.signingIn : t.auth.signInButton}
                       </CosmicButton>
                     </div>
 
@@ -478,7 +475,7 @@ const LoginPage: React.FC = () => {
                         disabled={oauthLoading !== null}
                       >
                         {oauthLoading === 'google' && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Продолжить с Google
+                        {t.auth.continueWithGoogle}
                       </Button>
                       <Button
                         type="button"
@@ -490,7 +487,7 @@ const LoginPage: React.FC = () => {
                         {oauthLoading === 'apple'
                           ? <Loader2 className="h-4 w-4 animate-spin" />
                           : <Apple className="h-4 w-4" />}
-                        Продолжить с Apple
+                        {t.auth.continueWithApple}
                       </Button>
                     </div>
                   </form>
@@ -548,7 +545,7 @@ const LoginPage: React.FC = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="signup-confirm-password" className="text-white">
-                        Повторите пароль
+                        {t.auth.repeatPassword}
                       </Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cosmic-accent h-5 w-5 z-10" />
@@ -576,7 +573,7 @@ const LoginPage: React.FC = () => {
                         )}
                       </div>
                       {confirmPassword.length > 0 && password !== confirmPassword && (
-                        <p className="text-xs text-destructive">Пароли не совпадают</p>
+                        <p className="text-xs text-destructive">{t.auth.passwordsDontMatchHint}</p>
                       )}
                     </div>
 
@@ -591,7 +588,7 @@ const LoginPage: React.FC = () => {
                         }
                       >
                         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {loading ? 'Регистрация...' : t.auth.signUpButton}
+                        {loading ? t.auth.signingUp : t.auth.signUpButton}
                       </CosmicButton>
                     </div>
 
