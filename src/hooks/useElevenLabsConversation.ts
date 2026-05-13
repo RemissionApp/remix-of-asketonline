@@ -1,7 +1,7 @@
 import { useConversation } from '@elevenlabs/react';
 import { Capacitor } from '@capacitor/core';
 import { useAppStore } from '@/store/useAppStore';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { createLogger } from '@/utils/logger';
 
@@ -22,6 +22,34 @@ type PendingStart = {
   reject: (error: Error) => void;
 };
 
+type PactLike = { status?: string; title?: string; duration?: number | string };
+type SummaryLike = { summary?: string | null; called_at?: string | null };
+type ConversationConnectProps = { conversationId?: string };
+type DisconnectDetails = {
+  reason?: string;
+  message?: string;
+  code?: string | number;
+  closeCode?: number;
+  closeReason?: string;
+  context?: { code?: number; reason?: string };
+};
+type ElevenLabsMessage = {
+  type?: string;
+  source?: string;
+  message?: string;
+  agent_response_event?: { agent_response?: string };
+  agent_response_correction_event?: { corrected_agent_response?: string };
+  user_transcription_event?: { user_transcript?: string };
+};
+type ElevenLabsErrorDetails = {
+  code?: string | number;
+  reason?: string;
+  name?: string;
+  closeCode?: number;
+  closeReason?: string;
+  context?: { code?: number; reason?: string };
+};
+
 const getRuntimePlatform = () => {
   if (Capacitor.isNativePlatform()) return Capacitor.getPlatform();
   if (/iPad|iPhone|iPod/.test(navigator.userAgent)) return 'ios-webview';
@@ -36,7 +64,7 @@ const toError = (value: unknown, fallback: string) => {
 };
 
 export const useElevenLabsConversation = () => {
-  const logger = createLogger('useElevenLabsConversation');
+  const logger = useMemo(() => createLogger('useElevenLabsConversation'), []);
   const { language, user, userProfile, pacts } = useAppStore();
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
