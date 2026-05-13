@@ -143,11 +143,11 @@ const MainPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-32 lg:pb-12">
+    <div className="min-h-screen flex flex-col relative pb-[calc(var(--bottomnav-total)+2rem)] lg:pb-12">
       <StarField starCount={100} />
 
       {/* Fixed TopBar at the top */}
-      <div className="fixed top-0 left-0 right-0 z-[100] lg:hidden">
+      <div className="fixed top-0 left-0 right-0 z-[100] lg:hidden pointer-events-none">
         <TopBar />
       </div>
 
@@ -183,9 +183,7 @@ const MainPage: React.FC = () => {
       <MissionReminder />
 
       {/* Bottom navigation */}
-      <div className="lg:hidden">
-        <BottomNavigation />
-      </div>
+      <BottomNavigation />
 
       {/* Pact completion dialog */}
       {currentCompletedPact && (
