@@ -23,17 +23,24 @@ serve(async req => {
     // Parse request body for language
     const { language } = await req.json();
 
-    // Set the prompt based on language
+    // Language-locked prompts
+    let systemPrompt = '';
     let prompt = '';
     if (language === 'ru') {
+      systemPrompt =
+        'Ты — космический наставник. Отвечай СТРОГО на русском языке. Ответ ОБЯЗАТЕЛЬНО ровно из двух предложений — не больше и не меньше. Никаких приветствий, пояснений или дополнительного текста. Не используй английские слова.';
       prompt =
-        'Сгенерируй короткий гороскоп/совет дня, состоящий СТРОГО из 2-х предложений. Не больше и не меньше.';
+        'Сгенерируй короткий совет дня — ровно 2 предложения на русском языке.';
     } else if (language === 'es') {
+      systemPrompt =
+        'Eres un consejero cósmico. Responde ESTRICTAMENTE en español. La respuesta debe contener EXACTAMENTE dos frases — ni más ni menos. Sin saludos, explicaciones ni texto adicional. No uses palabras en inglés.';
       prompt =
-        'Genera un horóscopo/consejo del día corto que conste ESTRICTAMENTE de 2 frases. Ni más ni menos.';
+        'Genera un consejo del día corto — exactamente 2 frases en español.';
     } else {
+      systemPrompt =
+        'You are a cosmic advisor. Respond STRICTLY in English. Your response MUST be EXACTLY two sentences long — no more, no less. No greetings, explanations, or additional text.';
       prompt =
-        'Generate a short horoscope/advice of the day consisting of EXACTLY 2 sentences. No more, no less.';
+        'Generate a short daily advice — exactly 2 sentences in English.';
     }
 
     // Call OpenAI to generate the advice
@@ -48,8 +55,7 @@ serve(async req => {
         messages: [
           {
             role: 'system',
-            content:
-              'You are a cosmic advisor providing daily advice. Your response MUST be EXACTLY two sentences long - no more, no less. Make each sentence meaningful and concise. Do not include any additional text, greetings, or explanations.',
+            content: systemPrompt,
           },
           {
             role: 'user',

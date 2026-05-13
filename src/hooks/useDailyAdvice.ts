@@ -7,6 +7,21 @@ export const useDailyAdvice = (language: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  const matchesLanguage = (text: string, lang: string): boolean => {
+    if (!text) return false;
+    const hasCyrillic = /[\u0400-\u04FF]/.test(text);
+    if (lang === 'ru') return hasCyrillic;
+    if (lang === 'en') return !hasCyrillic && /[a-zA-Z]/.test(text);
+    if (lang === 'es') {
+      // Spanish-specific characters or common words; otherwise reject pure English text
+      return (
+        /[áéíóúñ¿¡üÁÉÍÓÚÑÜ]/i.test(text) ||
+        /\b(el|la|los|las|de|que|para|tu|hoy|día|paso|cósmic|universo)\b/i.test(text)
+      );
+    }
+    return true;
+  };
+
   useEffect(() => {
     const fetchDailyAdvice = async () => {
       setIsLoading(true);
@@ -16,10 +31,14 @@ export const useDailyAdvice = (language: string) => {
         const cachedAdviceKey = `daily_advice_${today}_${language}`;
         const cachedAdvice = localStorage.getItem(cachedAdviceKey);
 
-        if (cachedAdvice) {
+        if (cachedAdvice && matchesLanguage(cachedAdvice, language)) {
           setDailyAdvice(cachedAdvice);
           setIsLoading(false);
           return;
+        }
+        if (cachedAdvice) {
+          // Stale cache in wrong language — drop it.
+          localStorage.removeItem(cachedAdviceKey);
         }
 
         // Generate new advice using edge function
@@ -46,9 +65,14 @@ export const useDailyAdvice = (language: string) => {
           );
         }
 
-        // Save to local storage
-        localStorage.setItem(cachedAdviceKey, generatedAdvice);
-        setDailyAdvice(generatedAdvice);
+        // Save to local storage only if language matches
+        if (matchesLanguage(generatedAdvice, language)) {
+          localStorage.setItem(cachedAdviceKey, generatedAdvice);
+          setDailyAdvice(generatedAdvice);
+        } else {
+          // Server returned wrong language → use fallback to avoid showing it
+          throw new Error('Advice language mismatch');
+        }
       } catch (error) {
         console.error('Error:', error);
         // Fallback advice
