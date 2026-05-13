@@ -1,7 +1,24 @@
 import React from 'react';
 import { MessageSquare, Stars } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
+import { useAppStore } from '@/store/useAppStore';
 
 export const EmptyChatState: React.FC = () => {
+  const { t } = useTranslations();
+  const { language } = useAppStore();
+  const tr = (ru: string, en: string, es: string) =>
+    language === 'ru' ? ru : language === 'es' ? es : en;
+  const title = t.universe?.chatTitle || tr('Диалог с Лирой', 'Chat with Lyra', 'Diálogo con Lyra');
+  const description = tr(
+    'Задай вопрос, и Лира ответит тебе через язык звёзд, метафор и космической мудрости.',
+    'Ask a question and Lyra will answer through the language of stars, metaphors and cosmic wisdom.',
+    'Haz una pregunta y Lyra te responderá a través del lenguaje de las estrellas, metáforas y sabiduría cósmica.',
+  );
+  const subtitle = tr(
+    'Каждый вопрос — это путешествие к осознанию...',
+    'Every question is a journey toward awareness...',
+    'Cada pregunta es un viaje hacia la conciencia...',
+  );
   return (
     <div className="h-full flex flex-col items-center justify-center p-6">
       <div className="relative w-24 h-24 mb-6">
@@ -17,14 +34,13 @@ export const EmptyChatState: React.FC = () => {
       </div>
 
       <h3 className="text-xl font-serif text-cosmic-accent mb-2 text-center">
-        Диалог со Вселенной
+        {title}
       </h3>
       <p className="text-cosmic-secondary text-center max-w-md mb-2">
-        Задайте вопрос, и Вселенная ответит вам через язык звёзд, метафор и
-        космической мудрости.
+        {description}
       </p>
       <p className="text-cosmic-secondary/70 text-sm text-center italic">
-        Каждый вопрос — это путешествие к осознанию...
+        {subtitle}
       </p>
     </div>
   );

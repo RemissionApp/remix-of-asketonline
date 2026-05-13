@@ -14,10 +14,10 @@ export const CallHero: React.FC = () => {
   const lyra = (t as any).lyra || {};
   const title =
     lyra.callButton ||
-    (language === 'ru' ? 'Позвонить Вселенной' : language === 'es' ? 'Llamar a Lyra' : 'Call Lyra');
+    (language === 'ru' ? 'Позвонить Лире' : language === 'es' ? 'Llamar a Lyra' : 'Call Lyra');
   const subtitle =
     lyra.callSubtitle ||
-    (language === 'ru' ? 'Высший разум всегда слышит тебя' : language === 'es' ? 'La sabiduría siempre te escucha' : 'The higher mind always hears you');
+    (language === 'ru' ? 'Лира всегда рядом и готова слушать' : language === 'es' ? 'Lyra siempre te escucha' : 'Lyra is always here for you');
   const minutes = (lyra.minutesLeft || 'Minutes left: {{count}}').replace('{{count}}', String(minutesLeft));
 
   return (

@@ -60,7 +60,7 @@ const WelcomePage: React.FC = () => {
         <div className="cosmic-block backdrop-blur-sm p-8 rounded-lg border border-cosmic-accent/30">
           <div className="flex flex-col items-center gap-3">
             <div className="w-10 h-10 border-4 border-cosmic-accent/60 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-cosmic-secondary">Загрузка...</p>
+            <p className="text-cosmic-secondary">{t.common?.loading || 'Loading...'}</p>
           </div>
         </div>
       </div>

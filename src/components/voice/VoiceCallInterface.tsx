@@ -18,6 +18,7 @@ export const VoiceCallInterface: React.FC = () => {
   const { toast } = useToast();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const lyra: any = (t as any).lyra || {};
   const [callDuration, setCallDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { minutesLeft, limitReached, addMinutes, refresh: refreshMinutes } = useCallMinutes();
@@ -88,7 +89,6 @@ export const VoiceCallInterface: React.FC = () => {
     } catch (error) {
       console.error('Failed to start call:', error);
 
-      const lyra: any = (t as any).lyra || {};
       const code = error instanceof Error ? error.message : '';
       let errorMessage: string;
       switch (code) {
@@ -144,12 +144,7 @@ export const VoiceCallInterface: React.FC = () => {
       }
 
       toast({
-        title:
-          language === 'ru'
-            ? 'Ошибка соединения'
-            : language === 'es'
-              ? 'Error de conexión'
-              : 'Connection error',
+        title: lyra.connectionErrorTitle || 'Connection error',
         description: errorMessage,
         variant: 'destructive',
       });
@@ -178,38 +173,11 @@ export const VoiceCallInterface: React.FC = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getTitle = () => {
-    switch (language) {
-      case 'ru':
-        return 'Звонок Вселенной';
-      case 'es':
-        return 'Llamada al Universo';
-      default:
-        return 'Universe Call';
-    }
-  };
-
-  const getSubtitle = () => {
-    switch (language) {
-      case 'ru':
-        return 'Соединитесь с космической мудростью';
-      case 'es':
-        return 'Conéctate con la sabiduría cósmica';
-      default:
-        return 'Connect with cosmic wisdom';
-    }
-  };
-
-  const getTipText = () => {
-    switch (language) {
-      case 'ru':
-        return 'Нажмите на кнопку звонка, чтобы соединиться с космической мудростью Вселенной';
-      case 'es':
-        return 'Presiona el botón de llamada para conectarte con la sabiduría cósmica del Universo';
-      default:
-        return 'Press the call button to connect with the cosmic wisdom of the Universe';
-    }
-  };
+  const getTitle = () => lyra.callTitle || lyra.callScreen || "Lyra's Call";
+  const getSubtitle = () => lyra.callSubtitleShort || 'Connect with cosmic wisdom';
+  const getTipText = () =>
+    lyra.callTip ||
+    'Press the call button to connect with Lyra and the cosmic wisdom of the Universe';
 
   return (
     <SwipeGestureHandler>

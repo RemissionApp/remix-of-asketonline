@@ -227,6 +227,7 @@ export interface CommonTranslations {
   back: string;
   next: string;
   submit: string;
+  loading?: string;
 }
 
 export interface MeditationTranslations {
@@ -382,5 +383,11 @@ export interface Translations {
     errorLimit?: string;
     errorAuth?: string;
     errorNetwork?: string;
+    callSubtitleShort?: string;
+    callTitle?: string;
+    callButtonShort?: string;
+    online?: string;
+    callTip?: string;
+    connectionErrorTitle?: string;
   };
 }

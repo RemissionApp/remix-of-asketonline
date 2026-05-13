@@ -61,7 +61,7 @@ const AccountSettingsPage: React.FC = () => {
             {/* Notifications */}
             <div>
               <h2 className="text-xl text-white font-serif mb-4">
-                Уведомления
+                {t.userProfile?.notifications || 'Notifications'}
               </h2>
               <PushNotificationManager />
             </div>
@@ -69,7 +69,7 @@ const AccountSettingsPage: React.FC = () => {
             {/* Developer Mode */}
             <div>
               <h2 className="text-xl text-white font-serif mb-4">
-                Developer Mode
+                {t.userProfile?.developerMode || 'Developer Mode'}
               </h2>
               <DeveloperSwitch />
             </div>
