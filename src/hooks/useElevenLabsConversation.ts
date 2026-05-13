@@ -356,7 +356,7 @@ export const useElevenLabsConversation = () => {
       logger.error('Error starting ElevenLabs conversation', error);
       throw error;
     }
-  }, [conversation, language, buildLyraContext, user?.id]);
+  }, [conversation, language, buildLyraContext, user?.id, logger]);
 
   const endConversation = useCallback(async () => {
     try {
@@ -370,7 +370,7 @@ export const useElevenLabsConversation = () => {
     } catch (error) {
       logger.error('Error ending conversation', error);
     }
-  }, [conversation]);
+  }, [conversation, logger]);
 
   useEffect(() => {
     return () => {
@@ -393,7 +393,7 @@ export const useElevenLabsConversation = () => {
         logger.error('Error setting volume', error);
       }
     },
-    [conversation]
+    [conversation, logger]
   );
 
   return {
