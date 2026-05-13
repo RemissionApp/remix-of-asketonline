@@ -11,6 +11,13 @@ const AGENTS = {
   es: 'agent_01jzhxwswhfas9ss9ae74n16v0',
 };
 
+type SignedUrlResponse = {
+  signedUrl?: string;
+  error?: string;
+  code?: string;
+  details?: unknown;
+};
+
 export const useElevenLabsConversation = () => {
   const logger = createLogger('useElevenLabsConversation');
   const { language, user, userProfile, pacts } = useAppStore();
@@ -102,7 +109,10 @@ export const useElevenLabsConversation = () => {
     onDisconnect: (details?: any) => {
       logger.info('ElevenLabs conversation disconnected', {
         reason: details?.reason,
+        message: details?.message,
         code: details?.code,
+        closeCode: details?.closeCode ?? details?.context?.code,
+        closeReason: details?.closeReason ?? details?.context?.reason,
         context: details?.context,
       });
       setIsConnected(false);
@@ -143,18 +153,28 @@ export const useElevenLabsConversation = () => {
     },
     onError: (message: any, error?: any) => {
       logger.error('ElevenLabs conversation error', {
-        message,
+        message: typeof message === 'string' ? message : message?.message,
+        rawMessage: message,
         code: error?.code,
         reason: error?.reason,
         name: error?.name,
+        closeCode: error?.closeCode ?? error?.context?.code,
+        closeReason: error?.closeReason ?? error?.context?.reason,
         error,
       });
     },
   });
 
   const startConversation = useCallback(async () => {
+    const startedAt = performance.now();
     try {
       const agentId = AGENTS[language as keyof typeof AGENTS] || AGENTS.en;
+
+      logger.info('Starting ElevenLabs conversation', {
+        agentId,
+        language,
+        connectionType: 'websocket',
+      });
 
       // 1. Запрашиваем доступ к микрофону до старта сессии
       try {
@@ -167,12 +187,30 @@ export const useElevenLabsConversation = () => {
       // 2. Build context for the agent (best-effort)
       const context = await buildLyraContext();
 
-      // 3. Стартуем сессию напрямую через agentId (публичные агенты, WebRTC).
-      // SDK сам получает токен — это устойчивее, чем наш backend-маршрут,
-      // и совпадает с официальной документацией ElevenLabs.
-      conversation.startSession({
+      // 3. Получаем signed URL на backend и стартуем WebSocket-сессию.
+      // Это обходит падающий LiveKit WebRTC /rtc/v1/validate endpoint.
+      const { data, error } = await supabase.functions.invoke<SignedUrlResponse>(
+        'elevenlabs-signed-url',
+        { body: { agentId } }
+      );
+
+      if (error || !data?.signedUrl) {
+        logger.error('Failed to get ElevenLabs signed URL', {
+          error,
+          data,
+          agentId,
+        });
+        throw new Error(data?.code || 'AGENT_UNAVAILABLE');
+      }
+
+      logger.info('Received ElevenLabs signed URL', {
         agentId,
-        connectionType: 'webrtc',
+        elapsedMs: Math.round(performance.now() - startedAt),
+      });
+
+      await conversation.startSession({
+        signedUrl: data.signedUrl,
+        connectionType: 'websocket',
         ...(user?.id ? { userId: user.id } : {}),
         ...(context
           ? {
@@ -184,6 +222,10 @@ export const useElevenLabsConversation = () => {
             }
           : {}),
       } as any);
+
+      logger.info('ElevenLabs WebSocket startSession completed', {
+        elapsedMs: Math.round(performance.now() - startedAt),
+      });
 
       return null;
     } catch (error) {
