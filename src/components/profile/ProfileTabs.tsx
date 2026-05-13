@@ -36,7 +36,8 @@ export const ProfileTabs: React.FC<Props> = ({ active, onChange }) => {
   return (
     <div
       ref={scrollRef}
-      className="sticky top-16 z-20 -mx-3 px-3 sm:-mx-4 sm:px-4 overflow-x-auto no-scrollbar"
+      className="sticky z-20 -mx-3 px-3 sm:-mx-4 sm:px-4 overflow-x-auto no-scrollbar bg-cosmic-dark/60 backdrop-blur-md"
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
     >
       <div className="flex items-center gap-2 py-2 w-max">
         {tabs.map(({ id, icon: Icon, label }) => {
@@ -46,13 +47,13 @@ export const ProfileTabs: React.FC<Props> = ({ active, onChange }) => {
               key={id}
               data-tab={id}
               onClick={() => onChange(id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap transition-colors backdrop-blur-sm ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 min-h-[36px] rounded-full border text-xs whitespace-nowrap transition-colors backdrop-blur-sm ${
                 isActive
-                  ? 'bg-cosmic-accent/25 border-cosmic-accent/50 text-white'
-                  : 'bg-cosmic-dark/40 border-cosmic-accent/15 text-cosmic-secondary hover:text-white'
+                  ? 'bg-cosmic-accent/30 border-cosmic-accent/60 text-white shadow-[0_0_14px_rgba(139,92,246,0.35)]'
+                  : 'bg-white/5 border-white/10 text-cosmic-secondary active:text-white'
               }`}
             >
-              <Icon size={13} />
+              <Icon size={14} />
               <span>{label}</span>
             </button>
           );
