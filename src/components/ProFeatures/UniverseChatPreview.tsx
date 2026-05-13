@@ -12,18 +12,13 @@ export const UniverseChatPreview: React.FC = () => {
   const { userProfile, language } = useAppStore();
   const { t } = useTranslations();
   const navigate = useNavigate();
+  const lyra: any = (t as any).lyra || {};
 
   const handleEnterCall = () => {
     navigate('/universe-call');
   };
 
-  // Translation for the title "Звонок Вселенной"
-  const universeTitle =
-    language === 'ru'
-      ? 'Звонок Вселенной'
-      : language === 'es'
-        ? 'Llamada al Universo'
-        : 'Universe Call';
+  const universeTitle = lyra.callTitle || lyra.callScreen || "Lyra's Call";
 
   // Determine the correct font class based on language
   const headingFontClass = language === 'en' ? 'font-serif' : 'font-sans';
@@ -59,11 +54,7 @@ export const UniverseChatPreview: React.FC = () => {
             </h3>
             <div className="flex items-center text-xs text-cosmic-secondary">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse-slow"></span>
-              {language === 'ru'
-                ? 'онлайн'
-                : language === 'es'
-                  ? 'en línea'
-                  : 'online'}
+              {lyra.online || 'online'}
             </div>
           </div>
         </div>
@@ -74,11 +65,7 @@ export const UniverseChatPreview: React.FC = () => {
           variant="default"
           className="w-full bg-gradient-to-r from-cosmic-accent/40 to-cosmic-indigo/30 hover:from-cosmic-accent/50 hover:to-cosmic-indigo/40 backdrop-blur-md border border-white/20 mt-4"
         >
-          {language === 'ru'
-            ? 'Позвонить Вселенной'
-            : language === 'es'
-              ? 'Llamar al Universo'
-              : 'Call Universe'}
+          {lyra.callButtonShort || lyra.callButton || 'Call Lyra'}
         </CosmicButton>
       </div>
     </div>

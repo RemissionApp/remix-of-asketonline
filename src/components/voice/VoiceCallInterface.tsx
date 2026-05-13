@@ -89,7 +89,6 @@ export const VoiceCallInterface: React.FC = () => {
     } catch (error) {
       console.error('Failed to start call:', error);
 
-      const lyra: any = (t as any).lyra || {};
       const code = error instanceof Error ? error.message : '';
       let errorMessage: string;
       switch (code) {
