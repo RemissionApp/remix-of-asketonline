@@ -114,7 +114,19 @@ export const useElevenLabsConversation = () => {
 
   const conversation = useConversation({
     onConnect: (props?: any) => {
-      logger.info('ElevenLabs conversation connected');
+      const pendingStart = pendingStartRef.current;
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.resolve();
+        pendingStartRef.current = null;
+      }
+
+      logger.info('ElevenLabs conversation connected', {
+        conversationId: props?.conversationId,
+        agentId: pendingStart?.agentId,
+        platform: getRuntimePlatform(),
+        elapsedMs: pendingStart ? Math.round(performance.now() - pendingStart.startedAt) : undefined,
+      });
       setIsConnected(true);
       setLastAgentMessage(null);
       setLastUserMessage(null);
@@ -124,8 +136,28 @@ export const useElevenLabsConversation = () => {
         setConversationId(id);
         conversationIdRef.current = id;
       }
+
+      if (pendingContextRef.current) {
+        try {
+          conversation.sendContextualUpdate(pendingContextRef.current, { contextId: 'asceta-user-context' });
+          logger.info('Sent ElevenLabs contextual update', {
+            contextLength: pendingContextRef.current.length,
+          });
+        } catch (e) {
+          logger.warn('Failed to send contextual update after connect', e);
+        } finally {
+          pendingContextRef.current = null;
+        }
+      }
     },
     onDisconnect: (details?: any) => {
+      const pendingStart = pendingStartRef.current;
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.reject(new Error('AGENT_UNAVAILABLE'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       logger.info('ElevenLabs conversation disconnected', {
         reason: details?.reason,
         message: details?.message,
@@ -171,6 +203,13 @@ export const useElevenLabsConversation = () => {
       }
     },
     onError: (message: any, error?: any) => {
+      const pendingStart = pendingStartRef.current;
+      if (pendingStart) {
+        clearTimeout(pendingStart.timeoutId);
+        pendingStart.reject(toError(error ?? message, 'AGENT_UNAVAILABLE'));
+        pendingStartRef.current = null;
+      }
+      pendingContextRef.current = null;
       logger.error('ElevenLabs conversation error', {
         message: typeof message === 'string' ? message : message?.message,
         rawMessage: message,
