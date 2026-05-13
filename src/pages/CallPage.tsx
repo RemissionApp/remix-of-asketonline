@@ -1,4 +1,5 @@
 import React from 'react';
+import { ConversationProvider } from '@elevenlabs/react';
 import { VoiceCallInterface } from '@/components/voice/VoiceCallInterface';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -25,7 +26,9 @@ const CallPage: React.FC = () => {
         />
 
         <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-4 pt-20">
-          <VoiceCallInterface />
+          <ConversationProvider>
+            <VoiceCallInterface />
+          </ConversationProvider>
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 z-30 pb-safe-bottom">
