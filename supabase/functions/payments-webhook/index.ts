@@ -12,7 +12,7 @@ function getSupabase() {
   return _supabase;
 }
 
-const FROM_EMAIL = "Asceta <hello@asceta.app>";
+const FROM_EMAIL = "Asceta <hello@remissionsoft.net>";
 const RESEND_GATEWAY = "https://connector-gateway.lovable.dev/resend";
 
 async function sendEmail(to: string, subject: string, html: string) {
