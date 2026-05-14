@@ -147,7 +147,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent
-                  className="w-auto bg-cosmic-dark/30 backdrop-blur-[5px] border-cosmic-accent/30 p-0"
+                  className="w-auto bg-cosmic-dark/95 border-cosmic-accent/30 p-0"
                   align="start"
                 >
                   <Calendar
@@ -156,7 +156,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                     onSelect={field.onChange}
                     disabled={date => date > maxBirthDate || date < minBirthDate}
                     defaultMonth={defaultCalendarMonth}
-                    captionLayout="dropdown"
                     fromYear={1930}
                     toYear={currentYear - 5}
                     initialFocus

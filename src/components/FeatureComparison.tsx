@@ -48,6 +48,18 @@ const FeatureComparison: React.FC = () => {
     ) ??
     null;
 
+  const otherPackages =
+    web.offering?.availablePackages?.filter(
+      p => p !== monthlyPkg && p !== annualPkg
+    ) ?? [];
+  const hasAnyPackage = (web.offering?.availablePackages?.length ?? 0) > 0;
+
+  React.useEffect(() => {
+    if (onWeb && web.isReady && !hasAnyPackage) {
+      console.warn('[Paywall] no packages in web offering', web.offering);
+    }
+  }, [onWeb, web.isReady, hasAnyPackage, web.offering]);
+
   const handleNativeUpgrade = async () => {
     try {
       await presentPaywall();
@@ -109,8 +121,27 @@ const FeatureComparison: React.FC = () => {
       {/* Tariffs */}
       <div className="space-y-3 mb-7">
         {onWeb ? (
-          <>
-            {annualPkg && (
+          web.isLoading || !web.isReady ? (
+            <div className="rounded-2xl border border-cosmic-accent/20 bg-cosmic-dark/40 p-6 text-center text-sm text-cosmic-secondary">
+              Загружаем тарифы…
+            </div>
+          ) : !hasAnyPackage ? (
+            <div className="rounded-2xl border border-cosmic-accent/20 bg-cosmic-dark/40 p-6 text-center space-y-3">
+              <p className="text-sm text-cosmic-secondary">
+                Тарифы временно недоступны. Попробуйте обновить.
+              </p>
+              <Button
+                variant="outline"
+                className="border-cosmic-accent/40 text-cosmic-accent hover:bg-cosmic-accent/10"
+                onClick={() => web.refresh()}
+              >
+                <RefreshCwIcon size={14} className="mr-2" />
+                Обновить
+              </Button>
+            </div>
+          ) : (
+            <>
+              {annualPkg && (
               <button
                 onClick={() => web.purchase(annualPkg)}
                 disabled={web.isPurchasing || !web.isReady}
@@ -155,20 +186,26 @@ const FeatureComparison: React.FC = () => {
                 </div>
               </button>
             )}
-            {!monthlyPkg && !annualPkg && (
-              <Button
-                className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 py-6"
-                disabled={!web.isReady}
-                onClick={() =>
-                  web.offering?.availablePackages?.[0] &&
-                  web.purchase(web.offering.availablePackages[0])
-                }
-              >
-                <SparklesIcon className="mr-2" size={18} />
-                Оформить Pro
-              </Button>
-            )}
-          </>
+              {otherPackages.map(pkg => (
+                <button
+                  key={pkg.identifier}
+                  onClick={() => web.purchase(pkg)}
+                  disabled={web.isPurchasing}
+                  className="w-full text-left rounded-2xl border border-cosmic-accent/30 bg-cosmic-dark/50 p-5 hover:bg-cosmic-dark/70 transition-colors disabled:opacity-60"
+                >
+                  <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
+                    {pkg.identifier}
+                  </div>
+                  <div className="text-2xl text-white font-serif">
+                    {pkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
+                  </div>
+                  <div className="text-xs text-cosmic-secondary mt-2">
+                    {web.isPurchasing ? 'Открываем оплату…' : 'Оформить →'}
+                  </div>
+                </button>
+              ))}
+            </>
+          )
         ) : (
           <Button
             onClick={handleNativeUpgrade}

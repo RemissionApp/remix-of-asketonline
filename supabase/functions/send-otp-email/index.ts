@@ -16,31 +16,31 @@ const corsHeaders = {
 // Email content translations
 const emailTranslations = {
   en: {
-    subject: 'Your verification code | Asket',
+    subject: 'Your verification code | Asceta',
     title: 'Verification Code',
     subtitle: 'Spiritual development and self-knowledge',
     codeLabel: 'Your verification code',
     validTime: 'Code valid for 5 minutes',
-    instructions: 'Enter this code in the Asket app to verify your email address. The code is valid for 5 minutes.',
-    footerNote: 'If you didn\'t sign up for Asket, please ignore this email.',
+    instructions: 'Enter this code in the Asceta app to verify your email address. The code is valid for 5 minutes.',
+    footerNote: 'If you didn\'t sign up for Asceta, please ignore this email.',
   },
   ru: {
-    subject: 'Ваш код подтверждения | Аскет',
+    subject: 'Ваш код подтверждения | Asceta',
     title: 'Код подтверждения',
     subtitle: 'Духовное развитие и самопознание',
     codeLabel: 'Ваш код подтверждения',
     validTime: 'Код действителен 5 минут',
-    instructions: 'Введите этот код в приложении Аскет для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
-    footerNote: 'Если вы не регистрировались в Аскет, проигнорируйте это письмо.',
+    instructions: 'Введите этот код в приложении Asceta для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
+    footerNote: 'Если вы не регистрировались в Asceta, проигнорируйте это письмо.',
   },
   es: {
-    subject: 'Tu código de verificación | Asket',
+    subject: 'Tu código de verificación | Asceta',
     title: 'Código de verificación',
     subtitle: 'Desarrollo espiritual y autoconocimiento',
     codeLabel: 'Tu código de verificación',
     validTime: 'Código válido por 5 minutos',
-    instructions: 'Ingresa este código en la aplicación Asket para verificar tu dirección de email. El código es válido por 5 minutos.',
-    footerNote: 'Si no te registraste en Asket, ignora este email.',
+    instructions: 'Ingresa este código en la aplicación Asceta para verificar tu dirección de email. El código es válido por 5 minutos.',
+    footerNote: 'Si no te registraste en Asceta, ignora este email.',
   }
 };
 
@@ -67,7 +67,7 @@ function getEmailContent(language: string, code: string) {
           
           body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0c0c0c 100%);
+            background: linear-gradient(135deg, #0a0814 0%, #14102a 50%, #0a0814 100%);
             min-height: 100vh;
             padding: 20px;
           }
@@ -75,19 +75,20 @@ function getEmailContent(language: string, code: string) {
           .container {
             max-width: 600px;
             margin: 0 auto;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            background: linear-gradient(135deg, #0F0B1F 0%, #1A1333 100%);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 60px rgba(232, 193, 108, 0.18);
+            border: 1px solid rgba(232, 193, 108, 0.25);
           }
           
           .header {
-            background: linear-gradient(135deg, hsl(260, 80%, 65%) 0%, hsl(258, 70%, 45%) 100%);
+            background: linear-gradient(135deg, #0F0B1F 0%, #1A1333 100%);
             padding: 40px 30px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            border-bottom: 1px solid rgba(232, 193, 108, 0.25);
           }
           
           .header::before {
@@ -109,18 +110,20 @@ function getEmailContent(language: string, code: string) {
           }
           
           .logo {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 700;
-            color: white;
+            color: #E8C16C;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 2px;
             margin-bottom: 8px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 24px rgba(232, 193, 108, 0.35);
             position: relative;
             z-index: 1;
           }
           
           .subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
             font-weight: 400;
             position: relative;
             z-index: 1;
@@ -131,7 +134,8 @@ function getEmailContent(language: string, code: string) {
           }
           
           .code-section {
-            background: linear-gradient(135deg, hsl(260, 80%, 65%) 0%, hsl(258, 70%, 45%) 100%);
+            background: linear-gradient(135deg, rgba(232, 193, 108, 0.08) 0%, rgba(120, 80, 220, 0.08) 100%);
+            border: 1px solid rgba(232, 193, 108, 0.3);
             border-radius: 16px;
             padding: 30px;
             text-align: center;
@@ -153,72 +157,75 @@ function getEmailContent(language: string, code: string) {
           }
           
           .code-title {
-            color: white;
-            font-size: 24px;
+            color: #E8C16C;
+            font-size: 18px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-bottom: 20px;
             position: relative;
             z-index: 1;
           }
           
           .code-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(10, 8, 20, 0.6);
+            border: 1px solid rgba(232, 193, 108, 0.35);
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
           }
           
           .code {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
-            color: hsl(260, 80%, 65%);
+            color: #E8C16C;
             letter-spacing: 8px;
             font-family: 'Courier New', monospace;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 0 16px rgba(232, 193, 108, 0.4);
           }
           
           .valid-time {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
             margin-top: 10px;
             position: relative;
             z-index: 1;
           }
           
           .instructions {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(232, 193, 108, 0.05);
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 30px;
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(232, 193, 108, 0.2);
           }
           
           .instructions-title {
-            color: hsl(260, 80%, 65%);
-            font-size: 18px;
+            color: #E8C16C;
+            font-size: 16px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             margin-bottom: 12px;
           }
           
           .instructions-text {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
             line-height: 1.6;
           }
           
           .footer {
             text-align: center;
             padding-top: 20px;
-            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            border-top: 1px solid rgba(232, 193, 108, 0.2);
           }
           
           .footer-note {
             color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
           }
           
@@ -270,7 +277,7 @@ function getEmailContent(language: string, code: string) {
         <div class="container">
           <div class="stars"></div>
           <div class="header">
-            <div class="logo">Asket</div>
+            <div class="logo">Asceta</div>
             <div class="subtitle">${lang.subtitle}</div>
           </div>
           
@@ -343,7 +350,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with OTP
     const emailResponse = await resend.emails.send({
-      from: "Asket <noreply@remissionsoft.net>",
+      from: "Asceta <noreply@remissionsoft.net>",
       to: [email],
       subject: emailContent.subject,
       html: emailContent.html,
