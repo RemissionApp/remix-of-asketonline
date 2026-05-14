@@ -13,6 +13,7 @@ import { toast } from '@/components/ui/use-toast';
 import { ProfileRow } from './ui/ProfileRow';
 import { ProfileSection } from './ui/ProfileSection';
 import { useProfileLang } from './i18n';
+import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 
 export const ProfileSubscriptionTab: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
   const { isPro, isTrialActive, daysLeft, hoursLeft } = useEntitlement();
   const { presentPaywall, restorePurchases } = useRevenueCat(user?.id);
   const { minutesUsed, minutesLimit } = useCallMinutes();
+  const { openCheckout, checkoutElement } = useStripeCheckout();
 
   const openPaywall = () => {
     if (isNativePlatform()) {
@@ -45,6 +47,21 @@ export const ProfileSubscriptionTab: React.FC = () => {
     } catch (e) {
       toast({ title: 'Не удалось открыть управление подпиской', variant: 'destructive' });
     }
+  };
+
+  const buyMinutesPack = () => {
+    if (isNativePlatform()) {
+      // Native: route to in-app paywall as fallback.
+      presentPaywall().catch(() => navigate('/comparison'));
+      return;
+    }
+    if (!user?.id) return;
+    openCheckout({
+      priceId: 'asceta_minutes_10_pack',
+      userId: user.id,
+      customerEmail: user.email,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
   };
 
   const t = {
@@ -141,7 +158,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
             <div className="h-full bg-gradient-to-r from-cosmic-accent to-cosmic-gold" style={{ width: `${minutesPercent}%` }} />
           </div>
         </div>
-        <ProfileRow icon={Plus} iconColor="gold" label={t.buyMinutes} sublabel={t.buyHint} onPress={openPaywall} badge={{ text: '$1.99 / 10', color: 'gold' }} />
+        <ProfileRow icon={Plus} iconColor="gold" label={t.buyMinutes} sublabel={t.buyHint} onPress={buyMinutesPack} badge={{ text: '$1.99 / 10', color: 'gold' }} />
       </ProfileSection>
 
       <ProfileSection title={t.other}>
@@ -149,6 +166,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
         <ProfileRow rounded="middle" icon={Gift} iconColor="green" label={t.referral} sublabel={t.referralHint} badge={{ text: '+7d', color: 'green' }} />
         <ProfileRow rounded="bottom" icon={BarChart3} iconColor="gray" label={t.compare} onPress={() => navigate('/comparison')} />
       </ProfileSection>
+      {checkoutElement}
     </div>
   );
 };
