@@ -5,7 +5,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslations } from '@/hooks/useTranslations';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, Sparkles, Crown, Check } from 'lucide-react';
+import { ArrowLeft, Crown, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const OnboardingPage: React.FC = () => {
