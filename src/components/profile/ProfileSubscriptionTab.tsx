@@ -8,6 +8,8 @@ import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useCallMinutes } from '@/hooks/useCallMinutes';
 import { useAppStore } from '@/store/useAppStore';
 import { isNativePlatform } from '@/utils/platform';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 import { ProfileRow } from './ui/ProfileRow';
 import { ProfileSection } from './ui/ProfileSection';
 import { useProfileLang } from './i18n';
@@ -25,6 +27,23 @@ export const ProfileSubscriptionTab: React.FC = () => {
       presentPaywall().catch(() => navigate('/comparison'));
     } else {
       navigate('/comparison');
+    }
+  };
+
+  const openManage = async () => {
+    if (isNativePlatform()) {
+      navigate('/comparison');
+      return;
+    }
+    try {
+      const env = (import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN as string | undefined)?.startsWith('pk_test_') ? 'sandbox' : 'live';
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: { returnUrl: `${window.location.origin}/profile`, environment: env },
+      });
+      if (error || !data?.url) throw new Error(error?.message || 'no url');
+      window.open(data.url, '_blank');
+    } catch (e) {
+      toast({ title: 'Не удалось открыть управление подпиской', variant: 'destructive' });
     }
   };
 
@@ -104,7 +123,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
             </button>
           )}
           <button
-            onClick={() => navigate('/comparison')}
+            onClick={() => (isPro ? openManage() : navigate('/comparison'))}
             className="flex-1 rounded-xl border border-cosmic-accent/30 text-cosmic-secondary text-xs py-2.5 active:scale-[0.99] transition-transform"
           >
             {isPro ? t.manage : t.compare}

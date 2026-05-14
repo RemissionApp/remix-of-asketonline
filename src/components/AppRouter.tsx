@@ -39,6 +39,7 @@ const NumerologyPage = lazy(() => import('@/pages/NumerologyPage'));
 const CosmosPage = lazy(() => import('@/pages/CosmosPage'));
 const UniverseHubPage = lazy(() => import('@/pages/UniverseHubPage'));
 const AdminPage = lazy(() => import('@/pages/AdminPage'));
+const CheckoutReturnPage = lazy(() => import('@/pages/CheckoutReturnPage'));
 
 const RouteFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-cosmic-dark">
@@ -94,6 +95,9 @@ export const AppRouter: React.FC = () => {
         
         {/* Auth callback */}
         <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Stripe checkout return */}
+        <Route path="/checkout/return" element={<ProtectedRoute><CheckoutReturnPage /></ProtectedRoute>} />
         
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

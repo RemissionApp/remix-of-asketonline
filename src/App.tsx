@@ -49,6 +49,7 @@ import { SafeAreaView } from './components/SafeAreaView';
 import { AppRouter } from './components/AppRouter';
 import { AuthBootstrap } from './components/auth/AuthBootstrap';
 import { TrialExpiredGate } from './components/TrialExpiredGate';
+import { PaymentTestModeBanner } from './components/PaymentTestModeBanner';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -81,6 +82,7 @@ const App = () => {
             <BrowserRouter>
               <AppInitializer />
               <AuthBootstrap>
+                <PaymentTestModeBanner />
                 <div className="">
                   <AppRouter />
                 </div>
