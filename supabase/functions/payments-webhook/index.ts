@@ -248,6 +248,22 @@ Deno.serve(async (req) => {
     const event = await verifyWebhook(req, env);
     console.log("[payments-webhook]", event.type);
 
+    // Idempotency — Stripe retries failed deliveries for up to 3 days.
+    const eventId = (event as any).id as string | undefined;
+    if (eventId) {
+      const { data: dup } = await getSupabase()
+        .from("stripe_events")
+        .select("event_id")
+        .eq("event_id", eventId)
+        .maybeSingle();
+      if (dup) {
+        console.log("[payments-webhook] duplicate event ignored", eventId);
+        return new Response(JSON.stringify({ received: true, duplicate: true }), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
     switch (event.type) {
       case "customer.subscription.created":
       case "customer.subscription.updated":
@@ -262,6 +278,14 @@ Deno.serve(async (req) => {
       default:
         // checkout.session.completed, invoice.* — ignored: subscription.* covers state.
         break;
+    }
+
+    if (eventId) {
+      await getSupabase().from("stripe_events").insert({
+        event_id: eventId,
+        type: event.type,
+        environment: env,
+      });
     }
 
     return new Response(JSON.stringify({ received: true }), {
