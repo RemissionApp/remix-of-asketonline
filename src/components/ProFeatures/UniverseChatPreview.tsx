@@ -3,13 +3,15 @@ import { MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
 import { useAppStore } from '@/store/useAppStore';
+import { useEntitlement } from '@/hooks/useEntitlement';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const UniverseChatPreview: React.FC = () => {
-  const { userProfile, language } = useAppStore();
+  const { language } = useAppStore();
+  const { isUnlocked } = useEntitlement();
   const { t } = useTranslations();
   const navigate = useNavigate();
   const lyra: any = (t as any).lyra || {};
@@ -71,8 +73,7 @@ export const UniverseChatPreview: React.FC = () => {
     </div>
   );
 
-  // If user is not PRO, wrap with ProFeatureOverlay
-  if (!userProfile?.isPro) {
+  if (!isUnlocked) {
     return (
       <ProFeatureOverlay
         title={t.universe?.chatProTitle || 'Диалог со Вселенной'}
