@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, FileBarChart, MousePointerClick, GitBranch } from 'lucide-react';
+import { LayoutDashboard, Users, FileBarChart, MousePointerClick, GitBranch, DollarSign, Repeat, Activity } from 'lucide-react';
 import { OverviewSection } from '@/components/admin/sections/Overview';
 import { UsersSection } from '@/components/admin/sections/Users';
 import { PagesSection } from '@/components/admin/sections/Pages';
 import { EventsSection } from '@/components/admin/sections/Events';
 import { FunnelsSection } from '@/components/admin/sections/Funnels';
+import { RevenueSection } from '@/components/admin/sections/Revenue';
+import { RetentionSection } from '@/components/admin/sections/Retention';
+import { HealthSection } from '@/components/admin/sections/Health';
 
-type Tab = 'overview' | 'users' | 'pages' | 'events' | 'funnels';
+type Tab = 'overview' | 'revenue' | 'users' | 'retention' | 'pages' | 'events' | 'funnels' | 'health';
 
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: 'overview', label: 'Обзор', icon: LayoutDashboard },
+  { id: 'revenue', label: 'Доходы', icon: DollarSign },
   { id: 'users', label: 'Пользователи', icon: Users },
+  { id: 'retention', label: 'Retention', icon: Repeat },
   { id: 'pages', label: 'Страницы', icon: FileBarChart },
   { id: 'events', label: 'События', icon: MousePointerClick },
   { id: 'funnels', label: 'Воронки', icon: GitBranch },
+  { id: 'health', label: 'Здоровье', icon: Activity },
 ];
 
 const AdminPage: React.FC = () => {
@@ -60,10 +66,13 @@ const AdminPage: React.FC = () => {
 
         <div>
           {tab === 'overview' && <OverviewSection days={days} />}
+          {tab === 'revenue' && <RevenueSection days={days} />}
           {tab === 'users' && <UsersSection />}
+          {tab === 'retention' && <RetentionSection days={days} />}
           {tab === 'pages' && <PagesSection days={days} />}
           {tab === 'events' && <EventsSection days={days} />}
           {tab === 'funnels' && <FunnelsSection days={days} />}
+          {tab === 'health' && <HealthSection />}
         </div>
       </div>
     </div>
