@@ -368,6 +368,18 @@ export interface NumerologyTranslations {
       generate: string;
       loading: string;
       error: string;
+      retry: string;
+      retryIn: string;
+      rateLimited: string;
+      creditsExhausted: string;
+      save: string;
+      saved: string;
+    };
+    answersBook: {
+      title: string;
+      empty: string;
+      delete: string;
+      savedAt: string;
     };
     enterName: string;
   };
