@@ -26,7 +26,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
+      className="fixed top-0 left-0 right-0 lg:left-64 z-40 pointer-events-none"
       style={{
         paddingTop: isAndroid()
           ? 'calc(env(safe-area-inset-top) + 0.6rem)'
