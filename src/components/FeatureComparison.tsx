@@ -12,6 +12,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useWebBilling } from '@/hooks/useWebBilling';
 import { isWebPlatform } from '@/utils/platform';
 import { toast } from 'sonner';
 import {
@@ -29,7 +30,22 @@ const FeatureComparison: React.FC = () => {
   const navigate = useNavigate();
   const { hasActiveSubscription, offerings, purchasePackage, isLoading } =
     useRevenueCat(user?.id);
-  const isPro = hasActiveSubscription;
+  const web = useWebBilling();
+  const onWeb = isWebPlatform();
+  const isPro = onWeb ? web.isPro || hasActiveSubscription : hasActiveSubscription;
+  const webPackages = web.offering?.availablePackages ?? [];
+  const monthlyPkg =
+    web.offering?.monthly ??
+    webPackages.find(p => p.identifier.toLowerCase().includes('month')) ??
+    null;
+  const annualPkg =
+    web.offering?.annual ??
+    webPackages.find(
+      p =>
+        p.identifier.toLowerCase().includes('annual') ||
+        p.identifier.toLowerCase().includes('year')
+    ) ??
+    null;
 
   // Extended feature list based on the provided image
   const features = [
@@ -106,13 +122,16 @@ const FeatureComparison: React.FC = () => {
   ];
 
   const handleUpgrade = async () => {
-    // Web has no native RevenueCat — show informative toast instead of
-    // attempting purchase. Users complete subscription in the mobile app.
-    if (isWebPlatform()) {
-      toast.message('Оплата через App Store / Google Play', {
-        description:
-          'Скачайте Asceta на iOS или Android, чтобы оформить подписку. Восстановление покупок работает на всех устройствах.',
-      });
+    // On web, route through RevenueCat Web Billing (Stripe checkout).
+    if (onWeb) {
+      const pkg = annualPkg ?? monthlyPkg ?? webPackages[0];
+      if (!pkg) {
+        toast.error('Подписки временно недоступны', {
+          description: 'Попробуйте обновить страницу через минуту.',
+        });
+        return;
+      }
+      await web.purchase(pkg);
       return;
     }
     try {
@@ -217,6 +236,38 @@ const FeatureComparison: React.FC = () => {
               Explore PRO Features <ArrowRightIcon className="ml-2" size={16} />
             </Button>
           </div>
+        ) : onWeb ? (
+          <div className="text-center mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+            {monthlyPkg && (
+              <Button
+                className="bg-cosmic-dark border border-cosmic-gold text-cosmic-gold hover:bg-cosmic-gold/10 px-6 py-5 text-base"
+                onClick={() => web.purchase(monthlyPkg)}
+                disabled={web.isPurchasing || !web.isReady}
+              >
+                Месяц · {monthlyPkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
+              </Button>
+            )}
+            {annualPkg && (
+              <Button
+                className="bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 px-8 py-6 text-lg"
+                onClick={() => web.purchase(annualPkg)}
+                disabled={web.isPurchasing || !web.isReady}
+              >
+                <SparklesIcon className="mr-2" size={18} />
+                Год · {annualPkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
+              </Button>
+            )}
+            {!monthlyPkg && !annualPkg && (
+              <Button
+                className="bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 px-8 py-6 text-lg"
+                onClick={handleUpgrade}
+                disabled={web.isPurchasing || !web.isReady}
+              >
+                <SparklesIcon className="mr-2" size={18} />
+                {web.isPurchasing ? 'Открываем оплату…' : 'Оформить PRO ✨'}
+              </Button>
+            )}
+          </div>
         ) : (
           <div className="text-center mt-6">
             <Button
@@ -298,6 +349,38 @@ const FeatureComparison: React.FC = () => {
                     Explore PRO Features{' '}
                     <ArrowRightIcon className="ml-2" size={16} />
                   </Button>
+                </div>
+              ) : onWeb ? (
+                <div className="space-y-2 mt-6">
+                  {monthlyPkg && (
+                    <Button
+                      className="w-full bg-cosmic-dark border border-cosmic-gold text-cosmic-gold hover:bg-cosmic-gold/10"
+                      onClick={() => web.purchase(monthlyPkg)}
+                      disabled={web.isPurchasing || !web.isReady}
+                    >
+                      Месяц · {monthlyPkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
+                    </Button>
+                  )}
+                  {annualPkg && (
+                    <Button
+                      className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90"
+                      onClick={() => web.purchase(annualPkg)}
+                      disabled={web.isPurchasing || !web.isReady}
+                    >
+                      <SparklesIcon className="mr-2" size={16} />
+                      Год · {annualPkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
+                    </Button>
+                  )}
+                  {!monthlyPkg && !annualPkg && (
+                    <Button
+                      className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90"
+                      onClick={handleUpgrade}
+                      disabled={web.isPurchasing || !web.isReady}
+                    >
+                      <SparklesIcon className="mr-2" size={16} />
+                      {web.isPurchasing ? 'Открываем оплату…' : 'Оформить PRO ✨'}
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <Button
