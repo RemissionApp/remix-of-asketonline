@@ -66,10 +66,11 @@ export const useRevenueCatStore = create<RevenueCatState>()(
 
         // Проверяем конкретные entitlements (для совместимости).
         // Корректный ID — `asket_premium_monthly`. Старый `asket_premium_montly`
-        // оставлен как fallback для уже активных подписок до их обновления.
+        // (опечатка) — TODO: удалить после 2026-07-14, когда все активные
+        // подписки на старом ID мигрируют.
         const hasSpecificSubscription = !!(
           customerInfo.entitlements?.active?.['asket_premium_monthly'] ||
-          customerInfo.entitlements?.active?.['asket_premium_montly'] ||
+          customerInfo.entitlements?.active?.['asket_premium_montly'] || // legacy typo
           customerInfo.entitlements?.active?.['asket_premium_yearly'] ||
           customerInfo.entitlements?.active?.['premium'] ||
           customerInfo.entitlements?.active?.['pro']
