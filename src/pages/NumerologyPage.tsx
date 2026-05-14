@@ -19,6 +19,8 @@ import { NumberDetailAccordion } from '@/components/numerology/NumberDetailAccor
 import { SquareAnalysisAccordion } from '@/components/numerology/SquareAnalysisAccordion';
 import { KarmaPositionCard } from '@/components/numerology/KarmaPositionCard';
 import { AnswersBookList } from '@/components/numerology/AnswersBookList';
+import { CosmicRevelation } from '@/components/numerology/CosmicRevelation';
+import { getZodiacSign } from '@/utils/zodiac';
 import { useNumerologyDeepReading, type DeepContext } from '@/hooks/useNumerologyDeepReading';
 import { useAnswersBook } from '@/hooks/useAnswersBook';
 
@@ -53,6 +55,12 @@ const NumerologyPage: React.FC = () => {
     if (!userProfile?.birthDate) return null;
     return buildProfile(String(userProfile.birthDate), userProfile.name || '');
   }, [userProfile?.birthDate, userProfile?.name]);
+
+  const zodiacSign = useMemo(() => {
+    if (!userProfile?.birthDate) return null;
+    const d = new Date(String(userProfile.birthDate));
+    return isNaN(d.getTime()) ? null : getZodiacSign(d);
+  }, [userProfile?.birthDate]);
 
   // Reset deep reading when switching tabs/system
   useEffect(() => {
@@ -200,6 +208,9 @@ const NumerologyPage: React.FC = () => {
 
           {profile && (
             <>
+              {/* Cosmic Revelation — rare astro-numerological alignments */}
+              <CosmicRevelation profile={profile} zodiacSign={zodiacSign} lang={lang} />
+
               {/* System switcher */}
               <div className="rounded-full bg-cosmic-dark/60 backdrop-blur-md border border-cosmic-accent/20 p-1 flex gap-1">
                 <button onClick={() => setSystem('pythagorean')} className={segmentBtn(system === 'pythagorean')}>
