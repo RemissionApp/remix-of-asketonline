@@ -95,6 +95,16 @@ const NumberCell: React.FC<{ label: string; value: string }> = ({ label, value }
   </div>
 );
 
+const TriadCell: React.FC<{ icon: LucideIcon; label: string; value: number | null; accent?: string }> = ({
+  icon: Icon, label, value, accent = 'text-cosmic-accent',
+}) => (
+  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-2.5 text-center">
+    <Icon size={14} className={`${accent} mx-auto mb-1`} />
+    <div className="text-xl font-serif text-white tabular-nums leading-none">{value ?? '—'}</div>
+    <div className="text-[10px] uppercase tracking-wider text-cosmic-secondary mt-1.5">{label}</div>
+  </div>
+);
+
 const NoBirthCTA: React.FC<{ lang: Lang }> = ({ lang }) => (
   <div className="text-center py-3">
     <p className="text-sm text-cosmic-secondary mb-3">{T.setBirth[lang]}</p>
