@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Flame, Mountain, Wind, Droplet, Globe2, Sun, Moon, Sparkles, Hash, BookmarkPlus, BookmarkCheck, type LucideIcon } from 'lucide-react';
+import { Star, Flame, Mountain, Wind, Droplet, Globe2, Sun, Moon, Sparkles, Hash, BookmarkPlus, BookmarkCheck, Heart, User as UserIcon, ArrowRight, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { getZodiacSign, zodiacData } from '@/utils/zodiac';
 import { translateElement, translateRuler } from '@/utils/zodiacTranslations';
 import {
-  calculateLifePathNumber,
-  calculatePersonalityNumber,
-  calculateDestinyMatrix,
-} from '@/utils/numerologyUtils';
+  lifePathNumber,
+  soulNumber,
+  personalityNumber,
+  expressionNumber,
+  personalYearNumber,
+  pythagoreanSquare,
+} from '@/utils/numerology/calculations';
+import { getNumberMeaning, pickI18n } from '@/utils/numerology/interpretations';
+import { PythagoreanSquareSVG } from '@/components/numerology/PythagoreanSquareSVG';
 import { useBriefHoroscope } from '@/hooks/useBriefHoroscope';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -22,10 +27,13 @@ const T = {
   sign:         { ru: 'Знак',                en: 'Sign',              es: 'Signo' },
   element:      { ru: 'Стихия',              en: 'Element',           es: 'Elemento' },
   ruler:        { ru: 'Управитель',          en: 'Ruler',             es: 'Regente' },
-  lifePath:     { ru: 'Число жизни',         en: 'Life path',         es: 'Camino' },
+  lifePath:     { ru: 'Жизненный путь',      en: 'Life path',         es: 'Camino de vida' },
   destiny:      { ru: 'Судьба',              en: 'Destiny',           es: 'Destino' },
+  soul:         { ru: 'Душа',                en: 'Soul',              es: 'Alma' },
   personality:  { ru: 'Личность',            en: 'Personality',       es: 'Personalidad' },
-  year:         { ru: 'Год',                 en: 'Year',              es: 'Año' },
+  personalYear: { ru: 'Личный год',          en: 'Personal year',     es: 'Año personal' },
+  square:       { ru: 'Квадрат Пифагора',    en: 'Pythagorean square', es: 'Cuadrado de Pitágoras' },
+  fullReading:  { ru: 'Полный разбор',       en: 'Full reading',      es: 'Lectura completa' },
   setBirth:     { ru: 'Укажите дату рождения, чтобы открыть',
                   en: 'Add your birth date to unlock',
                   es: 'Añade tu fecha de nacimiento para desbloquear' },
@@ -99,6 +107,13 @@ const NoBirthCTA: React.FC<{ lang: Lang }> = ({ lang }) => (
   </div>
 );
 
+const parseBirth = (raw: string | null): { d: number; m: number; y: number } | null => {
+  if (!raw) return null;
+  const dt = new Date(raw);
+  if (isNaN(dt.getTime())) return null;
+  return { d: dt.getDate(), m: dt.getMonth() + 1, y: dt.getFullYear() };
+};
+
 export const DesktopMainExtras: React.FC = () => {
   const { userProfile, language, user } = useAppStore();
   const lang = (['ru', 'en', 'es'].includes(language) ? language : 'en') as Lang;
@@ -108,9 +123,15 @@ export const DesktopMainExtras: React.FC = () => {
   const signData = sign ? zodiacData[sign] : null;
 
   const birthStr = userProfile?.birthDate ? String(userProfile.birthDate) : null;
-  const lifePath = birthStr ? calculateLifePathNumber(birthStr) : null;
-  const personality = userProfile?.name ? calculatePersonalityNumber(userProfile.name) : null;
-  const matrix = birthStr ? calculateDestinyMatrix(birthStr, userProfile?.name || '') : null;
+  const parsed = parseBirth(birthStr);
+  const fullName = userProfile?.name || '';
+  const lifePath = parsed ? lifePathNumber(parsed.d, parsed.m, parsed.y) : null;
+  const soul = fullName ? soulNumber(fullName) : null;
+  const personality = fullName ? personalityNumber(fullName) : null;
+  const expression = fullName ? expressionNumber(fullName) : null;
+  const pYear = parsed ? personalYearNumber(parsed.d, parsed.m, new Date().getFullYear()) : null;
+  const square = parsed ? pythagoreanSquare(parsed.d, parsed.m, parsed.y) : null;
+  const lifePathMeaning = lifePath ? getNumberMeaning(lifePath) : null;
 
   const { horoscope, loading, displayedText, isTyping } = useBriefHoroscope();
 
@@ -168,12 +189,82 @@ export const DesktopMainExtras: React.FC = () => {
 
       {/* Numerology */}
       <Card title={T.numerology[lang]} icon={Hash}>
-        {birthStr ? (
-          <div className="grid grid-cols-2 gap-2">
-            <NumberCell label={T.lifePath[lang]}    value={lifePath?.toString() ?? '—'} />
-            <NumberCell label={T.destiny[lang]}     value={matrix?.spiritualNumber?.toString() ?? '—'} />
-            <NumberCell label={T.personality[lang]} value={personality?.toString() ?? '—'} />
-            <NumberCell label={T.year[lang]}        value={matrix?.yearNumber?.toString() ?? '—'} />
+        {parsed && lifePath ? (
+          <div className="space-y-5">
+            {/* Life path hero */}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative">
+                <div className="absolute -inset-3 rounded-full bg-cosmic-accent/30 blur-2xl" />
+                <div
+                  className="relative w-24 h-24 rounded-full flex items-center justify-center
+                             bg-gradient-to-br from-cosmic-accent/80 via-fuchsia-500/60 to-indigo-700/70
+                             border border-white/20
+                             shadow-[0_0_40px_rgba(168,85,247,0.45),inset_0_1px_0_rgba(255,255,255,0.3)]"
+                >
+                  <span className="font-serif text-4xl text-white tabular-nums drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
+                    {lifePath}
+                  </span>
+                </div>
+              </div>
+              <p className="mt-3 text-[11px] uppercase tracking-[0.22em] text-cosmic-secondary">
+                {T.lifePath[lang]}
+              </p>
+              {lifePathMeaning && (
+                <>
+                  <h4 className="mt-1 font-serif text-lg text-cosmic-gold">
+                    {pickI18n(lifePathMeaning.pythagorean.lifePath.title, lang)}
+                  </h4>
+                  <p className="mt-2 text-[13px] leading-relaxed text-white/80 line-clamp-3">
+                    {pickI18n(lifePathMeaning.pythagorean.lifePath.essence, lang)}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Triad: soul / personality / expression */}
+            {fullName && (
+              <div className="grid grid-cols-3 gap-2">
+                <TriadCell icon={Heart}     label={T.soul[lang]}        value={soul} accent="text-rose-300" />
+                <TriadCell icon={UserIcon}  label={T.personality[lang]} value={personality} accent="text-sky-300" />
+                <TriadCell icon={Star}      label={T.destiny[lang]}     value={expression} accent="text-cosmic-gold" />
+              </div>
+            )}
+
+            {/* Personal year bar */}
+            {pYear !== null && (
+              <div className="flex items-center justify-between rounded-xl px-3 py-2.5 bg-white/[0.04] border border-white/10">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={14} className="text-cosmic-accent" />
+                  <span className="text-xs text-cosmic-secondary">{T.personalYear[lang]} · {new Date().getFullYear()}</span>
+                </div>
+                <span className="font-serif text-lg text-white tabular-nums">{pYear}</span>
+              </div>
+            )}
+
+            {/* Mini Pythagorean square */}
+            {square && (
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-cosmic-secondary mb-2 text-center">
+                  {T.square[lang]}
+                </p>
+                <div className="max-w-[220px] mx-auto">
+                  <PythagoreanSquareSVG square={square} size={220} />
+                </div>
+              </div>
+            )}
+
+            {/* CTA */}
+            <Link
+              to="/numerology"
+              className="group relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm text-white
+                         bg-gradient-to-r from-cosmic-accent/30 via-fuchsia-500/25 to-indigo-600/30
+                         border border-cosmic-accent/40
+                         hover:from-cosmic-accent/45 hover:via-fuchsia-500/40 hover:to-indigo-600/45
+                         transition-colors shadow-[0_0_25px_rgba(168,85,247,0.25)]"
+            >
+              <span className="font-serif tracking-wide">{T.fullReading[lang]}</span>
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </div>
         ) : (
           <NoBirthCTA lang={lang} />
