@@ -9,6 +9,7 @@ interface EntitlementState {
   trialEndsAt: Date | null;
   daysLeft: number;
   hoursLeft: number;
+  isCritical: boolean;
   loading: boolean;
 }
 
@@ -123,6 +124,7 @@ export function useEntitlement(): EntitlementState {
     trialEndsAt,
     daysLeft,
     hoursLeft: hoursLeft % 24,
+    isCritical: isTrialActive && hoursLeft < 24,
     loading,
   };
 }
