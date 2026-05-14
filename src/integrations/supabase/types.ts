@@ -605,6 +605,33 @@ export type Database = {
         }
         Relationships: []
       }
+      numerology_deep_cache: {
+        Row: {
+          cache_key: string
+          content: string
+          created_at: string
+          id: string
+          language: string
+          user_id: string
+        }
+        Insert: {
+          cache_key: string
+          content: string
+          created_at?: string
+          id?: string
+          language?: string
+          user_id: string
+        }
+        Update: {
+          cache_key?: string
+          content?: string
+          created_at?: string
+          id?: string
+          language?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       numerology_descriptions: {
         Row: {
           created_at: string
