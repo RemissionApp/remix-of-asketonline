@@ -273,6 +273,70 @@ const NumerologyPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Deep AI reading panel */}
+              <div className="rounded-3xl border border-cosmic-gold/30 bg-gradient-to-br from-cosmic-gold/10 via-cosmic-dark/60 to-cosmic-accent/10 backdrop-blur-md p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Wand2 className="w-4 h-4 text-cosmic-gold" />
+                  <h3 className="text-cosmic-gold font-serif text-base">
+                    {v2.deepAnalysis.title}
+                  </h3>
+                </div>
+                <p className="text-cosmic-secondary text-xs mb-4">
+                  {tab === 'numbers' && system === 'pythagorean'
+                    ? v2.numbers.lifePath
+                    : tab === 'numbers'
+                    ? v2.numbers.chaldeanLife
+                    : tab === 'square'
+                    ? v2.square.title
+                    : v2.karma.title}
+                </p>
+
+                {!deep.content && !deep.loading && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const ctx: DeepContext =
+                        tab === 'square'
+                          ? 'square'
+                          : tab === 'karma'
+                          ? 'karma'
+                          : system === 'chaldean'
+                          ? 'overall'
+                          : 'lifePath';
+                      const focus =
+                        ctx === 'lifePath'
+                          ? profile.pythagorean.lifePath
+                          : ctx === 'overall'
+                          ? profile.chaldean.lifePath.single
+                          : undefined;
+                      triggerDeep(ctx, focus);
+                    }}
+                    className="w-full rounded-full bg-gradient-to-r from-cosmic-gold/40 to-cosmic-accent/40 text-foreground py-2.5 text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
+                  >
+                    {v2.deepAnalysis.generate}
+                  </button>
+                )}
+
+                {deep.loading && (
+                  <div className="flex items-center justify-center gap-2 py-6 text-cosmic-secondary text-sm">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {v2.deepAnalysis.loading}
+                  </div>
+                )}
+
+                {deep.error && (
+                  <p className="text-destructive text-xs text-center py-3">
+                    {v2.deepAnalysis.error}
+                  </p>
+                )}
+
+                {deep.content && (
+                  <div className="prose prose-invert prose-sm max-w-none text-cosmic-secondary whitespace-pre-wrap leading-relaxed">
+                    {deep.content}
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
