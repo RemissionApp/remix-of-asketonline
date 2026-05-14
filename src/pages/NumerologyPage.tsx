@@ -4,7 +4,7 @@ import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
 import { MobileOptimizedInterface } from '@/components/ui/MobileOptimizedInterface';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { cn } from '@/lib/utils';
 import { buildProfile } from '@/utils/numerology/calculations';
@@ -20,6 +20,7 @@ import { NumberCard } from '@/components/numerology/NumberCard';
 import { NumberDetailAccordion } from '@/components/numerology/NumberDetailAccordion';
 import { SquareAnalysisAccordion } from '@/components/numerology/SquareAnalysisAccordion';
 import { KarmaPositionCard } from '@/components/numerology/KarmaPositionCard';
+import { useNumerologyDeepReading, type DeepContext } from '@/hooks/useNumerologyDeepReading';
 
 type System = 'pythagorean' | 'chaldean';
 type Tab = 'numbers' | 'square' | 'karma';
@@ -32,6 +33,7 @@ const NumerologyPage: React.FC = () => {
 
   const [system, setSystem] = useState<System>('pythagorean');
   const [tab, setTab] = useState<Tab>('numbers');
+  const deep = useNumerologyDeepReading();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0 });
@@ -39,6 +41,29 @@ const NumerologyPage: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [tab, system]);
+
+  const triggerDeep = (ctx: DeepContext, focusNumber?: number) => {
+    if (!profile || !userProfile) return;
+    deep.generate({
+      context: ctx,
+      focusNumber,
+      language: lang,
+      profile: {
+        name: userProfile.name ?? '',
+        birthDate: String(userProfile.birthDate),
+        pythagorean: profile.pythagorean,
+        chaldean: profile.chaldean,
+        square: profile.square,
+        karma: profile.karma,
+      },
+    });
+  };
+
+  // Reset when switching tabs
+  useEffect(() => {
+    deep.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, system]);
 
   const profile = useMemo(() => {
