@@ -5,7 +5,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { NUMBER_MEANINGS, pickI18n, pickI18nList } from '@/utils/numerology/interpretations';
+import {
+  NUMBER_MEANINGS,
+  pickI18n,
+  pickI18nList,
+  type PythagoreanLifePathBlock,
+} from '@/utils/numerology/interpretations';
 import {
   NUMBER_PLANETS,
   NUMBER_ELEMENTS,
@@ -51,6 +56,7 @@ export const NumberDetailAccordion: React.FC<Props> = ({ number, context, label 
       : meaning.pythagorean[context];
 
   const isFull = context === 'lifePath';
+  const fullBlock = isFull ? (block as PythagoreanLifePathBlock) : null;
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -79,27 +85,27 @@ export const NumberDetailAccordion: React.FC<Props> = ({ number, context, label 
               {pickI18n(block.essence, lang)}
             </p>
 
-            {isFull && 'gifts' in block && (
+            {isFull && fullBlock && (
               <>
                 <Section title={v2.sections.gifts}>
-                  <List items={pickI18nList(block.gifts, lang)} />
+                  <List items={pickI18nList(fullBlock.gifts, lang)} />
                 </Section>
                 <Section title={v2.sections.challenges}>
-                  <List items={pickI18nList(block.challenges, lang)} />
+                  <List items={pickI18nList(fullBlock.challenges, lang)} />
                 </Section>
                 <Section title={v2.sections.mission}>
                   <p className="text-cosmic-secondary text-sm leading-relaxed">
-                    {pickI18n(block.mission, lang)}
+                    {pickI18n(fullBlock.mission, lang)}
                   </p>
                 </Section>
                 <Section title={v2.sections.shadow}>
                   <p className="text-cosmic-secondary text-sm leading-relaxed">
-                    {pickI18n(block.shadow, lang)}
+                    {pickI18n(fullBlock.shadow, lang)}
                   </p>
                 </Section>
                 <Section title={v2.sections.affirmation}>
                   <p className="italic text-cosmic-gold text-sm leading-relaxed">
-                    «{pickI18n(block.affirmation, lang)}»
+                    «{pickI18n(fullBlock.affirmation, lang)}»
                   </p>
                 </Section>
               </>
