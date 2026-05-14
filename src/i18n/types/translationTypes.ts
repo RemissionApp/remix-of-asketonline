@@ -307,6 +307,70 @@ export interface NumerologyTranslations {
     wisdom: string;
   };
   enterBirthDateInProfile: string;
+  v2?: {
+    systems: { pythagorean: string; chaldean: string };
+    switchSystem: string;
+    coreNumbers: string;
+    numbers: {
+      lifePath: string;
+      expression: string;
+      soul: string;
+      personality: string;
+      maturity: string;
+      balance: string;
+      personalYear: string;
+      chaldeanLife: string;
+      chaldeanName: string;
+    };
+    sections: {
+      essence: string;
+      gifts: string;
+      challenges: string;
+      shadow: string;
+      mission: string;
+      affirmation: string;
+      planet: string;
+      zodiac: string;
+      element: string;
+      arcana: string;
+      colors: string;
+      crystals: string;
+      luckyDay: string;
+      luckyNumbers: string;
+    };
+    square: {
+      title: string;
+      intro: string;
+      cells: Record<string, string>;
+      levels: {
+        absent: string;
+        weak: string;
+        normal: string;
+        strong: string;
+        excessive: string;
+      };
+      working: { A: string; B: string; C: string; D: string };
+      analysis: string;
+    };
+    karma: {
+      title: string;
+      center: string;
+      sky: string;
+      earth: string;
+      missions: { social: string; spiritual: string; ancestral: string };
+      planets: {
+        sun: string; moon: string; mercury: string;
+        venus: string; mars: string; jupiter: string; saturn: string;
+      };
+    };
+    deepAnalysis: {
+      title: string;
+      generate: string;
+      loading: string;
+      error: string;
+    };
+    enterName: string;
+  };
 }
 
 export interface NotFoundTranslations {
