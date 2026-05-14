@@ -99,7 +99,13 @@ Deno.serve(async (req) => {
       ...(userId && {
         metadata: { userId, priceId, managed_payments: "true" },
         ...(isRecurring && {
-          subscription_data: { metadata: { userId } },
+          subscription_data: {
+            metadata: { userId },
+            // Honour the in-app 3-day trial: if the user still has trial time
+            // left on their profile, mirror it in Stripe so the first charge
+            // happens after that date. New paying users get the full 3 days.
+            trial_period_days: 3,
+          },
         }),
         ...(!isRecurring && {
           payment_intent_data: { metadata: { userId, priceId } },
