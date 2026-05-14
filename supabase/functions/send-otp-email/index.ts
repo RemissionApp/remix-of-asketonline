@@ -16,31 +16,31 @@ const corsHeaders = {
 // Email content translations
 const emailTranslations = {
   en: {
-    subject: 'Your verification code | Asket',
+    subject: 'Your verification code | Asceta',
     title: 'Verification Code',
     subtitle: 'Spiritual development and self-knowledge',
     codeLabel: 'Your verification code',
     validTime: 'Code valid for 5 minutes',
-    instructions: 'Enter this code in the Asket app to verify your email address. The code is valid for 5 minutes.',
-    footerNote: 'If you didn\'t sign up for Asket, please ignore this email.',
+    instructions: 'Enter this code in the Asceta app to verify your email address. The code is valid for 5 minutes.',
+    footerNote: 'If you didn\'t sign up for Asceta, please ignore this email.',
   },
   ru: {
-    subject: 'Ваш код подтверждения | Аскет',
+    subject: 'Ваш код подтверждения | Asceta',
     title: 'Код подтверждения',
     subtitle: 'Духовное развитие и самопознание',
     codeLabel: 'Ваш код подтверждения',
     validTime: 'Код действителен 5 минут',
-    instructions: 'Введите этот код в приложении Аскет для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
-    footerNote: 'Если вы не регистрировались в Аскет, проигнорируйте это письмо.',
+    instructions: 'Введите этот код в приложении Asceta для подтверждения вашего email адреса. Код действителен в течение 5 минут.',
+    footerNote: 'Если вы не регистрировались в Asceta, проигнорируйте это письмо.',
   },
   es: {
-    subject: 'Tu código de verificación | Asket',
+    subject: 'Tu código de verificación | Asceta',
     title: 'Código de verificación',
     subtitle: 'Desarrollo espiritual y autoconocimiento',
     codeLabel: 'Tu código de verificación',
     validTime: 'Código válido por 5 minutos',
-    instructions: 'Ingresa este código en la aplicación Asket para verificar tu dirección de email. El código es válido por 5 minutos.',
-    footerNote: 'Si no te registraste en Asket, ignora este email.',
+    instructions: 'Ingresa este código en la aplicación Asceta para verificar tu dirección de email. El código es válido por 5 minutos.',
+    footerNote: 'Si no te registraste en Asceta, ignora este email.',
   }
 };
 
@@ -270,7 +270,7 @@ function getEmailContent(language: string, code: string) {
         <div class="container">
           <div class="stars"></div>
           <div class="header">
-            <div class="logo">Asket</div>
+            <div class="logo">Asceta</div>
             <div class="subtitle">${lang.subtitle}</div>
           </div>
           
