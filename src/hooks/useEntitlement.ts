@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAppStore } from '@/store/useAppStore';
+import { getStripeEnvironment } from '@/lib/stripe';
 
 interface EntitlementState {
   isUnlocked: boolean;
@@ -55,6 +56,9 @@ export function useEntitlement(): EntitlementState {
       .from('subscriptions')
       .select('is_pro,status')
       .eq('user_id', user.id)
+      .eq('environment', getStripeEnvironment())
+      .order('updated_at', { ascending: false })
+      .limit(1)
       .maybeSingle()
       .then(({ data }) => {
         if (cancelled) return;
