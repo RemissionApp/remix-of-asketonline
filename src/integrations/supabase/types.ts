@@ -984,6 +984,27 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          environment: string | null
+          event_id: string
+          processed_at: string
+          type: string | null
+        }
+        Insert: {
+          environment?: string | null
+          event_id: string
+          processed_at?: string
+          type?: string | null
+        }
+        Update: {
+          environment?: string | null
+          event_id?: string
+          processed_at?: string
+          type?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean
