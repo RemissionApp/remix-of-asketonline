@@ -43,19 +43,22 @@ Deno.serve(async (req) => {
 
   const ids = expiredProfiles.map((p) => p.id);
 
-  const { error: updErr } = await supabase
+  // SAFETY: Only sweep rows that are still in the trialing state. Never touch
+  // 'active', 'past_due' or already 'canceled' rows — those belong to paying
+  // users (managed exclusively by the revenuecat-webhook).
+  const { error: updErr, count } = await supabase
     .from('subscriptions')
-    .update({ is_pro: false, status: 'canceled' })
+    .update({ is_pro: false, status: 'canceled' }, { count: 'exact' })
     .in('user_id', ids)
-    .eq('is_pro', false); // only those still without pro (don't touch paying users)
+    .eq('status', 'trialing');
 
   if (updErr) {
     console.error('[expire-trials] subscription update failed', updErr);
   }
 
-  console.log('[expire-trials] processed', { count: ids.length });
+  console.log('[expire-trials] processed', { matchedProfiles: ids.length, updatedSubs: count });
 
-  return new Response(JSON.stringify({ ok: true, expired: ids.length }), {
+  return new Response(JSON.stringify({ ok: true, expired: count ?? 0 }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 });

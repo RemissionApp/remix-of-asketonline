@@ -48,6 +48,7 @@ import { performanceMonitor } from './utils/performance';
 import { SafeAreaView } from './components/SafeAreaView';
 import { AppRouter } from './components/AppRouter';
 import { AuthBootstrap } from './components/auth/AuthBootstrap';
+import { TrialExpiredGate } from './components/TrialExpiredGate';
 
 // Создаем новый экземпляр QueryClient
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ const App = () => {
                 <div className="">
                   <AppRouter />
                 </div>
+                <TrialExpiredGate />
                 <PWAInstallPrompt />
                 <PWAUpdateNotification />
               </AuthBootstrap>

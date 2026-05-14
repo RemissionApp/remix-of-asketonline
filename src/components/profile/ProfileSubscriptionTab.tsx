@@ -7,6 +7,7 @@ import { useEntitlement } from '@/hooks/useEntitlement';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useCallMinutes } from '@/hooks/useCallMinutes';
 import { useAppStore } from '@/store/useAppStore';
+import { isNativePlatform } from '@/utils/platform';
 import { ProfileRow } from './ui/ProfileRow';
 import { ProfileSection } from './ui/ProfileSection';
 import { useProfileLang } from './i18n';
@@ -18,6 +19,14 @@ export const ProfileSubscriptionTab: React.FC = () => {
   const { isPro, isTrialActive, daysLeft, hoursLeft } = useEntitlement();
   const { presentPaywall, restorePurchases } = useRevenueCat(user?.id);
   const { minutesUsed, minutesLimit } = useCallMinutes();
+
+  const openPaywall = () => {
+    if (isNativePlatform()) {
+      presentPaywall().catch(() => navigate('/comparison'));
+    } else {
+      navigate('/comparison');
+    }
+  };
 
   const t = {
     title:        { ru: 'Asceta Pro',           en: 'Asceta Pro',         es: 'Asceta Pro' }[lang],
@@ -86,17 +95,19 @@ export const ProfileSubscriptionTab: React.FC = () => {
         </ul>
 
         <div className="mt-4 flex gap-2">
-          <button
-            onClick={() => presentPaywall().catch(() => {})}
-            className="flex-1 rounded-xl bg-cosmic-gold text-cosmic-dark text-xs font-medium py-2.5 active:scale-[0.99] transition-transform"
-          >
-            {isPro ? t.manage : t.upgrade}
-          </button>
+          {!isPro && (
+            <button
+              onClick={openPaywall}
+              className="flex-1 rounded-xl bg-cosmic-gold text-cosmic-dark text-xs font-medium py-2.5 active:scale-[0.99] transition-transform"
+            >
+              {t.upgrade}
+            </button>
+          )}
           <button
             onClick={() => navigate('/comparison')}
             className="flex-1 rounded-xl border border-cosmic-accent/30 text-cosmic-secondary text-xs py-2.5 active:scale-[0.99] transition-transform"
           >
-            {t.history}
+            {isPro ? t.manage : t.compare}
           </button>
         </div>
       </div>
@@ -111,7 +122,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
             <div className="h-full bg-gradient-to-r from-cosmic-accent to-cosmic-gold" style={{ width: `${minutesPercent}%` }} />
           </div>
         </div>
-        <ProfileRow icon={Plus} iconColor="gold" label={t.buyMinutes} sublabel={t.buyHint} onPress={() => presentPaywall().catch(() => {})} badge={{ text: '$1.99 / 10', color: 'gold' }} />
+        <ProfileRow icon={Plus} iconColor="gold" label={t.buyMinutes} sublabel={t.buyHint} onPress={openPaywall} badge={{ text: '$1.99 / 10', color: 'gold' }} />
       </ProfileSection>
 
       <ProfileSection title={t.other}>

@@ -1,96 +1,76 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Crown, Sparkles } from 'lucide-react';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { useToast } from '@/hooks/use-toast';
-import { useAppStore } from '@/store/useAppStore';
+import { useNavigate } from 'react-router-dom';
 import { useEntitlement } from '@/hooks/useEntitlement';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useAppStore } from '@/store/useAppStore';
+import { isNativePlatform } from '@/utils/platform';
 
 interface PaywallButtonProps {
   variant?: 'default' | 'outline' | 'premium';
   size?: 'default' | 'sm' | 'lg';
   className?: string;
+  /** @deprecated kept for backwards compatibility */
   offeringIdentifier?: string;
   children?: React.ReactNode;
 }
 
+/**
+ * Universal paywall trigger.
+ * Hidden when the user already has access (trial OR Pro).
+ * On native — opens RevenueCat paywall. On web — navigates to /comparison.
+ */
 export const PaywallButton: React.FC<PaywallButtonProps> = ({
   variant = 'premium',
   size = 'default',
   className = '',
-  offeringIdentifier,
   children,
 }) => {
   const { user } = useAppStore();
-  const { hasActiveSubscription, isLoading } = useRevenueCat(user?.id);
-  const { toast } = useToast();
-  const { isUnlocked } = useEntitlement();
+  const { isUnlocked, loading } = useEntitlement();
+  const { presentPaywall } = useRevenueCat(user?.id);
+  const navigate = useNavigate();
 
-  // Hide paywall button during trial or for paying users
-  if (hasActiveSubscription || isUnlocked) {
-    return null;
-  }
+  if (loading || isUnlocked) return null;
 
-  const handleShowPaywall = async () => {
-    try {
-      console.log('Paywall functionality not available');
-      toast({
-        title: 'Premium функции',
-        description: 'Функция временно недоступна',
-      });
-    } catch (error) {
-      console.error('Error showing paywall:', error);
+  const handlePress = () => {
+    if (isNativePlatform()) {
+      presentPaywall().catch(() => navigate('/comparison'));
+    } else {
+      navigate('/comparison');
     }
   };
 
-  const getButtonContent = () => {
-    if (children) return children;
+  const content =
+    children ??
+    (variant === 'outline' ? (
+      <>
+        <Sparkles className="w-4 h-4 mr-2" />
+        Премиум функции
+      </>
+    ) : (
+      <>
+        <Crown className="w-4 h-4 mr-2" />
+        Открыть Premium
+      </>
+    ));
 
-    switch (variant) {
-      case 'premium':
-        return (
-          <>
-            <Crown className="w-4 h-4 mr-2" />
-            Открыть Premium
-          </>
-        );
-      case 'outline':
-        return (
-          <>
-            <Sparkles className="w-4 h-4 mr-2" />
-            Премиум функции
-          </>
-        );
-      default:
-        return 'Открыть Paywall';
-    }
-  };
-
-  const getButtonClasses = () => {
-    let baseClasses = className;
-
-    switch (variant) {
-      case 'premium':
-        baseClasses +=
-          ' bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white';
-        break;
-      case 'outline':
-        baseClasses += ' border-purple-200 text-purple-700 hover:bg-purple-50';
-        break;
-    }
-
-    return baseClasses;
-  };
+  const classes =
+    variant === 'premium'
+      ? `${className} bg-gradient-to-r from-cosmic-accent to-cosmic-gold text-cosmic-dark hover:opacity-90`
+      : variant === 'outline'
+        ? `${className} border-cosmic-gold/40 text-cosmic-gold hover:bg-cosmic-gold/10`
+        : className;
 
   return (
     <Button
       variant={variant === 'premium' ? 'default' : variant}
       size={size}
-      className={getButtonClasses()}
-      onClick={handleShowPaywall}
-      disabled={isLoading}
+      className={classes}
+      onClick={handlePress}
     >
-      {isLoading ? 'Загрузка...' : getButtonContent()}
+      {content}
     </Button>
   );
 };

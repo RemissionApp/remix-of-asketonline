@@ -1,61 +1,108 @@
-# План: RevenueCat Web Billing на сайте Asceta
+## Цель
 
-В RevenueCat уже настроены продукты (`asket_pro_monthly`, `asket_pro_annually`) с привязанными Stripe-офферингами и entitlement `asket_pro_annually`. Используем официальный Web Billing SDK от RevenueCat — пользователь оплачивает прямо на сайте, подписка автоматически синхронизируется с тем же `appUserID` что и в iOS/Android приложении.
+Привести подписку и триал к одной модели:
+**`isUnlocked = isPro || isTrialActive`** — единственная проверка во всём приложении.
+Бесплатной версии больше нет: 3 дня триала → платная подписка. После окончания триала пользователю автоматически показывается экран оплаты.
 
-## Что нужно от пользователя
+---
 
-1. **Web Billing public API key** из RevenueCat Dashboard → Project Settings → API Keys → ключ с префиксом `rcb_` (это публичный ключ, можно хранить в коде, но мы положим в secret для гибкости).
-2. Подтвердить что в RevenueCat Dashboard → **Web Billing** включена платформа Web и продукты `asket_pro_monthly` / `asket_pro_annually` доступны для веба (часто требуется отдельно «Add to Web Billing»).
-3. Stripe-аккаунт уже подключён в RevenueCat (видно по скриншоту — это всё что требуется, отдельный Stripe в Lovable не нужен).
+## 1. Единый источник правды — `useEntitlement`
 
-## Технические шаги
+Переписать `src/hooks/useEntitlement.ts`:
+- Источник: только таблица `subscriptions` (БД), плюс `trial_ends_at` из `profiles` как fallback.
+- Realtime-подписка на `subscriptions` UPDATE → мгновенный пересчёт.
+- Минутный tick для авто-перехода `isTrialActive: true → false` без перезагрузки.
+- Возвращает: `isUnlocked, isPro, isTrialActive, isLoading, daysLeft, hoursLeft, isCritical (<24h), trialEndsAt, refetch`.
+- Никакого чтения `userProfile.isPro` / `localStorage` для определения статуса.
 
-### 1. Установка SDK
+## 2. Авто-показ paywall после окончания триала
+
+Новый компонент **`TrialExpiredGate`** монтируется в `App.tsx` рядом с `TrialBanner`:
+- Слушает `useEntitlement()`.
+- Срабатывает один раз, когда `!isLoading && !isPro && trialEndsAt && trialEndsAt <= now` и пользователь авторизован.
+- На вебе — модалка-оверлей со страницей подписки (контент `ComparisonPage` без сравнительной таблицы).
+- На нативном — `revenueCatStore.presentPaywall()`.
+- Пока пользователь не оформил подписку или не закрыл осознанно (кнопка «позже» — допустима только 1 раз/сутки через `localStorage` ключ `trial_expired_dismissed_at`), модалка возвращается при следующем заходе в приложение.
+- `ProFeatureOverlay`/`PaywallButton` продолжают работать как fallback на закрытых фичах.
+
+## 3. Чистка `src/store/slices/revenueCatSlice.ts`
+
+- Убрать `hasActiveSubscriptions` (использует `activeSubscriptions` — он надёжен, но дублирует entitlement-проверку; оставляем именно его) и **полностью удалить любые упоминания `allPurchasedProductIdentifiers`** во всём коде.
+- Заменить опечатку `'asket_premium_montly'` → `'asket_premium_monthly'` (оставить fallback, как сейчас, с TODO на удаление через 60 дней).
+- LOG_LEVEL: `DEBUG` только при `import.meta.env.DEV`, иначе `ERROR`.
+- `syncProStatus` пишет `is_pro` только в zustand; запись в `subscriptions` — только через `revenuecat-webhook` (как сейчас, оставить комментарий).
+
+## 4. Удалить экран сравнения «Free vs Pro»
+
+`src/components/FeatureComparison.tsx` — удалить таблицу/карточки сравнения и все упоминания «Бесплатно». Заменить на единый экран **«Asceta Pro»**:
+- Заголовок: «Открой полный доступ» / «Подписка активна» (если `isPro`).
+- Список фич Pro (без колонки Free).
+- Два тарифа: месяц / год (год — рекомендованный, цена и формат из RevenueCat offering).
+- На вебе — кнопки оплаты через `useWebBilling`.
+- На нативном — кнопка `presentPaywall()`.
+- Кнопка «Восстановить покупки» (только нативный).
+- Ссылки: Privacy, Terms.
+- Если `isPro` — карточка «У вас активная подписка», без кнопок покупки.
+
+`ComparisonPage.tsx` — обёртка остаётся, рендерит обновлённый `FeatureComparison`.
+
+## 5. Чистка применения проверок во всех экранах
+
+Глобально пройти по результатам `grep "isPro|hasActiveSubscription|userProfile?.isPro|allPurchasedProductIdentifiers"` и:
+- Заменить `userProfile?.isPro`, `subscription?.is_pro`, `hasActiveSubscription` → `useEntitlement().isUnlocked` (или `.isPro` там, где нужен именно платный статус — это только `ProfileSubscriptionTab` и `ComparisonPage`).
+- Удалить `allPurchasedProductIdentifiers`, `'asket_premium_montly'` везде.
+- `presentPaywall()` всегда оборачивать: `isNativePlatform() ? presentPaywall() : navigate('/comparison')`.
+
+Затрагиваемые файлы (по результатам grep):
+`MainPage`, `TopBar`, `DailyUsageStats`, `LimitIndicator`, `VoiceInputButton`, `DetailedHoroscopePage/Content`, `BriefHoroscopeDisplay`, `HoroscopeProOverlay`, `UniverseChatPage`, `UniverseChatProWrapper`, `QuestionForm`, `NumerologyPage` (через preview-компоненты), `NumerologyPreview`, `UniverseChatPreview`, `useTextToSpeech`, `useOptimizedTextToSpeech`, `useVoiceInput`, `useHoroscopeData`, `useMissionState`, `useEnhancedMissionState`, `useDailyLimits`, `SubscriptionManager` (оба), `SubscriptionBanner`, `ProductionReadinessPanel`, `DeveloperSwitch`, `AuthDebugPanel`, `NumerologyDiagnostic`, `OfferingsDisplay`, `SimplePurchaseButton`, `PaywallButton`, `ProFeatureOverlay`, `TrialBanner`.
+
+Удалить устаревшие компоненты-дубликаты, если не используются: один из двух `SubscriptionManager`, `OfferingsDisplay`, `SimplePurchaseButton`, `SubscriptionBanner` — оставить только то, что реально импортируется.
+
+## 6. `TrialBanner`, `PaywallButton`, `ProFeatureOverlay`
+
+- `TrialBanner`: показывать только при `isTrialActive && !isPro`. Зелёный режим (>24ч) и красный (<24ч).
+- `PaywallButton`: скрыть при `isUnlocked`. Web → `/comparison`, Native → `presentPaywall()`.
+- `ProFeatureOverlay`: при `isUnlocked` рендерит `children` без блюра. Иначе — блюр + `PaywallButton`.
+
+## 7. `ProfileSubscriptionTab` (модуль подписки в профиле)
+
+- Статус-бейдж: «Активна» (`isPro`) / «Пробный период» (`isTrialActive`) / «Не активна» (после триала).
+- Удалить кнопку `manage = presentPaywall()` для уже Pro: показывать «Управление подпиской» → ведёт на нативные настройки (`Capacitor` → магазин) или на `/comparison` на вебе.
+- Убрать дублирующую секцию «История» (вела на /comparison) — заменить на «Сравнить тарифы» только если `!isPro`.
+- Использовать `isUnlocked` для блока «доступные фичи».
+
+## 8. `expire-trials` edge function
+
+Изменить SQL на безопасную форму: обновлять только записи где
+`status = 'trialing' AND is_pro = true AND user_id IN (profiles where trial_ends_at < now AND payment_method_attached = false)`.
+(Сейчас код фильтрует по `is_pro = false` — это баг: триал имеет `is_pro = false` и `status = 'trialing'`, нужно сбрасывать `status = 'canceled'` именно для них; флаг `is_pro` остаётся `false`.) Уточнить так:
+
+```sql
+UPDATE subscriptions
+SET status = 'canceled', updated_at = now()
+WHERE status = 'trialing'
+  AND user_id IN (SELECT id FROM profiles
+                  WHERE trial_ends_at < now()
+                    AND payment_method_attached = false);
 ```
-bun add @revenuecat/purchases-js
-```
 
-### 2. Новый сервис `src/utils/revenueCatWeb.ts`
-- Singleton-обёртка над `Purchases.configure({ apiKey, appUserId })`.
-- Методы: `getOfferings()`, `purchasePackage(rcPackage)`, `getCustomerInfo()`, `restore()`.
-- `appUserId` берём из `useAppStore().user.id` — тот же что и в нативном SDK, чтобы entitlement работал кросс-платформенно.
+Не трогать `status IN ('active','past_due','canceled')`.
 
-### 3. Расширить `useRevenueCat.ts`
-- Если `isWebPlatform()` → использовать `revenueCatWeb`, иначе текущую Capacitor-реализацию.
-- Унифицировать форму `offerings` / `customerInfo` чтобы UI не различал источник.
-- `presentPaywall` на вебе больше не редиректит на `/comparison`, а вызывает `purchasePackage` выбранного пакета (или открывает встроенный Stripe Checkout-редирект, который SDK делает автоматически).
+## 9. Финальная проверка трёх сценариев
 
-### 4. Обновить `ComparisonPage.tsx` / `FeatureComparison.tsx`
-- На вебе: убрать предупреждение «только в App Store / Google Play».
-- Показать две реальные кнопки: «Месяц — $X» и «Год — $Y» с ценами из `offering.availablePackages[i].rcBillingProduct.currentPrice.formattedPrice`.
-- По клику — `purchasePackage(pkg)`. SDK сам редиректит на Stripe Checkout, потом возвращает на success URL.
-- Success URL: `/comparison?purchase=success` → показать toast «PRO активирован» и обновить `customerInfo`.
+- **A. Триал активен**: `isUnlocked = true` → нет ни одного `PaywallButton`/`ProFeatureOverlay`/«Купить», TrialBanner зелёный.
+- **B. Триал истёк, не Pro**: TrialBanner скрыт, `TrialExpiredGate` открывает paywall, закрытые фичи в overlay, базовые открыты (главный, краткий гороскоп, профиль).
+- **C. Активная Pro**: paywall и overlay скрыты везде, `ProfileSubscriptionTab` показывает «Активна», `ComparisonPage` — «Подписка активна».
 
-### 5. Webhook (уже есть)
-`supabase/functions/revenuecat-webhook/index.ts` уже обрабатывает события RevenueCat — Web Billing шлёт те же события `INITIAL_PURCHASE` / `RENEWAL` / `CANCELLATION`, доп. изменения не нужны. Проверим что в RevenueCat Dashboard → Integrations → Webhooks указан URL нашей функции.
+Verification: `bunx tsc --noEmit`, прогон unit-тестов (`bun test`), ручная проверка в preview по сценариям A/B/C через `DeveloperSwitch`.
 
-### 6. Серверная проверка `is_pro`
-Уже сделано в edge functions (`universe-answer`, `generate-numerology-description`) — они читают entitlement из БД, который пишется webhook'ом. Никаких изменений.
+---
 
-### 7. Secret
-Запросить через `add_secret`:
-- `VITE_REVENUECAT_WEB_BILLING_KEY` — публичный ключ `rcb_...`, доступный фронтенду.
+## Технические заметки
 
-## Файлы
+- Не трогать: `src/integrations/supabase/{client,types}.ts`, `capacitor.config.ts`, `.env`, `ios/`, `android/`.
+- Не вносить миграций БД (RLS и таблицы соответствуют требуемой логике).
+- Web Billing уже подключён (sandbox key `rcb_sb_…`), используется через `useWebBilling`.
+- Оставить fallback `'asket_premium_montly'` ещё на 60 дней с пометкой TODO.
 
-**Новые:**
-- `src/utils/revenueCatWeb.ts` — Web Billing сервис.
-
-**Изменяемые:**
-- `package.json` (+ `@revenuecat/purchases-js`)
-- `src/hooks/useRevenueCat.ts` — роутинг web/native.
-- `src/store/slices/revenueCatSlice.ts` — поддержка веб-офферингов.
-- `src/pages/ComparisonPage.tsx` — убрать disclaimer, обработать `?purchase=success`.
-- `src/components/FeatureComparison.tsx` — реальные кнопки оплаты с ценами.
-
-## Что НЕ делаем
-- Не подключаем Stripe напрямую через Lovable Payments — RevenueCat уже посредник, дублирование сломает синхронизацию entitlements между web/iOS/Android.
-- Не трогаем нативный Capacitor flow — он продолжает работать как есть.
-
-## После одобрения плана
-Жду от вас Web Billing API key (`rcb_...`) и подтверждение что продукты добавлены в Web Billing в RevenueCat Dashboard — после этого реализую всё за один проход.
+После апрува плана выполняю шаги 1 → 9 единым проходом, проверяю TS-компиляцию и поведение в preview.

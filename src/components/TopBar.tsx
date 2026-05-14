@@ -10,14 +10,16 @@ import { SoundToggle } from '@/components/ui/SoundToggle';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { isAndroid } from '@/utils/platform';
+import { useEntitlement } from '@/hooks/useEntitlement';
 
 export const TopBar: React.FC = memo(() => {
   const { userProfile } = useAppStore();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { isUnlocked, isPro } = useEntitlement();
 
   const handleZodiacClick = () => {
-    if (userProfile?.isPro && userProfile?.birthDate) {
+    if (isUnlocked && userProfile?.birthDate) {
       navigate('/full-horoscope');
     }
   };
@@ -40,11 +42,11 @@ export const TopBar: React.FC = memo(() => {
         <SoundToggle />
 
         {/* Zodiac badge - hide on very small screens or show conditionally */}
-        {(!isMobile || userProfile?.isPro) && (
+        {(!isMobile || isUnlocked) && (
           <div
             onClick={handleZodiacClick}
             className={
-              userProfile?.isPro && userProfile?.birthDate
+              isUnlocked && userProfile?.birthDate
                 ? 'cursor-pointer'
                 : ''
             }
@@ -73,7 +75,7 @@ export const TopBar: React.FC = memo(() => {
       </div>
 
       {/* Pro badge - repositioned on mobile to avoid overlaps */}
-      {userProfile?.isPro && (
+      {isPro && (
         <div className="absolute z-20 top-1 left-1/2 -translate-x-1/2">
           <ProBadge size="sm" />
         </div>
