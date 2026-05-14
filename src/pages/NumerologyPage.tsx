@@ -40,17 +40,14 @@ const NumerologyPage: React.FC = () => {
   const answersBook = useAnswersBook();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll fix: reset both window and inner scroll container
+  // Scroll reset on tab/system change. Targets the desktop shell scroller
+  // when present, otherwise falls back to window.
   useLayoutEffect(() => {
-    window.scrollTo({ top: 0, left: 0 });
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    // also walk up to find the actual scroll parent
-    let el: HTMLElement | null = scrollRef.current;
-    while (el) {
-      if (el.scrollHeight > el.clientHeight) {
-        el.scrollTop = 0;
-      }
-      el = el.parentElement;
+    const desktopScroller = document.querySelector<HTMLElement>('[data-scroll-container]');
+    if (desktopScroller) {
+      desktopScroller.scrollTo({ top: 0, left: 0 });
+    } else {
+      window.scrollTo({ top: 0, left: 0 });
     }
   }, [tab, system]);
 
