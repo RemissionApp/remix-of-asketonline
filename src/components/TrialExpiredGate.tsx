@@ -3,7 +3,6 @@ import { Crown, Sparkles } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEntitlement } from '@/hooks/useEntitlement';
 import { useAppStore } from '@/store/useAppStore';
-import { useWebBilling } from '@/hooks/useWebBilling';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { isNativePlatform } from '@/utils/platform';
 import { Button } from '@/components/ui/button';
