@@ -97,9 +97,12 @@ Deno.serve(async (req) => {
       managed_payments: { enabled: true },
       ...(customerId && { customer: customerId }),
       ...(userId && {
-        metadata: { userId, managed_payments: "true" },
+        metadata: { userId, priceId, managed_payments: "true" },
         ...(isRecurring && {
           subscription_data: { metadata: { userId } },
+        }),
+        ...(!isRecurring && {
+          payment_intent_data: { metadata: { userId, priceId } },
         }),
       }),
     });
