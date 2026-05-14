@@ -56,7 +56,7 @@ export function useAnswersBook() {
           focus_number: input.focusNumber ?? null,
           language: input.language,
           content: input.content,
-          profile_snapshot: input.profileSnapshot,
+          profile_snapshot: input.profileSnapshot as never,
         }])
         .select()
         .single();
