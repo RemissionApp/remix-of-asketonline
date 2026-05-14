@@ -17,7 +17,8 @@ export const GalaxyParallax: React.FC = () => {
 
     let raf = 0;
     const update = () => {
-      const y = window.scrollY || 0;
+      const shellScroller = document.querySelector<HTMLElement>('[data-scroll-container]');
+      const y = shellScroller?.scrollTop ?? window.scrollY ?? 0;
       if (nebulaRef.current) {
         nebulaRef.current.style.transform = `translate3d(0, ${y * 0.06}px, 0) scale(1.08)`;
       }
@@ -33,9 +34,11 @@ export const GalaxyParallax: React.FC = () => {
       });
     };
     update();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const shellScroller = document.querySelector<HTMLElement>('[data-scroll-container]');
+    const scrollTarget: HTMLElement | Window = shellScroller ?? window;
+    scrollTarget.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      scrollTarget.removeEventListener('scroll', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);

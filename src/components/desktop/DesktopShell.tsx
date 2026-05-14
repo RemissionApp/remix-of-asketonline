@@ -20,10 +20,10 @@ export const DesktopShell: React.FC<{ children: React.ReactNode }> = ({ children
   if (!shouldShell) return <>{children}</>;
 
   return (
-    <div className="hidden lg:flex min-h-screen w-full relative bg-cosmic-dark">
+    <div className="hidden lg:flex h-screen w-full relative bg-cosmic-dark overflow-hidden">
       <GalaxyParallax />
       <DesktopSidebar />
-      <main data-scroll-container className="flex-1 min-w-0 overflow-y-auto relative z-10">
+      <main data-scroll-container className="flex-1 min-w-0 h-screen overflow-y-auto overscroll-contain relative z-10">
         <div className="mx-auto w-full max-w-6xl px-8 py-8">{children}</div>
       </main>
     </div>
