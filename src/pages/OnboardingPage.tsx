@@ -15,11 +15,11 @@ const OnboardingPage: React.FC = () => {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
 
-  const totalSteps = 3;
+  const totalSteps = 2;
   const progress = ((step + 1) / totalSteps) * 100;
 
   const handleNext = () => {
-    if (step < 2) {
+    if (step < totalSteps - 1) {
       setStep(step + 1);
     } else {
       completeOnboarding();
@@ -169,36 +169,35 @@ const OnboardingPage: React.FC = () => {
         ) : (
           <div className="animate-fade-in">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cosmic-accent/15 border border-cosmic-accent/30 mb-5">
-                {step === 1 ? (
-                  <Sparkles className="h-7 w-7 text-cosmic-accent" />
-                ) : (
-                  <Crown className="h-7 w-7 text-cosmic-accent" />
-                )}
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cosmic-gold/30 to-cosmic-accent/30 border border-cosmic-gold/40 mb-5 shadow-[0_0_24px_rgba(232,193,108,0.25)]">
+                <Crown className="h-7 w-7 text-cosmic-gold" />
+              </div>
+              <div className="inline-block text-[11px] uppercase tracking-widest px-2.5 py-1 rounded-full bg-cosmic-gold/15 border border-cosmic-gold/40 text-cosmic-gold mb-3">
+                3 дня бесплатно
               </div>
               <h1 className="text-2xl sm:text-3xl font-serif text-white mb-2">
-                {step === 1
-                  ? t.onboarding.steps.features
-                  : t.onboarding.steps.proFeatures}
+                Asceta Pro
               </h1>
               <p className="text-sm text-cosmic-secondary/80">
-                {step === 1
-                  ? (t.onboarding as any).freeAfterSignup || 'Available right after sign up'
-                  : (t.onboarding as any).proWithSubscription || 'Unlocked with Pro subscription'}
+                Полный доступ ко всем функциям. Без ограничений.
               </p>
             </div>
 
             <ul className="space-y-3 mb-10">
-              {(step === 1
-                ? t.onboarding.freeFeatures
-                : t.onboarding.proFeatures
-              ).map((feature, index) => (
+              {[
+                '30 минут звонков с Лирой каждый месяц',
+                'Полная нумерология: квадрат Пифагора и матрица кармы',
+                'Персональные дневные, месячные и годовые гороскопы',
+                'Безлимитные пакты аскезы',
+                'Все космические миссии и достижения',
+                'Аффирмации голосом Вселенной',
+              ].map((feature, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-cosmic-dark/30 backdrop-blur-sm border border-cosmic-accent/15"
+                  className="flex items-start gap-3 p-3 rounded-xl bg-cosmic-dark/40 backdrop-blur-sm border border-cosmic-gold/15"
                 >
-                  <div className="shrink-0 w-7 h-7 rounded-full bg-cosmic-accent/20 flex items-center justify-center mt-0.5">
-                    <Check className="h-4 w-4 text-cosmic-accent" />
+                  <div className="shrink-0 w-7 h-7 rounded-full bg-cosmic-gold/20 flex items-center justify-center mt-0.5">
+                    <Check className="h-4 w-4 text-cosmic-gold" />
                   </div>
                   <span className="text-cosmic-secondary leading-relaxed text-[15px]">
                     {feature}
@@ -208,7 +207,7 @@ const OnboardingPage: React.FC = () => {
             </ul>
 
             <div className="flex justify-center mb-6 gap-2">
-              {[0, 1, 2].map(i => (
+              {[0, 1].map(i => (
                 <button
                   key={i}
                   type="button"
@@ -241,8 +240,6 @@ const OnboardingPage: React.FC = () => {
               >
                 {saving
                   ? '...'
-                  : step < 2
-                  ? t.onboarding.buttons.next
                   : t.onboarding.buttons.startJourney || 'Начать путь'}
               </CosmicButton>
             </div>
