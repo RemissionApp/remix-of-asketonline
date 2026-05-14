@@ -1,48 +1,61 @@
-# Fix broken scroll across all screens (mobile + web)
+# План: RevenueCat Web Billing на сайте Asceta
 
-## Root cause
+В RevenueCat уже настроены продукты (`asket_pro_monthly`, `asket_pro_annually`) с привязанными Stripe-офферингами и entitlement `asket_pro_annually`. Используем официальный Web Billing SDK от RevenueCat — пользователь оплачивает прямо на сайте, подписка автоматически синхронизируется с тем же `appUserID` что и в iOS/Android приложении.
 
-`src/components/ui/MobileOptimizedInterface.tsx` attaches a global, **non-passive** `touchmove` listener on `document` that calls `e.preventDefault()` whenever the finger moves down and `window.scrollY === 0`.
+## Что нужно от пользователя
 
-Two problems with this:
+1. **Web Billing public API key** из RevenueCat Dashboard → Project Settings → API Keys → ключ с префиксом `rcb_` (это публичный ключ, можно хранить в коде, но мы положим в secret для гибкости).
+2. Подтвердить что в RevenueCat Dashboard → **Web Billing** включена платформа Web и продукты `asket_pro_monthly` / `asket_pro_annually` доступны для веба (часто требуется отдельно «Add to Web Billing»).
+3. Stripe-аккаунт уже подключён в RevenueCat (видно по скриншоту — это всё что требуется, отдельный Stripe в Lovable не нужен).
 
-1. On the **desktop shell** (`ResponsiveShell` → `<main className="overflow-y-auto">`) the page itself does not scroll — the inner `<main>` does, so `window.scrollY` is always `0`. Every downward swipe / drag is therefore cancelled, freezing the page.
-2. On **mobile**, attaching a non-passive `touchmove` to `document` forces the browser into a slow-path on every touch and cancels scroll inside nested overflow containers (accordions, dialogs, the deep-reading panel, etc.).
+## Технические шаги
 
-Pull-to-refresh is already prevented natively by `html, body { overscroll-behavior: none }` in `src/styles/base.css`, so the JS listener is redundant.
+### 1. Установка SDK
+```
+bun add @revenuecat/purchases-js
+```
 
-A secondary issue lives in `src/pages/NumerologyPage.tsx`: the `useLayoutEffect` walks **every parent element** and sets `scrollTop = 0` on each scrollable ancestor on every tab/system change. This fights the user, can re-trigger layout, and is unnecessary now that the global scroll bug is fixed.
+### 2. Новый сервис `src/utils/revenueCatWeb.ts`
+- Singleton-обёртка над `Purchases.configure({ apiKey, appUserId })`.
+- Методы: `getOfferings()`, `purchasePackage(rcPackage)`, `getCustomerInfo()`, `restore()`.
+- `appUserId` берём из `useAppStore().user.id` — тот же что и в нативном SDK, чтобы entitlement работал кросс-платформенно.
 
-## Plan
+### 3. Расширить `useRevenueCat.ts`
+- Если `isWebPlatform()` → использовать `revenueCatWeb`, иначе текущую Capacitor-реализацию.
+- Унифицировать форму `offerings` / `customerInfo` чтобы UI не различал источник.
+- `presentPaywall` на вебе больше не редиректит на `/comparison`, а вызывает `purchasePackage` выбранного пакета (или открывает встроенный Stripe Checkout-редирект, который SDK делает автоматически).
 
-### 1. Remove the global scroll-blocking touch listeners
-File: `src/components/ui/MobileOptimizedInterface.tsx`
+### 4. Обновить `ComparisonPage.tsx` / `FeatureComparison.tsx`
+- На вебе: убрать предупреждение «только в App Store / Google Play».
+- Показать две реальные кнопки: «Месяц — $X» и «Год — $Y» с ценами из `offering.availablePackages[i].rcBillingProduct.currentPrice.formattedPrice`.
+- По клику — `purchasePackage(pkg)`. SDK сам редиректит на Stripe Checkout, потом возвращает на success URL.
+- Success URL: `/comparison?purchase=success` → показать toast «PRO активирован» и обновить `customerInfo`.
 
-- Delete `handleTouchStart` / `handleTouchMove` and their `addEventListener` / `removeEventListener` calls.
-- Keep the iOS input-zoom viewport toggle (`focusin`/`focusout`) and the haptic-feedback logic.
-- Pull-to-refresh stays disabled via existing CSS (`overscroll-behavior: none`).
+### 5. Webhook (уже есть)
+`supabase/functions/revenuecat-webhook/index.ts` уже обрабатывает события RevenueCat — Web Billing шлёт те же события `INITIAL_PURCHASE` / `RENEWAL` / `CANCELLATION`, доп. изменения не нужны. Проверим что в RevenueCat Dashboard → Integrations → Webhooks указан URL нашей функции.
 
-### 2. Simplify NumerologyPage scroll reset
-File: `src/pages/NumerologyPage.tsx`
+### 6. Серверная проверка `is_pro`
+Уже сделано в edge functions (`universe-answer`, `generate-numerology-description`) — они читают entitlement из БД, который пишется webhook'ом. Никаких изменений.
 
-- Replace the parent-walking `useLayoutEffect` with a single, narrowly scoped reset:
-  - Reset `window.scrollTo(0, 0)`.
-  - If running inside `DesktopShell`, also reset the nearest ancestor with `overflow-y: auto` (find via `closest('main')` or `scrollRef.current?.closest('[data-scroll-container]')` — using a `data-scroll-container` marker added to the desktop `<main>` for clarity).
-- Trigger only on `tab`/`system` change as today.
+### 7. Secret
+Запросить через `add_secret`:
+- `VITE_REVENUECAT_WEB_BILLING_KEY` — публичный ключ `rcb_...`, доступный фронтенду.
 
-### 3. Mark the desktop scroll container
-File: `src/components/desktop/DesktopShell.tsx`
+## Файлы
 
-- Add `data-scroll-container` to the `<main className="overflow-y-auto">` element so pages can target it for resets without DOM walking.
+**Новые:**
+- `src/utils/revenueCatWeb.ts` — Web Billing сервис.
 
-### 4. Smoke-test scrolling
-- Mobile viewport (390×844) and desktop viewport (1280×720): verify mouse-wheel + drag on `/main`, `/numerology` (all tabs and both systems), `/pacts`, `/profile`, `/universe-hub`, `/affirmations`.
-- Confirm no regression in: pull-to-refresh suppression, iOS keyboard zoom prevention, haptic feedback on buttons.
+**Изменяемые:**
+- `package.json` (+ `@revenuecat/purchases-js`)
+- `src/hooks/useRevenueCat.ts` — роутинг web/native.
+- `src/store/slices/revenueCatSlice.ts` — поддержка веб-офферингов.
+- `src/pages/ComparisonPage.tsx` — убрать disclaimer, обработать `?purchase=success`.
+- `src/components/FeatureComparison.tsx` — реальные кнопки оплаты с ценами.
 
-## Files touched
+## Что НЕ делаем
+- Не подключаем Stripe напрямую через Lovable Payments — RevenueCat уже посредник, дублирование сломает синхронизацию entitlements между web/iOS/Android.
+- Не трогаем нативный Capacitor flow — он продолжает работать как есть.
 
-- edit `src/components/ui/MobileOptimizedInterface.tsx`
-- edit `src/pages/NumerologyPage.tsx`
-- edit `src/components/desktop/DesktopShell.tsx`
-
-No backend, schema, i18n, or design-token changes.
+## После одобрения плана
+Жду от вас Web Billing API key (`rcb_...`) и подтверждение что продукты добавлены в Web Billing в RevenueCat Dashboard — после этого реализую всё за один проход.
