@@ -697,6 +697,42 @@ export type Database = {
         }
         Relationships: []
       }
+      numerology_saved_readings: {
+        Row: {
+          content: string
+          context: string
+          created_at: string
+          focus_number: number | null
+          id: string
+          language: string
+          profile_snapshot: Json
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          context: string
+          created_at?: string
+          focus_number?: number | null
+          id?: string
+          language?: string
+          profile_snapshot?: Json
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          context?: string
+          created_at?: string
+          focus_number?: number | null
+          id?: string
+          language?: string
+          profile_snapshot?: Json
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pact_days: {
         Row: {
           completed: boolean
