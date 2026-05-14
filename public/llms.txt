@@ -1,0 +1,11 @@
+# Asceta
+
+> Asceta is an AI-guided self-discipline and spiritual-practice app where users form sacred pacts with themselves to build inner strength, focus, and consistency.
+
+## Pages
+
+- [Home](/): Overview of Asceta and the sacred-pact practice.
+- [Pricing & Plans](/comparison): Free vs Pro feature comparison.
+- [Login](/login): Sign in or create an account.
+- [Privacy Policy](/privacy-policy): How user data is handled.
+- [Terms of Service](/terms-of-service): Usage terms.
