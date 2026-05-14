@@ -23,12 +23,12 @@ describe('pythagoreanReduce', () => {
     expect(pythagoreanReduce(33)).toBe(33);
   });
 
-  it('reduces multi-digit numbers', () => {
-    expect(pythagoreanReduce(38)).toBe(2); // 3+8=11 (master) — note: 11 stays
-    expect(pythagoreanReduce(38)).not.toBe(11); // 38 -> 11 -> 11
+  it('reduces multi-digit numbers (master preserved when reached)', () => {
+    // 38 -> 3+8 = 11 (master, preserved)
+    expect(pythagoreanReduce(38)).toBe(11);
+    // 19 -> 1+9 = 10 -> 1+0 = 1
+    expect(pythagoreanReduce(19)).toBe(1);
   });
-
-  // 38 -> 3+8 = 11, which IS master, so stays 11. Adjust expectation.
 });
 
 describe('pythagoreanReduce — corrected', () => {
@@ -114,8 +114,9 @@ describe('Reference date 14.03.1995', () => {
   describe('Karma Matrix', () => {
     const k = karmaMatrix(day, month, year);
 
-    it('center = 14 (5+3+6=14)', () => {
-      expect(k.center).toBe(14);
+    it('center = 5 (sumDigits day+month+year = 32 -> 5)', () => {
+      // 1+4 + 0+3 + 1+9+9+5 = 32, karmaReduce(32) = 3+2 = 5
+      expect(k.center).toBe(5);
     });
     it('sky = day+month = 17', () => {
       expect(k.sky).toBe(17);
