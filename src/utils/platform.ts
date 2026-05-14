@@ -2,167 +2,60 @@ import { Capacitor } from '@capacitor/core';
 
 export type Platform = 'ios' | 'android' | 'web';
 
-/**
- * Определяет текущую платформу
- * @returns 'ios' | 'android' | 'web'
- */
+export interface PlatformInfo {
+  isNative: boolean;
+  isIOS: boolean;
+  isAndroid: boolean;
+  isWeb: boolean;
+  platform: Platform;
+}
+
 export const getPlatform = (): Platform => {
-  if (Capacitor.isNativePlatform()) {
-    return Capacitor.getPlatform() as Platform;
-  }
+  const p = Capacitor.getPlatform();
+  if (p === 'ios' || p === 'android') return p;
   return 'web';
 };
 
-/**
- * Проверяет, является ли платформа iOS
- */
-export const isIOS = (): boolean => {
-  return getPlatform() === 'ios';
-};
+export const isNativePlatform = (): boolean => Capacitor.isNativePlatform();
+export const isWebPlatform = (): boolean => !Capacitor.isNativePlatform();
+export const isIOS = (): boolean => getPlatform() === 'ios';
+export const isAndroid = (): boolean => getPlatform() === 'android';
+export const isWeb = (): boolean => getPlatform() === 'web';
 
-/**
- * Проверяет, является ли платформа Android
- */
-export const isAndroid = (): boolean => {
-  return getPlatform() === 'android';
-};
-
-/**
- * Проверяет, является ли платформа веб
- */
-export const isWeb = (): boolean => {
-  return getPlatform() === 'web';
-};
-
-/**
- * Проверяет, является ли платформа нативной (iOS или Android)
- */
-export const isNative = (): boolean => {
-  return Capacitor.isNativePlatform();
-};
-
-/**
- * Получает информацию о платформе в виде объекта
- */
-export const getPlatformInfo = () => {
+export const getPlatformInfo = (): PlatformInfo => {
   const platform = getPlatform();
-
   return {
-    platform,
+    isNative: Capacitor.isNativePlatform(),
     isIOS: platform === 'ios',
     isAndroid: platform === 'android',
     isWeb: platform === 'web',
-    isNative: platform !== 'web',
+    platform,
   };
 };
 
-/**
- * Выполняет код в зависимости от платформы
- * @param callbacks - объект с колбэками для каждой платформы
- */
-export const platformSpecific = <T>(callbacks: {
-  ios?: () => T;
-  android?: () => T;
-  web?: () => T;
-  default?: () => T;
-}): T | undefined => {
-  const platform = getPlatform();
+export type PlatformFeature =
+  | 'safe-area'
+  | 'haptic'
+  | 'native-sharing'
+  | 'camera'
+  | 'native-payments';
 
-  switch (platform) {
-    case 'ios':
-      return callbacks.ios?.() ?? callbacks.default?.();
-    case 'android':
-      return callbacks.android?.() ?? callbacks.default?.();
-    case 'web':
-      return callbacks.web?.() ?? callbacks.default?.();
-    default:
-      return callbacks.default?.();
-  }
-};
-
-/**
- * Получает CSS классы в зависимости от платформы
- * @param classes - объект с классами для каждой платформы
- */
-export const getPlatformClasses = (classes: {
-  ios?: string;
-  android?: string;
-  web?: string;
-  default?: string;
-}): string => {
-  const platform = getPlatform();
-
-  switch (platform) {
-    case 'ios':
-      return classes.ios ?? classes.default ?? '';
-    case 'android':
-      return classes.android ?? classes.default ?? '';
-    case 'web':
-      return classes.web ?? classes.default ?? '';
-    default:
-      return classes.default ?? '';
-  }
-};
-
-/**
- * Получает значения в зависимости от платформы
- * @param values - объект со значениями для каждой платформы
- */
-export const getPlatformValue = <T>(values: {
-  ios?: T;
-  android?: T;
-  web?: T;
-  default?: T;
-}): T | undefined => {
-  const platform = getPlatform();
-
-  switch (platform) {
-    case 'ios':
-      return values.ios ?? values.default;
-    case 'android':
-      return values.android ?? values.default;
-    case 'web':
-      return values.web ?? values.default;
-    default:
-      return values.default;
-  }
-};
-
-/**
- * Проверяет, поддерживает ли платформа определенную функцию
- */
-export const supportsFeature = (
-  feature: 'safe-area' | 'haptic' | 'native-sharing' | 'camera'
-): boolean => {
-  const platform = getPlatform();
-
+export const supportsFeature = (feature: PlatformFeature): boolean => {
+  const native = Capacitor.isNativePlatform();
   switch (feature) {
     case 'safe-area':
-      return (
-        platform === 'ios' ||
-        (platform === 'android' && Capacitor.getPlatform() !== 'web')
-      );
     case 'haptic':
-      return platform !== 'web';
-    case 'native-sharing':
-      return platform !== 'web';
     case 'camera':
-      return platform !== 'web';
+    case 'native-payments':
+      return native;
+    case 'native-sharing':
+      return native || (typeof navigator !== 'undefined' && 'share' in navigator);
     default:
       return false;
   }
 };
 
-/**
- * Логирует информацию о платформе (для отладки)
- */
 export const logPlatformInfo = (): void => {
-  const info = getPlatformInfo();
-  console.log('Platform Info:', {
-    ...info,
-    capacitorPlatform: Capacitor.getPlatform(),
-    isNative: Capacitor.isNativePlatform(),
-    userAgent:
-      typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
-  });
+  // eslint-disable-next-line no-console
+  console.info('[platform]', getPlatformInfo());
 };

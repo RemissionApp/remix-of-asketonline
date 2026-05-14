@@ -12,6 +12,8 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { isWebPlatform } from '@/utils/platform';
+import { toast } from 'sonner';
 import {
   Table,
   TableBody,
@@ -104,6 +106,15 @@ const FeatureComparison: React.FC = () => {
   ];
 
   const handleUpgrade = async () => {
+    // Web has no native RevenueCat — show informative toast instead of
+    // attempting purchase. Users complete subscription in the mobile app.
+    if (isWebPlatform()) {
+      toast.message('Оплата через App Store / Google Play', {
+        description:
+          'Скачайте Asceta на iOS или Android, чтобы оформить подписку. Восстановление покупок работает на всех устройствах.',
+      });
+      return;
+    }
     try {
       // Check if we have offerings available
       if (

@@ -17,6 +17,14 @@ export const createProFeaturesSlice: StateCreator<
   // Upgrade to PRO
   upgradeToPro: async (): Promise<void> => {
     const { presentPaywall } = useRevenueCatStore.getState();
+    // Web fallback — slice has no router context, so we redirect via location.
+    if (typeof window !== 'undefined') {
+      const { Capacitor } = await import('@capacitor/core');
+      if (!Capacitor.isNativePlatform()) {
+        window.location.assign('/comparison');
+        return;
+      }
+    }
 
     try {
       // Show paywall for subscription

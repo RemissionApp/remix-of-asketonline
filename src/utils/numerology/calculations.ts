@@ -371,14 +371,18 @@ export function karmaMatrix(
 
   const karmaBlock = karmaReduce(Math.abs(sky - earth) || 22);
 
+  // Planetary positions follow the classical Chaldean numerology:
+  // reduce to 1..9 but preserve master numbers 11/22/33. This keeps
+  // archetypal planetary correspondences (1=Sun, 2=Moon, 3=Jupiter…)
+  // while still surfacing rare master-number activations.
   const planets = {
-    sun: karmaReduce(day),
-    moon: karmaReduce(month),
-    mars: karmaReduce(ySum),
-    venus: karmaReduce(day + month),
-    mercury: karmaReduce(day + ySum),
-    jupiter: karmaReduce(month + ySum),
-    saturn: karmaReduce(center),
+    sun: pythagoreanReduce(day),
+    moon: pythagoreanReduce(month),
+    mars: pythagoreanReduce(ySum),
+    venus: pythagoreanReduce(day + month),
+    mercury: pythagoreanReduce(day + ySum),
+    jupiter: pythagoreanReduce(month + ySum),
+    saturn: pythagoreanReduce(center),
   };
 
   return {

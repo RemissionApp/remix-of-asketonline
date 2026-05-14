@@ -2,9 +2,12 @@ import { useEffect } from 'react';
 import { PurchasesPackage } from '@revenuecat/purchases-capacitor';
 import { useToast } from '@/hooks/use-toast';
 import { useRevenueCatStore } from '@/store/slices/revenueCatSlice';
+import { isNativePlatform } from '@/utils/platform';
+import { useNavigate } from 'react-router-dom';
 
 export const useRevenueCat = (userId?: string) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Get state and actions from store
   const {
@@ -100,6 +103,13 @@ export const useRevenueCat = (userId?: string) => {
   };
 
   const presentPaywallWithToast = async (offeringIdentifier?: string) => {
+    // On web, RevenueCat's native paywall is not available — route to the
+    // in-app comparison/checkout page instead. This prevents the
+    // "Web not supported" runtime crash from @revenuecat/purchases-capacitor.
+    if (!isNativePlatform()) {
+      navigate('/comparison');
+      return { result: 'web_redirect' as const };
+    }
     try {
       const result = await presentPaywall(offeringIdentifier);
 
