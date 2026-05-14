@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -38,8 +38,6 @@ const NumerologyPage: React.FC = () => {
   const [lastFocus, setLastFocus] = useState<number | undefined>(undefined);
   const deep = useNumerologyDeepReading();
   const answersBook = useAnswersBook();
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   // Scroll reset on tab/system change. Targets the desktop shell scroller
   // when present, otherwise falls back to window.
   useLayoutEffect(() => {
@@ -177,10 +175,7 @@ const NumerologyPage: React.FC = () => {
         <StarField starCount={80} />
         <PageHeader title={t.numerology.title} />
 
-        <div
-          ref={scrollRef}
-          className="flex-1 relative z-10 px-3 sm:px-4 pt-page max-w-lg mx-auto w-full flex flex-col gap-4"
-        >
+        <div className="flex-1 relative z-10 px-3 sm:px-4 pt-page max-w-lg mx-auto w-full flex flex-col gap-4">
           {/* Hero */}
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cosmic-accent/15 via-cosmic-dark/60 to-cosmic-gold/10 backdrop-blur-md p-5 text-center">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-cosmic-gold/30 bg-cosmic-gold/10 px-3 py-1 text-[10px] uppercase tracking-wider text-cosmic-gold">
