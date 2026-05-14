@@ -46,29 +46,13 @@ export const MobileOptimizedInterface: React.FC<
     const buttons = document.querySelectorAll('button');
     buttons.forEach(addHapticFeedback);
 
-    // Prevent pull-to-refresh on touch devices
-    let startY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const currentY = e.touches[0].clientY;
-      if (startY < currentY && window.scrollY === 0) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener('touchstart', handleTouchStart, {
-      passive: false,
-    });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    // Pull-to-refresh is prevented natively via `overscroll-behavior: none`
+    // in src/styles/base.css. No JS touch listeners needed here — they
+    // previously broke scroll inside nested scroll containers (desktop shell).
     document.addEventListener('focusin', handleFocus);
     document.addEventListener('focusout', handleBlur);
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('focusin', handleFocus);
       document.removeEventListener('focusout', handleBlur);
     };

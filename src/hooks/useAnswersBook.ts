@@ -49,15 +49,15 @@ export function useAnswersBook() {
       if (!user?.id) return null;
       const { data, error } = await supabase
         .from('numerology_saved_readings')
-        .insert({
+        .insert([{
           user_id: user.id,
           title: input.title,
           context: input.context,
           focus_number: input.focusNumber ?? null,
           language: input.language,
           content: input.content,
-          profile_snapshot: input.profileSnapshot,
-        })
+          profile_snapshot: input.profileSnapshot as never,
+        }])
         .select()
         .single();
       if (error) throw error;
