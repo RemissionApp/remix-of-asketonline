@@ -1,53 +1,37 @@
-## Цель
+## Что меняем на странице `/login`
 
-Подключить встроенные платежи Lovable (Stripe) для веб-версии Asceta, чтобы пользователи могли оформить подписку Pro прямо сейчас в тестовом режиме — без настройки RevenueCat-дашборда и без своего Stripe-аккаунта. RevenueCat остаётся подключённым для iOS/Android.
+### 1. Убрать кнопку «Войти как гость (dev)»
+Файл: `src/pages/LoginPage.tsx`
+- Удалить весь блок `{import.meta.env.DEV && (...)}` (строки 456–467) с кнопкой `handleGuestLogin`.
+- Удалить функцию `handleGuestLogin` (строки 187–196), т.к. она больше не используется.
 
-## Что произойдёт
+### 2. Добавить официальные логотипы Google и Apple на кнопки OAuth
+Файл: `src/pages/LoginPage.tsx`
+- Кнопка «Продолжить с Google»: добавить inline-SVG с фирменным многоцветным логотипом Google (4 цвета — синий/красный/жёлтый/зелёный, как требуют [Google Brand Guidelines](https://developers.google.com/identity/branding-guidelines)). Размер 18×18, слева от текста.
+- Кнопка «Продолжить с Apple»: заменить текущую `Apple` иконку из `lucide-react` (это иконка-яблоко общего вида) на официальный Apple-logo SVG (моно-чёрный/белый, согласно [Sign in with Apple guidelines](https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple)). Цвет — `currentColor`, чтобы наследовал белый текст кнопки.
+- Оба SVG вставляем как маленькие React-компоненты в том же файле (или в `src/components/icons/`), чтобы не тянуть лишних зависимостей.
+- Удалить неиспользуемый импорт `Apple` из `lucide-react`.
 
-1. **Включаю встроенные Stripe-платежи** (`enable_stripe_payments`). Lovable автоматически создаст тестовое окружение Stripe — реальные карты не списываются, для тестов используется карта `4242 4242 4242 4242`. Свой Stripe-аккаунт **не нужен**, API-ключи добавлять не нужно. Для приёма реальных платежей позже потребуется только верификация (claim аккаунта).
-2. **Спрошу про налоги.** Stripe-интеграция Lovable поддерживает три режима: полная обработка налогов (Stripe = merchant of record, +3.5%), только расчёт налогов (+0.5%), или без налоговой автоматизации. Для цифровой подписки на международную аудиторию обычно подходит вариант 1.
-3. **Создам товары** (`batch_create_product`):
-   - `Asceta Pro Monthly` — месячная подписка
-   - `Asceta Pro Annual` — годовая подписка
-   Цены ты назовёшь после включения (например, $4.99/мес и $39.99/год).
-4. **Реализую веб-чекаут**:
-   - edge-функция `create-checkout` — создаёт Stripe Checkout Session и возвращает URL
-   - edge-функция `stripe-webhook` — слушает `checkout.session.completed` / `customer.subscription.updated` / `deleted` и обновляет таблицу `subscriptions` (`is_pro`, `status`, `subscription_end`)
-   - edge-функция `customer-portal` — открывает Stripe Customer Portal для управления подпиской
-5. **Переписываю веб-ветку оплаты** в `FeatureComparison.tsx`, `TrialExpiredGate.tsx`, `ProfileSubscriptionTab.tsx`, `PaywallButton.tsx`:
-   - вместо `useWebBilling` (RevenueCat Web) используется новый хук `useStripeCheckout`
-   - кнопки «Месяц» / «Год» вызывают `create-checkout` и редиректят на `session.url`
-   - после успеха Stripe редиректит на `/comparison?success=true` → дергаем `refresh-entitlement` → разблокируем Pro
-   - native-ветка (Capacitor) **не меняется** — там по-прежнему RevenueCat
-6. **Удаляю мёртвый веб-код RevenueCat**:
-   - `src/utils/revenueCatWeb.ts`, `src/hooks/useWebBilling.ts`
-   - пакет `@revenuecat/purchases-js` из `package.json`
-   - sandbox-ключ `rcb_sb_...` из репозитория
+### 3. Mobile OAuth на домене `asceta.app`
+Текущая реализация:
+- **Google** — `lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin })` через Lovable Cloud managed OAuth broker (`/~oauth/...`).
+- **Apple** — на iOS Capacitor нативный `SignInWithApple`, на Android и в браузере — Lovable Cloud managed OAuth.
 
-## Технические детали
+По документации Lovable Cloud, managed OAuth (`/~oauth/initiate` и `/~oauth/callback`) **уже поддерживает custom-домены автоматически** — `asceta.app` и `www.asceta.app` входят в allowlist редиректов, т.к. это активные custom-домены проекта. `redirect_uri: window.location.origin` корректно вернёт `https://asceta.app` при заходе с мобильного браузера.
 
-**Архитектура entitlement:**
-- Источник истины — таблица `public.subscriptions` (уже есть). Webhook обновляет `is_pro=true`, `status='active'`, `subscription_end=period_end`.
-- `useEntitlement` уже читает `subscriptions` → `isPro` → `isUnlocked`. Менять не надо.
-- На native — `revenuecat-webhook` (уже есть) пишет в ту же таблицу. Двойной источник работает корректно: чьё событие пришло позже, тот и побеждает.
+Проверки и действия:
+1. Запустить браузер на мобильном viewport и перейти на `https://asceta.app/login`. Нажать «Продолжить с Google» — убедиться, что редирект идёт на `https://asceta.app/~oauth/initiate?...` → Google → `https://asceta.app/~oauth/callback` → возврат на `/`.
+2. То же для Apple (web flow).
+3. Проверить, что в Lovable Cloud → Users → Authentication Settings провайдеры Google и Apple включены (managed-mode).
+4. Если Apple через managed-mode на web возвращает ошибку — это означает, что Sign in with Apple требует BYOC-настройки Services ID + Return URL для домена `asceta.app`; в этом случае мы оформим инструкцию и попросим тебя сгенерировать ключ.
 
-**Edge-функции (`verify_jwt = false` где нужно для webhook):**
-- `create-checkout` — JWT обязателен, берёт `auth.uid()`, ищет/создаёт Stripe Customer по email, создаёт subscription mode session с `client_reference_id=user_id` и `metadata.user_id`.
-- `stripe-webhook` — `verify_jwt=false`, проверяет подпись через `STRIPE_WEBHOOK_SECRET`, апдейтит `subscriptions` через service role.
-- `customer-portal` — JWT обязателен, возвращает billing portal URL.
+PWA service worker уже настроен корректно — `/~oauth` в `navigateFallbackDenylist` (если используется `vite-plugin-pwa`); проверим и при необходимости добавим.
 
-**Секреты, которые добавит Lovable автоматически после `enable_stripe_payments`:**
-`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY`. Вручную ничего вводить не надо.
+### Тех-детали (не критично читать)
+- Никаких изменений в `useAuthFlow`, `lovable/index.ts`, `appleSignIn.ts` не требуется — они уже корректны для custom-домена.
+- `useAuthFlow` после успешного OAuth-возврата автоматически перенаправит на `/profile-setup` или `/main` в зависимости от состояния пользователя.
 
-**Что НЕ трогаю:**
-- `src/integrations/supabase/client.ts`, `types.ts`
-- `capacitor.config.ts`, `.env`, `ios/`, `android/`
-- RevenueCat-логика для native (`useRevenueCat`, `revenueCatSlice`, `revenuecat-webhook`)
-- Таблицы БД — текущая схема `subscriptions` достаточна
-
-## После плана
-
-После твоего одобрения я:
-1. Вызову `enable_stripe_payments` (это откроет короткую форму — заполни email и имя, можно использовать алиас `you+asceta@…`).
-2. Спрошу про налоговый режим и цены подписок.
-3. Создам товары и весь код одним заходом.
+### Что покажу после реализации
+- Скриншот обновлённой страницы `/login` (mobile viewport).
+- Результат тестового OAuth-потока для Google с домена `asceta.app` (URL-цепочка).
+- Если Apple managed-OAuth не работает на web — отдельный шаг с настройкой BYOC.
