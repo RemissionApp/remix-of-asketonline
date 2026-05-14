@@ -3,8 +3,8 @@ import { Crown, Sparkles } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEntitlement } from '@/hooks/useEntitlement';
 import { useAppStore } from '@/store/useAppStore';
-import { useWebBilling } from '@/hooks/useWebBilling';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 import { isNativePlatform } from '@/utils/platform';
 import { Button } from '@/components/ui/button';
 
@@ -20,7 +20,7 @@ export const TrialExpiredGate: React.FC = () => {
   const { user } = useAppStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const web = useWebBilling();
+  const { openCheckout, checkoutElement } = useStripeCheckout();
   const { presentPaywall } = useRevenueCat(user?.id);
 
   const [dismissed, setDismissed] = useState(() => {
@@ -66,21 +66,6 @@ export const TrialExpiredGate: React.FC = () => {
   if (!trialEndedWithoutPayment || dismissed || onBlockedRoute) return null;
   if (isNativePlatform()) return null; // native paywall already triggered
 
-  const monthly =
-    web.offering?.monthly ??
-    web.offering?.availablePackages?.find(p =>
-      p.identifier.toLowerCase().includes('month')
-    ) ??
-    null;
-  const annual =
-    web.offering?.annual ??
-    web.offering?.availablePackages?.find(
-      p =>
-        p.identifier.toLowerCase().includes('annual') ||
-        p.identifier.toLowerCase().includes('year')
-    ) ??
-    null;
-
   const handleLater = () => {
     try {
       localStorage.setItem(DISMISS_KEY, String(Date.now()));
@@ -88,9 +73,14 @@ export const TrialExpiredGate: React.FC = () => {
     setDismissed(true);
   };
 
-  const handleCompare = () => {
-    handleLater();
-    navigate('/comparison');
+  const handleBuy = (priceId: string) => {
+    if (!user?.id) return;
+    openCheckout({
+      priceId,
+      userId: user.id,
+      customerEmail: user.email,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
   };
 
   return (
@@ -125,36 +115,20 @@ export const TrialExpiredGate: React.FC = () => {
         </ul>
 
         <div className="space-y-2">
-          {annual && (
-            <Button
-              className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 py-6 text-base font-semibold"
-              onClick={() => web.purchase(annual)}
-              disabled={web.isPurchasing || !web.isReady}
-            >
-              <Sparkles className="mr-2" size={18} />
-              Год ·{' '}
-              {annual.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
-            </Button>
-          )}
-          {monthly && (
-            <Button
-              variant="outline"
-              className="w-full border-cosmic-gold/40 text-cosmic-gold hover:bg-cosmic-gold/10"
-              onClick={() => web.purchase(monthly)}
-              disabled={web.isPurchasing || !web.isReady}
-            >
-              Месяц ·{' '}
-              {monthly.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
-            </Button>
-          )}
-          {!annual && !monthly && (
-            <Button
-              className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90"
-              onClick={handleCompare}
-            >
-              Открыть подписку
-            </Button>
-          )}
+          <Button
+            className="w-full bg-cosmic-gold text-cosmic-dark hover:bg-cosmic-gold/90 py-6 text-base font-semibold"
+            onClick={() => handleBuy('asceta_pro_yearly')}
+          >
+            <Sparkles className="mr-2" size={18} />
+            Год · $69.99
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full border-cosmic-gold/40 text-cosmic-gold hover:bg-cosmic-gold/10"
+            onClick={() => handleBuy('asceta_pro_monthly')}
+          >
+            Месяц · $9.99
+          </Button>
         </div>
 
         <button
@@ -164,6 +138,7 @@ export const TrialExpiredGate: React.FC = () => {
           Напомнить позже
         </button>
       </div>
+      {checkoutElement}
     </div>
   );
 };

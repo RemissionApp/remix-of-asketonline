@@ -11,7 +11,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useNavigate } from 'react-router-dom';
 import { useEntitlement } from '@/hooks/useEntitlement';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { useWebBilling } from '@/hooks/useWebBilling';
+import { useStripeCheckout } from '@/hooks/useStripeCheckout';
 import { isWebPlatform, isNativePlatform } from '@/utils/platform';
 import { toast } from 'sonner';
 
@@ -30,35 +30,24 @@ const FeatureComparison: React.FC = () => {
   const navigate = useNavigate();
   const { isPro, isTrialActive } = useEntitlement();
   const { presentPaywall, restorePurchases } = useRevenueCat(user?.id);
-  const web = useWebBilling();
+  const { openCheckout, checkoutElement } = useStripeCheckout();
   const onWeb = isWebPlatform();
 
-  const monthlyPkg =
-    web.offering?.monthly ??
-    web.offering?.availablePackages?.find(p =>
-      p.identifier.toLowerCase().includes('month')
-    ) ??
-    null;
-  const annualPkg =
-    web.offering?.annual ??
-    web.offering?.availablePackages?.find(
-      p =>
-        p.identifier.toLowerCase().includes('annual') ||
-        p.identifier.toLowerCase().includes('year')
-    ) ??
-    null;
-
-  const otherPackages =
-    web.offering?.availablePackages?.filter(
-      p => p !== monthlyPkg && p !== annualPkg
-    ) ?? [];
-  const hasAnyPackage = (web.offering?.availablePackages?.length ?? 0) > 0;
-
-  React.useEffect(() => {
-    if (onWeb && web.isReady && !hasAnyPackage) {
-      console.warn('[Paywall] no packages in web offering', web.offering);
+  const handleWebCheckout = (priceId: string) => {
+    if (!user?.id) {
+      toast.error('Нужно войти в аккаунт', {
+        description: 'Войдите, чтобы оформить подписку',
+      });
+      navigate('/login');
+      return;
     }
-  }, [onWeb, web.isReady, hasAnyPackage, web.offering]);
+    openCheckout({
+      priceId,
+      userId: user.id,
+      customerEmail: user.email,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
 
   const handleNativeUpgrade = async () => {
     try {
@@ -121,91 +110,41 @@ const FeatureComparison: React.FC = () => {
       {/* Tariffs */}
       <div className="space-y-3 mb-7">
         {onWeb ? (
-          web.isLoading || !web.isReady ? (
-            <div className="rounded-2xl border border-cosmic-accent/20 bg-cosmic-dark/40 p-6 text-center text-sm text-cosmic-secondary">
-              Загружаем тарифы…
-            </div>
-          ) : !hasAnyPackage ? (
-            <div className="rounded-2xl border border-cosmic-accent/20 bg-cosmic-dark/40 p-6 text-center space-y-3">
-              <p className="text-sm text-cosmic-secondary">
-                Тарифы временно недоступны. Попробуйте обновить.
-              </p>
-              <Button
-                variant="outline"
-                className="border-cosmic-accent/40 text-cosmic-accent hover:bg-cosmic-accent/10"
-                onClick={() => web.refresh()}
-              >
-                <RefreshCwIcon size={14} className="mr-2" />
-                Обновить
-              </Button>
-            </div>
-          ) : (
-            <>
-              {annualPkg && (
-              <button
-                onClick={() => web.purchase(annualPkg)}
-                disabled={web.isPurchasing || !web.isReady}
-                className="relative w-full text-left rounded-2xl border-2 border-cosmic-gold bg-gradient-to-br from-cosmic-gold/15 to-cosmic-accent/10 p-5 hover:bg-cosmic-gold/20 transition-colors disabled:opacity-60"
-              >
-                <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-cosmic-gold text-cosmic-dark font-semibold">
-                  Выгоднее
-                </div>
-                <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
-                  Годовая подписка
-                </div>
-                <div className="text-2xl text-white font-serif">
-                  {annualPkg.webBillingProduct?.currentPrice?.formattedPrice ??
-                    '—'}
-                  <span className="text-sm text-cosmic-secondary"> / год</span>
-                </div>
-                <div className="text-xs text-cosmic-gold mt-2">
-                  {web.isPurchasing
-                    ? 'Открываем оплату…'
-                    : 'Оформить на год →'}
-                </div>
-              </button>
-            )}
-            {monthlyPkg && (
-              <button
-                onClick={() => web.purchase(monthlyPkg)}
-                disabled={web.isPurchasing || !web.isReady}
-                className="w-full text-left rounded-2xl border border-cosmic-accent/30 bg-cosmic-dark/50 p-5 hover:bg-cosmic-dark/70 transition-colors disabled:opacity-60"
-              >
-                <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
-                  Ежемесячно
-                </div>
-                <div className="text-2xl text-white font-serif">
-                  {monthlyPkg.webBillingProduct?.currentPrice?.formattedPrice ??
-                    '—'}
-                  <span className="text-sm text-cosmic-secondary"> / мес</span>
-                </div>
-                <div className="text-xs text-cosmic-secondary mt-2">
-                  {web.isPurchasing
-                    ? 'Открываем оплату…'
-                    : 'Оформить на месяц →'}
-                </div>
-              </button>
-            )}
-              {otherPackages.map(pkg => (
-                <button
-                  key={pkg.identifier}
-                  onClick={() => web.purchase(pkg)}
-                  disabled={web.isPurchasing}
-                  className="w-full text-left rounded-2xl border border-cosmic-accent/30 bg-cosmic-dark/50 p-5 hover:bg-cosmic-dark/70 transition-colors disabled:opacity-60"
-                >
-                  <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
-                    {pkg.identifier}
-                  </div>
-                  <div className="text-2xl text-white font-serif">
-                    {pkg.webBillingProduct?.currentPrice?.formattedPrice ?? '—'}
-                  </div>
-                  <div className="text-xs text-cosmic-secondary mt-2">
-                    {web.isPurchasing ? 'Открываем оплату…' : 'Оформить →'}
-                  </div>
-                </button>
-              ))}
-            </>
-          )
+          <>
+            <button
+              onClick={() => handleWebCheckout('asceta_pro_yearly')}
+              className="relative w-full text-left rounded-2xl border-2 border-cosmic-gold bg-gradient-to-br from-cosmic-gold/15 to-cosmic-accent/10 p-5 hover:bg-cosmic-gold/20 transition-colors"
+            >
+              <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-cosmic-gold text-cosmic-dark font-semibold">
+                Выгоднее
+              </div>
+              <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
+                Годовая подписка
+              </div>
+              <div className="text-2xl text-white font-serif">
+                $69.99
+                <span className="text-sm text-cosmic-secondary"> / год</span>
+              </div>
+              <div className="text-xs text-cosmic-gold mt-2">
+                Оформить на год →
+              </div>
+            </button>
+            <button
+              onClick={() => handleWebCheckout('asceta_pro_monthly')}
+              className="w-full text-left rounded-2xl border border-cosmic-accent/30 bg-cosmic-dark/50 p-5 hover:bg-cosmic-dark/70 transition-colors"
+            >
+              <div className="text-xs text-cosmic-secondary uppercase tracking-wider mb-1">
+                Ежемесячно
+              </div>
+              <div className="text-2xl text-white font-serif">
+                $9.99
+                <span className="text-sm text-cosmic-secondary"> / мес</span>
+              </div>
+              <div className="text-xs text-cosmic-secondary mt-2">
+                Оформить на месяц →
+              </div>
+            </button>
+          </>
         ) : (
           <Button
             onClick={handleNativeUpgrade}
@@ -259,6 +198,7 @@ const FeatureComparison: React.FC = () => {
           Условия
         </button>
       </div>
+      {checkoutElement}
     </div>
   );
 };
