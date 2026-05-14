@@ -36,24 +36,20 @@
 }
 
 html {
-  min-height: 100%;
-  height: auto;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   overscroll-behavior-x: none;
   overscroll-behavior-y: contain;
   overflow-x: clip;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 body {
-  min-height: 100%;
-  min-height: -webkit-fill-available;
   overscroll-behavior-x: none;
   overscroll-behavior-y: contain;
   max-width: 100%;
   overflow-x: clip;
-  overflow-y: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -61,6 +57,7 @@ body {
   min-height: 100dvh;
   width: 100%;
   overflow-x: clip;
+  overflow-y: visible;
 }
 
 :root {
@@ -172,7 +169,7 @@ a[role='button'],
     background-repeat: no-repeat;
     /* Мобильные стили для фиксации ширины и предотвращения горизонтальной прокрутки */
     overflow-x: clip;
-    overflow-y: auto;
+    overflow-y: visible;
     width: 100%;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
@@ -181,7 +178,7 @@ a[role='button'],
   /* Глобальное предотвращение горизонтальной прокрутки */
   html {
     overflow-x: clip;
-    overflow-y: auto;
+    overflow-y: visible;
     width: 100%;
     max-width: 100%;
   }
