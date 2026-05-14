@@ -350,7 +350,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with OTP
     const emailResponse = await resend.emails.send({
-      from: "Asket <noreply@remissionsoft.net>",
+      from: "Asceta <noreply@remissionsoft.net>",
       to: [email],
       subject: emailContent.subject,
       html: emailContent.html,
