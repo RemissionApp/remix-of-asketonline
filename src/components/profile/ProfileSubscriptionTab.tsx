@@ -14,6 +14,7 @@ import { ProfileRow } from './ui/ProfileRow';
 import { ProfileSection } from './ui/ProfileSection';
 import { useProfileLang } from './i18n';
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
+import { getStripeEnvironment } from '@/lib/stripe';
 
 export const ProfileSubscriptionTab: React.FC = () => {
   const navigate = useNavigate();
@@ -38,14 +39,23 @@ export const ProfileSubscriptionTab: React.FC = () => {
       return;
     }
     try {
-      const env = (import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN as string | undefined)?.startsWith('pk_test_') ? 'sandbox' : 'live';
       const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: { returnUrl: `${window.location.origin}/profile`, environment: env },
+        body: { returnUrl: `${window.location.origin}/profile`, environment: getStripeEnvironment() },
       });
       if (error || !data?.url) throw new Error(error?.message || 'no url');
       window.open(data.url, '_blank');
     } catch (e) {
       toast({ title: 'Не удалось открыть управление подпиской', variant: 'destructive' });
+    }
+  };
+
+  const handleRestore = () => {
+    if (isNativePlatform()) {
+      restorePurchases().catch(() => {});
+    } else {
+      // On web there are no "purchases to restore" — opening the billing
+      // portal lets users find the right account & resync subscription state.
+      openManage();
     }
   };
 
@@ -162,7 +172,7 @@ export const ProfileSubscriptionTab: React.FC = () => {
       </ProfileSection>
 
       <ProfileSection title={t.other}>
-        <ProfileRow rounded="top" icon={RefreshCw} iconColor="purple" label={t.restore} onPress={() => restorePurchases().catch(() => {})} />
+        <ProfileRow rounded="top" icon={RefreshCw} iconColor="purple" label={t.restore} onPress={handleRestore} />
         <ProfileRow rounded="middle" icon={Gift} iconColor="green" label={t.referral} sublabel={t.referralHint} badge={{ text: '+7d', color: 'green' }} />
         <ProfileRow rounded="bottom" icon={BarChart3} iconColor="gray" label={t.compare} onPress={() => navigate('/comparison')} />
       </ProfileSection>
