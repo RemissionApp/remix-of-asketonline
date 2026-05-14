@@ -46,6 +46,7 @@
         "@radix-ui/react-tooltip": "^1.1.4",
         "@revenuecat/purchases-capacitor": "^11.2.0",
         "@revenuecat/purchases-capacitor-ui": "^11.2.0",
+        "@revenuecat/purchases-js": "^1.41.0",
         "@supabase/supabase-js": "^2.104.0",
         "@tanstack/react-query": "^5.56.2",
         "class-variance-authority": "^0.7.1",
@@ -373,6 +374,8 @@
     "@revenuecat/purchases-capacitor": ["@revenuecat/purchases-capacitor@11.2.0", "", { "dependencies": { "@revenuecat/purchases-typescript-internal-esm": "17.5.0" }, "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-D64U5OCDRfRCDd7cz+mTGW+AD+IriWTCfdIrDRGEpbEoDp1TE/6qy4DI0j66TfDAVjvuj3bvmnV0LN28Xu2INw=="],
 
     "@revenuecat/purchases-capacitor-ui": ["@revenuecat/purchases-capacitor-ui@11.2.0", "", { "dependencies": { "@capacitor/core": "^7.0.0", "@revenuecat/purchases-capacitor": "^10.2.4", "@revenuecat/purchases-typescript-internal-esm": "17.5.0" }, "peerDependencies": { "@capacitor/core": "^7.0.0" } }, "sha512-1nPKqjrbmzEE1TATvaG36nM9zHaspD5wiTseW3rVFKYGdfmUvZVVsYIRvyYOxPN26GxbNA2o80AahtxSVaUcEg=="],
+
+    "@revenuecat/purchases-js": ["@revenuecat/purchases-js@1.41.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@revenuecat/purchases-js/-/purchases-js-1.41.0.tgz", {}, "sha512-IvRbTzyNOguQGcWyTUxYbZZPTRK4fM9U7BFQrX6MKw8VAwTsyNX8nVsPWjr0qZS5nJNEd5h88g842HC0Q9aBjg=="],
 
     "@revenuecat/purchases-typescript-internal-esm": ["@revenuecat/purchases-typescript-internal-esm@17.5.0", "", {}, "sha512-1u+gE1yWSHDkDcXjPPigTH7mq75q0Ip34vNqQkP0Sg4nXQ+jG5UrQiO7LedN4AzxCi9+fVJmr36cWNeYIYGskA=="],
 
