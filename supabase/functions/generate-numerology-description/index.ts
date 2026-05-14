@@ -199,9 +199,11 @@ Deno.serve(async (req: Request) => {
     });
 
     if (aiResp.status === 429) {
+      const retryAfterHeader = aiResp.headers.get('retry-after');
+      const retryAfter = retryAfterHeader ? Math.max(1, parseInt(retryAfterHeader, 10) || 30) : 30;
       return new Response(
-        JSON.stringify({ error: 'rate_limited' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'rate_limited', retryAfter }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': String(retryAfter) } }
       );
     }
     if (aiResp.status === 402) {
