@@ -1,37 +1,57 @@
-## Что меняем на странице `/login`
+## 1. Убрать баннер тестового режима
 
-### 1. Убрать кнопку «Войти как гость (dev)»
-Файл: `src/pages/LoginPage.tsx`
-- Удалить весь блок `{import.meta.env.DEV && (...)}` (строки 456–467) с кнопкой `handleGuestLogin`.
-- Удалить функцию `handleGuestLogin` (строки 187–196), т.к. она больше не используется.
+Файл `src/App.tsx`:
+- Удалить импорт `PaymentTestModeBanner` (строка 52) и его рендер (строка 85).
 
-### 2. Добавить официальные логотипы Google и Apple на кнопки OAuth
-Файл: `src/pages/LoginPage.tsx`
-- Кнопка «Продолжить с Google»: добавить inline-SVG с фирменным многоцветным логотипом Google (4 цвета — синий/красный/жёлтый/зелёный, как требуют [Google Brand Guidelines](https://developers.google.com/identity/branding-guidelines)). Размер 18×18, слева от текста.
-- Кнопка «Продолжить с Apple»: заменить текущую `Apple` иконку из `lucide-react` (это иконка-яблоко общего вида) на официальный Apple-logo SVG (моно-чёрный/белый, согласно [Sign in with Apple guidelines](https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple)). Цвет — `currentColor`, чтобы наследовал белый текст кнопки.
-- Оба SVG вставляем как маленькие React-компоненты в том же файле (или в `src/components/icons/`), чтобы не тянуть лишних зависимостей.
-- Удалить неиспользуемый импорт `Apple` из `lucide-react`.
+Файл `src/components/PaymentTestModeBanner.tsx`:
+- Удалить файл целиком.
 
-### 3. Mobile OAuth на домене `asceta.app`
-Текущая реализация:
-- **Google** — `lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin })` через Lovable Cloud managed OAuth broker (`/~oauth/...`).
-- **Apple** — на iOS Capacitor нативный `SignInWithApple`, на Android и в браузере — Lovable Cloud managed OAuth.
+**Контекст:** Stripe go-live полностью завершён (все 5 шагов `completed`). `.env.production` уже содержит `pk_live_...`, `.env.development` — `pk_test_...`. Баннер сейчас показывается только в preview (sandbox-режим). После удаления баннер исчезнет везде. Реальные карты на `asceta.app` будут списываться, в preview оплата продолжит работать в тестовом режиме скрыто (это нормально для разработки).
 
-По документации Lovable Cloud, managed OAuth (`/~oauth/initiate` и `/~oauth/callback`) **уже поддерживает custom-домены автоматически** — `asceta.app` и `www.asceta.app` входят в allowlist редиректов, т.к. это активные custom-домены проекта. `redirect_uri: window.location.origin` корректно вернёт `https://asceta.app` при заходе с мобильного браузера.
+## 2. Полная pre-publish проверка приложения
 
-Проверки и действия:
-1. Запустить браузер на мобильном viewport и перейти на `https://asceta.app/login`. Нажать «Продолжить с Google» — убедиться, что редирект идёт на `https://asceta.app/~oauth/initiate?...` → Google → `https://asceta.app/~oauth/callback` → возврат на `/`.
-2. То же для Apple (web flow).
-3. Проверить, что в Lovable Cloud → Users → Authentication Settings провайдеры Google и Apple включены (managed-mode).
-4. Если Apple через managed-mode на web возвращает ошибку — это означает, что Sign in with Apple требует BYOC-настройки Services ID + Return URL для домена `asceta.app`; в этом случае мы оформим инструкцию и попросим тебя сгенерировать ключ.
+Прогоню все доступные проверки и соберу единый отчёт:
 
-PWA service worker уже настроен корректно — `/~oauth` в `navigateFallbackDenylist` (если используется `vite-plugin-pwa`); проверим и при необходимости добавим.
+### A. Stripe / платежи
+- ✅ Go-live статус — все 5 шагов завершены (уже проверено).
+- Верифицировать через `supabase--curl_edge_functions` создание live-checkout сессии для каждой цены: `asceta_pro_monthly`, `asceta_pro_yearly`, `asceta_minutes_pack_10`.
+- Проверить, что у всех продуктов в Stripe выставлен tax code `txcd_10103001` (SaaS).
+- Проверить webhook live: `payments-webhook` принимает `?env=live` и подписан `PAYMENTS_LIVE_WEBHOOK_SECRET` (секрет уже есть).
+- Проверить `create-portal-session` (Billing Portal на live).
 
-### Тех-детали (не критично читать)
-- Никаких изменений в `useAuthFlow`, `lovable/index.ts`, `appleSignIn.ts` не требуется — они уже корректны для custom-домена.
-- `useAuthFlow` после успешного OAuth-возврата автоматически перенаправит на `/profile-setup` или `/main` в зависимости от состояния пользователя.
+### B. База данных и безопасность
+- `supabase--linter` — все автоматические security-warning'и.
+- `security--run_security_scan` — глубокий security-скан RLS, политик, утечек.
+- Просмотреть таблицы `subscriptions`, `profiles`, `monthly_call_minutes` на корректность RLS.
 
-### Что покажу после реализации
-- Скриншот обновлённой страницы `/login` (mobile viewport).
-- Результат тестового OAuth-потока для Google с домена `asceta.app` (URL-цепочка).
-- Если Apple managed-OAuth не работает на web — отдельный шаг с настройкой BYOC.
+### C. Auth
+- Проверить, что в Lovable Cloud включены: email/password + Google + Apple (managed OAuth).
+- Email confirmation включена (триггер `handle_new_user` создаёт профиль и trial).
+- HIBP (leaked password check) — рекомендую включить, спрошу подтверждение если выключено.
+
+### D. Edge функции
+- Список деплоя: `create-checkout`, `payments-webhook`, `create-portal-session`, `delete-account`, `expire-trials` и др.
+- Проверить, что у платёжных функций `verify_jwt = false` в `supabase/config.toml`.
+- Проверить `supabase--edge_function_logs` за последние сутки на критические ошибки.
+
+### E. Frontend
+- Зависимости: `code--dependency_scan` — известные уязвимости в npm.
+- Сборка production (`bun run build`) — нет TS/Vite ошибок.
+- SEO: `index.html` — title, meta description, og-теги, canonical, lang.
+- Service Worker / PWA — корректный кэш, `/~oauth` в denylist (для OAuth с custom-домена).
+
+### F. Custom domain
+- `asceta.app` — статус Active, SSL валиден.
+- OAuth-редиректы (`/~oauth/callback`) работают на custom-домене.
+
+### G. Чек-лист публикации (выдам пошагово)
+- Что нажать в Lovable для публикации.
+- Как протестировать реальной картой минимальную сумму ($1.99 за 10 минут).
+- Где смотреть Stripe live-транзакции и логи Cloud.
+
+### Что вернётся пользователю
+Один сжатый отчёт: ✅ что готово / ⚠️ что требует внимания / ❌ что блокирует публикацию, с конкретными файлами/секциями для каждого пункта. Если найдутся блокеры, предложу их сразу починить.
+
+### Тех-детали
+- Никаких изменений в платёжной логике, RLS или auth не планируется без явного блокера.
+- Для preview оплата останется sandbox — это by design (Vite автоматически грузит `.env.development`).
