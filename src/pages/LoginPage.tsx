@@ -456,19 +456,6 @@ const LoginPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {import.meta.env.DEV && (
-                      <div className="pt-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full border-cosmic-accent/30 text-cosmic-accent hover:bg-cosmic-accent/10 bg-cosmic-dark/5 backdrop-blur-sm"
-                          onClick={handleGuestLogin}
-                        >
-                          {t.auth.guestSignIn || 'Войти как гость'} (dev)
-                        </Button>
-                      </div>
-                    )}
-
                     <div className="pt-2 space-y-2">
                       <Button
                         type="button"
@@ -477,7 +464,9 @@ const LoginPage: React.FC = () => {
                         onClick={handleGoogleSignIn}
                         disabled={oauthLoading !== null}
                       >
-                        {oauthLoading === 'google' && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {oauthLoading === 'google'
+                          ? <Loader2 className="h-4 w-4 animate-spin" />
+                          : <GoogleLogo className="h-4 w-4" />}
                         {t.auth.continueWithGoogle}
                       </Button>
                       <Button
@@ -489,7 +478,7 @@ const LoginPage: React.FC = () => {
                       >
                         {oauthLoading === 'apple'
                           ? <Loader2 className="h-4 w-4 animate-spin" />
-                          : <Apple className="h-4 w-4" />}
+                          : <AppleLogo className="h-4 w-4" />}
                         {t.auth.continueWithApple}
                       </Button>
                     </div>
