@@ -1,4 +1,5 @@
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,6 +7,32 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+let _admin: ReturnType<typeof createClient> | null = null;
+function getAdmin() {
+  if (!_admin) {
+    _admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+  }
+  return _admin;
+}
+
+// Returns remaining trial days for the user (capped at 3, min 1) or null if
+// the in-app trial is already over / user has no profile.
+async function getRemainingTrialDays(userId: string): Promise<number | null> {
+  const { data } = await getAdmin()
+    .from("profiles")
+    .select("trial_ends_at")
+    .eq("id", userId)
+    .maybeSingle();
+  const endsAt = data?.trial_ends_at ? new Date(data.trial_ends_at as string).getTime() : 0;
+  if (!endsAt) return null;
+  const msLeft = endsAt - Date.now();
+  if (msLeft <= 0) return null;
+  return Math.min(3, Math.max(1, Math.ceil(msLeft / 86_400_000)));
+}
 
 async function resolveOrCreateCustomer(
   stripe: ReturnType<typeof createStripeClient>,
@@ -89,6 +116,10 @@ Deno.serve(async (req) => {
           })
         : undefined;
 
+    // For subscriptions, honour the in-app 3-day trial — pass the remaining
+    // days as `trial_period_days` so Stripe defers the first charge.
+    const trialDays = isRecurring && userId ? await getRemainingTrialDays(userId) : null;
+
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePrice.id, quantity: quantity || 1 }],
       mode: isRecurring ? "subscription" : "payment",
@@ -99,7 +130,10 @@ Deno.serve(async (req) => {
       ...(userId && {
         metadata: { userId, priceId, managed_payments: "true" },
         ...(isRecurring && {
-          subscription_data: { metadata: { userId } },
+          subscription_data: {
+            metadata: { userId },
+            ...(trialDays && { trial_period_days: trialDays }),
+          },
         }),
         ...(!isRecurring && {
           payment_intent_data: { metadata: { userId, priceId } },

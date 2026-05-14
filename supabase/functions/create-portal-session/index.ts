@@ -42,6 +42,7 @@ Deno.serve(async (req) => {
       .from("subscriptions")
       .select("stripe_customer_id")
       .eq("user_id", user.id)
+      .eq("environment", environment)
       .not("stripe_customer_id", "is", null)
       .order("created_at", { ascending: false })
       .limit(1)

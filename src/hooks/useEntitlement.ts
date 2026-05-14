@@ -55,6 +55,8 @@ export function useEntitlement(): EntitlementState {
       .from('subscriptions')
       .select('is_pro,status')
       .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
       .maybeSingle()
       .then(({ data }) => {
         if (cancelled) return;

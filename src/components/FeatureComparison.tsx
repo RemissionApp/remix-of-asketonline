@@ -174,6 +174,15 @@ const FeatureComparison: React.FC = () => {
         </ul>
       </div>
 
+      {onWeb && (
+        <p className="text-[11px] text-cosmic-secondary/70 leading-relaxed mb-3 px-1">
+          Подписка продлевается автоматически по той же цене, пока вы её не отмените.
+          Отменить можно в любой момент в Профиль → Подписка → Управление.
+          Первые 3 дня — бесплатно, оплата спишется только после окончания триала.
+          Налоги (если применимо) рассчитываются Stripe и показываются на экране оплаты.
+        </p>
+      )}
+
       {isNativePlatform() && (
         <button
           onClick={() => restorePurchases().catch(() => {})}
