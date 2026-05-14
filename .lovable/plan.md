@@ -1,108 +1,59 @@
-## Цель
+## Что нужно исправить
 
-Привести подписку и триал к одной модели:
-**`isUnlocked = isPro || isTrialActive`** — единственная проверка во всём приложении.
-Бесплатной версии больше нет: 3 дня триала → платная подписка. После окончания триала пользователю автоматически показывается экран оплаты.
+1. **Календарь даты рождения** — сейчас в `src/components/ui/calendar.tsx` сверху отрисовываются «Год: 1990» и «Месяц: 1» как сырые слайдеры, а `ProfileForm` дополнительно включает `captionLayout="dropdown"`, из-за чего поверх ещё рендерятся нативные `<select>` Month/Year (белая засветка на скриншоте). Плюс в шапке цифры дней «засвечены» — это `day_today` со светлым `bg-accent` без контраста.
+2. **Онбординг** — шаги 1 и 2 в `src/pages/OnboardingPage.tsx` всё ещё показывают «Бесплатные функции» vs «Pro функции», хотя бесплатной версии больше нет. Должен быть только триал → Pro.
+3. **Кнопка «Оформить Pro»** на `/comparison` — на web не работает: рендерится fallback `<Button>` (когда `monthlyPkg` и `annualPkg` не нашлись в `web.offering`), и его `onClick` дёргает `web.purchase(availablePackages[0])`. Если оффер не успел загрузиться или identifier пакетов не содержит `month/annual/year`, кнопка молча ничего не делает. Также если `web.offering` вовсе пустой, fallback не рендерится из-за `if (!monthlyPkg && !annualPkg)`.
+4. **OTP-письмо** — `supabase/functions/send-otp-email/index.ts` использует имя «Asket / Аскет», лиловый бренд-градиент `hsl(260, 80%, 65%)` и адрес `Asket <noreply@remissionsoft.net>`. Нужно «Asceta» во всех языках + цвета бренда (космический тёмный + золотой акцент `cosmic-gold`).
 
----
+## План
 
-## 1. Единый источник правды — `useEntitlement`
+### Шаг 1. Календарь даты рождения
+**Файл:** `src/components/ui/calendar.tsx` — переписать.
+- Удалить блоки слайдеров «Год/Месяц».
+- Кастомный header (`components.Caption`): два аккуратно стилизованных `<select>` (месяц, год) на тёмном фоне в стиле cosmic (`bg-cosmic-dark/60 border-cosmic-accent/30 text-white`), плюс кнопки «‹ ›» для шага по месяцам.
+- Диапазон годов: `fromYear..toYear` если переданы, иначе `currentYear-100..currentYear`.
+- Дни: `day_selected` — `bg-cosmic-accent text-white`; `day_today` — `border border-cosmic-gold/40` без светлой заливки (чтобы не «засвечивало»); `day_outside`/`day_disabled` — `text-cosmic-secondary/40`.
+- Шапка дней недели — `text-cosmic-secondary`, фон поповера — уже задан в `ProfileForm`.
 
-Переписать `src/hooks/useEntitlement.ts`:
-- Источник: только таблица `subscriptions` (БД), плюс `trial_ends_at` из `profiles` как fallback.
-- Realtime-подписка на `subscriptions` UPDATE → мгновенный пересчёт.
-- Минутный tick для авто-перехода `isTrialActive: true → false` без перезагрузки.
-- Возвращает: `isUnlocked, isPro, isTrialActive, isLoading, daysLeft, hoursLeft, isCritical (<24h), trialEndsAt, refetch`.
-- Никакого чтения `userProfile.isPro` / `localStorage` для определения статуса.
+**Файл:** `src/components/ProfileForm.tsx`
+- Убрать `captionLayout="dropdown"` (наш кастомный header его заменяет).
+- В `PopoverContent` поднять контраст: `bg-cosmic-dark/95` (вместо `/30`) и убрать `backdrop-blur` (на фото он смешивается с фоном звёзд).
 
-## 2. Авто-показ paywall после окончания триала
+**Файл:** `src/components/BirthDateEditor.tsx` — без изменений (использует тот же `Calendar`).
 
-Новый компонент **`TrialExpiredGate`** монтируется в `App.tsx` рядом с `TrialBanner`:
-- Слушает `useEntitlement()`.
-- Срабатывает один раз, когда `!isLoading && !isPro && trialEndsAt && trialEndsAt <= now` и пользователь авторизован.
-- На вебе — модалка-оверлей со страницей подписки (контент `ComparisonPage` без сравнительной таблицы).
-- На нативном — `revenueCatStore.presentPaywall()`.
-- Пока пользователь не оформил подписку или не закрыл осознанно (кнопка «позже» — допустима только 1 раз/сутки через `localStorage` ключ `trial_expired_dismissed_at`), модалка возвращается при следующем заходе в приложение.
-- `ProFeatureOverlay`/`PaywallButton` продолжают работать как fallback на закрытых фичах.
+### Шаг 2. Онбординг — убрать сравнение тарифов
+**Файл:** `src/pages/OnboardingPage.tsx`
+- Сделать 2 шага вместо 3: `welcome` и `proTrial`.
+- Шаг 1 (welcome) — как сейчас (заголовок + описание + «Войти/Далее»).
+- Шаг 2 — единственный экран «Asceta Pro · 3 дня бесплатно»: иконка `Crown`, заголовок «3 дня бесплатно», подпись «Полный доступ ко всем функциям, без ограничений», список из `PRO_FEATURES` (тот же, что в `FeatureComparison`). Кнопка «Начать путь» вызывает `completeOnboarding()`.
+- Удалить ветку `step === 1` с «Бесплатные функции» полностью.
+- В `t.onboarding`: использовать существующие ключи `proFeatures`/`steps.proFeatures`; ключ `freeFeatures` больше не читаем (оставляем в i18n, не удаляем — чтобы не ломать типы).
 
-## 3. Чистка `src/store/slices/revenueCatSlice.ts`
+### Шаг 3. Кнопка «Оформить Pro» на /comparison
+**Файл:** `src/components/FeatureComparison.tsx`
+- Перед рендером тарифов проверять `web.isLoading` → показывать скелетон/«Загружаем тарифы…».
+- Если `web.isReady` и `availablePackages.length > 0`, но ни `monthly`, ни `annual` не определились — рендерить **все** доступные пакеты циклом (`availablePackages.map`), а не один fallback.
+- Fallback-кнопка «Оформить Pro»: убрать условие `!monthlyPkg && !annualPkg` — если пакетов вообще нет, показывать сообщение «Тарифы временно недоступны, попробуйте позже» + кнопку «Обновить» (`web.refresh()`), не молчаливый no-op.
+- Логировать `console.warn('[Paywall] no packages', web.offering)` чтобы диагностировать на проде.
 
-- Убрать `hasActiveSubscriptions` (использует `activeSubscriptions` — он надёжен, но дублирует entitlement-проверку; оставляем именно его) и **полностью удалить любые упоминания `allPurchasedProductIdentifiers`** во всём коде.
-- Заменить опечатку `'asket_premium_montly'` → `'asket_premium_monthly'` (оставить fallback, как сейчас, с TODO на удаление через 60 дней).
-- LOG_LEVEL: `DEBUG` только при `import.meta.env.DEV`, иначе `ERROR`.
-- `syncProStatus` пишет `is_pro` только в zustand; запись в `subscriptions` — только через `revenuecat-webhook` (как сейчас, оставить комментарий).
+**Файл:** `src/utils/revenueCatWeb.ts` (быстрая проверка) — убедиться, что `getWebOfferings()` возвращает `current` оффер; если нет — попробовать `all['default']`. (Если уже так — пропустить.)
 
-## 4. Удалить экран сравнения «Free vs Pro»
+### Шаг 4. OTP-письмо
+**Файл:** `supabase/functions/send-otp-email/index.ts`
+- Заменить во всех `subject/instructions/footerNote` `Asket` → `Asceta`, `Аскет` → `Asceta`.
+- В `from`: `"Asceta <noreply@remissionsoft.net>"`.
+- Шапка/код-секция: заменить лиловый градиент на бренд:
+  - header background: `linear-gradient(135deg, #0F0B1F 0%, #1A1333 100%)` (cosmic-dark) с золотой обводкой `1px solid rgba(232,193,108,0.35)`;
+  - logo: `color: #E8C16C` (cosmic-gold), serif шрифт;
+  - code-section: тёмный фон + золотой бордер, цифры — `color: #E8C16C`, не белый блок.
+- Subtitle/instructions: заголовок `color: #E8C16C`, текст `rgba(255,255,255,0.85)`.
+- Деплой функции `send-otp-email` после изменений.
 
-`src/components/FeatureComparison.tsx` — удалить таблицу/карточки сравнения и все упоминания «Бесплатно». Заменить на единый экран **«Asceta Pro»**:
-- Заголовок: «Открой полный доступ» / «Подписка активна» (если `isPro`).
-- Список фич Pro (без колонки Free).
-- Два тарифа: месяц / год (год — рекомендованный, цена и формат из RevenueCat offering).
-- На вебе — кнопки оплаты через `useWebBilling`.
-- На нативном — кнопка `presentPaywall()`.
-- Кнопка «Восстановить покупки» (только нативный).
-- Ссылки: Privacy, Terms.
-- Если `isPro` — карточка «У вас активная подписка», без кнопок покупки.
+### Шаг 5. Проверка
+- TS-компиляция (`bunx tsc --noEmit`).
+- Открыть `/profile-setup` → дата рождения: ровный кастомный селектор без сырых элементов.
+- Онбординг: 2 шага, без блока «Бесплатные функции».
+- `/comparison` на web: либо реальные пакеты, либо понятное сообщение + кнопка обновить.
+- Запросить OTP, проверить письмо: «Asceta», тёмно-золотой стиль.
 
-`ComparisonPage.tsx` — обёртка остаётся, рендерит обновлённый `FeatureComparison`.
-
-## 5. Чистка применения проверок во всех экранах
-
-Глобально пройти по результатам `grep "isPro|hasActiveSubscription|userProfile?.isPro|allPurchasedProductIdentifiers"` и:
-- Заменить `userProfile?.isPro`, `subscription?.is_pro`, `hasActiveSubscription` → `useEntitlement().isUnlocked` (или `.isPro` там, где нужен именно платный статус — это только `ProfileSubscriptionTab` и `ComparisonPage`).
-- Удалить `allPurchasedProductIdentifiers`, `'asket_premium_montly'` везде.
-- `presentPaywall()` всегда оборачивать: `isNativePlatform() ? presentPaywall() : navigate('/comparison')`.
-
-Затрагиваемые файлы (по результатам grep):
-`MainPage`, `TopBar`, `DailyUsageStats`, `LimitIndicator`, `VoiceInputButton`, `DetailedHoroscopePage/Content`, `BriefHoroscopeDisplay`, `HoroscopeProOverlay`, `UniverseChatPage`, `UniverseChatProWrapper`, `QuestionForm`, `NumerologyPage` (через preview-компоненты), `NumerologyPreview`, `UniverseChatPreview`, `useTextToSpeech`, `useOptimizedTextToSpeech`, `useVoiceInput`, `useHoroscopeData`, `useMissionState`, `useEnhancedMissionState`, `useDailyLimits`, `SubscriptionManager` (оба), `SubscriptionBanner`, `ProductionReadinessPanel`, `DeveloperSwitch`, `AuthDebugPanel`, `NumerologyDiagnostic`, `OfferingsDisplay`, `SimplePurchaseButton`, `PaywallButton`, `ProFeatureOverlay`, `TrialBanner`.
-
-Удалить устаревшие компоненты-дубликаты, если не используются: один из двух `SubscriptionManager`, `OfferingsDisplay`, `SimplePurchaseButton`, `SubscriptionBanner` — оставить только то, что реально импортируется.
-
-## 6. `TrialBanner`, `PaywallButton`, `ProFeatureOverlay`
-
-- `TrialBanner`: показывать только при `isTrialActive && !isPro`. Зелёный режим (>24ч) и красный (<24ч).
-- `PaywallButton`: скрыть при `isUnlocked`. Web → `/comparison`, Native → `presentPaywall()`.
-- `ProFeatureOverlay`: при `isUnlocked` рендерит `children` без блюра. Иначе — блюр + `PaywallButton`.
-
-## 7. `ProfileSubscriptionTab` (модуль подписки в профиле)
-
-- Статус-бейдж: «Активна» (`isPro`) / «Пробный период» (`isTrialActive`) / «Не активна» (после триала).
-- Удалить кнопку `manage = presentPaywall()` для уже Pro: показывать «Управление подпиской» → ведёт на нативные настройки (`Capacitor` → магазин) или на `/comparison` на вебе.
-- Убрать дублирующую секцию «История» (вела на /comparison) — заменить на «Сравнить тарифы» только если `!isPro`.
-- Использовать `isUnlocked` для блока «доступные фичи».
-
-## 8. `expire-trials` edge function
-
-Изменить SQL на безопасную форму: обновлять только записи где
-`status = 'trialing' AND is_pro = true AND user_id IN (profiles where trial_ends_at < now AND payment_method_attached = false)`.
-(Сейчас код фильтрует по `is_pro = false` — это баг: триал имеет `is_pro = false` и `status = 'trialing'`, нужно сбрасывать `status = 'canceled'` именно для них; флаг `is_pro` остаётся `false`.) Уточнить так:
-
-```sql
-UPDATE subscriptions
-SET status = 'canceled', updated_at = now()
-WHERE status = 'trialing'
-  AND user_id IN (SELECT id FROM profiles
-                  WHERE trial_ends_at < now()
-                    AND payment_method_attached = false);
-```
-
-Не трогать `status IN ('active','past_due','canceled')`.
-
-## 9. Финальная проверка трёх сценариев
-
-- **A. Триал активен**: `isUnlocked = true` → нет ни одного `PaywallButton`/`ProFeatureOverlay`/«Купить», TrialBanner зелёный.
-- **B. Триал истёк, не Pro**: TrialBanner скрыт, `TrialExpiredGate` открывает paywall, закрытые фичи в overlay, базовые открыты (главный, краткий гороскоп, профиль).
-- **C. Активная Pro**: paywall и overlay скрыты везде, `ProfileSubscriptionTab` показывает «Активна», `ComparisonPage` — «Подписка активна».
-
-Verification: `bunx tsc --noEmit`, прогон unit-тестов (`bun test`), ручная проверка в preview по сценариям A/B/C через `DeveloperSwitch`.
-
----
-
-## Технические заметки
-
-- Не трогать: `src/integrations/supabase/{client,types}.ts`, `capacitor.config.ts`, `.env`, `ios/`, `android/`.
-- Не вносить миграций БД (RLS и таблицы соответствуют требуемой логике).
-- Web Billing уже подключён (sandbox key `rcb_sb_…`), используется через `useWebBilling`.
-- Оставить fallback `'asket_premium_montly'` ещё на 60 дней с пометкой TODO.
-
-После апрува плана выполняю шаги 1 → 9 единым проходом, проверяю TS-компиляцию и поведение в preview.
+Файлы НЕ трогаю: `supabase/client.ts`, `types.ts`, `capacitor.config.ts`, `.env`, `ios/`, `android/`.
