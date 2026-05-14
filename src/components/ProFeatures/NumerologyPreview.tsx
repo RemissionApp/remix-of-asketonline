@@ -2,13 +2,13 @@ import React from 'react';
 import { Book, List, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProFeatureOverlay } from '@/components/ProFeatureOverlay';
-import { useAppStore } from '@/store/useAppStore';
+import { useEntitlement } from '@/hooks/useEntitlement';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useNavigate } from 'react-router-dom';
 import { CosmicButton } from '@/components/CosmicButton';
 
 export const NumerologyPreview: React.FC = () => {
-  const { userProfile } = useAppStore();
+  const { isUnlocked } = useEntitlement();
   const { t } = useTranslations();
   const navigate = useNavigate();
 
@@ -40,8 +40,8 @@ export const NumerologyPreview: React.FC = () => {
     </Card>
   );
 
-  // If user is not PRO, wrap with ProFeatureOverlay
-  if (!userProfile?.isPro) {
+  // Locked only when access is fully closed (no trial, no Pro)
+  if (!isUnlocked) {
     return (
       <ProFeatureOverlay
         title={t.universe?.proTitle || 'Нумерологический разбор'}
