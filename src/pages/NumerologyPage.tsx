@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StarField } from '@/components/StarField';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -32,6 +32,14 @@ const NumerologyPage: React.FC = () => {
 
   const [system, setSystem] = useState<System>('pythagorean');
   const [tab, setTab] = useState<Tab>('numbers');
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 });
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [tab, system]);
 
   const profile = useMemo(() => {
     if (!userProfile?.birthDate) return null;
