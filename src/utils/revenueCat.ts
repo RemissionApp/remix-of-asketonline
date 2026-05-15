@@ -8,9 +8,13 @@ import {
 } from '@revenuecat/purchases-capacitor';
 import { Capacitor } from '@capacitor/core';
 
-// API ключи из RevenueCat Dashboard
-const REVENUECAT_ANDROID_API_KEY = 'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
-const REVENUECAT_IOS_API_KEY = 'appl_SFBeDRUZdFrEaMxEmovtiUEhcdf';
+// API ключи из RevenueCat Dashboard (env override + safe fallback for legacy builds)
+const REVENUECAT_ANDROID_API_KEY =
+  import.meta.env.VITE_REVENUECAT_ANDROID_API_KEY ||
+  'goog_EPRsxfvWzbItUwOHnEGHBGMIuCf';
+const REVENUECAT_IOS_API_KEY =
+  import.meta.env.VITE_REVENUECAT_IOS_API_KEY ||
+  'appl_SFBeDRUZdFrEaMxEmovtiUEhcdf';
 
 export class RevenueCatService {
   private static instance: RevenueCatService;

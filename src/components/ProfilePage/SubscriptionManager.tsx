@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { SparklesIcon } from 'lucide-react';
@@ -12,6 +14,7 @@ export const SubscriptionManager: React.FC = () => {
   const { userProfile, upgradeToPro, cancelProSubscription, user } =
     useAppStore();
   const { presentPaywall } = useRevenueCat(user?.id);
+  const navigate = useNavigate();
 
   const handleManageSubscription = async () => {
     if (userProfile?.isPro) {
@@ -19,8 +22,11 @@ export const SubscriptionManager: React.FC = () => {
       cancelProSubscription();
     } else {
       try {
-        // Use RevenueCat Paywall UI
-        await presentPaywall();
+        if (Capacitor.isNativePlatform()) {
+          await presentPaywall();
+        } else {
+          navigate('/comparison');
+        }
       } catch (error) {
         console.error('Failed to present paywall:', error);
         // Fallback to demo behavior on error

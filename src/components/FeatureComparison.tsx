@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEntitlement } from '@/hooks/useEntitlement';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useStripeCheckout } from '@/hooks/useStripeCheckout';
+import { Capacitor } from '@capacitor/core';
 import { isWebPlatform, isNativePlatform } from '@/utils/platform';
 import { toast } from 'sonner';
 
@@ -51,7 +52,11 @@ const FeatureComparison: React.FC = () => {
 
   const handleNativeUpgrade = async () => {
     try {
-      await presentPaywall();
+      if (Capacitor.isNativePlatform()) {
+        await presentPaywall();
+      } else {
+        navigate('/comparison');
+      }
     } catch (e) {
       toast.error('Не удалось открыть оплату', {
         description: 'Попробуйте ещё раз через минуту',
