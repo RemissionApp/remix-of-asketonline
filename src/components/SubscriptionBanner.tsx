@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon, MedalIcon } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { Card, CardContent } from '@/components/ui/card';
 import { CosmicButton } from './CosmicButton';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -36,8 +37,11 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({
     }
 
     try {
-      // Use RevenueCat Paywall UI
-      await presentPaywall();
+      if (Capacitor.isNativePlatform()) {
+        await presentPaywall();
+      } else {
+        navigate('/comparison');
+      }
     } catch (error) {
       console.error('Failed to present paywall:', error);
       // Fallback to demo behavior on error

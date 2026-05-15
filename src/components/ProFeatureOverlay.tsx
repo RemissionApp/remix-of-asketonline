@@ -1,6 +1,7 @@
 import React from 'react';
 import { LockIcon, SparklesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useAppStore } from '@/store/useAppStore';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { useToast } from '@/hooks/use-toast';
@@ -50,8 +51,12 @@ export const ProFeatureOverlay: React.FC<ProFeatureOverlayProps> = ({
         return;
       }
 
-      // Открываем RevenueCat paywall
-      await presentPaywall();
+      // Native: open RevenueCat paywall, web: fallback to comparison page
+      if (Capacitor.isNativePlatform()) {
+        await presentPaywall();
+      } else {
+        navigate('/comparison');
+      }
     } catch (error) {
       console.error('Ошибка при открытии paywall:', error);
       // В случае ошибки переходим на страницу сравнения
