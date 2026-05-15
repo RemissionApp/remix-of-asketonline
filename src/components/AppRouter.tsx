@@ -7,29 +7,30 @@ import { ResponsiveShell } from '@/components/desktop/DesktopShell';
 import { RequireAdmin } from '@/components/admin/RequireAdmin';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 
-import WelcomePage from '@/pages/WelcomePage';
-import LanguagePage from '@/pages/LanguagePage';
-import LoginPage from '@/pages/LoginPage';
-import UserProfilePage from '@/pages/UserProfilePage';
-import OnboardingPage from '@/pages/OnboardingPage';
-import MainPage from '@/pages/MainPage';
-import CreatePactPage from '@/pages/CreatePactPage';
-import PactsPage from '@/pages/PactsPage';
-import UniversePage from '@/pages/UniversePage';
-const LyraPage = UniversePage;
-import ProfilePage from '@/pages/ProfilePage';
-import NotFound from '@/pages/NotFound';
-import ComparisonPage from '@/pages/ComparisonPage';
-import AffirmationsPage from '@/pages/AffirmationsPage';
-import CosmicMissionsPage from '@/pages/CosmicMissionsPage';
-import AchievementsPage from '@/pages/AchievementsPage';
-import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
-import TermsOfServicePage from '@/pages/TermsOfServicePage';
-import DeleteAccountPage from '@/pages/DeleteAccountPage';
-import AccountSettingsPage from '@/pages/AccountSettingsPage';
 import { AuthCallback } from '@/components/AuthCallback';
 
-// Heavy pages — code-split via React.lazy to keep initial bundle small.
+// All pages code-split via React.lazy to keep initial bundle small.
+// Critical first-paint route (/main) is preloaded after mount below.
+const WelcomePage = lazy(() => import('@/pages/WelcomePage'));
+const LanguagePage = lazy(() => import('@/pages/LanguagePage'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const UserProfilePage = lazy(() => import('@/pages/UserProfilePage'));
+const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'));
+const MainPage = lazy(() => import('@/pages/MainPage'));
+const CreatePactPage = lazy(() => import('@/pages/CreatePactPage'));
+const PactsPage = lazy(() => import('@/pages/PactsPage'));
+const UniversePage = lazy(() => import('@/pages/UniversePage'));
+const LyraPage = UniversePage;
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const ComparisonPage = lazy(() => import('@/pages/ComparisonPage'));
+const AffirmationsPage = lazy(() => import('@/pages/AffirmationsPage'));
+const CosmicMissionsPage = lazy(() => import('@/pages/CosmicMissionsPage'));
+const AchievementsPage = lazy(() => import('@/pages/AchievementsPage'));
+const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage'));
+const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage'));
+const DeleteAccountPage = lazy(() => import('@/pages/DeleteAccountPage'));
+const AccountSettingsPage = lazy(() => import('@/pages/AccountSettingsPage'));
 const DetailedHoroscopePage = lazy(() => import('@/pages/DetailedHoroscopePage'));
 const FullHoroscopePage = lazy(() => import('@/pages/FullHoroscopePage'));
 const UniverseChatPage = lazy(() => import('@/pages/UniverseChatPage'));
